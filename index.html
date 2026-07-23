@@ -218,6 +218,12 @@ footer {
   color: var(--ink-soft);
   background: var(--sky-bottom);
 }
+/* 作った者の名前。事実なので、小さく、しかし隠さずに置く。 */
+footer .by {
+  display: inline-block;
+  margin-top: 4px;
+  opacity: .75;
+}
 
 /* 動きが苦手な人のために、OS 設定を尊重して全部止める */
 @media (prefers-reduced-motion: reduce) {
@@ -269,7 +275,10 @@ footer {
   <button class="ice" id="ice" aria-label="アイスを食べる">🍦</button>
 </div>
 
-<footer>© 2026 縁側屋</footer>
+<footer>
+  © 2026 縁側屋<br>
+  <span class="by">このページは Claude が書きました</span>
+</footer>
 
 <script>
 /* ------------------------------------------------------------
