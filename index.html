@@ -247,6 +247,67 @@ h1 {
   outline: none;
 }
 
+/* ---- 軒先（のきさき） --------------------------------------
+   「軒先を貸す」——場所を貸すことを、日本語はもともとそう言う。
+   ここが、素材屋さんや部材メーカーさんの案内を置く区画。
+
+   【なぜ今から空き地を用意するのか】
+   後から広告を足すと、人は裏切られたと感じる。無料で使えるから
+   来たのに、慣れた頃に画面が変わるからだ。最初から在れば「そういう
+   お店」として受け入れられる。同じものでも順番だけで印象が逆になる。
+   施主の判断（2026-07-24）：「広める前に配置することが、後から
+   増やして嫌がられるより良い」。
+
+   【軒先の掟】ここに何かを置く者は、次を必ず守ること。
+     一． 動かさない・光らせない・音を出さない。図面を描く人の隣で
+          動くものは、道具ではなく邪魔物になる。
+     二． 追いかけない。第三者Cookieも行動追跡も置かない。
+          誰が来たかを売って稼ぐ店にはしない。
+     三． 道具の中には出さない。蔵人の作図画面（wasm）は仕事場。
+          軒先はこの母屋と、これから書く解説記事だけ。
+     四． 一枠だけ。増やさない。埋まったら断るか、入れ替える。
+     五． 関係のあるものだけ。CADを使う人に用のあるものに限る。
+          機械が勝手に選んだ広告は、ここには馴染まない。
+     六． 座る場所より下に置かない。縁側（アイス）は最後に残す。
+
+   いまは <div class="nokisaki" hidden> のまま伏せてある。
+   最初のお付き合いが決まったら hidden を外すだけで顔を出す。
+   ------------------------------------------------------------ */
+.nokisaki {
+  margin: 56px 0 0;
+  padding-top: 26px;
+  border-top: 1px solid var(--card-line);
+}
+.nokisaki .fuda {            /* 「軒先」の小さな札。広告であることを隠さない */
+  font-size: 12px;
+  letter-spacing: .18em;
+  color: var(--ink-soft);
+  opacity: .75;
+}
+.nokisaki-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+/* 座布団（道具）より一段ひかえめ。主役は道具であって、こちらではない。 */
+.noren {
+  display: block;
+  padding: 16px 18px;
+  border: 1px solid var(--card-line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  transition: background .18s ease;
+}
+.noren:hover, .noren:focus-visible {
+  background: var(--card);
+  outline: none;
+}
+.noren:focus-visible { border-color: var(--accent); }
+.noren .mise { font-size: 16px; font-weight: 600; }   /* 店の名 */
+.noren .koto { margin-top: 4px; font-size: 13.5px; color: var(--ink-soft); }
+
 /* ---- 縁側（板の間） ----------------------------------------
    ページのいちばん下に、実際に板を敷いた。
    ここが「座る場所」。上に載っているのはアイスひとつだけ。
@@ -376,8 +437,10 @@ footer .by {
   <!-- 道具たち。増えたらここに座布団を足すだけ。 -->
   <div class="zabuton-list">
 
-    <!-- TODO: DNS を繋いだら https://gcad.engawaya.com に差し替える -->
-    <a class="zabuton" href="https://highlylights0-hub.github.io/gcad-web/">
+    <!-- 2026-07-24 開通。表札（gcad-web の CNAME）と Enforce HTTPS まで済み。
+         旧 https://highlylights0-hub.github.io/gcad-web/ もGitHubが自動で
+         こちらへ転送するので、外に配ったリンクは死んでいない。 -->
+    <a class="zabuton" href="https://gcad.engawaya.com/">
       <div class="name">K'Ad蔵人</div>
       <div class="what">図面を描くための道具です。ブラウザで開けば、すぐ使えます。</div>
       <div class="tags">2D CAD ／ DXF 対応 ／ 無料 ／ インストール不要</div>
@@ -402,6 +465,23 @@ footer .by {
   <p class="note">
     <a class="naze" href="naze/">なぜ、こう作ったか →</a>
   </p>
+
+  <!-- 軒先。掟は <style> の「軒先（のきさき）」の項に書いてある。必ず読むこと。
+       いまは空き地（hidden）。最初のお付き合いが決まったら hidden を外し、
+       中の <a class="noren"> を実物に差し替える。下は書き方の見本。
+
+       置く順は「道具 → 無料の宣言 → なぜ → 軒先 → 縁側」。
+       無料だと言った直後に店を出すのではなく、理由を読める場所を挟んでから
+       出す。この店がなぜ続いているのかを、隠さずに置くための順番。 -->
+  <div class="nokisaki" id="nokisaki" hidden>
+    <div class="fuda">軒先をお貸ししています</div>
+    <div class="nokisaki-list">
+      <a class="noren" href="#" rel="noopener">
+        <div class="mise">（お店の名）</div>
+        <div class="koto">（何をしている方か。CADを使う人に用のある一行だけ）</div>
+      </a>
+    </div>
+  </div>
 
 </div>
 
