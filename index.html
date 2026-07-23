@@ -236,6 +236,16 @@ h1 {
   color: var(--ink-soft);
 }
 .note b { color: var(--ink); font-weight: 600; }
+/* 奥の部屋への戸。主張しない大きさで、しかし見つかる位置に。 */
+.note a.naze {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.note a.naze:hover, .note a.naze:focus-visible {
+  border-bottom-color: var(--accent);
+  outline: none;
+}
 
 /* ---- 縁側（板の間） ----------------------------------------
    ページのいちばん下に、実際に板を敷いた。
@@ -385,6 +395,12 @@ footer .by {
     ここの道具は、ぜんぶ<b>無料</b>です。<br>
     お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。<br>
     使ってみて、役に立ったなら、それでじゅうぶんです。
+  </p>
+
+  <!-- 奥の部屋への戸。表に理由を書き並べると重たくなるので、
+       読みたい人だけが上がれるように、小さく一行だけ置く。 -->
+  <p class="note">
+    <a class="naze" href="naze/">なぜ、こう作ったか →</a>
   </p>
 
 </div>

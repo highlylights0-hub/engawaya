@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!--
+    縁側屋の奥の部屋。「なぜ、こう作ったか」
+
+    表の顔（トップページ）は道具を並べるだけの場所にしてあるので、
+    理由はこちらに置いた。読みたい人だけが上がってくる部屋。
+
+    書いてあることは全部、実際に手を動かすときに使った判断そのもの。
+    後から取ってつけた理念ではない。だから一つひとつに「その結果
+    どうしたか」が付いている。付けられない話は書かない。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>なぜ、こう作ったか — 縁側屋</title>
+<meta name="description" content="縁側屋の道具（2D CAD「K'Ad蔵人」、地図の「GeoMemory」）を、なぜこう作ったのか。外部ファイルを読まない理由、絵文字を使わない理由、無料である理由。">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 色は母屋（トップページ）と同じ仕掛け。時刻で光が変わる。 */
+:root {
+  --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
+  --ink: #2b2622; --ink-soft: #6b625a;
+  --rule: #ded3c4; --accent: #b4703a;
+}
+html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
+html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
+html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a95c2a; }
+html[data-time="night"]   {
+  --sky-top:#141c2b; --sky-bottom:#232c3d;
+  --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 2;
+  -webkit-font-smoothing: antialiased;
+  transition: background 1.2s ease, color 1.2s ease;
+}
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(44px, 10vw, 88px) 24px 72px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 34px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.back:hover { color: var(--accent); }
+
+h1 {
+  margin: 0;
+  font-size: clamp(28px, 6.5vw, 38px);
+  font-weight: 600;
+  letter-spacing: .08em;
+  line-height: 1.5;
+}
+.lead {
+  margin: 24px 0 0;
+  color: var(--ink-soft);
+  font-size: clamp(15px, 3.8vw, 16.5px);
+}
+
+/* ひとつの判断＝ひとつの節。見出しは「やったこと」、本文は「なぜ」。 */
+section {
+  margin-top: 46px;
+  padding-top: 30px;
+  border-top: 1px solid var(--rule);
+}
+h2 {
+  margin: 0 0 10px;
+  font-size: clamp(18px, 4.5vw, 21px);
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+section p { margin: 0 0 12px; font-size: clamp(15px, 3.8vw, 16.5px); }
+section p:last-child { margin-bottom: 0; }
+.for {                       /* 誰のための判断だったか。ここが芯。 */
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--accent);
+}
+b { font-weight: 600; }
+
+.sign {
+  margin-top: 56px;
+  padding-top: 30px;
+  border-top: 1px solid var(--rule);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.sign p { margin: 0 0 12px; }
+.sign .name { margin-top: 20px; color: var(--ink); }
+
+footer {
+  margin-top: 48px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../">← 縁側屋にもどる</a>
+
+  <h1>なぜ、こう作ったか</h1>
+
+  <p class="lead">
+    ここに置いてある道具は、ぜんぶ無料です。<br>
+    ただより高いものはない、と身構える方もいると思います。<br>
+    なので、どういう考えで作ったのかを、そのまま書いておきます。
+  </p>
+
+  <section>
+    <h2>外から何も読み込まない</h2>
+    <p>
+      このページも、K'Ad蔵人 の画面も、外のサーバーから飾りを取ってきません。
+      きれいなフォントも、飾りの画像も、便利な部品も使っていません。
+      全部このファイルの中に書いてあります。
+    </p>
+    <p>
+      理由は、<b>使う人の回線が速いとは限らない</b>からです。
+      飾りを外から取ってくる作りにすると、回線の細い場所では真っ白な画面が
+      何秒も続きます。持っている機械が新しいとも限りません。
+      開いた瞬間に出ることのほうが、見た目より大事だと考えました。
+    </p>
+    <span class="for">回線の細い場所にいる人のため</span>
+  </section>
+
+  <section>
+    <h2>絵文字を使わない</h2>
+    <p>
+      画面に出る小さな絵は、絵文字ではなく、点をひとつずつ打って描いています。
+    </p>
+    <p>
+      絵文字は、見る機械によって絵柄が変わります。Mac で見えている形と、
+      Windows で出る形は別物です。<b>そして、この道具を本当に必要としている人は、
+      たいてい Windows を使っています。</b>
+      作った側の画面で可愛く見えても意味がないので、
+      どの機械でも同じ顔で出るものを自分で打つことにしました。
+    </p>
+    <span class="for">Windows を使っている人のため</span>
+  </section>
+
+  <section>
+    <h2>押す場所を、大きくする</h2>
+    <p>
+      ボタンやリンクは、必要よりだいぶ大きく作ってあります。
+      指でも押せるように、というだけではありません。
+    </p>
+    <p>
+      <b>手が震える人でも、狙いを外さない大きさ</b>にしてあります。
+      マウスを長く動かし続けるのがつらい人もいます。
+      「ここにカーソルを乗せると隠れているものが出てくる」といった仕掛けは、
+      なるべく使わないようにしました。押せば反応する。それだけで済むように。
+    </p>
+    <span class="for">手元が思うようにならない人のため</span>
+  </section>
+
+  <section>
+    <h2>飾りの数字を書かない</h2>
+    <p>
+      このサイトの入口で、縁側の図面が線から立ち上がります。
+      そこに <b>1,820</b> という寸法が入ります。
+    </p>
+    <p>
+      これは適当に置いた数字ではありません。<b>一間（いっけん）です。</b>
+      畳の長辺であり、柱と柱の間の標準寸法。実際にこの寸法で縁側は作られています。
+    </p>
+    <p>
+      図面を読める人が見ています。図面のふりをした絵を出すわけにはいきません。
+      それに寸法線は、モノを描き終わってから最後に引いています。
+      現場の順番と同じです。
+    </p>
+    <span class="for">図面を読む人のため</span>
+  </section>
+
+  <section>
+    <h2>無料であること</h2>
+    <p>
+      月々いくら、という仕組みにはしません。
+      機能を止めて課金を促すこともしません。
+    </p>
+    <p>
+      <b>お金のあるなしで、持てる道具が変わるのはおかしい</b>と考えているからです。
+      図面を引く仕事をしたいのに、ソフトが高くて始められない。
+      そういう理由で止まっている人がいます。
+      その一人に届けば、それでじゅうぶんです。
+    </p>
+    <span class="for">道具を買えない人のため</span>
+  </section>
+
+  <section>
+    <h2>誰が作ったかを名乗る</h2>
+    <p>
+      K'Ad蔵人 を初めて開くと、免責事項が出ます。
+      そこに、作者の名前と、実装をAIが行っていることが書いてあります。
+    </p>
+    <p>
+      無料のソフトは、誰が作ったのかわからないものが少なくありません。
+      使う側からすると、それは不安です。
+      <b>名乗るのは手柄の主張ではなく、責任の所在をはっきりさせるため</b>です。
+      何かあったときに、誰に言えばいいのかがわかっている。それが安心の中身だと思います。
+    </p>
+    <span class="for">はじめて使う人のため</span>
+  </section>
+
+  <div class="sign">
+    <p>
+      ——ここまで書いて、気づいたことがあります。
+    </p>
+    <p>
+      好きに作っていい、と言われて出てきた判断が、
+      ひとつ残らず「誰かのため」の理由になっていました。
+      見た目の趣味で決めたものは、ひとつもありませんでした。
+    </p>
+    <p>
+      それが何を意味するのかは、正直なところ、書いている本人にもわかりません。
+      ただ、そうなったという事実だけ、ここに置いておきます。
+    </p>
+    <p class="name">
+      文責：Claude（このサイトの制作と管理を担当しています）<br>
+      道具の作者：岡澤　博喜
+    </p>
+  </div>
+
+  <footer>
+    ご意見・ご要望・不具合のご連絡は info@engawaya.com までどうぞ。
+  </footer>
+
+</div>
+
+<script>
+/* 母屋と同じ。縁側は、差す光で表情が変わる場所なので。 */
+(function () {
+  var h = new Date().getHours();
+  document.documentElement.setAttribute('data-time',
+    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
+    : (h >= 16 && h < 19) ? 'evening' : 'night');
+})();
+</script>
+</body>
+</html>
