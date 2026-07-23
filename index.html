@@ -253,18 +253,23 @@ h1 {
   box-shadow: inset 0 14px 24px #0000002e;
   transition: background 1.2s ease;
 }
-/* アイス。押すとひとこと言う。それだけの仕掛け。 */
+/* アイス。押すとひとこと言う。それだけの仕掛け。
+
+   絵文字（🍦）ではなくドット絵で打ち直した。理由は見た目の趣味ではなく、
+   絵文字は OS ごとに絵柄が違うから。Mac で見えているものと Windows で
+   出るものは別物になる。そして届けたい人は Windows に居る。
+   自分で打った点は、どの機械でも同じ顔で出る。 */
 .ice {
   position: absolute;
-  top: -30px; left: 50%;
+  top: -34px; left: 50%;
   transform: translateX(-50%);
-  font-size: 34px;
   background: none; border: 0; padding: 6px;
   cursor: pointer;
-  line-height: 1;
+  line-height: 0;
   filter: drop-shadow(0 4px 6px #00000035);
   transition: transform .2s ease;
 }
+.ice svg { width: 34px; height: auto; display: block; }
 .ice:hover { transform: translateX(-50%) translateY(-3px) rotate(-4deg); }
 .ice:active { transform: translateX(-50%) translateY(1px); }
 
@@ -387,7 +392,45 @@ footer .by {
 <!-- 縁側。座る場所。 -->
 <div class="engawa">
   <div class="whisper" id="whisper"></div>
-  <button class="ice" id="ice" aria-label="アイスを食べる">🍦</button>
+  <!-- ドット絵のアイス。1マス＝1ドットの矩形の集まり。
+       shape-rendering="crispEdges" で、拡大しても点がぼやけない。 -->
+  <button class="ice" id="ice" aria-label="アイスを食べる">
+    <svg viewBox="0 0 11 14" shape-rendering="crispEdges" role="img" aria-hidden="true">
+      <!-- ① 玉（本体） -->
+      <g fill="#fbe3c0">
+        <rect x="4" y="0" width="3" height="1"/>
+        <rect x="3" y="1" width="5" height="1"/>
+        <rect x="2" y="2" width="7" height="2"/>
+        <rect x="1" y="4" width="9" height="2"/>
+        <rect x="2" y="6" width="7" height="1"/>
+        <rect x="3" y="7" width="5" height="1"/>
+      </g>
+      <!-- ② 光の当たる側（左上）。1段明るくするだけで玉に見える -->
+      <g fill="#fff7e9">
+        <rect x="4" y="1" width="2" height="1"/>
+        <rect x="3" y="2" width="2" height="1"/>
+        <rect x="2" y="4" width="2" height="1"/>
+      </g>
+      <!-- ③ 影の側（右下） -->
+      <g fill="#eccb9e">
+        <rect x="7" y="5" width="3" height="1"/>
+        <rect x="6" y="6" width="3" height="1"/>
+        <rect x="5" y="7" width="3" height="1"/>
+      </g>
+      <!-- ④ コーン -->
+      <g fill="#c48c4e">
+        <rect x="3" y="8"  width="5" height="2"/>
+        <rect x="4" y="10" width="3" height="2"/>
+        <rect x="5" y="12" width="1" height="2"/>
+      </g>
+      <!-- ⑤ コーンの網目（濃い点を散らすだけでワッフルに見える） -->
+      <g fill="#a06f38">
+        <rect x="4" y="9"  width="1" height="1"/>
+        <rect x="6" y="9"  width="1" height="1"/>
+        <rect x="5" y="11" width="1" height="1"/>
+      </g>
+    </svg>
+  </button>
 </div>
 
 <footer>
