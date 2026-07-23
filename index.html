@@ -229,6 +229,31 @@ h1 {
   color: var(--accent);
 }
 
+/* ---- 但し書き（開発中であること・連絡先） ------------------
+   道具のすぐ下に置く。なぜここかというと、押す前に目に入る位置で
+   なければ後出しになるから。軒先の考え方と同じで、最初から在れば
+   「そういう店」として受け取ってもらえる。慣れた頃に出てくると、
+   同じ文でも裏切りに見える。
+
+   詫びの文にはしない。開発中であることは恥ではなく、ことわり。
+   点線の枠にしてあるのは「まだ引き終わっていない線」の意味。
+   ------------------------------------------------------------ */
+.tadashi {
+  margin: 22px 0 0;
+  padding: 18px 20px;
+  border: 1px dashed var(--card-line);
+  border-radius: 12px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.tadashi b { color: var(--ink); font-weight: 600; }
+.tadashi a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+}
+.tadashi .kubiri { margin-top: 10px; }   /* 免責と、連絡先の間の一息 */
+
 /* ---- ちいさな但し書き ---- */
 .note {
   margin: 52px 0 0;
@@ -454,6 +479,25 @@ footer .by {
 
   </div>
 
+  <!-- 但し書き。道具の真下＝リンクのすぐそば。押す前に読める位置に置く。
+       連絡先を生のまま書かないのは、公開ページのメールアドレスを
+       迷惑メール業者の巡回ロボットが拾って回るため。ここには字で
+       「アットマーク」と書いておき、下の script が開いた瞬間に
+       押せるリンクへ組み直す。人には普通に見えて、機械には読みにくい。
+       JS が動かない機械でも、この字のままなら人は読めるので誰も締め出さない。 -->
+  <p class="tadashi">
+    どちらの道具も、まだ<b>開発中</b>です。うまく動かないところが残っています。<br>
+    <b>ファイルを扱うときは、必ず控え（バックアップ）を取ってから</b>どうぞ。
+    上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、
+    別の場所にも控えを置いてください。
+    使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。
+    <span class="kubiri" style="display:block">
+      おかしいところ、こうしてほしいところがあれば、
+      <span class="renraku">highlylights0 アットマーク gmail.com</span>
+      までメールをください。ひとつずつ直していきます。
+    </span>
+  </p>
+
   <p class="note">
     ここの道具は、ぜんぶ<b>無料</b>です。<br>
     お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。<br>
@@ -574,6 +618,29 @@ footer .by {
       whisper.classList.remove('show');
     }, 2600);
   });
+})();
+
+/* ------------------------------------------------------------
+   連絡先を、開いた瞬間に組み立てる。
+
+   なぜ HTML に生で書かないか：公開ページに書かれたメールアドレスは、
+   迷惑メール業者の巡回ロボットが拾って歩く。文字を分けて持っておき、
+   ここで @ に組み直せば、人には押せて機械には読みにくい。
+   完全には防げないので、増えてきたら受け側（Gmail）で振り分ける。
+
+   件名を入れておくのは、届いたときに何の話か一目で分かるように。
+   ------------------------------------------------------------ */
+(function () {
+  var na = 'highlylights0', ie = 'gmail.com';
+  var list = document.querySelectorAll('.renraku');
+  for (var k = 0; k < list.length; k++) {
+    var a = document.createElement('a');
+    a.href = 'mailto:' + na + '@' + ie
+           + '?subject=' + encodeURIComponent('縁側屋の道具のこと');
+    a.textContent = na + '@' + ie;
+    list[k].textContent = '';
+    list[k].appendChild(a);
+  }
 })();
 </script>
 
