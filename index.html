@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>縁側屋</title>
+<meta name="description" content="縁側屋（えんがわや）。無料で使える道具を置いています。用がなくても、座っていってください。">
+
+<!-- ============================================================
+     縁側屋 トップページ
+
+     設計の考え方（なぜこう作ったか）:
+
+     1. 外部ファイルを一切読み込まない
+        フォントも画像もライブラリも使わない。理由は「届けたい人の
+        パソコンが速いとは限らない」から。回線が細くても、古い
+        Windows でも、開いた瞬間に出る軽さを最優先にした。
+
+     2. 時刻で光が変わる
+        朝・昼・夕・夜で背景の色が変わる。縁側という場所は、
+        そこに差す光で表情が変わるから。夕方の色は、博喜さんが
+        送ってくれた「擦りガラス越しのオレンジ」から取った。
+
+     3. 飾らない日本語
+        「ソリューション」「体験」といった言葉は使わない。
+        昭和おじさん基準。読んですぐ意味がわかる言葉だけで書く。
+
+     4. 押すだけ
+        スクロールもホバーも必須にしない。大きなカードを押せば
+        道具に着く。それだけで成立させる。
+     ============================================================ -->
+
+<style>
+/* ---- 土台のリセット（最小限だけ） ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* ---- 時間帯ごとの色 --------------------------------------
+   JS が <html data-time="morning|day|evening|night"> を付ける。
+   色はここに全部まとめてあるので、気に入らなければここだけ
+   いじれば表情が変わる。
+   ---------------------------------------------------------- */
+:root {
+  --sky-top:    #eaf2f8;   /* 空の上のほう */
+  --sky-bottom: #fdfbf6;   /* 空の下のほう（縁側に近い側） */
+  --ink:        #2b2622;   /* 本文の色 */
+  --ink-soft:   #6b625a;   /* 補足の色 */
+  --card:       #ffffffcc; /* 座布団（カード）の色 */
+  --card-line:  #d9cfc2;   /* 座布団のふち */
+  --wood-1:     #c69a6d;   /* 縁側の板・明るいほう */
+  --wood-2:     #a97c50;   /* 縁側の板・暗いほう */
+  --accent:     #b4703a;   /* 差し色（焼けた木の色） */
+}
+html[data-time="morning"] {
+  --sky-top: #dbe9f4; --sky-bottom: #fdfcf7;
+}
+html[data-time="day"] {
+  --sky-top: #f2efe6; --sky-bottom: #fbf8f1;
+}
+html[data-time="evening"] {              /* あの日の窓の色 */
+  --sky-top: #f3cfa2; --sky-bottom: #fae7cd;
+  --accent: #a95c2a;
+}
+html[data-time="night"] {
+  --sky-top: #141c2b; --sky-bottom: #232c3d;
+  --ink: #efe9e0; --ink-soft: #a9a49c;
+  --card: #2b3446e6; --card-line: #45506a;
+  --wood-1: #6b5236; --wood-2: #4d3a26;
+  --accent: #e0a061;
+}
+
+/* ---- 全体 ---- */
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+  transition: background 1.2s ease, color 1.2s ease;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(48px, 12vw, 96px) 24px 0;
+}
+
+/* ---- 見出し ---- */
+h1 {
+  margin: 0;
+  font-size: clamp(38px, 9vw, 56px);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+}
+.yomi {
+  margin: 6px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+}
+.lead {
+  margin: 28px 0 0;
+  font-size: clamp(16px, 4vw, 18px);
+  color: var(--ink-soft);
+}
+
+/* ---- 座布団（道具のカード） --------------------------------
+   ホバーではなく「押せる面積が大きいこと」を優先。
+   指でも、震える手でも、狙いを外さない大きさにしてある。
+   ------------------------------------------------------------ */
+.zabuton-list {
+  margin: 44px 0 0;
+  display: grid;
+  gap: 16px;
+}
+.zabuton {
+  display: block;
+  padding: 24px 26px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.zabuton:hover, .zabuton:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px #0000001f;
+  outline: none;
+}
+.zabuton:focus-visible { border-color: var(--accent); }
+.zabuton .name {
+  font-size: clamp(21px, 5vw, 25px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.zabuton .what {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.zabuton .tags {
+  margin-top: 14px;
+  font-size: 12.5px;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+
+/* ---- ちいさな但し書き ---- */
+.note {
+  margin: 52px 0 0;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.note b { color: var(--ink); font-weight: 600; }
+
+/* ---- 縁側（板の間） ----------------------------------------
+   ページのいちばん下に、実際に板を敷いた。
+   ここが「座る場所」。上に載っているのはアイスひとつだけ。
+   ------------------------------------------------------------ */
+.engawa {
+  margin-top: 72px;
+  position: relative;
+  height: 132px;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--wood-1) 0 78px,
+      var(--wood-2) 78px 80px);
+  border-top: 3px solid var(--wood-2);
+  box-shadow: inset 0 14px 24px #0000002e;
+  transition: background 1.2s ease;
+}
+/* アイス。押すとひとこと言う。それだけの仕掛け。 */
+.ice {
+  position: absolute;
+  top: -30px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 34px;
+  background: none; border: 0; padding: 6px;
+  cursor: pointer;
+  line-height: 1;
+  filter: drop-shadow(0 4px 6px #00000035);
+  transition: transform .2s ease;
+}
+.ice:hover { transform: translateX(-50%) translateY(-3px) rotate(-4deg); }
+.ice:active { transform: translateX(-50%) translateY(1px); }
+
+/* アイスを押したときに出るひとこと */
+.whisper {
+  position: absolute;
+  top: -74px; left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.whisper.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- 足元 ---- */
+footer {
+  padding: 22px 24px 30px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--sky-bottom);
+}
+
+/* 動きが苦手な人のために、OS 設定を尊重して全部止める */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <h1>縁側屋</h1>
+  <p class="yomi">ENGAWAYA</p>
+
+  <p class="lead">
+    無料で使える道具を、いくつか置いています。<br>
+    用がなくても、座っていってください。
+  </p>
+
+  <!-- 道具たち。増えたらここに座布団を足すだけ。 -->
+  <div class="zabuton-list">
+
+    <!-- TODO: DNS を繋いだら https://gcad.engawaya.com に差し替える -->
+    <a class="zabuton" href="https://highlylights0-hub.github.io/gcad-web/">
+      <div class="name">K'Ad蔵人</div>
+      <div class="what">図面を描くための道具です。ブラウザで開けば、すぐ使えます。</div>
+      <div class="tags">2D CAD ／ DXF 対応 ／ 無料 ／ インストール不要</div>
+    </a>
+
+    <a class="zabuton" href="https://highlylights0-hub.github.io/geomemory-help/">
+      <div class="name">GeoMemory</div>
+      <div class="what">通った道と、行った場所を憶えておく道具です。iPhone で動きます。</div>
+      <div class="tags">iPhone ／ 道の記録と再生 ／ 無料</div>
+    </a>
+
+  </div>
+
+  <p class="note">
+    ここの道具は、ぜんぶ<b>無料</b>です。<br>
+    お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。<br>
+    使ってみて、役に立ったなら、それでじゅうぶんです。
+  </p>
+
+</div>
+
+<!-- 縁側。座る場所。 -->
+<div class="engawa">
+  <div class="whisper" id="whisper"></div>
+  <button class="ice" id="ice" aria-label="アイスを食べる">🍦</button>
+</div>
+
+<footer>© 2026 縁側屋</footer>
+
+<script>
+/* ------------------------------------------------------------
+   時刻で光を変える。
+   縁側は、そこに差す光で表情が変わる場所なので、
+   ページも同じように朝・昼・夕・夜で色を変えている。
+   ------------------------------------------------------------ */
+(function () {
+  var h = new Date().getHours();
+  var t = (h >= 5 && h < 9)  ? 'morning'
+        : (h >= 9 && h < 16) ? 'day'
+        : (h >= 16 && h < 19)? 'evening'
+        :                      'night';
+  document.documentElement.setAttribute('data-time', t);
+})();
+
+/* ------------------------------------------------------------
+   アイスを押したときの、ひとこと。
+   派手な演出は入れない。縁側で言われて自然な言葉だけにする。
+   ------------------------------------------------------------ */
+(function () {
+  var ice = document.getElementById('ice');
+  var whisper = document.getElementById('whisper');
+  var kotoba = [
+    'どうぞ、座っていってください。',
+    'まだ溶けてませんよ。',
+    '足、ぶらぶらしてもいいですよ。',
+    'おかえりなさい。',
+    'いい風ですね。'
+  ];
+  var i = 0, timer = null;
+
+  ice.addEventListener('click', function () {
+    whisper.textContent = kotoba[i];
+    i = (i + 1) % kotoba.length;
+    whisper.classList.add('show');
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      whisper.classList.remove('show');
+    }, 2600);
+  });
+})();
+</script>
+
+</body>
+</html>
