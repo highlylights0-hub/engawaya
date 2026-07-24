@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<!--
+    ┌────────────────────────────────────────────────┐
+    │                                                │
+    │                 棟   札                        │
+    │                                                │
+    │      上棟   二〇二六年 七月 二十五日           │
+    │                                                │
+    │      施主   岡 澤 博 喜                        │
+    │      大工   Claude （蔵人）                    │
+    │                                                │
+    │      この部屋を建てた理由                      │
+    │        二〇二一年、施主はひとりで              │
+    │        落ちものを一本作りきっていた。          │
+    │        名は [Ochi-Gee] 。C++で一万四千行。     │
+    │        よく出来ていたが、顔かたちが            │
+    │        よその家のものに似すぎていて            │
+    │        表に出せなかった。                      │
+    │                                                │
+    │        だから作り直した。                      │
+    │        駒のかたちと、消えかたを変えた。        │
+    │        魂だけを連れてきた。                    │
+    │                                                │
+    │        壊れたままの本家は、記念にとってある。  │
+    │                                                │
+    └────────────────────────────────────────────────┘
+
+    ── この部屋の掟 ────────────────────────────────
+
+    一． 外から何も読み込まない。
+         絵も音も文字も、ぜんぶこの一枚の中で作る。画像ファイルも
+         音源ファイルも持たない。理由は母屋と同じ——遊びに来た人の
+         機械が速いとは限らないから。押した瞬間に始まること。
+
+    二． 借り物を置かない。
+         そうすれば版権のことで誰も困らない。クレジットに書く相手が
+         いない、という状態を作る。これは本家 [Ochi-Gee] が出せな
+         かった理由への、まっすぐな答え。
+
+    三． 押すだけで遊べる。
+         スワイプもフリックも必須にしない。大きなボタンを押せば動く。
+         キーボードでも遊べるが、無くても遊べる。
+
+    四． 音は黙って出さない。
+         既定は消音。出したい人が札を押したときだけ鳴る。
+
+    五． 目が疲れる光を出さない。
+         点滅で殴らない。動きを止めたい人（prefers-reduced-motion）
+         には止めて出す。
+
+    ────────────────────────────────────────────────
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>星つなぎ — 縁側屋</title>
+<meta name="description" content="縁側屋の遊び場。落ちてくる星を積んで、左の端から右の端までつなげると開通します。無料・インストール不要・ブラウザだけで遊べます。">
+
+<style>
+/* ============================================================
+   星つなぎ
+
+   画面の作り：
+     ・数字（点数・段・開通）は HTML の文字。canvas に描かない。
+       そのほうが拡大しても綺麗で、読み上げソフトにも届く。
+     ・夜空と星と盤は canvas。ここは絵なので canvas が向いている。
+     ・操作ボタンは本物の <button>。指で押せる大きさを最優先。
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+:root {
+  /* 夜空。縁側から見上げた夏の空の色 */
+  --sora-ue:   #0d1424;
+  --sora-shita:#1a2338;
+  --ink:       #eceef5;   /* 文字 */
+  --ink-soft:  #9aa3b8;   /* 補足の文字 */
+  --waku:      #3b4864;   /* 枠線 */
+  --waku-akari:#6f83ad;   /* 明るい枠線 */
+  --ita:       #8a6743;   /* 縁側の板 */
+  --ita-kage:  #5f472e;   /* 板の影 */
+  --akari:     #ffd166;   /* 差し色（灯り） */
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sora-ue) 0%, var(--sora-shita) 70%, #223049 100%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  /* 遊んでいる最中、指で画面が動いてしまうのを止める */
+  overscroll-behavior: none;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 14px 14px 0;
+}
+
+/* ---- 上の帯（もどる／題）---- */
+.obi {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.back {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 13px;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+}
+.back:hover, .back:focus-visible { color: var(--akari); border-bottom-color: var(--akari); }
+h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+h1 .yomi { font-size: 11px; letter-spacing: 0.3em; color: var(--ink-soft); margin-left: 8px; font-weight: 400; }
+
+/* ---- 数字の札（点数・段・開通・最高）--------------------
+   4つ横並び。狭い画面では2列に折れる。
+   数字は tabular-nums で桁が踊らないようにする。
+   -------------------------------------------------------- */
+.fuda-列 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+@media (max-width: 380px) { .fuda-列 { grid-template-columns: repeat(2, 1fr); } }
+.fuda {
+  border: 1px solid var(--waku);
+  border-radius: 4px;
+  background: #ffffff0a;
+  padding: 5px 6px 6px;
+  text-align: center;
+  line-height: 1.35;
+}
+.fuda .na { display: block; font-size: 10px; letter-spacing: 0.12em; color: var(--ink-soft); }
+.fuda .kazu {
+  display: block;
+  font-size: 19px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+/* 最高点を抜いた瞬間だけ、札の色が変わる（点滅はさせない） */
+.fuda.koushin { border-color: var(--akari); }
+.fuda.koushin .kazu { color: var(--akari); }
+
+/* ---- 夜空（canvas）---- */
+.yozora {
+  position: relative;
+  border: 1px solid var(--waku);
+  border-radius: 4px;
+  background: #060a14;
+  overflow: hidden;
+  /* 指で長押ししても選択・拡大が起きないように */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+canvas { display: block; width: 100%; height: auto; }
+
+/* ---- 縁側の板。盤の下に一本だけ通す（ここは母屋と地続き）---- */
+.engawa {
+  height: 10px;
+  background: repeating-linear-gradient(90deg,
+    var(--ita) 0 26px, var(--ita-kage) 26px 28px);
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 12px;
+}
+
+/* ---- 操作ボタン ------------------------------------------
+   「押すだけ」の掟。指の腹で押せる大きさ（最低48px）を守る。
+   並びは実機の親指の位置に合わせて、左手＝移動／右手＝回すと落とす。
+   ---------------------------------------------------------- */
+.soujuu {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+button {
+  font: inherit;
+  color: var(--ink);
+  background: #ffffff10;
+  border: 1px solid var(--waku-akari);
+  border-radius: 6px;
+  min-height: 52px;
+  padding: 6px 4px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  transition: background 0.12s ease, transform 0.06s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button:hover { background: #ffffff1c; }
+button:active { background: #ffffff2e; transform: translateY(1px); }
+button:focus-visible { outline: 2px solid var(--akari); outline-offset: 2px; }
+button .sub { display: block; font-size: 10px; color: var(--ink-soft); letter-spacing: 0.08em; }
+button.hiroi { grid-column: span 3; }
+button.ikki { border-color: var(--akari); background: #ffd16618; }
+button.ikki:hover { background: #ffd16628; }
+
+/* ---- 小さい札（音・たすけ・やめる）---- */
+.kobuda {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.kobuda button { min-height: 40px; flex: 1; font-size: 13px; }
+
+/* ---- 遊び方（開いて読む）---- */
+details {
+  border: 1px solid var(--waku);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  background: #ffffff08;
+}
+summary { cursor: pointer; font-size: 14px; letter-spacing: 0.08em; }
+details p, details li { font-size: 13px; color: var(--ink-soft); }
+details p { margin: 10px 0 0; }
+details ul { margin: 8px 0 0; padding-left: 1.3em; }
+details b { color: var(--ink); }
+kbd {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11px;
+  border: 1px solid var(--waku-akari);
+  border-radius: 3px;
+  padding: 0 4px;
+  color: var(--ink);
+}
+
+/* ---- 足元 ---- */
+footer {
+  border-top: 1px solid var(--waku);
+  padding: 14px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+footer a { color: var(--ink-soft); }
+
+/* 動きを止めたい人には、canvas の中の漂う星も止める（JS が読む） */
+@media (prefers-reduced-motion: reduce) {
+  button { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="obi">
+    <a class="back" href="../">← 縁側屋にもどる</a>
+    <h1>星つなぎ<span class="yomi">ほしつなぎ</span></h1>
+  </div>
+
+  <!-- 数字の札。canvas ではなく文字なので、拡大しても綺麗で読み上げも効く -->
+  <div class="fuda-列">
+    <div class="fuda"><span class="na">てんすう</span><span class="kazu" id="ui-score">0</span></div>
+    <div class="fuda"><span class="na">だん</span><span class="kazu" id="ui-level">1</span></div>
+    <div class="fuda"><span class="na">かいつう</span><span class="kazu" id="ui-lines">0</span></div>
+    <div class="fuda" id="fuda-high"><span class="na">さいこう</span><span class="kazu" id="ui-high">0</span></div>
+  </div>
+
+  <!-- 夜空。ここに盤と、つぎの駒と、あずけた駒が出る -->
+  <div class="yozora">
+    <canvas id="ban" role="img"
+      aria-label="星つなぎの盤面。落ちてくる星を積んで、左の端から右の端まで同じ色でつなぐと開通します。"></canvas>
+  </div>
+  <div class="engawa" aria-hidden="true"></div>
+
+  <!-- 操作。押すだけで遊べること -->
+  <div class="soujuu">
+    <button id="b-left"  type="button" aria-label="左へ動かす">←<span class="sub">ひだり</span></button>
+    <button id="b-rot"   type="button" aria-label="回す">回す<span class="sub">まわす</span></button>
+    <button id="b-right" type="button" aria-label="右へ動かす">→<span class="sub">みぎ</span></button>
+    <button id="b-soft"  type="button" aria-label="ゆっくり落とす">↓<span class="sub">そっと</span></button>
+    <button id="b-hold"  type="button" aria-label="あずける">あずける<span class="sub">とりかえ</span></button>
+    <button id="b-hard"  type="button" class="ikki" aria-label="一気に落とす">⇊<span class="sub">いっき</span></button>
+  </div>
+
+  <div class="kobuda">
+    <button id="b-sound" type="button" aria-pressed="false">音を出す</button>
+    <button id="b-pause" type="button">やすむ</button>
+    <button id="b-new"   type="button">はじめから</button>
+  </div>
+
+  <details>
+    <summary>遊び方</summary>
+
+    <p>落ちてくる星を積んでいきます。<b>左の端から右の端まで、同じ色の星がつながると「開通」</b>——その星がぜんぶ消えて、上に載っていた星が下へ落ちます。</p>
+
+    <p>落ちた先でまたつながれば、続けて開通します。これが<b>連鎖</b>で、点数が大きく増えます。</p>
+
+    <p><b>斜めもつながります。</b>星座は斜めに結ぶものなので。</p>
+
+    <p>星は<b>3つの駒</b>と<b>5つの駒</b>があります。4つの駒はありません。</p>
+
+    <p>色は<b>白と青の二色</b>だけです。だから落ちてきた星は、必ずどちらかの道の役に立ちます。色の見分けがつきにくい方のために、星の中の点のかたちも変えてあります（白は真ん中の点、青は縦の棒）。</p>
+
+    <p>左右の端の列がうっすら光っているのが、つなぐ先です。</p>
+
+    <p>天井まで積み上がると<b>断線</b>——おしまいです。</p>
+
+    <p>キーボードでも遊べます。</p>
+    <ul>
+      <li><kbd>←</kbd> <kbd>→</kbd> 動かす　<kbd>↑</kbd> 回す</li>
+      <li><kbd>↓</kbd> そっと落とす　<kbd>スペース</kbd> 一気に落とす</li>
+      <li><kbd>Shift</kbd> あずける　<kbd>P</kbd> やすむ</li>
+    </ul>
+  </details>
+
+</div>
+
+<footer>
+  © 2026 縁側屋　岡澤　博喜<br>
+  借り物の絵も音も使っていません。ぜんぶこの一枚の中で作っています。
+</footer>
+
+<script>
+"use strict";
+/* ============================================================================
+   星つなぎ ── 縁側屋の遊び場
+
+   本家 [Ochi-Gee]（2021・C++・DxLib）から連れてきたもの：
+     ・点数の表（1本200／2本500／3本800／4本以上2000）
+     ・段が上がるのは開通10回ごと、最大99段
+     ・速さの上がり方（開通のたびに 0.02〜0.08 ずつ足す。1〜2段のあいだは倍）
+     ・点数が「じわじわ数え上がる」あの気持ちよさ
+     ・起動のアレシボ・メッセージ（73×23。施主が手で打った点）
+     ・-Connected- で始まり、Line Disconnection で終わる筋書き
+
+   本家から意識して変えたもの（版権に触れないため）：
+     ・駒　　 4マス7種をやめ、3マスと5マスにした
+     ・消え方 「横一列そろえる」をやめ、「左の壁から右の壁まで
+     　　　　 同じ色でつながったら開通」にした
+     ・落ち方 消えた後は行ごとにずり下がるのではなく、星が一粒ずつ落ちる
+              （だから連鎖が起きる）
+
+   守られるのは仕組みではなく「顔かたち」なので、駒と消え方を変えれば
+   別の顔になる。中身の設計は施主のもので、そこは堂々と継いでいる。
+   ========================================================================= */
+
+
+/* ===========================================================================
+   一、設定 ── 数字はぜんぶここに名前をつけて置く
+   　　　　　（あとで調整したくなったとき、探し回らずに済むように）
+   ======================================================================== */
+const 設定 = {
+  // ---- 盤の寸法 ----
+  // 10×20（よその家の寸法）を避けたうえで、実際に何百局も打たせて測って
+  // 決めた。横を広げると「端から端まで」が遠すぎて一度も開通しないまま
+  // 詰む。狭めすぎると簡単すぎる。7×18 が、並の打ち手で二百数十駒・
+  // 四十回ほど開通して一分強もつ寸法だった。
+  盤の横: 7,
+  盤の縦: 18,
+
+  // ---- 星の色 ----
+  // ここも測って決めた。4色だと、ある色の道を作っているあいだに
+  // 残り3色がただの瓦礫として積もるので、開通する前に詰む。
+  // 2色なら、落ちてくる星は必ずどちらかの道の役に立つ。
+  色の数: 2,
+
+  // ---- 落ちる速さ ----
+  最初の速さ: 1.0,    // 1秒に何マス落ちるか（ゆっくりから始める）
+  速さの伸び: 6.0,    // 貯めた「速さ」をマス／秒に換算する倍率
+  速さの上限: 14.0,   // これ以上は速くしない（人が反応できる限界のあたり）
+  そっと落とす倍率: 14, // ↓ を押しているあいだの速さ
+
+  // 開通したときに「速さ」へ足す量。同時に何本開通したかで変わる。
+  // ── 本家 speed_controll() の 0.02／0.04／0.06／0.08 をそのまま持ってきた
+  速さの足し: [0, 0.02, 0.04, 0.06, 0.08],
+  低段の倍: 2,        // 1〜2段のあいだは倍で足す（早くぬるま湯から出す）
+  低段とは: 2,
+
+  // ---- 点数 ----
+  // ── 本家の表。1本200／2本500／3本800／4本以上2000
+  点数の表: [0, 200, 500, 800, 2000],
+  連鎖の倍: [1, 1, 2, 3, 4, 5, 6, 7, 8],  // 何連鎖目かで掛ける
+  点数の上限: 999999,
+
+  // ---- 段（レベル）----
+  段が上がる開通数: 10,
+  段の上限: 99,
+
+  // ---- 間（ま）----
+  置いてから消すまで: 0.18,   // 秒。置いた形が目に残る時間
+  消してから落ちるまで: 0.22, // 秒。開通の光が走る時間
+  接地の猶予: 0.5,            // 秒。着いてもすぐ固まらない（滑り込ませてやる）
+  猶予の作り直し上限: 12,     // ずっと粘れないように回数で止める
+
+  つぎを見せる数: 3,
+};
+
+/* ===========================================================================
+   二、駒 ── 3マスと5マス。4マスは一つも作らない
+   　　　　　（4マス7種は、よその家の顔かたちそのものだから）
+   ======================================================================== */
+// 読みやすさのために絵で書く。# が星、. が空。
+const 駒の絵 = {
+  ぼう3:  ["###"],
+  かど3:  ["#.",
+           "##"],
+
+  ぼう5:  ["#####"],
+  かぎ5:  ["#...",
+           "####"],
+  コ5:    ["#.#",
+           "###"],
+  十5:    [".#.",
+           "###",
+           ".#."],
+  ひら5:  ["##",
+           "##",
+           "#."],
+  ずれ5:  [".#",
+           ".#",
+           "##",
+           "#."],
+};
+
+// 出やすさ。3マスは置き場所を作ってくれる助け駒なので多めに配る。
+const 駒の出やすさ = {
+  ぼう3: 3, かど3: 3,
+  ぼう5: 2, かぎ5: 2, コ5: 2, 十5: 2, ひら5: 2, ずれ5: 2,
+};
+
+/** 絵（文字の並び）を [{x,y}, ...] の座標に開く */
+function 絵を座標に(絵) {
+  const 出 = [];
+  for (let y = 0; y < 絵.length; y++) {
+    for (let x = 0; x < 絵[y].length; x++) {
+      if (絵[y][x] === "#") 出.push({ x, y });
+    }
+  }
+  return 出;
+}
+
+/** 座標のかたまりを右へ90度まわす（外枠の縦横を入れ替えて写す） */
+function まわす(座標) {
+  const 縦 = Math.max(...座標.map(c => c.y)) + 1;
+  return 座標.map(c => ({ x: 縦 - 1 - c.y, y: c.x }));
+}
+
+// 駒ごとに「4方向ぶんの形」を先に作っておく（毎回まわす計算をしないため）。
+// 同じ形に戻るもの（ぼう3の180度など）は重複を捨てる。
+const 駒表 = Object.keys(駒の絵).map(名 => {
+  const 向き = [];
+  let 形 = 絵を座標に(駒の絵[名]);
+  for (let i = 0; i < 4; i++) {
+    const 鍵 = 形.map(c => c.x + "," + c.y).sort().join(" ");
+    if (!向き.some(v => v.鍵 === 鍵)) 向き.push({ 鍵, 形 });
+    形 = まわす(形);
+  }
+  return {
+    名,
+    向き: 向き.map(v => v.形),
+    横: Math.max(...絵を座標に(駒の絵[名]).map(c => c.x)) + 1,
+  };
+});
+
+// 出やすさの通りに番号を並べた袋。ここから引いて、無くなったら混ぜ直す。
+const 袋の元 = [];
+駒表.forEach((駒, i) => {
+  for (let n = 0; n < (駒の出やすさ[駒.名] || 1); n++) 袋の元.push(i);
+});
+
+/* ===========================================================================
+   三、星の色 ── 色だけに頼らない
+   　　　　　　　（色の見分けがつきにくい人にも通じるよう、
+   　　　　　　　 星ごとに中の点の並びを変えてある）
+   ======================================================================== */
+const 星の色 = [
+  { 名: "しろ", 地: "#e8ecf8", 縁: "#ffffff", 芯: "#8b93ad", 印: "なか" },
+  { 名: "あお", 地: "#5aa6f0", 縁: "#9fd0ff", 芯: "#1d4f86", 印: "たて" },
+  { 名: "きん", 地: "#f0c150", 縁: "#ffe6a0", 芯: "#8a6412", 印: "よこ" },
+  { 名: "あか", 地: "#ea7070", 縁: "#ffb3b3", 芯: "#8d2b2b", 印: "ばつ" },
+];
+
+/* ===========================================================================
+   四、アレシボ・メッセージ ── 73行×23列
+   　　1974年、人類がヘルクレス座の球状星団へ向けて送った信号の絵。
+   　　この点の並びは、本家 [Ochi-Gee] の arecibo_hu[73][23] から
+   　　連れてきた。施主が一点ずつ手で打ったもので、借り物ではない。
+   　　数字は色の区別（0は空）。
+   ======================================================================== */
+const アレシボ = [
+  "00000090909090000000000","00909000009090000000900","90009000900090090990090",
+  "90909090909090900900900","00000000000000000000000","00000000000088000000000",
+  "00000000008808000000000","00000000008808000000000","00000000080808000000000",
+  "00000000088888000000000","00000000000000000000000","44000044400044000044000",
+  "40000000000000440040000","44040004400044000044040","44444044444044444044444",
+  "00000000000000000000000","00040000000000000000040","00000000000000000000000",
+  "00004000000000000000004","44444000000000000044444","00000000000000000000000",
+  "44000004400044400044000","40000000040000000040000","44040000044004440044040",
+  "44444044444044444044444","00000000000000000000000","00040000009900000000040",
+  "00000000009900000000000","00004000009900000000004","44444000009900000044444",
+  "00000000009900000000000","00600000000900000000600","00060000009900000006000",
+  "00006600009900000060000","00000066000900006600000","00000000009900660000000",
+  "00000066000900006600000","00006600009900000060000","00060000009000000006000",
+  "00600000009900000000600","06000000009900000000600","06000000000900000006000",
+  "00600000009000000060000","00060000000000006600000","00006600000000660000000",
+  "00600066605066000000000","00600000005000000000000","00600000555550000000000",
+  "00600005055505009099099","00000050055500500999999","90999000055500000990999",
+  "00000000050500000999099","00600000050500000999999","00600000050500000990000",
+  "00600000550550000000000","00000000000000000000000","00333000003000000000000",
+  "00333030300030303030303","00333000000000303030300","00000000000000303000000",
+  "00000000888880000000000","00000088888888800000000","00008880000000888000000",
+  "00088000000000008800000","00880800000000080880000","08800880000000880088000",
+  "08000808000008080008000","08000800800080080008000","00000800080800080000000",
+  "00000800008000080000000","00000800000000080000000","00000009009090000000000",
+  "06666009999909006666000",
+];
+// アレシボの点の色。もとの信号は色に意味を持たせて送られている。
+const アレシボの色 = {
+  "9": "#e9edf7", // 数のならび・そのほか
+  "8": "#b48ce0", // 元素の番号／おしまいの望遠鏡
+  "4": "#7ddba0", // 核酸のかたち
+  "6": "#6fa8ff", // DNAの二重らせん
+  "5": "#ff8f8f", // 人のかたち
+  "3": "#ffd166", // 太陽系
+};
+
+/* ===========================================================================
+   五、音 ── 音源ファイルを持たない。その場で波を作って鳴らす
+   　　　　　既定は消音。押されたときだけ目を覚ます。
+   ======================================================================== */
+const 音 = {
+  出す: false,
+  文脈: null,
+
+  起こす() {
+    if (this.文脈) return;
+    const A = window.AudioContext || window.webkitAudioContext;
+    if (!A) return;                 // 古い機械では黙って諦める（遊べなくはならない）
+    this.文脈 = new A();
+  },
+
+  /** 単音。高さ(Hz)・長さ(秒)・波形・音量 */
+  鳴らす(高さ, 長さ = 0.08, 波形 = "square", 音量 = 0.12) {
+    if (!this.出す || !this.文脈) return;
+    const c = this.文脈, 今 = c.currentTime;
+    const 発 = c.createOscillator(), 栓 = c.createGain();
+    発.type = 波形;
+    発.frequency.setValueAtTime(高さ, 今);
+    // 立ち上がりを少しなまらせる。四角い波をそのまま出すと耳に刺さる。
+    栓.gain.setValueAtTime(0, 今);
+    栓.gain.linearRampToValueAtTime(音量, 今 + 0.008);
+    栓.gain.exponentialRampToValueAtTime(0.0001, 今 + 長さ);
+    発.connect(栓); 栓.connect(c.destination);
+    発.start(今); 発.stop(今 + 長さ + 0.02);
+  },
+
+  動く()  { this.鳴らす(320, 0.04, "square", 0.06); },
+  回る()  { this.鳴らす(520, 0.05, "square", 0.07); },
+  置く()  { this.鳴らす(190, 0.09, "triangle", 0.10); },
+  預ける(){ this.鳴らす(700, 0.06, "sine", 0.08); },
+
+  /** 開通。連鎖が重なるほど高いところへ上っていく */
+  開通(連鎖) {
+    if (!this.出す || !this.文脈) return;
+    const 底 = 440 * Math.pow(1.12, Math.min(連鎖, 8) - 1);
+    [0, 4, 7].forEach((半音, i) => {
+      setTimeout(() => this.鳴らす(底 * Math.pow(2, 半音 / 12), 0.16, "triangle", 0.10), i * 55);
+    });
+  },
+
+  /** 断線。落ちていく音 */
+  断線() {
+    if (!this.出す || !this.文脈) return;
+    [440, 370, 294, 220].forEach((高さ, i) => {
+      setTimeout(() => this.鳴らす(高さ, 0.3, "sawtooth", 0.09), i * 130);
+    });
+  },
+};
+
+/* ===========================================================================
+   六、控え ── 点数と設定と、遊びかけの盤を機械に覚えておいてもらう
+   　　　　　　（localStorage が使えない設定の機械でも落ちないようにする）
+   ======================================================================== */
+const 控え = {
+  鍵: "engawaya.hoshitsunagi.v1",
+  読む() {
+    try { return JSON.parse(localStorage.getItem(this.鍵)) || {}; }
+    catch (e) { return {}; }
+  },
+  書く(中身) {
+    try { localStorage.setItem(this.鍵, JSON.stringify(中身)); }
+    catch (e) { /* 使えないなら、覚えないだけ。遊べることは変わらない */ }
+  },
+};
+
+/* ===========================================================================
+   七、盤 ── 星の置き場所と、開通の判定
+   ======================================================================== */
+const 盤 = {
+  升: [],        // 升[y][x] = 色の番号 or null
+  最高点: 0,
+
+  作り直す() {
+    this.升 = [];
+    for (let y = 0; y < 設定.盤の縦; y++) {
+      this.升.push(new Array(設定.盤の横).fill(null));
+    }
+  },
+
+  中か(x, y) { return x >= 0 && x < 設定.盤の横 && y >= 0 && y < 設定.盤の縦; },
+  空か(x, y) { return this.中か(x, y) && this.升[y][x] === null; },
+
+  /** 駒（座標のかたまり）を、その位置に置けるか */
+  置けるか(形, 左, 上) {
+    return 形.every(c => this.空か(左 + c.x, 上 + c.y));
+  },
+
+  /** ------------------------------------------------------------------
+      開通しているところを探す
+
+      同じ色でつながっている一群を数え上げ、その一群が「左の端の列」と
+      「右の端の列」の両方に足を掛けていたら開通。
+
+      斜めも繋がる。最初は縦横だけにしていたが、それだと上手に打っても
+      一度も開通しないまま断線した（測った）。それに——星座は、もともと
+      斜めに結ぶものだ。縦横だけに縛る理由が、遊びの側にも絵の側にも
+      無かった。
+      ------------------------------------------------------------------ */
+  // 見にいく八方。斜めの四つを外すと、この遊びは成り立たない。
+  つながる向き: [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]],
+
+  開通を探す() {
+    const 見た = this.升.map(行 => 行.map(() => false));
+    const 開通 = [];   // 開通した一群の配列。中身は {x,y} の並び
+
+    for (let y = 0; y < 設定.盤の縦; y++) {
+      for (let x = 0; x < 設定.盤の横; x++) {
+        if (見た[y][x] || this.升[y][x] === null) continue;
+
+        const 色 = this.升[y][x];
+        const 一群 = [];
+        const 待ち = [{ x, y }];
+        見た[y][x] = true;
+        let 左端に着いた = false, 右端に着いた = false;
+
+        while (待ち.length) {
+          const 今 = 待ち.pop();
+          一群.push(今);
+          if (今.x === 0) 左端に着いた = true;
+          if (今.x === 設定.盤の横 - 1) 右端に着いた = true;
+
+          this.つながる向き.forEach(([dx, dy]) => {
+            const nx = 今.x + dx, ny = 今.y + dy;
+            if (this.中か(nx, ny) && !見た[ny][nx] && this.升[ny][nx] === 色) {
+              見た[ny][nx] = true;
+              待ち.push({ x: nx, y: ny });
+            }
+          });
+        }
+
+        if (左端に着いた && 右端に着いた) 開通.push(一群);
+      }
+    }
+    return 開通;
+  },
+
+  /** 星を消す */
+  消す(星たち) {
+    星たち.forEach(c => { this.升[c.y][c.x] = null; });
+  },
+
+  /** ------------------------------------------------------------------
+      落とす（一粒ずつ）
+
+      本家は行ごとにずり下がっていたが、こちらは星が一粒ずつ落ちる。
+      列ごとに、残っている星を下から詰め直すだけ。
+      これで地形に穴が残り、落ちた先でまた繋がる＝連鎖が生まれる。
+      ------------------------------------------------------------------ */
+  落とす() {
+    let 動いた = false;
+    for (let x = 0; x < 設定.盤の横; x++) {
+      let 置く先 = 設定.盤の縦 - 1;
+      for (let y = 設定.盤の縦 - 1; y >= 0; y--) {
+        if (this.升[y][x] !== null) {
+          if (y !== 置く先) {
+            this.升[置く先][x] = this.升[y][x];
+            this.升[y][x] = null;
+            動いた = true;
+          }
+          置く先--;
+        }
+      }
+    }
+    return 動いた;
+  },
+};
+
+/* ===========================================================================
+   八、遊びの進み方 ── 状態でふるまいを分ける
+   　　　　　　　　　  "起動" → "題" → "遊ぶ" ⇄ "やすむ" → "断線"
+   ======================================================================== */
+const 遊び = {
+  状態: "起動",
+
+  // 遊びの中身
+  点数: 0, 見せる点数: 0, 段: 1, 開通数: 0,
+  速さ貯金: 0,
+  経過: 0,               // 何秒もったか
+  連鎖: 0,
+
+  今の駒: null,          // {番号, 色, 向き, 左, 上}
+  つぎ: [],              // {番号, 色} の待ち行列
+  袋: [],
+  預り: null,            // あずけた駒 {番号, 色}
+  預けた: false,         // この駒では、もう一度あずけられない
+
+  落ち貯め: 0,           // 落下の端数（マス単位）
+  そっと: false,
+  猶予: 0, 猶予回数: 0,
+
+  待ち: 0,               // 「置いてから消すまで」などの間
+  待ちの次: null,
+
+  光: [],                // 開通の光（描くための一時的な飾り）
+  文字: [],              // 「開通！」などの浮き文字
+  揺れ: 0,
+
+  起動進み: 0,           // アレシボが何行めまで出たか
+
+  /* ---- 新しく始める ---- */
+  始める(控えから) {
+    盤.作り直す();
+    this.点数 = 0; this.見せる点数 = 0; this.段 = 1; this.開通数 = 0;
+    this.速さ貯金 = 0; this.経過 = 0; this.連鎖 = 0;
+    this.袋 = []; this.つぎ = []; this.預り = null; this.預けた = false;
+    this.光 = []; this.文字 = []; this.揺れ = 0;
+    this.待ち = 0; this.待ちの次 = null;
+
+    // 遊びかけを戻す。ただし盤の寸法を作り変えたあとの古い控えは捨てる
+    // （寸法が違うものを流し込むと、そこから先が全部おかしくなる）
+    const 寸法が合う = 控えから && 控えから.升
+      && 控えから.升.length === 設定.盤の縦
+      && 控えから.升[0].length === 設定.盤の横;
+
+    if (寸法が合う) {
+      盤.升 = 控えから.升.map(行 => 行.slice());
+      this.点数 = 控えから.点数; this.見せる点数 = 控えから.点数;
+      this.段 = 控えから.段; this.開通数 = 控えから.開通数;
+      this.速さ貯金 = 控えから.速さ貯金; this.経過 = 控えから.経過 || 0;
+      this.預り = (控えから.預り === undefined) ? null : 控えから.預り;
+      this.つぎ = (控えから.つぎ || []).slice();
+    }
+
+    this.つぎを補う();
+    this.駒を出す();
+    this.状態 = "遊ぶ";
+  },
+
+  /** ------------------------------------------------------------------
+      袋から一つ引く
+
+      形と色は別々に決める。ここは一度しくじって直したところ。
+      最初は「形ごとに決まった色」にしていた（覚えやすいと思った）が、
+      それだと横に長い駒（ぼう5・かぎ5）が特定の色にしか出ないので、
+      他の色は端から端まで道を伸ばせない。測ってみたら、上手に打っても
+      一度も開通しないまま断線した。だから色は駒ごとにばらす。
+      ------------------------------------------------------------------ */
+  袋から引く() {
+    if (this.袋.length === 0) {
+      this.袋 = 袋の元.slice();
+      // 混ぜる（Fisher–Yates）
+      for (let i = this.袋.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [this.袋[i], this.袋[j]] = [this.袋[j], this.袋[i]];
+      }
+    }
+    return { 番号: this.袋.pop(), 色: Math.floor(Math.random() * 設定.色の数) };
+  },
+
+  つぎを補う() {
+    while (this.つぎ.length < 設定.つぎを見せる数 + 1) this.つぎ.push(this.袋から引く());
+  },
+
+  /** つぎの駒を天井に置く。置けなければ断線 */
+  駒を出す(札) {
+    if (札 === undefined) {
+      札 = this.つぎ.shift();
+      this.つぎを補う();
+    }
+    const 駒 = 駒表[札.番号];
+    const 形 = 駒.向き[0];
+    const 左 = Math.floor((設定.盤の横 - 駒.横) / 2);
+
+    this.今の駒 = { 番号: 札.番号, 色: 札.色, 向き: 0, 左, 上: 0 };
+    this.落ち貯め = 0; this.猶予 = 0; this.猶予回数 = 0;
+    this.預けた = false;
+    this.連鎖 = 0;
+
+    if (!盤.置けるか(形, 左, 0)) {
+      this.今の駒 = null;
+      this.断線する();
+    }
+  },
+
+  今の形() {
+    const d = this.今の駒;
+    return 駒表[d.番号].向き[d.向き];
+  },
+
+  /* ---- 動かす ---- */
+  横へ(向き) {
+    if (this.状態 !== "遊ぶ" || !this.今の駒) return;
+    const d = this.今の駒;
+    if (盤.置けるか(this.今の形(), d.左 + 向き, d.上)) {
+      d.左 += 向き;
+      this.猶予を作り直す();
+      音.動く();
+    }
+  },
+
+  /** 回す。そのままでは壁や星に刺さるとき、少しずらして入れてやる */
+  回転() {
+    if (this.状態 !== "遊ぶ" || !this.今の駒) return;
+    const d = this.今の駒;
+    const 駒 = 駒表[d.番号];
+    const 次の向き = (d.向き + 1) % 駒.向き.length;
+    const 形 = 駒.向き[次の向き];
+
+    // ずらして試す順。真ん中→左右1→左右2→ひとつ上（床から押し上げる）
+    const 試す = [[0,0],[-1,0],[1,0],[-2,0],[2,0],[0,-1]];
+    for (const [dx, dy] of 試す) {
+      if (盤.置けるか(形, d.左 + dx, d.上 + dy)) {
+        d.向き = 次の向き; d.左 += dx; d.上 += dy;
+        this.猶予を作り直す();
+        音.回る();
+        return;
+      }
+    }
+  },
+
+  /** あずける（もう一度は押せない。無限に取り替えられると手応えが消える） */
+  預ける() {
+    if (this.状態 !== "遊ぶ" || !this.今の駒 || this.預けた) return;
+    const 今の札 = { 番号: this.今の駒.番号, 色: this.今の駒.色 };
+    if (this.預り === null) {
+      this.預り = 今の札;
+      this.駒を出す();
+    } else {
+      const 出す札 = this.預り;
+      this.預り = 今の札;
+      this.駒を出す(出す札);
+    }
+    this.預けた = true;   // 駒を出すと false に戻るので、そのあとで立てる
+    音.預ける();
+  },
+
+  /** 一気に落とす。落ちた距離ぶん、ほんの少し点が入る */
+  一気に落とす() {
+    if (this.状態 !== "遊ぶ" || !this.今の駒) return;
+    const d = this.今の駒;
+    let 落ちた = 0;
+    while (盤.置けるか(this.今の形(), d.左, d.上 + 1)) { d.上++; 落ちた++; }
+    this.点を足す(落ちた * 2);
+    this.揺れ = Math.min(6, 2 + 落ちた * 0.3);
+    this.固める();
+  },
+
+  猶予を作り直す() {
+    // 着地していて、まだ粘れる回数が残っていれば、猶予を巻き戻す
+    const d = this.今の駒;
+    if (!d) return;
+    if (!盤.置けるか(this.今の形(), d.左, d.上 + 1) && this.猶予回数 < 設定.猶予の作り直し上限) {
+      this.猶予 = 0;
+      this.猶予回数++;
+    }
+  },
+
+  /* ---- 置く → 開通を見る → 落とす → また開通を見る（連鎖）---- */
+  固める() {
+    const d = this.今の駒;
+    if (!d) return;
+
+    this.今の形().forEach(c => {
+      if (盤.中か(d.左 + c.x, d.上 + c.y)) 盤.升[d.上 + c.y][d.左 + c.x] = d.色;
+    });
+
+    this.今の駒 = null;
+    音.置く();
+
+    // 少し見せてから、開通を見にいく
+    this.待つ(設定.置いてから消すまで, () => this.開通を見る());
+  },
+
+  待つ(秒, つぎ) {
+    this.待ち = 秒;
+    this.待ちの次 = つぎ;
+  },
+
+  開通を見る() {
+    const 開通 = 盤.開通を探す();
+
+    if (開通.length === 0) {
+      // 誰も繋がらなかった。次の駒へ
+      this.連鎖 = 0;
+      this.駒を出す();
+      return;
+    }
+
+    this.連鎖++;
+    const 本数 = 開通.length;
+    const 星の数 = 開通.reduce((和, 群) => 和 + 群.length, 0);
+
+    // ---- 点数（本家の表 × 連鎖の倍）----
+    const 表 = 設定.点数の表;
+    const 素点 = 本数 >= 表.length - 1 ? 表[表.length - 1] : 表[本数];
+    const 倍 = 設定.連鎖の倍[Math.min(this.連鎖, 設定.連鎖の倍.length - 1)];
+    // 素点（本家の表）＋ 連鎖の倍 ＋ 消えた星の数ぶん。
+    // 星の数を足しているのは、長い道をぐるりと作った人が報われるように。
+    this.点を足す(素点 * 倍 + 星の数 * 10);
+
+    // ---- 開通の光。左から右へ走らせる ----
+    開通.forEach(群 => {
+      this.光.push({ 星: 群, 齢: 0 });
+    });
+
+    // ---- 浮き文字 ----
+    let 言葉 = "開通";
+    if (本数 === 2) 言葉 = "二本 開通";
+    if (本数 === 3) 言葉 = "三本 開通";
+    if (本数 >= 4) 言葉 = "総 開通";
+    if (this.連鎖 >= 2) 言葉 += "　" + this.連鎖 + "連鎖";
+    this.文字を出す(言葉);
+
+    音.開通(this.連鎖);
+    this.揺れ = Math.min(8, 3 + 本数 * 1.5);
+
+    // ---- 開通数と段 ----
+    this.開通数 += 本数;
+    const 新しい段 = Math.min(設定.段の上限,
+      1 + Math.floor(this.開通数 / 設定.段が上がる開通数));
+    if (新しい段 > this.段) {
+      this.段 = 新しい段;
+      this.文字を出す(this.段 + "段");
+    }
+
+    // ---- 速さ（本家 speed_controll のまま）----
+    const 足し = 設定.速さの足し[Math.min(本数, 設定.速さの足し.length - 1)];
+    const 倍率 = this.段 <= 設定.低段とは ? 設定.低段の倍 : 1;
+    this.速さ貯金 += 足し * 倍率;
+
+    // ---- 消して、落として、もう一度見る ----
+    this.待つ(設定.消してから落ちるまで, () => {
+      開通.forEach(群 => 盤.消す(群));
+      this.光 = [];
+      盤.落とす();
+      this.待つ(設定.消してから落ちるまで, () => this.開通を見る());
+    });
+  },
+
+  点を足す(足す) {
+    this.点数 = Math.min(設定.点数の上限, this.点数 + 足す);
+  },
+
+  文字を出す(言葉) {
+    this.文字.push({ 言葉, 齢: 0 });
+  },
+
+  断線する() {
+    this.状態 = "断線";
+    音.断線();
+    if (this.点数 > 盤.最高点) {
+      盤.最高点 = this.点数;
+    }
+    // 遊びかけの控えは消す（断線したものを「つづきから」にはできない）
+    控え.書く({ 最高点: 盤.最高点, 音: 音.出す });
+    画面を書き直す();
+  },
+
+  /** 一秒あたり何マス落ちるか */
+  落ちる速さ() {
+    const 速さ = 設定.最初の速さ + this.速さ貯金 * 設定.速さの伸び;
+    const 上限 = 設定.速さの上限;
+    return Math.min(上限, 速さ) * (this.そっと ? 設定.そっと落とす倍率 : 1);
+  },
+
+  /* ---- 毎コマの進行 ---- */
+  進む(刻) {
+    // 浮き文字と光と揺れは、どの状態でも老けていく
+    this.文字.forEach(f => f.齢 += 刻);
+    this.文字 = this.文字.filter(f => f.齢 < 1.4);
+    this.光.forEach(h => h.齢 += 刻);
+    this.揺れ *= Math.pow(0.001, 刻);
+
+    // 点数はじわじわ数え上がる（本家 score_calc の気持ちよさ）
+    if (this.見せる点数 < this.点数) {
+      const 差 = this.点数 - this.見せる点数;
+      // 差が大きいほど速く回す。少なくとも毎秒60は動かす。
+      const 速さ = Math.max(60, 差 * 6);
+      this.見せる点数 = Math.min(this.点数, this.見せる点数 + 速さ * 刻);
+    }
+
+    if (this.状態 === "起動") {
+      // アレシボが下から上へ立ち上がっていく
+      this.起動進み += 刻 * 46;
+      if (this.起動進み >= アレシボ.length + 26) this.状態 = "題";
+      return;
+    }
+    if (this.状態 !== "遊ぶ") return;
+
+    this.経過 += 刻;
+
+    // 「置いてから消すまで」などの間
+    if (this.待ち > 0) {
+      this.待ち -= 刻;
+      if (this.待ち <= 0) {
+        const つぎ = this.待ちの次;
+        this.待ちの次 = null;
+        if (つぎ) つぎ();
+      }
+      return;
+    }
+
+    if (!this.今の駒) return;
+    const d = this.今の駒;
+
+    // 落ちる
+    if (盤.置けるか(this.今の形(), d.左, d.上 + 1)) {
+      this.猶予 = 0;
+      this.落ち貯め += this.落ちる速さ() * 刻;
+      while (this.落ち貯め >= 1) {
+        if (!盤.置けるか(this.今の形(), d.左, d.上 + 1)) break;
+        d.上++;
+        this.落ち貯め -= 1;
+        if (this.そっと) this.点を足す(1);
+      }
+    } else {
+      // 着いた。すぐには固めず、少し滑り込ませてやる
+      this.猶予 += 刻;
+      if (this.猶予 >= 設定.接地の猶予) this.固める();
+    }
+  },
+
+  /** 落ちる先（うっすら見せる影）*/
+  影の上() {
+    if (!this.今の駒) return null;
+    const d = this.今の駒;
+    let 上 = d.上;
+    while (盤.置けるか(this.今の形(), d.左, 上 + 1)) 上++;
+    return 上;
+  },
+
+  /** 遊びかけを控えておく */
+  控える() {
+    if (this.状態 !== "遊ぶ" && this.状態 !== "やすむ") return;
+    控え.書く({
+      最高点: 盤.最高点,
+      音: 音.出す,
+      途中: {
+        升: 盤.升, 点数: this.点数, 段: this.段, 開通数: this.開通数,
+        速さ貯金: this.速さ貯金, 経過: this.経過,
+        預り: this.預り, つぎ: this.つぎ,
+      },
+    });
+  },
+};
+
+/* ===========================================================================
+   九、絵 ── 夜空と星を描く
+   ======================================================================== */
+const 絵 = {
+  canvas: null, ctx: null,
+  升の大きさ: 20,
+  幅: 0, 高さ: 0,
+  盤左: 0, 盤上: 0,
+  棚左: 0,                 // 「つぎ」「あずける」を置く棚
+  動きを控える: false,
+  漂う星: [],
+
+  仕込む() {
+    this.canvas = document.getElementById("ban");
+    this.ctx = this.canvas.getContext("2d");
+    this.動きを控える =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.寸法を決める();
+    window.addEventListener("resize", () => this.寸法を決める());
+  },
+
+  /** 入れ物の幅から升の大きさを決める（どんな画面でも綺麗に収まるように） */
+  寸法を決める() {
+    const 入れ物 = this.canvas.parentElement;
+    const 使える幅 = Math.max(240, 入れ物.clientWidth);
+
+    // 横の割り付け：余白1 + 盤9 + 余白1 + 棚4.6 + 余白0.8
+    const 升ぶん = 1 + 設定.盤の横 + 1 + 4.6 + 0.8;
+    this.升の大きさ = Math.max(12, Math.floor((使える幅 / 升ぶん) * 100) / 100);
+    const 升 = this.升の大きさ;
+
+    this.幅 = 使える幅;
+    this.高さ = Math.round(升 * (設定.盤の縦 + 2));
+    this.盤左 = Math.round(升 * 1);
+    this.盤上 = Math.round(升 * 1);
+    this.棚左 = Math.round(升 * (1 + 設定.盤の横 + 1));
+
+    // 実際の画素は画面の密度に合わせる（細い線がぼやけないように）
+    const 密度 = Math.min(2, window.devicePixelRatio || 1);
+    this.canvas.width = Math.round(this.幅 * 密度);
+    this.canvas.height = Math.round(this.高さ * 密度);
+    this.canvas.style.height = this.高さ + "px";
+    this.ctx.setTransform(密度, 0, 0, 密度, 0, 0);
+
+    // 夜空に漂う星を撒き直す
+    this.漂う星 = [];
+    const 数 = Math.round(this.幅 * this.高さ / 2600);
+    for (let i = 0; i < 数; i++) {
+      this.漂う星.push({
+        x: Math.random() * this.幅,
+        y: Math.random() * this.高さ,
+        明: 0.18 + Math.random() * 0.5,
+        速: 1.5 + Math.random() * 5,
+        位相: Math.random() * 6.28,
+      });
+    }
+  },
+
+  /** 星ひとつ。中の点の並びで色を見分けられるようにしてある */
+  星を描く(x, y, 色番号, 明るさ = 1) {
+    const g = this.ctx, 升 = this.升の大きさ;
+    const 色 = 星の色[色番号];
+    const p = Math.max(1, Math.round(升 / 10));   // 点ひとつの大きさ
+
+    g.globalAlpha = 明るさ;
+
+    // 地
+    g.fillStyle = 色.地;
+    g.fillRect(x + p, y + p, 升 - p * 2, 升 - p * 2);
+    // 明るいふち（左上）と影（右下）。これだけで立体に見える
+    g.fillStyle = 色.縁;
+    g.fillRect(x + p, y + p, 升 - p * 2, p);
+    g.fillRect(x + p, y + p, p, 升 - p * 2);
+    g.fillStyle = 色.芯;
+    g.fillRect(x + p, y + 升 - p * 2, 升 - p * 2, p);
+    g.fillRect(x + 升 - p * 2, y + p, p, 升 - p * 2);
+
+    // 中の印。色の見分けがつきにくい方のために、色だけでなく形も変える。
+    // ただし目立たせすぎると星がうるさくなるので、控えめに小さく打つ。
+    g.fillStyle = 色.芯;
+    g.globalAlpha = 明るさ * 0.75;
+    const 中 = x + 升 / 2, 央 = y + 升 / 2;
+    if (色.印 === "なか") {
+      g.fillRect(中 - p, 央 - p, p * 2, p * 2);
+    } else if (色.印 === "たて") {
+      g.fillRect(中 - p / 2, 央 - p * 1.5, p, p * 3);
+    } else if (色.印 === "よこ") {
+      g.fillRect(中 - p * 1.5, 央 - p / 2, p * 3, p);
+    } else if (色.印 === "ばつ") {
+      for (let i = -1; i <= 1; i++) {
+        g.fillRect(中 + i * p - p / 2, 央 + i * p - p / 2, p, p);
+        g.fillRect(中 + i * p - p / 2, 央 - i * p - p / 2, p, p);
+      }
+    }
+    g.globalAlpha = 1;
+  },
+
+  /** 駒を、好きな場所に小さく描く（つぎ／あずける の棚用）*/
+  駒を描く(札, 中心x, 中心y, 升) {
+    const 駒 = 駒表[札.番号], 形 = 駒.向き[0];
+    const 横 = Math.max(...形.map(c => c.x)) + 1;
+    const 縦 = Math.max(...形.map(c => c.y)) + 1;
+    const 左 = 中心x - (横 * 升) / 2, 上 = 中心y - (縦 * 升) / 2;
+    const 元 = this.升の大きさ;
+    this.升の大きさ = 升;
+    形.forEach(c => this.星を描く(左 + c.x * 升, 上 + c.y * 升, 札.色));
+    this.升の大きさ = 元;
+  },
+
+  /** 文字。中央そろえの小さな見出し用 */
+  字(文, x, y, 大きさ, 色 = "#eceef5", 揃え = "center") {
+    const g = this.ctx;
+    g.fillStyle = 色;
+    g.textAlign = 揃え;
+    g.textBaseline = "middle";
+    g.font = "600 " + 大きさ + 'px "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif';
+    g.fillText(文, x, y);
+  },
+
+  描く(時) {
+    const g = this.ctx, 升 = this.升の大きさ;
+    const 盤幅 = 升 * 設定.盤の横, 盤高 = 升 * 設定.盤の縦;
+
+    g.clearRect(0, 0, this.幅, this.高さ);
+
+    // ---- 夜空 ----
+    const 空 = g.createLinearGradient(0, 0, 0, this.高さ);
+    空.addColorStop(0, "#060a14");
+    空.addColorStop(1, "#101a2e");
+    g.fillStyle = 空;
+    g.fillRect(0, 0, this.幅, this.高さ);
+
+    // 漂う星（動きを控える設定なら、瞬かせず置くだけ）
+    this.漂う星.forEach(s => {
+      const 明 = this.動きを控える ? s.明 : s.明 * (0.6 + 0.4 * Math.sin(時 * s.速 * 0.3 + s.位相));
+      g.globalAlpha = Math.max(0, 明);
+      g.fillStyle = "#ffffff";
+      g.fillRect(Math.round(s.x), Math.round(s.y), 1, 1);
+    });
+    g.globalAlpha = 1;
+
+    // 揺れ（開通したときだけ、ほんの少し）
+    const 揺 = this.動きを控える ? 0 : 遊び.揺れ;
+    g.save();
+    if (揺 > 0.2) g.translate((Math.random() - 0.5) * 揺, (Math.random() - 0.5) * 揺);
+
+    // ---- 起動の画面（アレシボ）----
+    if (遊び.状態 === "起動" || 遊び.状態 === "題") {
+      this.起動を描く(時);
+      g.restore();
+      return;
+    }
+
+    // ---- 盤の枠 ----
+    g.strokeStyle = "#3b4864";
+    g.lineWidth = 1;
+    g.strokeRect(this.盤左 - 0.5, this.盤上 - 0.5, 盤幅 + 1, 盤高 + 1);
+
+    // 左右の端の列に、うっすら柱を立てる（ここへ繋げばいいと目で分かるように）
+    g.fillStyle = "#ffd1660c";
+    g.fillRect(this.盤左, this.盤上, 升, 盤高);
+    g.fillRect(this.盤左 + 盤幅 - 升, this.盤上, 升, 盤高);
+    g.fillStyle = "#ffd16626";
+    g.fillRect(this.盤左, this.盤上, 2, 盤高);
+    g.fillRect(this.盤左 + 盤幅 - 2, this.盤上, 2, 盤高);
+
+    // ---- 置いてある星 ----
+    for (let y = 0; y < 設定.盤の縦; y++) {
+      for (let x = 0; x < 設定.盤の横; x++) {
+        const 色 = 盤.升[y][x];
+        if (色 !== null) this.星を描く(this.盤左 + x * 升, this.盤上 + y * 升, 色);
+      }
+    }
+
+    // ---- 開通の光。左から右へ、線が走る ----
+    遊び.光.forEach(h => {
+      const 進み = Math.min(1, h.齢 / 設定.消してから落ちるまで);
+      h.星.forEach(c => {
+        // その星が、左からの進み具合に追い越されたら光る
+        const ここ = (c.x + 0.5) / 設定.盤の横;
+        if (ここ <= 進み) {
+          const 強さ = 1 - Math.min(1, (進み - ここ) * 2.5);
+          g.globalAlpha = 0.25 + 0.75 * 強さ;
+          g.fillStyle = "#ffffff";
+          g.fillRect(this.盤左 + c.x * 升, this.盤上 + c.y * 升, 升, 升);
+          g.globalAlpha = 1;
+        }
+      });
+    });
+
+    // ---- 落ちる先の影 ----
+    const 影上 = 遊び.影の上();
+    if (影上 !== null && 遊び.今の駒) {
+      const d = 遊び.今の駒;
+      g.strokeStyle = "#ffffff40";
+      g.lineWidth = 1;
+      遊び.今の形().forEach(c => {
+        const x = this.盤左 + (d.左 + c.x) * 升, y = this.盤上 + (影上 + c.y) * 升;
+        g.strokeRect(x + 1.5, y + 1.5, 升 - 3, 升 - 3);
+      });
+    }
+
+    // ---- 今落ちている駒 ----
+    if (遊び.今の駒) {
+      const d = 遊び.今の駒;
+      遊び.今の形().forEach(c => {
+        this.星を描く(this.盤左 + (d.左 + c.x) * 升, this.盤上 + (d.上 + c.y) * 升, d.色);
+      });
+    }
+
+    // ---- 棚：つぎ／あずける ----
+    // 断線したあとは描かない（覆いに書く「もった時間」と二重になるため）
+    if (遊び.状態 !== "断線") this.棚を描く();
+
+    // ---- 浮き文字 ----
+    // 連鎖が続くと二つ三つ同時に出るので、段違いに積んで重ならないようにする
+    遊び.文字.forEach((f, i) => {
+      const 明 = f.齢 < 1 ? 1 : 1 - (f.齢 - 1) / 0.4;
+      g.globalAlpha = Math.max(0, 明);
+      const 上へ = this.動きを控える ? 0 : f.齢 * 14;
+      this.字(f.言葉, this.盤左 + 盤幅 / 2,
+             this.盤上 + 盤高 * 0.44 - 上へ + i * 升 * 1.15,
+             Math.round(升 * 0.85), "#ffd166");
+      g.globalAlpha = 1;
+    });
+
+    // ---- やすむ／断線の覆い ----
+    if (遊び.状態 === "やすむ")  this.覆い("やすんでいます", "「やすむ」をもう一度押すと戻ります");
+    if (遊び.状態 === "断線")    this.断線を描く();
+
+    g.restore();
+  },
+
+  棚を描く() {
+    const g = this.ctx, 升 = this.升の大きさ;
+    const x = this.棚左, 幅 = 升 * 4.6;
+    let y = this.盤上;
+
+    // つぎ
+    this.字("つぎ", x + 幅 / 2, y + 升 * 0.45, Math.round(升 * 0.6), "#9aa3b8");
+    y += 升 * 0.95;
+    for (let i = 0; i < 設定.つぎを見せる数; i++) {
+      const 札 = 遊び.つぎ[i];
+      const 枠高 = 升 * 1.9;
+      g.strokeStyle = "#3b4864";
+      g.strokeRect(x + 0.5, y + 0.5, 幅 - 1, 枠高 - 1);
+      if (札 !== undefined) {
+        this.駒を描く(札, x + 幅 / 2, y + 枠高 / 2, 升 * (i === 0 ? 0.62 : 0.48));
+      }
+      y += 枠高 + 升 * 0.22;
+    }
+
+    // あずける
+    y += 升 * 0.4;
+    this.字("あずけた", x + 幅 / 2, y + 升 * 0.45, Math.round(升 * 0.6), "#9aa3b8");
+    y += 升 * 0.95;
+    const 枠高 = 升 * 2.0;
+    g.strokeStyle = 遊び.預けた ? "#3b4864" : "#6f83ad";
+    g.strokeRect(x + 0.5, y + 0.5, 幅 - 1, 枠高 - 1);
+    if (遊び.預り !== null) {
+      g.globalAlpha = 遊び.預けた ? 0.4 : 1;   // 使い切ったら薄くして「押せない」を伝える
+      this.駒を描く(遊び.預り, x + 幅 / 2, y + 枠高 / 2, 升 * 0.58);
+      g.globalAlpha = 1;
+    }
+    y += 枠高 + 升 * 0.5;
+
+    // もった時間（本家の Survial Time）
+    const 分 = Math.floor(遊び.経過 / 60), 秒 = Math.floor(遊び.経過 % 60);
+    this.字("もった時間", x + 幅 / 2, y, Math.round(升 * 0.55), "#9aa3b8");
+    this.字(String(分).padStart(2, "0") + ":" + String(秒).padStart(2, "0"),
+           x + 幅 / 2, y + 升 * 0.85, Math.round(升 * 0.78), "#eceef5");
+  },
+
+  /** 起動画面。アレシボ・メッセージが下から立ち上がる */
+  起動を描く(時) {
+    const g = this.ctx, 升 = this.升の大きさ;
+    const 点 = Math.max(2, Math.floor((升 * 設定.盤の縦) / アレシボ.length));
+    const 絵幅 = 点 * 23, 絵高 = 点 * アレシボ.length;
+    const 左 = this.盤左 + (升 * 設定.盤の横 - 絵幅) / 2;
+    // 真ん中よりわずかに上へ。下に言葉の帯を敷くので、望遠鏡の脚が隠れないように。
+    const 上 = this.盤上 + (升 * 設定.盤の縦 - 絵高) / 2 - 升 * 0.9;
+
+    const 出た行 = Math.min(アレシボ.length, Math.floor(遊び.起動進み));
+    for (let y = アレシボ.length - 1; y >= アレシボ.length - 出た行; y--) {
+      const 行 = アレシボ[y];
+      for (let x = 0; x < 行.length; x++) {
+        const v = 行[x];
+        if (v === "0") continue;
+        g.fillStyle = アレシボの色[v] || "#ffffff";
+        g.fillRect(左 + x * 点, 上 + y * 点, 点, 点);
+      }
+    }
+
+    // 立ち上がりの言葉。本家の起動シーケンスと同じ順で出す。
+    // 絵の上に字を重ねるので、下に暗い帯を敷いてから書く（読めなくなるため）
+    const 中 = this.盤左 + (升 * 設定.盤の横) / 2;
+    const 下 = this.盤上 + 升 * 設定.盤の縦;
+    if (遊び.状態 === "起動") {
+      const 文 = 出た行 < アレシボ.length * 0.5 ? "信号を組み立てています"
+               : 出た行 < アレシボ.length      ? "全系 用意よし"
+               : "― つながりました ―";
+      g.fillStyle = "#060a14d8";
+      g.fillRect(this.盤左, 下 - 升 * 2, 升 * 設定.盤の横, 升 * 1.7);
+      this.字(文, 中, 下 - 升 * 1.15, Math.round(升 * 0.72), "#9aa3b8");
+    } else {
+      // 題（タイトル）
+      g.fillStyle = "#060a14c0";
+      g.fillRect(0, 0, this.幅, this.高さ);
+      this.字("星つなぎ", this.幅 / 2, this.高さ * 0.34, Math.round(升 * 1.9), "#eceef5");
+      this.字("― つながりました ―", this.幅 / 2, this.高さ * 0.44,
+             Math.round(升 * 0.72), "#ffd166");
+      // 遊びかけが残っているなら、そう言ってやる（黙って上書きしない）
+      this.字(残っている遊びかけ ? "押すと つづきから" : "押すと はじまります",
+             this.幅 / 2, this.高さ * 0.56, Math.round(升 * 0.8), "#eceef5");
+      this.字(残っている遊びかけ ? "「はじめから」で 新しい一局"
+                              : "盤のどこでも かまいません",
+             this.幅 / 2, this.高さ * 0.62, Math.round(升 * 0.62), "#9aa3b8");
+      this.字("1974年 アレシボから送られた信号の絵です", this.幅 / 2, this.高さ * 0.9,
+             Math.round(升 * 0.56), "#6f83ad");
+    }
+  },
+
+  覆い(見出し, 添え) {
+    const g = this.ctx, 升 = this.升の大きさ;
+    g.fillStyle = "#060a14cc";
+    g.fillRect(0, 0, this.幅, this.高さ);
+    this.字(見出し, this.幅 / 2, this.高さ * 0.44, Math.round(升 * 1.2), "#eceef5");
+    if (添え) this.字(添え, this.幅 / 2, this.高さ * 0.54, Math.round(升 * 0.66), "#9aa3b8");
+  },
+
+  断線を描く() {
+    const g = this.ctx, 升 = this.升の大きさ;
+    g.fillStyle = "#060a14e0";
+    g.fillRect(0, 0, this.幅, this.高さ);
+
+    const 分 = Math.floor(遊び.経過 / 60), 秒 = Math.floor(遊び.経過 % 60);
+    this.字("断線", this.幅 / 2, this.高さ * 0.34, Math.round(升 * 1.7), "#eceef5");
+    this.字("Line Disconnection", this.幅 / 2, this.高さ * 0.42,
+           Math.round(升 * 0.66), "#6f83ad");
+    this.字("もった時間　" + String(分).padStart(2, "0") + ":" + String(秒).padStart(2, "0"),
+           this.幅 / 2, this.高さ * 0.53, Math.round(升 * 0.8), "#9aa3b8");
+    this.字("てんすう　" + 遊び.点数, this.幅 / 2, this.高さ * 0.61,
+           Math.round(升 * 0.9), "#ffd166");
+    if (遊び.点数 >= 盤.最高点 && 遊び.点数 > 0) {
+      this.字("最高点を抜きました", this.幅 / 2, this.高さ * 0.68,
+             Math.round(升 * 0.7), "#ffd166");
+    }
+    this.字("「はじめから」を押すと、もう一度", this.幅 / 2, this.高さ * 0.8,
+           Math.round(升 * 0.68), "#9aa3b8");
+  },
+};
+
+/* ===========================================================================
+   十、文字の札を書き直す（HTML のほう）
+   ======================================================================== */
+const 札 = {
+  点: null, 段: null, 開通: null, 最高: null, 最高枠: null,
+  仕込む() {
+    this.点 = document.getElementById("ui-score");
+    this.段 = document.getElementById("ui-level");
+    this.開通 = document.getElementById("ui-lines");
+    this.最高 = document.getElementById("ui-high");
+    this.最高枠 = document.getElementById("fuda-high");
+  },
+  書く() {
+    this.点.textContent = Math.floor(遊び.見せる点数);
+    this.段.textContent = 遊び.段;
+    this.開通.textContent = 遊び.開通数;
+    const 最高 = Math.max(盤.最高点, 遊び.点数);
+    this.最高.textContent = 最高;
+    // 最高点を抜いているあいだは、札の色を変える（点滅はさせない）
+    this.最高枠.classList.toggle("koushin", 遊び.点数 > 0 && 遊び.点数 >= 盤.最高点);
+  },
+};
+function 画面を書き直す() { 札.書く(); }
+
+/* ===========================================================================
+   十一、操作 ── ボタンとキーボード
+   ======================================================================== */
+function 操作を仕込む() {
+  const 押す = (id, 仕事, 長押しも) => {
+    const b = document.getElementById(id);
+    let 繰り返し = null, 待ち = null;
+
+    const 始め = (e) => {
+      e.preventDefault();
+      音.起こす();
+      仕事();
+      if (長押しも) {
+        // 長押しで連続。押した直後は少し待つ（1回だけ押したいときに走らないよう）
+        待ち = setTimeout(() => {
+          繰り返し = setInterval(仕事, 60);
+        }, 220);
+      }
+    };
+    const 終い = () => {
+      if (待ち) { clearTimeout(待ち); 待ち = null; }
+      if (繰り返し) { clearInterval(繰り返し); 繰り返し = null; }
+    };
+
+    b.addEventListener("pointerdown", 始め);
+    b.addEventListener("pointerup", 終い);
+    b.addEventListener("pointerleave", 終い);
+    b.addEventListener("pointercancel", 終い);
+    // キーボードで <button> を押したときは pointerdown が来ないので、こちらも拾う
+    b.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); 音.起こす(); 仕事(); }
+    });
+  };
+
+  押す("b-left",  () => 遊び.横へ(-1), true);
+  押す("b-right", () => 遊び.横へ(1), true);
+  押す("b-rot",   () => 遊び.回転());
+  押す("b-hold",  () => 遊び.預ける());
+  押す("b-hard",  () => 遊び.一気に落とす());
+
+  // そっと落とす。押しているあいだだけ速くする
+  const そっと = document.getElementById("b-soft");
+  const そっと入 = (e) => { e.preventDefault(); 音.起こす(); 遊び.そっと = true; };
+  const そっと切 = () => { 遊び.そっと = false; };
+  そっと.addEventListener("pointerdown", そっと入);
+  そっと.addEventListener("pointerup", そっと切);
+  そっと.addEventListener("pointerleave", そっと切);
+  そっと.addEventListener("pointercancel", そっと切);
+
+  // 音の札
+  const 音札 = document.getElementById("b-sound");
+  音札.addEventListener("click", () => {
+    音.出す = !音.出す;
+    if (音.出す) { 音.起こす(); 音.鳴らす(660, 0.1, "triangle", 0.1); }
+    音札.textContent = 音.出す ? "音を止める" : "音を出す";
+    音札.setAttribute("aria-pressed", String(音.出す));
+    const c = 控え.読む();
+    c.音 = 音.出す;
+    控え.書く(c);
+  });
+
+  // やすむ
+  document.getElementById("b-pause").addEventListener("click", () => {
+    if (遊び.状態 === "遊ぶ") { 遊び.状態 = "やすむ"; 遊び.控える(); }
+    else if (遊び.状態 === "やすむ") { 遊び.状態 = "遊ぶ"; }
+  });
+
+  // はじめから
+  document.getElementById("b-new").addEventListener("click", () => {
+    音.起こす();
+    遊び.始める(null);
+  });
+
+  // キーボード
+  window.addEventListener("keydown", (e) => {
+    // 文字を打っている最中は横取りしない
+    const 相手 = document.activeElement;
+    if (相手 && (相手.tagName === "INPUT" || 相手.tagName === "TEXTAREA")) return;
+
+    音.起こす();
+    switch (e.key) {
+      case "ArrowLeft":  遊び.横へ(-1); e.preventDefault(); break;
+      case "ArrowRight": 遊び.横へ(1);  e.preventDefault(); break;
+      case "ArrowUp":    遊び.回転();   e.preventDefault(); break;
+      case "ArrowDown":  遊び.そっと = true; e.preventDefault(); break;
+      case " ":          遊び.一気に落とす(); e.preventDefault(); break;
+      case "Shift":      遊び.預ける(); break;
+      case "p": case "P":
+        if (遊び.状態 === "遊ぶ") { 遊び.状態 = "やすむ"; 遊び.控える(); }
+        else if (遊び.状態 === "やすむ") 遊び.状態 = "遊ぶ";
+        break;
+    }
+  });
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowDown") 遊び.そっと = false;
+  });
+
+  // 起動画面・題の画面は、盤をどこか押せば飛ばせる
+  document.querySelector(".yozora").addEventListener("pointerdown", () => {
+    音.起こす();
+    if (遊び.状態 === "起動") { 遊び.起動進み = アレシボ.length + 26; }
+    else if (遊び.状態 === "題") { 遊び.始める(残っている遊びかけ); }
+  });
+
+  // 画面から離れたら、やすむ＋控える（電話が来ても続きから戻れるように）
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && 遊び.状態 === "遊ぶ") {
+      遊び.状態 = "やすむ";
+      遊び.控える();
+    }
+  });
+  window.addEventListener("pagehide", () => 遊び.控える());
+}
+
+/* ===========================================================================
+   十二、はじまり
+   ======================================================================== */
+let 残っている遊びかけ = null;
+
+(function はじめる() {
+  const c = 控え.読む();
+  盤.最高点 = c.最高点 || 0;
+  音.出す = !!c.音;
+  if (音.出す) {
+    const 音札 = document.getElementById("b-sound");
+    音札.textContent = "音を止める";
+    音札.setAttribute("aria-pressed", "true");
+  }
+  残っている遊びかけ = c.途中 || null;
+
+  盤.作り直す();
+  絵.仕込む();
+  札.仕込む();
+  操作を仕込む();
+
+  // 起動画面から。遊びかけがあるかどうかは、題の画面で拾う
+  遊び.状態 = "起動";
+  遊び.つぎを補う();
+
+  let 前 = performance.now();
+  function ひとコマ(今) {
+    const 刻 = Math.min(0.05, (今 - 前) / 1000);   // 裏に回ったあとの大跳びを抑える
+    前 = 今;
+    遊び.進む(刻);
+    絵.描く(今 / 1000);
+    札.書く();
+    requestAnimationFrame(ひとコマ);
+  }
+  requestAnimationFrame(ひとコマ);
+})();
+</script>
+</body>
+</html>
