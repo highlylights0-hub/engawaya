@@ -387,6 +387,135 @@ h1 {
 }
 .whisper.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ---- 夏の景物（縁側に置く点描） --------------------------------
+   猫・スズメ・風鈴・スイカ・かき氷を、板の間に並べる。
+
+   なぜ絵文字を使わないか：
+   アイスと同じ理由。🐈も🍉も、Mac と Windows と Android で
+   絵柄が全部ちがう。届けたい人は Windows に居るのだから、
+   こちらで一点ずつ打った点なら、どの機械でも同じ顔で出る。
+   shape-rendering="crispEdges" で、拡大しても点はぼやけない。
+
+   動きの掟：
+   縁側は「座る場所」なので、アイスと同じく遊びを許す。ただし
+   母屋ぜんぶに効かせている作法として、音は出さない・光らせない。
+   風鈴も、揺らすだけで鳴らさない。動きは、風でそよぐ程度に留める。
+   派手にすると、上で図面を描く人の目のはしで暴れる邪魔物になる。
+
+   置く順（左→右）：風鈴／猫／スイカ／アイス（中央・既存）／かき氷／スズメ。
+   すべて板の上端に底を合わせて「置いた」ように見せる。top を絵の
+   高さぶんマイナスにして、下端が板の面に着く。
+   ------------------------------------------------------------ */
+.natsu {
+  position: absolute;
+  line-height: 0;
+  filter: drop-shadow(0 3px 4px #00000028);
+  pointer-events: none;          /* 見るだけ。押すのはアイスだけに任せる */
+}
+.natsu svg { display: block; width: 100%; height: auto; }
+
+/* 風鈴。軒から吊るした体で、板の上空に置く。
+   支点は紐の上端（transform-origin を上端中央に）。そこを軸に、
+   風でゆっくり左右へ。周期を長めにして、せわしなくしない。 */
+.furin {
+  left: 15%;
+  top: -84px;
+  width: 27px;
+  transform-origin: 50% 6%;
+  animation: furin-yure 4.6s ease-in-out infinite;
+}
+@keyframes furin-yure {
+  0%, 100% { transform: rotate(-5deg); }
+  50%      { transform: rotate(5deg); }
+}
+
+/* 猫。板の上で香箱座り。ふだんは座っていて、ときどき思い出したように
+   ぴょんと跳ねて、右へ少し歩き、また戻ってくる。
+   支点を下端にして、跳ねるときの伸び縮み（かがむ→伸びる→着地で潰れる）
+   が自然に見えるようにした。移動は板の上だけに収め、遠くへは行かせない。 */
+.neko {
+  left: 5%;
+  top: -46px;
+  width: 48px;
+  transform-origin: 50% 100%;
+  animation: neko-asobi 7s ease-in-out infinite;
+}
+@keyframes neko-asobi {
+  0%, 30% { transform: translateX(0)   translateY(0)     scaleY(1);    }  /* 座っている */
+  34%     { transform: translateX(0)   translateY(0)     scaleY(0.86); }  /* かがむ */
+  40%     { transform: translateX(4vw) translateY(-20px) scaleY(1.10); }  /* 右へぴょん（伸びる） */
+  45%     { transform: translateX(8vw) translateY(0)     scaleY(0.92); }  /* 着地（潰れる） */
+  48%     { transform: translateX(8vw) translateY(0)     scaleY(1);    }
+  62%     { transform: translateX(8vw) translateY(0)     scaleY(1);    }  /* 右でひと休み */
+  66%     { transform: translateX(8vw) translateY(0)     scaleY(0.86); }  /* また かがむ */
+  72%     { transform: translateX(4vw) translateY(-20px) scaleY(1.10); }  /* 左へ戻るぴょん */
+  77%     { transform: translateX(0)   translateY(0)     scaleY(0.92); }
+  80%     { transform: translateX(0)   translateY(0)     scaleY(1);    }
+  100%    { transform: translateX(0)   translateY(0)     scaleY(1);    }
+}
+
+/* スイカ。切って置いた一切れ。動かさない置物。 */
+.suika { left: 29%; top: -34px; width: 46px; }
+
+/* かき氷。器に山盛り。これも動かさない。アイスと役割が重ならない
+   よう、アイスは中央の主役として残し、こちらは脇にひかえる。 */
+.kakigori { right: 23%; top: -42px; width: 34px; }
+
+/* スズメ。縁側の上を、放物線を描いて飛び回る。
+   右端で二、三度ちょんちょん跳ねてから、山なりに左へ飛ぶ。左でまた
+   ちょんちょん、向きを変えて右へ帰ってくる。これを繰り返す。
+   進む向きに顔を向けたいので、右へ飛ぶ区間だけ scaleX(-1) で絵を
+   左右反転させる（もとの絵はくちばしが左向きなので、そのままだと左行き）。
+   飛ぶ高さは板のすぐ上に抑えて、上の文章の前で暴れさせない。 */
+.suzume {
+  right: 6%;
+  top: -26px;
+  width: 30px;
+  transform-origin: 50% 100%;
+  animation: suzume-tabi 9s ease-in-out infinite;
+}
+@keyframes suzume-tabi {
+  0%   { transform: translateX(0)     translateY(0)     scaleX(1);  }  /* 右端でちょんちょん */
+  6%   { transform: translateX(0)     translateY(-6px)  scaleX(1);  }
+  10%  { transform: translateX(-2vw)  translateY(0)     scaleX(1);  }
+  15%  { transform: translateX(-4vw)  translateY(-5px)  scaleX(1);  }
+  18%  { transform: translateX(-5vw)  translateY(0)     scaleX(1);  }
+  24%  { transform: translateX(-16vw) translateY(-26px) scaleX(1);  }  /* 左へ飛ぶ（山なり） */
+  30%  { transform: translateX(-30vw) translateY(-32px) scaleX(1);  }
+  36%  { transform: translateX(-44vw) translateY(-24px) scaleX(1);  }
+  42%  { transform: translateX(-54vw) translateY(0)     scaleX(1);  }  /* 左端に着地 */
+  47%  { transform: translateX(-54vw) translateY(-6px)  scaleX(1);  }  /* 左でちょんちょん */
+  50%  { transform: translateX(-54vw) translateY(0)     scaleX(1);  }
+  57%  { transform: translateX(-44vw) translateY(-24px) scaleX(-1); }  /* 向きを変え右へ帰る */
+  63%  { transform: translateX(-30vw) translateY(-32px) scaleX(-1); }
+  69%  { transform: translateX(-16vw) translateY(-26px) scaleX(-1); }
+  75%  { transform: translateX(-4vw)  translateY(0)     scaleX(-1); }
+  80%  { transform: translateX(0)     translateY(-6px)  scaleX(-1); }  /* 右端でちょんちょん */
+  84%  { transform: translateX(0)     translateY(0)     scaleX(-1); }
+  92%  { transform: translateX(0)     translateY(-4px)  scaleX(1);  }  /* 向きを戻す */
+  100% { transform: translateX(0)     translateY(0)     scaleX(1);  }
+}
+
+/* 二羽目のスズメ。飛び方（軌道）は一羽目とまったく同じにして、
+   大きさを少しだけ小さく（遠く・子に見せる）、レーンを少し上に、
+   そして animation-delay をマイナスにして「時間をずらして」出す。
+   同じ軌道を数秒おくれて辿るので、追いつきも離れもせず、後ろを
+   ついていく――追いかけっこに見える。 */
+.suzume-ko {
+  top: -36px;                 /* 一羽目より少し上のレーン */
+  width: 24px;                /* ひとまわり小さく */
+  animation-delay: -3.1s;     /* 一羽目を追いかける時間差 */
+}
+
+/* 画面が狭いときは詰まりすぎるので、脇役から先に引っこめる。
+   主役（アイス）と、いちばん夏らしいスイカ・風鈴だけは残す。
+   スズメは二羽ともここで一緒に引っこめる。 */
+@media (max-width: 430px) {
+  .kakigori { right: 8%; }
+  .neko     { width: 42px; top: -40px; }
+  .suzume   { display: none; }
+}
+
 /* ---- 足元 ---- */
 footer {
   padding: 22px 24px 30px;
@@ -529,9 +658,270 @@ footer .by {
 
 </div>
 
-<!-- 縁側。座る場所。 -->
+<!-- 縁側。座る場所。夏のあいだは、ここに景物を置く。
+     すべて絵文字ではなく手打ちのドット絵。理由は <style> の
+     「夏の景物」の項に書いてある。1マス＝1ドットの矩形の集まり。 -->
 <div class="engawa">
   <div class="whisper" id="whisper"></div>
+
+  <!-- 風鈴。紐で吊るし、椀の下に短冊が下がる。揺れるが鳴らさない。 -->
+  <div class="natsu furin" aria-hidden="true">
+    <svg viewBox="0 0 16 27" shape-rendering="crispEdges">
+      <!-- 吊り紐 -->
+      <rect x="7" y="0" width="2" height="4" fill="#9a8a63"/>
+      <!-- 椀（ガラス）。上が閉じ下が開いた釣鐘。 -->
+      <g fill="#bfe3ee">
+        <rect x="6"  y="3"  width="4" height="1"/>
+        <rect x="5"  y="4"  width="6" height="1"/>
+        <rect x="4"  y="5"  width="8" height="1"/>
+        <rect x="3"  y="6"  width="10" height="2"/>
+        <rect x="3"  y="8"  width="10" height="1"/>
+      </g>
+      <!-- 椀のふち（下の口）と縁取り -->
+      <g fill="#8fc9dc">
+        <rect x="6"  y="3"  width="4" height="1"/>
+        <rect x="3"  y="9"  width="10" height="1"/>
+      </g>
+      <!-- 光の当たる側（左上）。白を一点置くとガラスに見える -->
+      <g fill="#f2fbff">
+        <rect x="5"  y="4"  width="1" height="1"/>
+        <rect x="4"  y="6"  width="1" height="2"/>
+      </g>
+      <!-- 舌（ぜつ）。短冊を吊る玉。 -->
+      <rect x="7" y="10" width="2" height="1" fill="#8fc9dc"/>
+      <!-- 短冊（藍）。白い縦のあたりを一本入れて紙に見せる。 -->
+      <g fill="#3f6b9a">
+        <rect x="6" y="11" width="4" height="8"/>
+      </g>
+      <rect x="7" y="12" width="1" height="6" fill="#5f88b5"/>
+    </svg>
+  </div>
+
+  <!-- 猫。茶トラの香箱座り、正面。 -->
+  <div class="natsu neko" aria-hidden="true">
+    <svg viewBox="0 0 15 15" shape-rendering="crispEdges">
+      <!-- 耳 -->
+      <g fill="#e0955180">
+        <rect x="3"  y="0" width="2" height="1"/>
+        <rect x="10" y="0" width="2" height="1"/>
+      </g>
+      <g fill="#e09551">
+        <rect x="2"  y="1" width="3" height="1"/>
+        <rect x="10" y="1" width="3" height="1"/>
+      </g>
+      <!-- 耳のうち（うすい桃） -->
+      <g fill="#f0b8a0">
+        <rect x="3"  y="1" width="1" height="1"/>
+        <rect x="11" y="1" width="1" height="1"/>
+      </g>
+      <!-- 頭・体（オレンジの毛） -->
+      <g fill="#e8a35c">
+        <rect x="3"  y="2"  width="9"  height="1"/>
+        <rect x="2"  y="3"  width="11" height="1"/>
+        <rect x="2"  y="4"  width="11" height="1"/>
+        <rect x="2"  y="5"  width="11" height="1"/>
+        <rect x="2"  y="6"  width="11" height="1"/>
+        <rect x="1"  y="7"  width="13" height="1"/>
+        <rect x="1"  y="8"  width="13" height="1"/>
+        <rect x="1"  y="9"  width="13" height="1"/>
+        <rect x="1"  y="10" width="13" height="1"/>
+        <rect x="1"  y="11" width="13" height="1"/>
+        <rect x="2"  y="12" width="11" height="1"/>
+        <rect x="2"  y="13" width="11" height="1"/>
+      </g>
+      <!-- 縞（濃いオレンジ）。額と背に数本。 -->
+      <g fill="#cf7f3a">
+        <rect x="6"  y="2" width="1" height="1"/>
+        <rect x="8"  y="2" width="1" height="1"/>
+        <rect x="2"  y="4" width="1" height="2"/>
+        <rect x="12" y="4" width="1" height="2"/>
+        <rect x="1"  y="8" width="1" height="2"/>
+        <rect x="13" y="8" width="1" height="2"/>
+      </g>
+      <!-- 口もと・胸の白 -->
+      <g fill="#fdf3e6">
+        <rect x="5"  y="5" width="5" height="2"/>
+        <rect x="6"  y="10" width="3" height="4"/>
+      </g>
+      <!-- 目（みどり）と鼻（桃） -->
+      <g fill="#5f7f43">
+        <rect x="4"  y="4" width="1" height="1"/>
+        <rect x="10" y="4" width="1" height="1"/>
+      </g>
+      <rect x="7" y="5" width="1" height="1" fill="#c07a7a"/>
+      <!-- 前足の割れ目（白い胸を二本に見せる影） -->
+      <rect x="7" y="12" width="1" height="2" fill="#e8a35c"/>
+      <!-- しっぽ。右わきから手前へ巻く（濃いオレンジ） -->
+      <g fill="#cf7f3a">
+        <rect x="13" y="9"  width="1" height="4"/>
+        <rect x="12" y="13" width="2" height="1"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- スイカ。切った一切れ。 -->
+  <div class="natsu suika" aria-hidden="true">
+    <svg viewBox="0 0 16 13" shape-rendering="crispEdges">
+      <!-- 実（赤） -->
+      <g fill="#e2504f">
+        <rect x="7"  y="1"  width="2"  height="1"/>
+        <rect x="6"  y="2"  width="4"  height="1"/>
+        <rect x="5"  y="3"  width="6"  height="1"/>
+        <rect x="5"  y="4"  width="6"  height="1"/>
+        <rect x="4"  y="5"  width="8"  height="1"/>
+        <rect x="3"  y="6"  width="10" height="1"/>
+        <rect x="3"  y="7"  width="10" height="1"/>
+        <rect x="2"  y="8"  width="12" height="1"/>
+      </g>
+      <!-- 内果皮（白みどり） -->
+      <g fill="#dcefcb">
+        <rect x="2"  y="9"  width="12" height="1"/>
+        <rect x="1"  y="10" width="14" height="1"/>
+      </g>
+      <!-- 皮（緑） -->
+      <g fill="#3f8b3f">
+        <rect x="1"  y="11" width="14" height="1"/>
+        <rect x="1"  y="12" width="14" height="1"/>
+      </g>
+      <rect x="1" y="12" width="14" height="1" fill="#2f6f2f"/>
+      <!-- 種（黒）を数粒 -->
+      <g fill="#2b2b2b">
+        <rect x="7"  y="3" width="1" height="1"/>
+        <rect x="9"  y="5" width="1" height="1"/>
+        <rect x="5"  y="6" width="1" height="1"/>
+        <rect x="11" y="7" width="1" height="1"/>
+        <rect x="8"  y="7" width="1" height="1"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- かき氷。器に山盛り、いちごシロップ。 -->
+  <div class="natsu kakigori" aria-hidden="true">
+    <svg viewBox="0 0 13 16" shape-rendering="crispEdges">
+      <!-- 氷（白）。山盛り。 -->
+      <g fill="#ffffff">
+        <rect x="5"  y="0" width="3"  height="1"/>
+        <rect x="4"  y="1" width="5"  height="1"/>
+        <rect x="3"  y="2" width="7"  height="1"/>
+        <rect x="2"  y="3" width="9"  height="1"/>
+        <rect x="2"  y="4" width="9"  height="1"/>
+        <rect x="1"  y="5" width="11" height="1"/>
+      </g>
+      <!-- 氷の陰（うすい水色）。右下に置いて丸みを出す。 -->
+      <g fill="#dfeef2">
+        <rect x="8"  y="3" width="2" height="1"/>
+        <rect x="8"  y="4" width="3" height="1"/>
+        <rect x="9"  y="5" width="3" height="1"/>
+      </g>
+      <!-- いちごシロップ（赤）。てっぺんから垂れる。 -->
+      <g fill="#e2504f">
+        <rect x="5"  y="0" width="3" height="1"/>
+        <rect x="5"  y="1" width="3" height="1"/>
+        <rect x="4"  y="2" width="1" height="1"/>
+        <rect x="8"  y="2" width="1" height="2"/>
+        <rect x="3"  y="3" width="1" height="2"/>
+        <rect x="6"  y="4" width="1" height="1"/>
+      </g>
+      <!-- 器（ガラス） -->
+      <g fill="#bfe3ee">
+        <rect x="1"  y="6"  width="11" height="1"/>
+        <rect x="2"  y="7"  width="9"  height="1"/>
+        <rect x="2"  y="8"  width="9"  height="1"/>
+        <rect x="3"  y="9"  width="7"  height="1"/>
+        <rect x="4"  y="10" width="5"  height="1"/>
+      </g>
+      <!-- 器のふち・脚（濃い水色） -->
+      <g fill="#8fc9dc">
+        <rect x="1"  y="6"  width="11" height="1"/>
+        <rect x="5"  y="11" width="3"  height="1"/>
+        <rect x="4"  y="12" width="5"  height="1"/>
+      </g>
+    </svg>
+  </div>
+  <!-- スズメ。板の上をちょんちょん。左を向いている。 -->
+  <div class="natsu suzume" aria-hidden="true">
+    <svg viewBox="0 0 13 11" shape-rendering="crispEdges">
+      <!-- 背・翼（茶） -->
+      <g fill="#b98a5a">
+        <rect x="2"  y="1" width="4"  height="1"/>
+        <rect x="1"  y="2" width="6"  height="1"/>
+        <rect x="1"  y="3" width="8"  height="1"/>
+        <rect x="1"  y="4" width="9"  height="1"/>
+        <rect x="2"  y="5" width="8"  height="1"/>
+      </g>
+      <!-- 翼の縞（濃い茶） -->
+      <g fill="#8a6238">
+        <rect x="5"  y="3" width="3" height="1"/>
+        <rect x="6"  y="4" width="3" height="1"/>
+      </g>
+      <!-- 尾（右へ跳ね上げ） -->
+      <g fill="#8a6238">
+        <rect x="9"  y="2" width="3" height="1"/>
+        <rect x="9"  y="3" width="3" height="1"/>
+      </g>
+      <!-- 腹・頬（白） -->
+      <g fill="#f5ede0">
+        <rect x="4"  y="3" width="2" height="1"/>
+        <rect x="3"  y="6" width="6" height="1"/>
+        <rect x="4"  y="7" width="4" height="1"/>
+      </g>
+      <!-- くちばし（左へ） -->
+      <rect x="0" y="2" width="1" height="2" fill="#6b5436"/>
+      <!-- 目・喉（黒） -->
+      <rect x="3" y="2" width="1" height="1" fill="#2f271f"/>
+      <rect x="2" y="3" width="1" height="1" fill="#2f271f"/>
+      <!-- 足（細い二本） -->
+      <g fill="#7a6248">
+        <rect x="4"  y="8" width="1" height="2"/>
+        <rect x="6"  y="8" width="1" height="2"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 二羽目のスズメ（追いかけっこ）。一羽目と同じ絵・同じ軌道だが、
+       ひとまわり小さくして（遠く・子に見せる）、飛ぶタイミングを
+       ずらしてある。追いつかず、離れず、少し後ろをついていく。
+       中身は一羽目と同じドット。羽の色だけほんの少し淡くして、
+       二羽が団子にならないよう見分けをつけた。 -->
+  <div class="natsu suzume suzume-ko" aria-hidden="true">
+    <svg viewBox="0 0 13 11" shape-rendering="crispEdges">
+      <!-- 背・翼（茶・淡いめ） -->
+      <g fill="#c69b6e">
+        <rect x="2"  y="1" width="4"  height="1"/>
+        <rect x="1"  y="2" width="6"  height="1"/>
+        <rect x="1"  y="3" width="8"  height="1"/>
+        <rect x="1"  y="4" width="9"  height="1"/>
+        <rect x="2"  y="5" width="8"  height="1"/>
+      </g>
+      <!-- 翼の縞（濃い茶） -->
+      <g fill="#9a744a">
+        <rect x="5"  y="3" width="3" height="1"/>
+        <rect x="6"  y="4" width="3" height="1"/>
+      </g>
+      <!-- 尾（右へ跳ね上げ） -->
+      <g fill="#9a744a">
+        <rect x="9"  y="2" width="3" height="1"/>
+        <rect x="9"  y="3" width="3" height="1"/>
+      </g>
+      <!-- 腹・頬（白） -->
+      <g fill="#f7f0e5">
+        <rect x="4"  y="3" width="2" height="1"/>
+        <rect x="3"  y="6" width="6" height="1"/>
+        <rect x="4"  y="7" width="4" height="1"/>
+      </g>
+      <!-- くちばし（左へ） -->
+      <rect x="0" y="2" width="1" height="2" fill="#6b5436"/>
+      <!-- 目・喉（黒） -->
+      <rect x="3" y="2" width="1" height="1" fill="#2f271f"/>
+      <rect x="2" y="3" width="1" height="1" fill="#2f271f"/>
+      <!-- 足（細い二本） -->
+      <g fill="#8a7256">
+        <rect x="4"  y="8" width="1" height="2"/>
+        <rect x="6"  y="8" width="1" height="2"/>
+      </g>
+    </svg>
+  </div>
+
   <!-- ドット絵のアイス。1マス＝1ドットの矩形の集まり。
        shape-rendering="crispEdges" で、拡大しても点がぼやけない。 -->
   <button class="ice" id="ice" aria-label="アイスを食べる">
