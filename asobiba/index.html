@@ -174,7 +174,9 @@ h1 .yomi { font-size: 11px; letter-spacing: 0.3em; color: var(--ink-soft); margi
   -webkit-user-select: none;
   user-select: none;
 }
-canvas { display: block; width: 100%; height: auto; }
+/* 幅は JS が決めて px で入れる（窓の高さにも合わせて縮めるため）。
+   縮んだときに左へ寄らないよう、margin auto で真ん中に置く。 */
+canvas { display: block; margin: 0 auto; }
 
 /* ---- 縁側の板。盤の下に一本だけ通す（ここは母屋と地続き）---- */
 .engawa {
@@ -319,7 +321,9 @@ footer a { color: var(--ink-soft); }
 
     <p>色は<b>白と青の二色</b>だけです。だから落ちてきた星は、必ずどちらかの道の役に立ちます。色の見分けがつきにくい方のために、星の中の点のかたちも変えてあります（白は真ん中の点、青は縦の棒）。</p>
 
-    <p>左右の端の列がうっすら光っているのが、つなぐ先です。</p>
+    <p>盤の<b>外側</b>、左右で細く光っているのが、つなぐ先の合図です。盤の中は、端の列まで<b>どこにでも置けます</b>。</p>
+
+    <p>段が上がると、夜空が変わります。</p>
 
     <p>天井まで積み上がると<b>断線</b>——おしまいです。</p>
 
@@ -367,6 +371,9 @@ footer a { color: var(--ink-soft); }
    一、設定 ── 数字はぜんぶここに名前をつけて置く
    　　　　　（あとで調整したくなったとき、探し回らずに済むように）
    ======================================================================== */
+// 円ひとまわり。本家の一行目にも constexpr auto PI2 と書いてあった。
+const PI2 = Math.PI * 2;
+
 const 設定 = {
   // ---- 盤の寸法 ----
   // 10×20（よその家の寸法）を避けたうえで、実際に何百局も打たせて測って
@@ -1083,6 +1090,194 @@ const 遊び = {
 };
 
 /* ===========================================================================
+   八の二、夜空 ── 背景を数式で焼く
+
+   本家 [Ochi-Gee] は段が上がるたびに背景が変わった。NASAの写真を
+   十枚ほど差し替えていて、あれが宇宙の広さを出していた。
+
+   こちらは写真を持てない（外から何も読み込まない掟）。だから同じことを
+   **式で**やる。対数螺旋で銀河の腕を巻き、放射の階調を重ねて星雲にし、
+   点を撒いて星にする。写真の代わりに、数を並べて空をつくる。
+
+   焼くのは段が変わったときの一回だけ。焼いた紙を毎コマ貼って、ゆっくり
+   回して流すだけなので、古い機械でも重くならない。
+
+   段ごとの空は「種」から決まるので、同じ段ならいつも同じ空が出る。
+   偶然の綺麗さではなく、その段の空として毎回そこにある。
+   ======================================================================== */
+const 夜空 = {
+  紙: null,        // 焼いた下絵（星雲と星）
+  銀河: null,      // 回す層（銀河の腕）
+  焼いた段: -1,
+  焼いた寸法: "",
+  流れ星: [],
+  次の流れ星: 4,
+
+  // 段ごとの色。順に巡って、十段でひと回りする。
+  // 実際の宇宙写真から色だけ拾った（写真そのものは持たない）。
+  空の色: [
+    { 名: "天の川",     雲: ["#2a3a6b", "#4a3a7a", "#1e3358"], 芯: "#cfd8ff" },
+    { 名: "オリオン",   雲: ["#5a2a4a", "#7a3a3a", "#2a2a5a"], 芯: "#ffd8e0" },
+    { 名: "馬頭",       雲: ["#6b2a2a", "#3a2a5a", "#5a3a2a"], 芯: "#ffcfb0" },
+    { 名: "アンドロメダ",雲: ["#2a4a5a", "#3a5a6b", "#20304a"], 芯: "#d8f0ff" },
+    { 名: "干潟",       雲: ["#5a3a6b", "#7a4a5a", "#2a2a4a"], 芯: "#f0d8ff" },
+    { 名: "北アメリカ",雲: ["#7a3a2a", "#5a4a2a", "#2a3a4a"], 芯: "#ffe8c0" },
+    { 名: "エスキモー",雲: ["#2a5a5a", "#3a6b5a", "#1e3a4a"], 芯: "#d0fff0" },
+    { 名: "らせん",     雲: ["#4a2a6b", "#6b2a5a", "#2a2a5a"], 芯: "#e8d0ff" },
+    { 名: "かに",       雲: ["#6b4a2a", "#5a2a3a", "#2a3a5a"], 芯: "#ffe0c8" },
+    { 名: "すばる",     雲: ["#2a3a7a", "#3a4a8a", "#1e2a5a"], 芯: "#dce8ff" },
+  ],
+
+  /** 種から決まる乱数（同じ段なら、いつも同じ空が出るように） */
+  賽(種) {
+    let s = 種 >>> 0;
+    return function () {
+      s = (s + 0x6d2b79f5) >>> 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  },
+
+  /** 段の空を焼く。段が変わったときと、窓の大きさが変わったときだけ走る */
+  焼く(段, 幅, 高さ) {
+    const 寸法 = 幅 + "x" + 高さ;
+    if (this.焼いた段 === 段 && this.焼いた寸法 === 寸法) return;
+    this.焼いた段 = 段; this.焼いた寸法 = 寸法;
+
+    const 色 = this.空の色[(段 - 1) % this.空の色.length];
+    const 賽 = this.賽(段 * 7919 + 13);
+
+    // ---- 一枚目：星雲と星 ----
+    // 銀河を回すので、はみ出さないよう対角ぶんの正方形に焼く
+    const 辺 = Math.ceil(Math.hypot(幅, 高さ));
+    this.紙 = document.createElement("canvas");
+    this.紙.width = 辺; this.紙.height = 辺;
+    const g = this.紙.getContext("2d");
+
+    // 星雲。放射の階調を十数枚、加算で重ねる。
+    // 一枚では丸いしみだが、大小をずらして重ねると雲の形になる。
+    g.globalCompositeOperation = "lighter";
+    for (let i = 0; i < 16; i++) {
+      const x = 賽() * 辺, y = 賽() * 辺;
+      const r = 辺 * (0.10 + 賽() * 0.28);
+      const 雲 = g.createRadialGradient(x, y, 0, x, y, r);
+      const c = 色.雲[Math.floor(賽() * 色.雲.length)];
+      雲.addColorStop(0, c + "3a");
+      雲.addColorStop(0.45, c + "18");
+      雲.addColorStop(1, c + "00");
+      g.fillStyle = 雲;
+      g.beginPath(); g.arc(x, y, r, 0, PI2); g.fill();
+    }
+
+    // 星。遠くの細かい星を撒く。ときどき十字の煌めきを付ける。
+    g.globalCompositeOperation = "source-over";
+    const 星数 = Math.round(辺 * 辺 / 950);
+    for (let i = 0; i < 星数; i++) {
+      const x = Math.round(賽() * 辺), y = Math.round(賽() * 辺);
+      const 明 = 賽();
+      g.fillStyle = "rgba(255,255,255," + (0.10 + 明 * 0.55).toFixed(3) + ")";
+      g.fillRect(x, y, 1, 1);
+      if (明 > 0.985) {           // ごく稀に、大きく光る星
+        g.fillStyle = "rgba(255,255,255,0.5)";
+        g.fillRect(x - 2, y, 5, 1);
+        g.fillRect(x, y - 2, 1, 5);
+      }
+    }
+
+    // ---- 二枚目：銀河の腕（この層だけを回す）----
+    this.銀河 = document.createElement("canvas");
+    this.銀河.width = 辺; this.銀河.height = 辺;
+    const h = this.銀河.getContext("2d");
+    const 中x = 辺 / 2, 中y = 辺 / 2;
+
+    // 芯。中心の明るいふくらみ
+    const 芯 = h.createRadialGradient(中x, 中y, 0, 中x, 中y, 辺 * 0.10);
+    芯.addColorStop(0, 色.芯 + "55");
+    芯.addColorStop(0.4, 色.芯 + "1c");
+    芯.addColorStop(1, 色.芯 + "00");
+    h.fillStyle = 芯;
+    h.beginPath(); h.arc(中x, 中y, 辺 * 0.10, 0, PI2); h.fill();
+
+    // 腕。対数螺旋 r = a·e^(b·θ) に沿って、ばらつかせながら星を置く。
+    // ばらつき（散らし）を入れないと、ただの渦巻きの線に見えてしまう。
+    const 腕の数 = 2;
+    const a = 辺 * 0.016, b = 0.26;
+    for (let 腕 = 0; 腕 < 腕の数; 腕++) {
+      const 元角 = (腕 / 腕の数) * PI2;
+      for (let i = 0; i < 2400; i++) {
+        const θ = (i / 2400) * 11;                 // 巻き数
+        const r = a * Math.exp(b * θ);
+        if (r > 辺 * 0.52) break;
+        const 散らし = (賽() - 0.5) * r * 0.36;
+        const 角 = θ + 元角 + (賽() - 0.5) * 0.10;
+        const x = 中x + Math.cos(角) * (r + 散らし);
+        const y = 中y + Math.sin(角) * (r + 散らし) * 0.62;   // 傾いて見えるよう縦を潰す
+        const 明 = (1 - r / (辺 * 0.55)) * (0.5 + 賽() * 0.5);
+        if (明 <= 0) continue;
+        h.fillStyle = "rgba(255,255,255," + (明 * 0.30).toFixed(3) + ")";
+        h.fillRect(Math.round(x), Math.round(y), 1, 1);
+      }
+    }
+  },
+
+  /** 毎コマ。焼いた紙を貼って、ゆっくり流して回すだけ */
+  貼る(g, 時, 幅, 高さ, 止める) {
+    if (!this.紙) return;
+    const 辺 = this.紙.width;
+    // 銀河の芯は、盤で隠れない右上のあたりに置く。真ん中に置くと
+    // いちばん明るいところが盤の裏に入って、ただの染みに見えてしまう。
+    const 中x = 幅 * 0.70, 中y = 高さ * 0.30;
+
+    // 星雲と星。とてもゆっくり流す（風でそよぐ程度）
+    const 流れ = 止める ? 0 : (時 * 1.6) % 辺;
+    g.globalAlpha = 0.9;
+    g.drawImage(this.紙, 中x - 辺 / 2, 中y - 辺 / 2 - 流れ * 0.02);
+
+    // 銀河。中心のまわりを、時計の分針よりずっと遅く回す
+    g.save();
+    g.translate(中x, 中y);
+    g.rotate(止める ? 0.4 : 時 * 0.006);
+    g.globalAlpha = 0.85;
+    g.drawImage(this.銀河, -辺 / 2, -辺 / 2);
+    g.restore();
+    g.globalAlpha = 1;
+
+    if (!止める) this.流れ星を流す(g, 時, 幅, 高さ);
+  },
+
+  /** 流れ星。ときどき一本、斜めに走って消える */
+  流れ星を流す(g, 時, 幅, 高さ) {
+    if (時 > this.次の流れ星) {
+      this.次の流れ星 = 時 + 5 + Math.random() * 14;
+      this.流れ星.push({
+        x: Math.random() * 幅, y: Math.random() * 高さ * 0.5,
+        速x: 60 + Math.random() * 90, 速y: 40 + Math.random() * 60,
+        齢: 0, 寿: 0.7 + Math.random() * 0.5,
+      });
+    }
+    const 刻 = 1 / 60;
+    this.流れ星 = this.流れ星.filter(s => {
+      s.齢 += 刻;
+      if (s.齢 > s.寿) return false;
+      const x = s.x + s.速x * s.齢, y = s.y + s.速y * s.齢;
+      const 尾 = 18;
+      const 明 = Math.sin((s.齢 / s.寿) * Math.PI);   // 出て、消える
+      const 線 = g.createLinearGradient(x, y, x - s.速x * 0.012 * 尾, y - s.速y * 0.012 * 尾);
+      線.addColorStop(0, "rgba(255,255,255," + (明 * 0.8).toFixed(3) + ")");
+      線.addColorStop(1, "rgba(255,255,255,0)");
+      g.strokeStyle = 線;
+      g.lineWidth = 1.2;
+      g.beginPath();
+      g.moveTo(x, y);
+      g.lineTo(x - s.速x * 0.012 * 尾, y - s.速y * 0.012 * 尾);
+      g.stroke();
+      return true;
+    });
+  },
+};
+
+/* ===========================================================================
    九、絵 ── 夜空と星を描く
    ======================================================================== */
 const 絵 = {
@@ -1101,19 +1296,58 @@ const 絵 = {
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     this.寸法を決める();
     window.addEventListener("resize", () => this.寸法を決める());
+    // 文字が出そろってから、もう一度測る（書体の読み込みで高さが動くため）
+    window.addEventListener("load", () => this.寸法を決める());
   },
 
-  /** 入れ物の幅から升の大きさを決める（どんな画面でも綺麗に収まるように） */
+  /** ------------------------------------------------------------------
+      升の大きさを決める
+
+      幅だけで決めると、横に広い画面（パソコン）では盤が縦に伸びすぎて
+      ボタンが画面の外へ落ちる。遊んでいる最中に転がして操作を探すのは
+      おかしいので、**窓の高さからも決めて、小さいほうを採る**。
+
+      盤・ボタン三段・遊び方の見出しまでが、転がさずに一目で入ること。
+      それが守れないほど窓が狭いときだけ、最小の升まで下げて諦める。
+      ------------------------------------------------------------------ */
   寸法を決める() {
     const 入れ物 = this.canvas.parentElement;
-    const 使える幅 = Math.max(240, 入れ物.clientWidth);
+    const 柱 = document.querySelector(".wrap");
 
-    // 横の割り付け：余白1 + 盤9 + 余白1 + 棚4.6 + 余白0.8
+    // 測る前に、柱の幅を必ず元(CSSの値)へ戻す。
+    // 前回細くした幅のまま測ると、そのぶん上下が動いて、また細い値が出る。
+    // それを繰り返して二度と大きく戻れなくなる（実際に一度そうなった）。
+    if (柱) 柱.style.maxWidth = "";
+
+    // 横の割り付け：余白1 + 盤 + 余白1 + 棚4.6 + 余白0.8
     const 升ぶん = 1 + 設定.盤の横 + 1 + 4.6 + 0.8;
-    this.升の大きさ = Math.max(12, Math.floor((使える幅 / 升ぶん) * 100) / 100);
+
+    // ---- まず縦から。盤の下に置くもの（縁側の板・ボタン三段・遊び方）の
+    //      高さを実際に測る。決め打ちの数字を書かないのは、文字の大きさが
+    //      機械の設定や拡大で変わるから。
+    //      窓の上からではなく「紙の上から」測る（転がした状態だと狂うため）。
+    const 盤の上端 = 入れ物.getBoundingClientRect().top + window.scrollY;
+    const 下に要る = this.下の高さを測る();
+    const 使える高さ = window.innerHeight - 盤の上端 - 下に要る;
+    const 高さから = 使える高さ / (設定.盤の縦 + 2);
+
+    // ---- 縦で決まった大きさに合わせて、柱（本文の幅）ごと細くする。
+    //      横に広い画面で盤だけ小さくすると、盤の周りだけ妙に余って
+    //      間が抜ける。札もボタンも同じ幅に揃えれば、一本の柱に見える。
+    //      幅は「高さから決めた値」だけで出す。
+    if (柱) {
+      const 欲しい幅 = Math.min(560, Math.max(300, Math.round(高さから * 升ぶん)));
+      柱.style.maxWidth = 欲しい幅 + "px";
+    }
+
+    const 使える幅 = Math.max(240, 入れ物.clientWidth);
+    const 幅から = 使える幅 / 升ぶん;
+
+    this.升の大きさ = Math.max(11, Math.floor(Math.min(幅から, 高さから) * 100) / 100);
     const 升 = this.升の大きさ;
 
-    this.幅 = 使える幅;
+    // 高さで縮んだときは canvas 自体を細くして、真ん中に置く（CSSの margin auto）
+    this.幅 = Math.round(升 * 升ぶん);
     this.高さ = Math.round(升 * (設定.盤の縦 + 2));
     this.盤左 = Math.round(升 * 1);
     this.盤上 = Math.round(升 * 1);
@@ -1123,12 +1357,13 @@ const 絵 = {
     const 密度 = Math.min(2, window.devicePixelRatio || 1);
     this.canvas.width = Math.round(this.幅 * 密度);
     this.canvas.height = Math.round(this.高さ * 密度);
+    this.canvas.style.width = this.幅 + "px";
     this.canvas.style.height = this.高さ + "px";
     this.ctx.setTransform(密度, 0, 0, 密度, 0, 0);
 
-    // 夜空に漂う星を撒き直す
+    // 手前で瞬く星を撒き直す（背景の星は 夜空 が焼くので、ここは少しだけ）
     this.漂う星 = [];
-    const 数 = Math.round(this.幅 * this.高さ / 2600);
+    const 数 = Math.round(this.幅 * this.高さ / 9000);
     for (let i = 0; i < 数; i++) {
       this.漂う星.push({
         x: Math.random() * this.幅,
@@ -1138,6 +1373,26 @@ const 絵 = {
         位相: Math.random() * 6.28,
       });
     }
+  },
+
+  /** ------------------------------------------------------------------
+      盤の下に置いたものの高さを、実際に測って合計する
+
+      「ボタンは何ピクセル」と決め打ちで書かない。文字の大きさは機械の
+      設定や、目の悪い人の拡大で変わるから。実物を測れば、どう変えられても
+      ボタンは画面の中に残る。
+      ------------------------------------------------------------------ */
+  下の高さを測る() {
+    let 和 = 0;
+    ["engawa", "soujuu", "kobuda"].forEach(組 => {
+      const e = document.querySelector("." + 組);
+      if (!e) return;
+      和 += e.offsetHeight + parseFloat(getComputedStyle(e).marginBottom || 0);
+    });
+    // 「遊び方」の札は、閉じている見出しの一行ぶんだけ見えていればよい
+    const 遊び方 = document.querySelector("details");
+    和 += 遊び方 ? Math.min(遊び方.offsetHeight, 52) : 52;
+    return 和 + 8;   // ほんの余白
   },
 
   /** 星ひとつ。中の点の並びで色を見分けられるようにしてある */
@@ -1214,7 +1469,12 @@ const 絵 = {
     g.fillStyle = 空;
     g.fillRect(0, 0, this.幅, this.高さ);
 
-    // 漂う星（動きを控える設定なら、瞬かせず置くだけ）
+    // ---- 段ごとの空。段が変わったときだけ焼き直す ----
+    夜空.焼く(遊び.段, this.幅, this.高さ);
+    夜空.貼る(g, 時, this.幅, this.高さ, this.動きを控える);
+
+    // 手前で瞬く星をひと握り。焼いた紙の星は瞬かないので、
+    // その上に少しだけ生きている星を置く（多くすると騒がしい）
     this.漂う星.forEach(s => {
       const 明 = this.動きを控える ? s.明 : s.明 * (0.6 + 0.4 * Math.sin(時 * s.速 * 0.3 + s.位相));
       g.globalAlpha = Math.max(0, 明);
@@ -1236,17 +1496,34 @@ const 絵 = {
     }
 
     // ---- 盤の枠 ----
+    // 背景（銀河や星雲）が賑やかなので、盤の中だけ暗く沈める。
+    // 遊ぶ場所と、眺める場所を分ける。目が迷わないように。
+    g.fillStyle = "#050810b0";
+    g.fillRect(this.盤左, this.盤上, 盤幅, 盤高);
     g.strokeStyle = "#3b4864";
     g.lineWidth = 1;
     g.strokeRect(this.盤左 - 0.5, this.盤上 - 0.5, 盤幅 + 1, 盤高 + 1);
 
-    // 左右の端の列に、うっすら柱を立てる（ここへ繋げばいいと目で分かるように）
-    g.fillStyle = "#ffd1660c";
-    g.fillRect(this.盤左, this.盤上, 升, 盤高);
-    g.fillRect(this.盤左 + 盤幅 - 升, this.盤上, 升, 盤高);
-    g.fillStyle = "#ffd16626";
-    g.fillRect(this.盤左, this.盤上, 2, 盤高);
-    g.fillRect(this.盤左 + 盤幅 - 2, this.盤上, 2, 盤高);
+    /* ------------------------------------------------------------------
+       つなぐ先の合図
+
+       はじめは左右の端の「列」をうっすら塗っていた。ここへ繋げという
+       合図のつもりだったが、施主に指摘された——**それは「ここには置け
+       ない」に読める**。本家 [Ochi-Gee] の両側の壁は判定のための壁で、
+       置けない場所だったから、なおさら紛らわしい。
+
+       だから盤の中は塗らない。合図は**盤の外**、枠の左右に灯りとして
+       立てる。中は最後の一マスまで置ける場所だと、目で分かるように。
+       ------------------------------------------------------------------ */
+    const 灯り幅 = Math.max(2, Math.round(升 * 0.14));
+    [this.盤左 - 灯り幅 - 2, this.盤左 + 盤幅 + 2].forEach(x => {
+      const 帯 = g.createLinearGradient(0, this.盤上, 0, this.盤上 + 盤高);
+      帯.addColorStop(0,    "#ffd16600");
+      帯.addColorStop(0.5,  "#ffd16688");
+      帯.addColorStop(1,    "#ffd16600");
+      g.fillStyle = 帯;
+      g.fillRect(x, this.盤上, 灯り幅, 盤高);
+    });
 
     // ---- 置いてある星 ----
     for (let y = 0; y < 設定.盤の縦; y++) {
@@ -1326,6 +1603,8 @@ const 絵 = {
     for (let i = 0; i < 設定.つぎを見せる数; i++) {
       const 札 = 遊び.つぎ[i];
       const 枠高 = 升 * 1.9;
+      g.fillStyle = "#050810a0";     // 背景の銀河が透けると駒が読みにくい
+      g.fillRect(x, y, 幅, 枠高);
       g.strokeStyle = "#3b4864";
       g.strokeRect(x + 0.5, y + 0.5, 幅 - 1, 枠高 - 1);
       if (札 !== undefined) {
