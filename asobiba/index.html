@@ -199,16 +199,44 @@ canvas { display: block; margin: 0 auto; }
   margin-bottom: 12px;
 }
 
+/* ---- 横並び（パソコンのような広い画面）--------------------------
+   盤を左、操作を右に置く。こうすると盤が縦を全部使えるので、
+   同じ窓でもずっと大きく取れる（施主：エリアが狭い）。
+   縦長の画面（スマホ）では、これまでどおり上下に積む。
+   切り替えは JS が窓を見て class を付け外しする。
+   ---------------------------------------------------------------- */
+.wrap.yokonarabi {
+  display: grid;
+  /* 盤側は 1fr。auto にすると「中身の幅」で列が決まり、その中身（canvas）の
+     幅はこの列の幅から計算しているので、食い合って盤が大きくならない。
+     1fr なら列の幅が先に決まるから、そこから升を出せる。 */
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+  gap: 18px 22px;
+  align-items: start;
+}
+.wrap.yokonarabi .obi,
+.wrap.yokonarabi .fuda-列 { grid-column: 1 / -1; }
+.wrap.yokonarabi .bangawa { grid-column: 1; }
+.wrap.yokonarabi .tegawa  { grid-column: 2; }
+.wrap.yokonarabi .fuda-列 { grid-template-columns: repeat(4, 1fr); }
+/* 手側は細い柱なので、ボタンは二列に落とす。
+   四列のままだと一つ70pxほどになって、「ひだり回し」が折れて読めない。 */
+.wrap.yokonarabi .soujuu.yoko,
+.wrap.yokonarabi .soujuu.tate { grid-template-columns: repeat(2, 1fr); }
+.wrap.yokonarabi .soujuu.tate #b-hard { grid-column: 1 / -1; }
+.wrap.yokonarabi .kobuda button { flex: 1 1 44%; }
+
 /* ---- 操作ボタン ------------------------------------------
    「押すだけ」の掟。指の腹で押せる大きさ（最低48px）を守る。
    並びは実機の親指の位置に合わせて、左手＝移動／右手＝回すと落とす。
    ---------------------------------------------------------- */
 .soujuu {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
+.soujuu.yoko { grid-template-columns: repeat(4, 1fr); }
+.soujuu.tate { grid-template-columns: repeat(3, 1fr); margin-bottom: 10px; }
 button {
   font: inherit;
   color: var(--ink);
@@ -228,9 +256,36 @@ button:hover { background: #ffffff1c; }
 button:active { background: #ffffff2e; transform: translateY(1px); }
 button:focus-visible { outline: 2px solid var(--akari); outline-offset: 2px; }
 button .sub { display: block; font-size: 10px; color: var(--ink-soft); letter-spacing: 0.08em; }
-button.hiroi { grid-column: span 3; }
 button.ikki { border-color: var(--akari); background: #ffd16618; }
 button.ikki:hover { background: #ffd16628; }
+
+/* ---- ボタンと画面を、ひとつのものにする（施主の案）-------------
+   キーで遊んでいる人には、押したキーに当たるボタンが光る。
+   どのキーが効くかも、ボタンの中に小さく書いておく。
+   「押しても何も起きない」ときは、ボタンのほうが断る（.dame）。
+   ---------------------------------------------------------------- */
+button .key {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--waku-akari);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+/* キーを押している（あるいは指で押している）あいだ */
+button.oshita {
+  background: #ffffff34;
+  border-color: var(--akari);
+  transform: translateY(1px);
+}
+/* いま使えないもの。あずけるを使い切ったとき */
+button.tsukaenai { opacity: 0.42; }
+button.tsukaenai .key { color: var(--waku); }
+/* 行けない向き。壁に当たっているあいだ、そちらのボタンが断る */
+button.dame {
+  border-color: #7a5a5a;
+  background: #ff8f6a1c;
+}
 
 /* ---- 小さい札（音・たすけ・やめる）---- */
 .kobuda {
@@ -304,26 +359,39 @@ footer a { color: var(--ink-soft); }
     <div class="fuda" id="fuda-high"><span class="na">さいこう</span><span class="kazu" id="ui-high">0</span></div>
   </div>
 
-  <!-- 夜空。ここに盤と、つぎの駒と、あずけた駒が出る -->
-  <div class="yozora">
-    <canvas id="ban" role="img"
-      aria-label="星つなぎの盤面。落ちてくる星を積んで、左の端から右の端まで同じ色でつなぐと開通します。"></canvas>
+  <!-- 盤側。夜空と、その下の縁側の板。
+       パソコンのような横に広い画面では、この左に盤・右に操作が並ぶ。
+       盤が縦を全部使えるので、大きく取れる（施主：エリアが狭い）。 -->
+  <div class="bangawa">
+    <div class="yozora">
+      <canvas id="ban" role="img"
+        aria-label="星つなぎの盤面。落ちてくる星を積んで、左の端から右の端まで同じ色でつなぐと開通します。"></canvas>
+    </div>
+    <div class="engawa" aria-hidden="true"></div>
   </div>
-  <div class="engawa" aria-hidden="true"></div>
 
-  <!-- 操作。押すだけで遊べること -->
-  <div class="soujuu">
-    <button id="b-left"  type="button" aria-label="左へ動かす">←<span class="sub">ひだり</span></button>
-    <button id="b-rot"   type="button" aria-label="回す">回す<span class="sub">まわす</span></button>
-    <button id="b-right" type="button" aria-label="右へ動かす">→<span class="sub">みぎ</span></button>
-    <button id="b-soft"  type="button" aria-label="ゆっくり落とす">↓<span class="sub">そっと</span></button>
-    <button id="b-hold"  type="button" aria-label="あずける">あずける<span class="sub">とりかえ</span></button>
-    <button id="b-hard"  type="button" class="ikki" aria-label="一気に落とす">⇊<span class="sub">いっき</span></button>
+  <div class="tegawa"><!-- 手側（操作） -->
+
+  <!-- 操作。押すだけで遊べること。
+       そして、キーで遊んでいる人のために——押したキーに当たるボタンが
+       光る。ボタンと画面を別のものにしないための仕掛け（施主の案）。
+       どのキーが効くかは、ボタンの中に小さく書いてある。 -->
+  <div class="soujuu yoko">
+    <button id="b-left"  type="button" aria-label="左へ動かす">←<span class="sub">ひだり</span><span class="key">←</span></button>
+    <button id="b-rotl"  type="button" aria-label="左に回す">↺<span class="sub">ひだり回し</span><span class="key">Z</span></button>
+    <button id="b-rotr"  type="button" aria-label="右に回す">↻<span class="sub">みぎ回し</span><span class="key">X ／ ↑</span></button>
+    <button id="b-right" type="button" aria-label="右へ動かす">→<span class="sub">みぎ</span><span class="key">→</span></button>
+  </div>
+  <div class="soujuu tate">
+    <button id="b-soft"  type="button" aria-label="ゆっくり落とす">↓<span class="sub">そっと</span><span class="key">↓</span></button>
+    <button id="b-hold"  type="button" aria-label="あずける">あずける<span class="sub">とりかえ</span><span class="key">Shift</span></button>
+    <button id="b-hard"  type="button" class="ikki" aria-label="一気に落とす">⇊<span class="sub">いっき</span><span class="key">スペース</span></button>
   </div>
 
   <div class="kobuda">
     <button id="b-sound" type="button" aria-pressed="false">音を出す</button>
-    <button id="b-pause" type="button">やすむ</button>
+    <button id="b-michi" type="button" aria-pressed="true">みちしるべ</button>
+    <button id="b-pause" type="button">やすむ<span class="key">P</span></button>
     <button id="b-new"   type="button">はじめから</button>
   </div>
 
@@ -348,13 +416,17 @@ footer a { color: var(--ink-soft); }
 
     <p>天井まで積み上がると<b>断線</b>——おしまいです。</p>
 
-    <p>キーボードでも遊べます。</p>
+    <p><b>ウニョウニョしている枠</b>は「そこにその色の星が来れば、道が開く」という合図です。どの駒をどう回して入れるかは、ご自分で。要らなければ「みちしるべ」を押して消せます。</p>
+
+    <p>キーボードでも遊べます。<b>押したキーのボタンが光ります。</b></p>
     <ul>
-      <li><kbd>←</kbd> <kbd>→</kbd> 動かす　<kbd>↑</kbd> 回す</li>
+      <li><kbd>←</kbd> <kbd>→</kbd> 動かす</li>
+      <li><kbd>Z</kbd> 左に回す　<kbd>X</kbd>（または <kbd>↑</kbd>）右に回す</li>
       <li><kbd>↓</kbd> そっと落とす　<kbd>スペース</kbd> 一気に落とす</li>
       <li><kbd>Shift</kbd> あずける　<kbd>P</kbd> やすむ</li>
     </ul>
   </details>
+  </div><!-- /手側 -->
 
 </div>
 
@@ -410,17 +482,34 @@ const 設定 = {
   // 2色なら、落ちてくる星は必ずどちらかの道の役に立つ。
   色の数: 2,
 
-  // ---- 落ちる速さ ----
-  最初の速さ: 1.0,    // 1秒に何マス落ちるか（ゆっくりから始める）
-  速さの伸び: 6.0,    // 貯めた「速さ」をマス／秒に換算する倍率
+  /* ---- 落ちる速さ --------------------------------------------------
+     ここは一度、施主の遊んだ実感で作り替えたところ。
+
+     はじめは本家 [Ochi-Gee] の数字をそのまま継いでいた——1〜2段の
+     あいだは倍で足す、という設計。本家はアーケードの気風なので
+     「早くぬるま湯から出す」のが正しかった。
+
+     ところが縁側の遊び場では逆に効いた。施主の言葉：
+     「無我夢中で、考える時間がないので、もう少し、遅いテンポで
+     はやくしていくと、次はこうしようとか、腕が磨けてる実感が湧くと
+     やる気が出る」。
+
+     考える時間がないと、腕が磨けない。腕が磨けないと、続けたくならない。
+     だから低段は**逆に半分**にして、伸びも半分以下にした。
+     　段3まで  ゆっくり（一分半ほどは、ほぼ落ち着いたまま）
+     　段12あたりで 7マス/秒
+     本家への不義理ではない。作っている遊びが違う。
+     ------------------------------------------------------------------ */
+  最初の速さ: 0.8,    // 1秒に何マス落ちるか
+  速さの伸び: 3.2,    // 貯めた「速さ」をマス／秒に換算する倍率
   速さの上限: 14.0,   // これ以上は速くしない（人が反応できる限界のあたり）
   そっと落とす倍率: 14, // ↓ を押しているあいだの速さ
 
   // 開通したときに「速さ」へ足す量。同時に何本開通したかで変わる。
-  // ── 本家 speed_controll() の 0.02／0.04／0.06／0.08 をそのまま持ってきた
+  // ── 数字そのものは本家 speed_controll() の 0.02／0.04／0.06／0.08
   速さの足し: [0, 0.02, 0.04, 0.06, 0.08],
-  低段の倍: 2,        // 1〜2段のあいだは倍で足す（早くぬるま湯から出す）
-  低段とは: 2,
+  低段の倍: 0.5,      // 低い段は「半分」で足す（本家は倍だった。上の説明のとおり）
+  低段とは: 3,        // 何段までを低段とみなすか
 
   // ---- 点数 ----
   // ── 本家の表。1本200／2本500／3本800／4本以上2000
@@ -738,6 +827,37 @@ const 盤 = {
     return 開通;
   },
 
+  /** ------------------------------------------------------------------
+      導き（みちしるべ）を探す
+
+      施主の案——「ここにおくと開通みたいなもの」。
+
+      教えるのは**答えではなく、あと一歩の場所**にした。
+      「この升に、この色の星が来れば道が開く」だけを示す。
+      どの駒をどう回してそこへ入れるかは、遊ぶ人が考えるところ。
+      そこまで教えてしまうと、腕を磨く余地がなくなる。
+
+      空いている升それぞれに、色を仮に置いて開通を見るだけ。
+      升126×色2＝252回ぶんの判定になるが、走るのは盤が変わったとき
+      （駒を置いたとき／連鎖が収まったとき）だけなので毎コマの重さには
+      ならない。実測 1ミリ秒足らず。
+      ------------------------------------------------------------------ */
+  導きを探す() {
+    const 出 = [];
+    for (let y = 0; y < 設定.盤の縦; y++) {
+      for (let x = 0; x < 設定.盤の横; x++) {
+        if (this.升[y][x] !== null) continue;
+        for (let 色 = 0; 色 < 設定.色の数; 色++) {
+          this.升[y][x] = 色;
+          const 開く = this.開通を探す().length > 0;
+          this.升[y][x] = null;
+          if (開く) 出.push({ x, y, 色 });
+        }
+      }
+    }
+    return 出;
+  },
+
   /** 星を消す */
   消す(星たち) {
     星たち.forEach(c => { this.升[c.y][c.x] = null; });
@@ -812,6 +932,9 @@ const 遊び = {
   連続: 0,
   前の開通からの駒: 0,
 
+  導き: [],              // 「ここに来れば開通する」升
+  導きを見せる: true,    // 見せるかどうか（札で切り替えられる）
+
   起動進み: 0,           // アレシボが何行めまで出たか
 
   /* ---- 新しく始める ---- */
@@ -825,6 +948,7 @@ const 遊び = {
     this.跳ね横 = { 齢: 0, 強さ: 0, 向き: 1 };
     this.円盤 = { 出る: false, 齢: 0, 向き: 1, 空の名: "" };
     this.連続 = 0; this.前の開通からの駒 = 0;
+    this.導き = [];
     this.待ち = 0; this.待ちの次 = null;
 
     // 遊びかけを戻す。ただし盤の寸法を作り変えたあとの古い控えは捨てる
@@ -887,6 +1011,10 @@ const 遊び = {
     this.預けた = false;
     this.連鎖 = 0;
 
+    // 盤が落ち着いたところなので、ここで導きを探し直す。
+    // （駒を置いたあとと、連鎖が収まったあとは、必ずここを通る）
+    this.導き = 盤.導きを探す();
+
     if (!盤.置けるか(形, 左, 0)) {
       this.今の駒 = null;
       this.断線する();
@@ -912,12 +1040,20 @@ const 遊び = {
     }
   },
 
-  /** 回す。そのままでは壁や星に刺さるとき、少しずらして入れてやる */
-  回転() {
+  /** ------------------------------------------------------------------
+      回す。そのままでは壁や星に刺さるとき、少しずらして入れてやる
+
+      まわし方は左右どちらもある。はじめは右だけにしていたが、施主が
+      パソコンのキーで遊ぶと分かったので両方にした。指二本で右だけ、
+      というのは指が一本しか要らない画面での話で、キーなら両手が空いている。
+      逆に回せないと、壁際で一手余分にかかる。
+      ------------------------------------------------------------------ */
+  回転(まわり = 1) {
     if (this.状態 !== "遊ぶ" || !this.今の駒) return;
     const d = this.今の駒;
     const 駒 = 駒表[d.番号];
-    const 次の向き = (d.向き + 1) % 駒.向き.length;
+    const 数 = 駒.向き.length;
+    const 次の向き = ((d.向き + まわり) % 数 + 数) % 数;
     const 形 = 駒.向き[次の向き];
 
     // ずらして試す順。真ん中→左右1→左右2→ひとつ上（床から押し上げる）
@@ -1186,7 +1322,7 @@ const 遊び = {
       盤.最高点 = this.点数;
     }
     // 遊びかけの控えは消す（断線したものを「つづきから」にはできない）
-    控え.書く({ 最高点: 盤.最高点, 音: 音.出す });
+    控え.書く({ 最高点: 盤.最高点, 音: 音.出す, 導き: this.導きを見せる });
     画面を書き直す();
   },
 
@@ -1288,6 +1424,7 @@ const 遊び = {
     控え.書く({
       最高点: 盤.最高点,
       音: 音.出す,
+      導き: 遊び.導きを見せる,
       途中: {
         升: 盤.升, 点数: this.点数, 段: this.段, 開通数: this.開通数,
         速さ貯金: this.速さ貯金, 経過: this.経過,
@@ -1417,12 +1554,13 @@ const 夜空 = {
     // 差し替えると、十種類も焼いてあるのに誰も気づかない）。
     // 窓の大きさが変わっただけのときは、重ねない（ただの焼き直し）。
     if (this.紙 && this.焼いた段 !== 段 && this.焼いた寸法 === 寸法) {
-      this.前 = { 紙: this.紙, 銀河: this.銀河, 先端: this.先端 };
+      this.前 = { 紙: this.紙, 銀河: this.銀河, 先端: this.先端, 段: this.焼いた段 };
     } else {
       this.前 = null;
     }
 
     this.焼いた段 = 段; this.焼いた寸法 = 寸法;
+    this.段 = 段;
 
     const 色 = this.空の色[(段 - 1) % this.空の色.length];
     const 賽 = this.賽(段 * 7919 + 13);
@@ -1566,6 +1704,9 @@ const 夜空 = {
     g.globalAlpha = 0.9 * 濃さ;
     g.drawImage(空.紙, 中x - 辺 / 2, 中y - 辺 / 2 - 流れ * 0.02);
 
+    // 空いっぱいのリサージュ（施主：背景で大々的にやってもいい）
+    this.大リサージュ(g, 時, 幅, 高さ, 空.段 || 1, 濃さ, 止める);
+
     // 銀河。中心のまわりを、時計の分針よりずっと遅く回す
     g.save();
     g.translate(中x, 中y);
@@ -1598,6 +1739,44 @@ const 夜空 = {
       g.fillRect(Math.round(s.x), Math.round(s.y), 点, 点);
     });
     g.restore();
+    g.globalAlpha = 1;
+  },
+
+  /** ------------------------------------------------------------------
+      空いっぱいのリサージュ（施主の案：背景で大々的にやってもいい）
+
+      段の札に出しているのと**同じ比**を、空の端から端まで引く。
+      だから段が上がると、空の色も、銀河も、この曲線も、まとめて
+      変わる。その段の顔になる。
+
+      位相 δ をゆっくり動かすと、平面の線なのに立体が回って見える。
+      施主の言う「動いて見えます」がこれで、目のほうが勝手に奥行きを
+      作ってくれる。線は一本、点は二百。それだけ。
+
+      薄く引くのが肝。ここを濃くすると盤より曲線を見てしまう。
+      ------------------------------------------------------------------ */
+  大リサージュ(g, 時, 幅, 高さ, 段, 濃さ, 止める) {
+    const [a, b] = リサージュ.比[(段 - 1) % リサージュ.比.length];
+    const 色 = this.空の色[(段 - 1) % this.空の色.length];
+    const δ = 止める ? 0.6 : 時 * 0.22;
+    const 中x = 幅 * 0.5, 中y = 高さ * 0.46;
+    const 半x = 幅 * 0.46, 半y = 高さ * 0.42;
+
+    // 二本引く。位相をわずかにずらすと、面のように見えて奥行きが出る
+    [[0, 0.13], [0.35, 0.08]].forEach(([ずれ, 濃]) => {
+      g.strokeStyle = 色.芯;
+      g.globalAlpha = 濃 * 濃さ;
+      g.lineWidth = 1;
+      g.beginPath();
+      const 刻み = 200;
+      for (let i = 0; i <= 刻み; i++) {
+        const t = (i / 刻み) * PI2;
+        const x = 中x + Math.sin(a * t + δ + ずれ) * 半x;
+        const y = 中y + Math.sin(b * t) * 半y;
+        if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.stroke();
+    });
     g.globalAlpha = 1;
   },
 
@@ -1641,6 +1820,7 @@ const 絵 = {
   幅: 0, 高さ: 0,
   盤左: 0, 盤上: 0,
   棚左: 0,                 // 「つぎ」「あずける」を置く棚
+  横並び: false,           // 盤と操作を左右に分けているか
   動きを控える: false,
   漂う星: [],
 
@@ -1672,7 +1852,13 @@ const 絵 = {
     // 測る前に、柱の幅を必ず元(CSSの値)へ戻す。
     // 前回細くした幅のまま測ると、そのぶん上下が動いて、また細い値が出る。
     // それを繰り返して二度と大きく戻れなくなる（実際に一度そうなった）。
-    if (柱) 柱.style.maxWidth = "";
+    if (柱) { 柱.style.maxWidth = ""; 柱.style.gridTemplateColumns = ""; }
+
+    /* ---- 横並びにするかどうか ----
+       横に余裕があって、縦もある程度あるときだけ、盤と操作を左右に分ける。
+       そうすると盤が縦を全部使えるので、同じ窓でもずっと大きくなる。 */
+    this.横並び = window.innerWidth >= 780 && window.innerHeight >= 560;
+    if (柱) 柱.classList.toggle("yokonarabi", this.横並び);
 
     // 横の割り付け：余白1 + 盤 + 余白1 + 棚4.6 + 余白0.8
     const 升ぶん = 1 + 設定.盤の横 + 1 + 4.6 + 0.8;
@@ -1686,19 +1872,26 @@ const 絵 = {
     const 使える高さ = window.innerHeight - 盤の上端 - 下に要る;
     const 高さから = 使える高さ / (設定.盤の縦 + 2);
 
-    // ---- 縦で決まった大きさに合わせて、柱（本文の幅）ごと細くする。
-    //      横に広い画面で盤だけ小さくすると、盤の周りだけ妙に余って
-    //      間が抜ける。札もボタンも同じ幅に揃えれば、一本の柱に見える。
-    //      幅は「高さから決めた値」だけで出す。
-    if (柱) {
-      const 欲しい幅 = Math.min(560, Math.max(300, Math.round(高さから * 升ぶん)));
-      柱.style.maxWidth = 欲しい幅 + "px";
+    /* ---- 横の割り付け ------------------------------------------------
+       どちらの並びでも、幅は**測った値ではなく計算した値**から決める。
+       いま画面に出ている幅を測って、それをまた画面に書き戻すと、
+       二つが食い合って盤が育たない（この罠に二度はまった）。
+       ------------------------------------------------------------------ */
+    const 手側の幅 = 300, 隙 = 22, 柱の内余白 = 28;
+    let 幅から;
+
+    if (this.横並び) {
+      // 操作は横に居るので、盤は窓の縦を全部使える。
+      // 横は「窓から操作の幅を引いた残り」までなら使ってよい。
+      const 使える横 = window.innerWidth - 柱の内余白 - 隙 - 手側の幅 - 8;
+      幅から = Math.max(240, 使える横) / 升ぶん;
+    } else {
+      幅から = Math.max(240, 入れ物.clientWidth) / 升ぶん;
     }
 
-    const 使える幅 = Math.max(240, 入れ物.clientWidth);
-    const 幅から = 使える幅 / 升ぶん;
-
-    this.升の大きさ = Math.max(11, Math.floor(Math.min(幅から, 高さから) * 100) / 100);
+    // 上限を置く。大きな画面で升が育ちすぎると、目が盤を一度に見渡せない。
+    this.升の大きさ = Math.max(11, Math.min(38,
+      Math.floor(Math.min(幅から, 高さから) * 100) / 100));
     const 升 = this.升の大きさ;
 
     // 高さで縮んだときは canvas 自体を細くして、真ん中に置く（CSSの margin auto）
@@ -1715,6 +1908,27 @@ const 絵 = {
     this.canvas.style.width = this.幅 + "px";
     this.canvas.style.height = this.高さ + "px";
     this.ctx.setTransform(密度, 0, 0, 密度, 0, 0);
+
+    // 夜空の箱と縁側の板を、盤の幅にぴたりと合わせる。
+    // 箱だけ広いと、盤の周りに意味のない暗がりが余る。
+    const 空箱 = document.querySelector(".yozora");
+    const 板 = document.querySelector(".engawa");
+    if (空箱) { 空箱.style.width = this.幅 + "px"; 空箱.style.marginInline = "auto"; }
+    if (板)   { 板.style.width = this.幅 + "px";   板.style.marginInline = "auto"; }
+
+    /* 柱（本文）の幅を、いま決めた盤の幅に合わせて決める。
+       ・横並び：盤の幅＋隙＋操作の幅。列も px で固定するので、盤の周りに
+         意味のない空きが出ない。
+       ・縦積み：札もボタンも盤と同じ幅に揃えて、一本の柱に見せる。 */
+    if (柱) {
+      if (this.横並び) {
+        柱.style.gridTemplateColumns = this.幅 + "px minmax(240px, " + 手側の幅 + "px)";
+        柱.style.maxWidth = (this.幅 + 隙 + 手側の幅 + 柱の内余白) + "px";
+      } else {
+        柱.style.gridTemplateColumns = "";
+        柱.style.maxWidth = Math.min(560, Math.max(300, this.幅 + 柱の内余白)) + "px";
+      }
+    }
 
     // 手前で瞬く星を撒き直す（背景の星は 夜空 が焼くので、ここは少しだけ）
     this.漂う星 = [];
@@ -1738,11 +1952,16 @@ const 絵 = {
       ボタンは画面の中に残る。
       ------------------------------------------------------------------ */
   下の高さを測る() {
+    // 横並びのときは、盤の下にあるのは縁側の板だけ
+    if (this.横並び) {
+      const 板 = document.querySelector(".engawa");
+      return (板 ? 板.offsetHeight + parseFloat(getComputedStyle(板).marginBottom || 0) : 22) + 10;
+    }
     let 和 = 0;
     ["engawa", "soujuu", "kobuda"].forEach(組 => {
-      const e = document.querySelector("." + 組);
-      if (!e) return;
-      和 += e.offsetHeight + parseFloat(getComputedStyle(e).marginBottom || 0);
+      document.querySelectorAll("." + 組).forEach(e => {
+        和 += e.offsetHeight + parseFloat(getComputedStyle(e).marginBottom || 0);
+      });
     });
     // 「遊び方」の札は、閉じている見出しの一行ぶんだけ見えていればよい
     const 遊び方 = document.querySelector("details");
@@ -1947,6 +2166,34 @@ const 絵 = {
       g.restore();
       g.globalAlpha = 1;
     });
+
+    /* ---- 導き（みちしるべ）------------------------------------------
+       「この升に、この色の星が来れば道が開く」場所を、ウニョウニョと
+       息をするように示す。星と紛れないよう、四角い枠の内側を
+       うねらせて描く（塗らない）。色は「来てほしい星の色」。 */
+    if (遊び.導きを見せる && 遊び.導き.length) {
+      遊び.導き.slice(0, 26).forEach(m => {
+        const 位相 = (m.x * 7 + m.y * 13 + m.色 * 3) * 0.7;
+        const 息 = this.動きを控える ? 0.5 : (Math.sin(時 * 3.4 + 位相) + 1) / 2;
+        const 内 = 升 * (0.16 + 息 * 0.14);
+        const x = this.盤左 + m.x * 升, y = this.盤上 + m.y * 升;
+        g.globalAlpha = 0.30 + 息 * 0.35;
+        g.strokeStyle = 星の色[m.色].縁;
+        g.lineWidth = Math.max(1, 升 * 0.075);
+        g.beginPath();
+        // 角を丸めた四角。丸みも息と一緒に変わるので、ウニョウニョする
+        const r = 升 * (0.10 + 息 * 0.20);
+        const 左 = x + 内, 上 = y + 内, 右 = x + 升 - 内, 下 = y + 升 - 内;
+        g.moveTo(左 + r, 上);
+        g.arcTo(右, 上, 右, 下, r);
+        g.arcTo(右, 下, 左, 下, r);
+        g.arcTo(左, 下, 左, 上, r);
+        g.arcTo(左, 上, 右, 上, r);
+        g.closePath();
+        g.stroke();
+        g.globalAlpha = 1;
+      });
+    }
 
     // ---- 落ちる先の影 ----
     const 影上 = 遊び.影の上();
@@ -2229,12 +2476,16 @@ const 絵 = {
    ======================================================================== */
 const 札 = {
   点: null, 段: null, 開通: null, 最高: null, 最高枠: null,
+  左: null, 右: null, 預: null,
   仕込む() {
     this.点 = document.getElementById("ui-score");
     this.段 = document.getElementById("ui-level");
     this.開通 = document.getElementById("ui-lines");
     this.最高 = document.getElementById("ui-high");
     this.最高枠 = document.getElementById("fuda-high");
+    this.左 = document.getElementById("b-left");
+    this.右 = document.getElementById("b-right");
+    this.預 = document.getElementById("b-hold");
   },
   書く() {
     this.点.textContent = Math.floor(遊び.見せる点数);
@@ -2244,6 +2495,19 @@ const 札 = {
     this.最高.textContent = 最高;
     // 最高点を抜いているあいだは、札の色を変える（点滅はさせない）
     this.最高枠.classList.toggle("koushin", 遊び.点数 > 0 && 遊び.点数 >= 盤.最高点);
+
+    /* ---- ボタンに、盤の様子を映す（施主の案）--------------------------
+       押しても動かないときは、押す前にボタンのほうが断る。
+       「押したのに何も起きない」を無くすのが、ここのねらい。 */
+    const d = 遊び.今の駒;
+    const 動けるか = (向き) => {
+      if (!d || 遊び.状態 !== "遊ぶ") return true;
+      return 盤.置けるか(遊び.今の形(), d.左 + 向き, d.上);
+    };
+    this.左.classList.toggle("dame", !動けるか(-1));
+    this.右.classList.toggle("dame", !動けるか(1));
+    // あずけるは、この駒で一度使うと次の駒まで使えない
+    this.預.classList.toggle("tsukaenai", 遊び.状態 === "遊ぶ" && 遊び.預けた);
   },
 };
 function 画面を書き直す() { 札.書く(); }
@@ -2251,23 +2515,60 @@ function 画面を書き直す() { 札.書く(); }
 /* ===========================================================================
    十一、操作 ── ボタンとキーボード
    ======================================================================== */
+/* ===========================================================================
+   十一、操作 ── ボタンとキーを、ひとつのものにする
+
+   施主はパソコンのキーで遊ぶ。だからボタンは「押す道具」であると同時に
+   「いま何が起きているかを映す鏡」にした（施主の案：ボタン操作と
+   グラフィックを同一化すると親切UI）。
+
+     ・キーを押すと、当たるボタンが光る
+     ・どのキーが効くかは、ボタンの中に小さく書いてある
+     ・壁に当たって行けないあいだは、そちらのボタンが断る（赤い枠）
+     ・あずけるを使い切ったら、そのボタンが薄くなる
+
+   一つの仕事に「ボタン」と「キー」の二つの入口があるので、仕事の表を
+   先に作って、両方から同じところへ入れる。二重に書くと必ず片方が
+   古くなるので。
+   ======================================================================== */
 function 操作を仕込む() {
-  const 押す = (id, 仕事, 長押しも) => {
+
+  // ---- 仕事の表。ボタンの id ／ 効くキー ／ 何をするか ／ 長押しで続くか ----
+  const 割り当て = [
+    { id: "b-left",  鍵: ["ArrowLeft"],           仕事: () => 遊び.横へ(-1), 長押し: true },
+    { id: "b-right", 鍵: ["ArrowRight"],          仕事: () => 遊び.横へ(1),  長押し: true },
+    { id: "b-rotl",  鍵: ["z", "Z"],              仕事: () => 遊び.回転(-1) },
+    { id: "b-rotr",  鍵: ["x", "X", "ArrowUp"],   仕事: () => 遊び.回転(1) },
+    { id: "b-hard",  鍵: [" "],                   仕事: () => 遊び.一気に落とす() },
+    { id: "b-hold",  鍵: ["Shift"],               仕事: () => 遊び.預ける() },
+  ];
+
+  const 光らせる = (id) => {
     const b = document.getElementById(id);
+    if (!b) return;
+    b.classList.add("oshita");
+    // キーで押したときは、ひと呼吸だけ光らせて戻す
+    clearTimeout(b.__消し);
+    b.__消し = setTimeout(() => b.classList.remove("oshita"), 110);
+  };
+
+  割り当て.forEach(({ id, 仕事, 長押し }) => {
+    const b = document.getElementById(id);
+    if (!b) return;
     let 繰り返し = null, 待ち = null;
 
     const 始め = (e) => {
       e.preventDefault();
       音.起こす();
+      b.classList.add("oshita");
       仕事();
-      if (長押しも) {
+      if (長押し) {
         // 長押しで連続。押した直後は少し待つ（1回だけ押したいときに走らないよう）
-        待ち = setTimeout(() => {
-          繰り返し = setInterval(仕事, 60);
-        }, 220);
+        待ち = setTimeout(() => { 繰り返し = setInterval(仕事, 60); }, 220);
       }
     };
     const 終い = () => {
+      b.classList.remove("oshita");
       if (待ち) { clearTimeout(待ち); 待ち = null; }
       if (繰り返し) { clearInterval(繰り返し); 繰り返し = null; }
     };
@@ -2276,22 +2577,19 @@ function 操作を仕込む() {
     b.addEventListener("pointerup", 終い);
     b.addEventListener("pointerleave", 終い);
     b.addEventListener("pointercancel", 終い);
-    // キーボードで <button> を押したときは pointerdown が来ないので、こちらも拾う
+    // キーボードで <button> 自体を押したときは pointerdown が来ないので拾う
     b.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); 音.起こす(); 仕事(); }
     });
-  };
+  });
 
-  押す("b-left",  () => 遊び.横へ(-1), true);
-  押す("b-right", () => 遊び.横へ(1), true);
-  押す("b-rot",   () => 遊び.回転());
-  押す("b-hold",  () => 遊び.預ける());
-  押す("b-hard",  () => 遊び.一気に落とす());
-
-  // そっと落とす。押しているあいだだけ速くする
+  // そっと落とす。押しているあいだだけ速くする（押し下げっぱなしが意味を持つ）
   const そっと = document.getElementById("b-soft");
-  const そっと入 = (e) => { e.preventDefault(); 音.起こす(); 遊び.そっと = true; };
-  const そっと切 = () => { 遊び.そっと = false; };
+  const そっと入 = (e) => {
+    if (e) e.preventDefault();
+    音.起こす(); 遊び.そっと = true; そっと.classList.add("oshita");
+  };
+  const そっと切 = () => { 遊び.そっと = false; そっと.classList.remove("oshita"); };
   そっと.addEventListener("pointerdown", そっと入);
   そっと.addEventListener("pointerup", そっと切);
   そっと.addEventListener("pointerleave", そっと切);
@@ -2304,16 +2602,28 @@ function 操作を仕込む() {
     if (音.出す) { 音.起こす(); 音.鳴らす(660, 0.1, "triangle", 0.1); }
     音札.textContent = 音.出す ? "音を止める" : "音を出す";
     音札.setAttribute("aria-pressed", String(音.出す));
-    const c = 控え.読む();
-    c.音 = 音.出す;
-    控え.書く(c);
+    const c = 控え.読む(); c.音 = 音.出す; 控え.書く(c);
   });
 
+  // みちしるべの札。手取り足取りが嫌な人は消せる（見た目の選択権は遊ぶ人に）
+  const 導き札 = document.getElementById("b-michi");
+  const 導き札を書く = () => {
+    導き札.textContent = 遊び.導きを見せる ? "みちしるべ" : "みちしるべ（切）";
+    導き札.setAttribute("aria-pressed", String(遊び.導きを見せる));
+  };
+  導き札.addEventListener("click", () => {
+    遊び.導きを見せる = !遊び.導きを見せる;
+    導き札を書く();
+    const c = 控え.読む(); c.導き = 遊び.導きを見せる; 控え.書く(c);
+  });
+  導き札を書く();
+
   // やすむ
-  document.getElementById("b-pause").addEventListener("click", () => {
+  const やすむ = () => {
     if (遊び.状態 === "遊ぶ") { 遊び.状態 = "やすむ"; 遊び.控える(); }
     else if (遊び.状態 === "やすむ") { 遊び.状態 = "遊ぶ"; }
-  });
+  };
+  document.getElementById("b-pause").addEventListener("click", やすむ);
 
   // はじめから
   document.getElementById("b-new").addEventListener("click", () => {
@@ -2321,28 +2631,28 @@ function 操作を仕込む() {
     遊び.始める(null);
   });
 
-  // キーボード
+  // ---- キーボード。表を引いて、ボタンと同じ入口へ入れる ----
   window.addEventListener("keydown", (e) => {
     // 文字を打っている最中は横取りしない
     const 相手 = document.activeElement;
     if (相手 && (相手.tagName === "INPUT" || 相手.tagName === "TEXTAREA")) return;
+    // ボタンにフォーカスが当たっているときは、そのボタン自身の処理に任せる
+    if (相手 && 相手.tagName === "BUTTON" && (e.key === "Enter" || e.key === " ")) return;
 
     音.起こす();
-    switch (e.key) {
-      case "ArrowLeft":  遊び.横へ(-1); e.preventDefault(); break;
-      case "ArrowRight": 遊び.横へ(1);  e.preventDefault(); break;
-      case "ArrowUp":    遊び.回転();   e.preventDefault(); break;
-      case "ArrowDown":  遊び.そっと = true; e.preventDefault(); break;
-      case " ":          遊び.一気に落とす(); e.preventDefault(); break;
-      case "Shift":      遊び.預ける(); break;
-      case "p": case "P":
-        if (遊び.状態 === "遊ぶ") { 遊び.状態 = "やすむ"; 遊び.控える(); }
-        else if (遊び.状態 === "やすむ") 遊び.状態 = "遊ぶ";
-        break;
+
+    const 当たり = 割り当て.find(w => w.鍵.includes(e.key));
+    if (当たり) {
+      e.preventDefault();
+      当たり.仕事();
+      光らせる(当たり.id);       // ボタンのほうも光る＝画面とボタンが同じもの
+      return;
     }
+    if (e.key === "ArrowDown") { そっと入(e); e.preventDefault(); return; }
+    if (e.key === "p" || e.key === "P") { やすむ(); return; }
   });
   window.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowDown") 遊び.そっと = false;
+    if (e.key === "ArrowDown") そっと切();
   });
 
   // 起動画面・題の画面は、盤をどこか押せば飛ばせる
@@ -2371,6 +2681,7 @@ let 残っている遊びかけ = null;
   const c = 控え.読む();
   盤.最高点 = c.最高点 || 0;
   音.出す = !!c.音;
+  遊び.導きを見せる = (c.導き === undefined) ? true : !!c.導き;
   if (音.出す) {
     const 音札 = document.getElementById("b-sound");
     音札.textContent = "音を止める";
