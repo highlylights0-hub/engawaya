@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--
+    Ochi-Gee のサポートページ。
+
+    App Store は掲載にサポートURLを必須にしている。
+    母屋（トップページ）を出していたが、あそこにはK'Ad蔵人とGeoMemoryしか無く、
+    Ochi-Geeの名前が一つも出てこない。利用者が「サポート」を押して
+    関係ない道具の紹介に着くのは不親切なので、ここを立てた。
+
+    サポートページに要るのは、飾りではなく次の三つだけ:
+      これは何か / 困ったときどうするか / どこへ連絡するか
+
+    母屋と同じく外から何ひとつ読み込まない。全部この1ファイルの中にある。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ochi-Gee — 縁側屋</title>
+<meta name="description" content="落ちものパズル「Ochi-Gee」のサポートページ。遊び方、困ったときの対処、お問い合わせ先。">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 色は母屋と同じ仕掛け。時刻で光が変わる。 */
+:root {
+  --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
+  --ink: #2b2622; --ink-soft: #6b625a;
+  --rule: #ded3c4; --accent: #b4703a;
+}
+html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
+html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
+html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a95c2a; }
+html[data-time="night"]   {
+  --sky-top:#141c2b; --sky-bottom:#232c3d;
+  --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 2;
+  -webkit-font-smoothing: antialiased;
+  transition: background 1.2s ease, color 1.2s ease;
+}
+.wrap { max-width: 680px; margin: 0 auto; padding: clamp(44px, 10vw, 88px) 24px 72px; }
+
+.back {
+  display: inline-block; margin-bottom: 34px;
+  font-size: 14px; color: var(--ink-soft); text-decoration: none;
+}
+.back:hover { color: var(--accent); }
+
+h1 {
+  margin: 0; font-size: clamp(30px, 7vw, 40px);
+  font-weight: 600; letter-spacing: .08em; line-height: 1.4;
+}
+.lead { margin: 22px 0 0; color: var(--ink-soft); font-size: clamp(15px, 3.8vw, 16.5px); }
+
+section { margin-top: 46px; padding-top: 30px; border-top: 1px solid var(--rule); }
+h2 {
+  margin: 0 0 10px; font-size: clamp(18px, 4.5vw, 21px);
+  font-weight: 600; letter-spacing: .04em;
+}
+section p { margin: 0 0 12px; font-size: clamp(15px, 3.8vw, 16.5px); }
+section p:last-child { margin-bottom: 0; }
+ul { margin: 0 0 12px; padding-left: 1.3em; font-size: clamp(15px, 3.8vw, 16.5px); }
+li { margin-bottom: 8px; }
+b { font-weight: 600; }
+a { color: var(--accent); }
+
+/* 星の温度の表。この游びがゲームの芯なので、ここだけ見せる。 */
+.stars { width: 100%; border-collapse: collapse; margin: 14px 0 4px; font-size: 15px; }
+.stars td { padding: 5px 8px; border-bottom: 1px solid var(--rule); }
+.stars td:first-child { width: 34px; }
+.stars td:last-child { text-align: right; color: var(--ink-soft); white-space: nowrap; }
+.chip {
+  display: inline-block; width: 22px; height: 14px;
+  border-radius: 3px; vertical-align: middle;
+}
+
+.sign {
+  margin-top: 56px; padding-top: 30px; border-top: 1px solid var(--rule);
+  font-size: 14.5px; color: var(--ink-soft);
+}
+.sign .name { margin-top: 20px; color: var(--ink); }
+
+footer { margin-top: 48px; font-size: 12.5px; color: var(--ink-soft); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../">← 縁側屋にもどる</a>
+
+  <h1>Ochi-Gee</h1>
+
+  <p class="lead">
+    落ちてくるのは、星です。<br>
+    iPhone用の落ちものパズル。無料、広告なし、通信なし。
+  </p>
+
+  <section>
+    <h2>7色は、星の色です</h2>
+    <p>
+      ブロックの色には、実際の星の色と表面温度が割り当ててあります。
+      画面のいちばん下の帯が「星の温度計」。
+      いま持っている駒の色のところが白く光り、右端にその温度が出ます。
+    </p>
+    <table class="stars">
+      <tr><td><span class="chip" style="background:#9333ea"></span></td><td>青紫の星</td><td>40000 K</td></tr>
+      <tr><td><span class="chip" style="background:#1d4ed8"></span></td><td>青い星</td><td>20000 K</td></tr>
+      <tr><td><span class="chip" style="background:#06b6d4"></span></td><td>空色の星</td><td>9000 K</td></tr>
+      <tr><td><span class="chip" style="background:#f0b000"></span></td><td>金の星（太陽）</td><td>5772 K</td></tr>
+      <tr><td><span class="chip" style="background:#f97316"></span></td><td>橙の星</td><td>4500 K</td></tr>
+      <tr><td><span class="chip" style="background:#d01f3c"></span></td><td>赤い星</td><td>3200 K</td></tr>
+      <tr><td><span class="chip" style="background:#2faf4e"></span></td><td>星雲の緑</td><td>500.7 nm</td></tr>
+    </table>
+    <p>
+      緑だけ温度がありません。<b>緑色の星は、宇宙に一つも存在しない</b>からです。
+      星の光は連続スペクトルなので、緑にピークが来る星は両隣の赤と青も一緒に届いて、
+      人の目には白く見えてしまう。だから緑は星ではなく、星雲の色にしてあります。
+    </p>
+    <p>
+      この帯は遊びに一切関係しません。関係しないから置いてあります。
+    </p>
+  </section>
+
+  <section>
+    <h2>遊び方は、アプリの中に全部あります</h2>
+    <p>
+      タイトル画面の <b>Help（遊び方）</b> に、20ページの解説が入っています。
+      キー操作、ルール、回転入れ、そして「潮汐ロック」と「秤動」のやり方まで、
+      図と動きつきで載せてあります。
+    </p>
+    <ul>
+      <li><b>潮汐ロック</b> — 月が地球にいつも同じ面を向け続けている、あの現象。
+          回して隙間にはめる技です。決まると通常の5倍の得点</li>
+      <li><b>秤動</b> — その月が完全には固定しきれず、わずかに首を振る動き。
+          「ほぼはまったが、少しずれた」ときの技です</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>UFOが駒を盗みに来ます</h2>
+    <p>
+      あと少しで一列そろう、というときに円盤が飛んできて、
+      積んだブロックを一つ持ち去ります。ただ奪うのではなく、別の場所へ落とし直していきます。
+      穴が埋まって、かえって助かることもあります。
+    </p>
+    <p>
+      <b>防げます。</b>狙われている列の上へブロックを置くと、雷が落ちて中止されます。
+      うるさいと感じたら、<b>Config（設定調整）で攻撃そのものを切れます</b>。
+    </p>
+  </section>
+
+  <section>
+    <h2>困ったときは</h2>
+    <ul>
+      <li><b>音が出ない</b> — Config（設定調整）でBGMと効果音のオンオフを確認してください。
+          端末のサイレントスイッチもご確認を</li>
+      <li><b>ゴーストが邪魔</b> — Config で消せます</li>
+      <li><b>ボタンが効かない</b> — ハードドロップを押しっぱなしにすると、
+          誤爆を防ぐために一時的に鍵がかかります（錠のマークが出ます）。
+          指を離せばすぐ戻ります</li>
+      <li><b>途中でやめたい</b> — 画面右上の電源ボタンから、セーブして中断できます。
+          次はタイトルの Continue（つづきから）で戻れます</li>
+    </ul>
+    <p>
+      解決しないときは、下の連絡先までお知らせください。
+      <b>端末の機種とiOSのバージョン</b>を書いていただけると助かります。
+    </p>
+  </section>
+
+  <section>
+    <h2>集めている情報はありません</h2>
+    <p>
+      本アプリはインターネットにつなぐ機能そのものがありません。
+      広告もアプリ内課金もなく、記録は端末の中だけに保存されます。
+      詳しくは <a href="privacy/">プライバシーポリシー</a> をご覧ください。
+    </p>
+  </section>
+
+  <div class="sign">
+    <p>
+      2021年に作ったものを、2026年にiPhoneへ移しました。
+      音楽と一部の素材はお借りしています。配布元はアプリ内のヘルプに記載しています。
+      背景の写真は NASA Image and Video Library のものです。
+    </p>
+    <p class="name">
+      作者：岡澤　博喜<br>
+      連絡先：info@engawaya.com
+    </p>
+  </div>
+
+  <footer>
+    ご意見・ご要望・不具合のご連絡は info@engawaya.com までどうぞ。
+  </footer>
+
+</div>
+
+<script>
+/* 母屋と同じ。縁側は、差す光で表情が変わる場所なので。 */
+(function () {
+  var h = new Date().getHours();
+  document.documentElement.setAttribute('data-time',
+    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
+    : (h >= 16 && h < 19) ? 'evening' : 'night');
+})();
+</script>
+</body>
+</html>
