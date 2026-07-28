@@ -32,7 +32,7 @@
 <!-- description は検索結果に実際に出る文章。
      keywords タグは Google が完全に無視するので入れない（入れると
      かえって雑に見える）。効くのは本文に実際に書いてある言葉だけ。 -->
-<meta name="description" content="縁側屋（えんがわや）。無料の2D CAD「K'Ad蔵人」（DXF・JWW・PDF・DWG／ブラウザで動く・インストール不要）と、通った道と場所を憶える「GeoMemory」を置いています。用がなくても、座っていってください。">
+<meta name="description" content="縁側屋（えんがわや）。無料の2D CAD「K'Ad蔵人」（DXF・JWW・PDF／ブラウザで動く・インストール不要）と、通った道と場所を憶える「GeoMemory」を置いています。用がなくても、座っていってください。">
 
 <!-- ============================================================
      縁側屋 トップページ
@@ -623,11 +623,15 @@ footer .by {
     <a class="zabuton" href="https://gcad.engawaya.com/">
       <div class="name">K'Ad蔵人</div>
       <div class="what">図面を描くための道具です。ブラウザで開けば、すぐ使えます。</div>
-      <div class="tags">2D CAD ／ DXF・JWW・PDF・DWG ／ 無料 ／ インストール不要</div>
-      <!-- 正直な帳簿。DWGの翻訳係（LibreDWG）はMac版にしか居ないので、
-           Web版のこの座布団に「DWG対応」だけ書くと押した人が困る。
-           四つ並べたうえで、ここで一行だけ断っておく。 -->
-      <div class="tags-note">※ DWG（AutoCAD）の取り込みは、いまのところ Mac 版のみです。</div>
+      <!-- 札には「この先で動くこと」だけを書く。押した先はWeb版だから。
+           DWGを四つ目に並べると「ここで開ける」と読めてしまい、
+           DWGを持った人が開けずに戻ってくる＝看板が嘘をつく。 -->
+      <div class="tags">2D CAD ／ DXF・JWW・PDF ／ 無料 ／ インストール不要</div>
+      <!-- DWGは但し書きへ降ろす。翻訳係（LibreDWG）はGPL-3で、
+           非公開のK'Ad蔵人へ練り込めない。Mac版は別プロセスに頼む形で
+           かわしているが、Web版で同じ分離を建てる工事は見送った
+           （2026-07-28・施主判断「奥にしまっておく」）。 -->
+      <div class="tags-note">※ DWG（AutoCAD）も読めますが、いまのところ Mac 版のみです。</div>
     </a>
 
     <!-- 2026-07-28 差し替え。座布団の行き先を App Store へ。
