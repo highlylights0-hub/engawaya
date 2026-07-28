@@ -239,20 +239,33 @@ h1 {
   line-height: 1.6;
   color: var(--ink-soft);
 }
-/* 座布団に添える細い道（使い方ガイドなど）。
-   座布団そのものを二重リンクにすると押し間違いが起きるので、
-   外に出して、小さく、けれど独立して押せる字にしてある。 */
+/* 小座布団。座布団に添えるもう一本の道（使い方ガイドなど）。
+   ------------------------------------------------------------
+   座布団の中にリンクを二つ入れるとHTMLの決まりで壊れるので外へ出す。
+   ただし「外に出す」を口実に、脚注みたいな薄い小さな字にしてはいけない。
+   見えないリンクは無いのと同じ＝看板だけあって中身へ行けない家になる。
+   だから座布団と同じ作法で、縁を持たせて、指で狙える大きさにする。
+   母屋の座布団より一回り小さいのは、主従を字の大小で伝えるため。 */
 .zabuton-soe {
-  margin: 8px 2px 0;
-  font-size: 13.5px;
-  text-align: right;
+  margin: 10px 0 0;
 }
 .zabuton-soe a {
-  color: var(--ink-soft);
-  text-underline-offset: 4px;
+  display: inline-block;
+  padding: 13px 20px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 11px;
+  font-size: 14.5px;
+  letter-spacing: .03em;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 .zabuton-soe a:hover, .zabuton-soe a:focus-visible {
-  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px #00000017;
+  border-color: var(--accent);
+  outline: none;
 }
 
 /* ---- 但し書き（開発中であること・連絡先） ------------------
@@ -643,8 +656,11 @@ footer .by {
       <div class="what">通った道と、行った場所を憶えておく道具です。iPhone で動きます。</div>
       <div class="tags">iPhone ／ 道の記録と再生 ／ 無料 ／ App Store で配布中</div>
     </a>
+    <!-- 入手の窓口（座布団＝App Store）と、中身を知る窓口（ここ）。
+         押す前に「どんな道具か」を確かめたい人の行き先が無いと、
+         看板だけあって中身へ行けない家になる。 -->
     <p class="zabuton-soe">
-      <a href="https://highlylights0-hub.github.io/geomemory-help/">GeoMemory の使い方ガイド</a>
+      <a href="https://highlylights0-hub.github.io/geomemory-help/">GeoMemory の使い方ガイドを見る</a>
     </p>
 
   </div>
