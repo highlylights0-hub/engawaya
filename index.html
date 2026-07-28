@@ -32,7 +32,7 @@
 <!-- description は検索結果に実際に出る文章。
      keywords タグは Google が完全に無視するので入れない（入れると
      かえって雑に見える）。効くのは本文に実際に書いてある言葉だけ。 -->
-<meta name="description" content="縁側屋（えんがわや）。無料の2D CAD「K'Ad蔵人」（DXF対応・ブラウザで動く・インストール不要）と、通った道と場所を憶える「GeoMemory」を置いています。用がなくても、座っていってください。">
+<meta name="description" content="縁側屋（えんがわや）。無料の2D CAD「K'Ad蔵人」（DXF・JWW・PDF・DWG／ブラウザで動く・インストール不要）と、通った道と場所を憶える「GeoMemory」を置いています。用がなくても、座っていってください。">
 
 <!-- ============================================================
      縁側屋 トップページ
@@ -228,6 +228,30 @@ h1 {
   margin-top: 14px;
   font-size: 12.5px;
   letter-spacing: .04em;
+  color: var(--accent);
+}
+/* 正直な帳簿の一行。看板の色（accent）を使わないのは、
+   ここが「できること」ではなく「まだできないこと」だから。
+   目立たせないが、押す前に読める位置に置く。 */
+.zabuton .tags-note {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+/* 座布団に添える細い道（使い方ガイドなど）。
+   座布団そのものを二重リンクにすると押し間違いが起きるので、
+   外に出して、小さく、けれど独立して押せる字にしてある。 */
+.zabuton-soe {
+  margin: 8px 2px 0;
+  font-size: 13.5px;
+  text-align: right;
+}
+.zabuton-soe a {
+  color: var(--ink-soft);
+  text-underline-offset: 4px;
+}
+.zabuton-soe a:hover, .zabuton-soe a:focus-visible {
   color: var(--accent);
 }
 
@@ -599,14 +623,25 @@ footer .by {
     <a class="zabuton" href="https://gcad.engawaya.com/">
       <div class="name">K'Ad蔵人</div>
       <div class="what">図面を描くための道具です。ブラウザで開けば、すぐ使えます。</div>
-      <div class="tags">2D CAD ／ DXF 対応 ／ 無料 ／ インストール不要</div>
+      <div class="tags">2D CAD ／ DXF・JWW・PDF・DWG ／ 無料 ／ インストール不要</div>
+      <!-- 正直な帳簿。DWGの翻訳係（LibreDWG）はMac版にしか居ないので、
+           Web版のこの座布団に「DWG対応」だけ書くと押した人が困る。
+           四つ並べたうえで、ここで一行だけ断っておく。 -->
+      <div class="tags-note">※ DWG（AutoCAD）の取り込みは、いまのところ Mac 版のみです。</div>
     </a>
 
-    <a class="zabuton" href="https://highlylights0-hub.github.io/geomemory-help/">
+    <!-- 2026-07-28 差し替え。座布団の行き先を App Store へ。
+         「GeoMemory」の字ごと押せば、そのまま入手の窓口に着く。
+         使い方ガイド（GitHub Pages）は下に小さく添える＝
+         押せる面積は座布団のまま、道は二本。 -->
+    <a class="zabuton" href="https://apps.apple.com/jp/app/geomemory-%E9%81%93%E3%82%92%E8%A6%9A%E3%81%88%E3%82%8B%E3%83%8A%E3%83%93/id6788990853">
       <div class="name">GeoMemory</div>
       <div class="what">通った道と、行った場所を憶えておく道具です。iPhone で動きます。</div>
-      <div class="tags">iPhone ／ 道の記録と再生 ／ 無料</div>
+      <div class="tags">iPhone ／ 道の記録と再生 ／ 無料 ／ App Store で配布中</div>
     </a>
+    <p class="zabuton-soe">
+      <a href="https://highlylights0-hub.github.io/geomemory-help/">GeoMemory の使い方ガイド</a>
+    </p>
 
   </div>
 
