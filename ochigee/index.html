@@ -30,6 +30,7 @@ html, body { margin: 0; padding: 0; }
   --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
   --ink: #2b2622; --ink-soft: #6b625a;
   --rule: #ded3c4; --accent: #b4703a;
+  --card: #ffffffcc;              /* 座布団の色。母屋と同じ値にしてある */
 }
 html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
 html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
@@ -37,6 +38,7 @@ html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a
 html[data-time="night"]   {
   --sky-top:#141c2b; --sky-bottom:#232c3d;
   --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
+  --card:#2b3446e6;               /* 夜は白い札を出さない。母屋と同じ紺の座布団に */
 }
 
 body {
@@ -62,6 +64,36 @@ h1 {
   font-weight: 600; letter-spacing: .08em; line-height: 1.4;
 }
 .lead { margin: 22px 0 0; color: var(--ink-soft); font-size: clamp(15px, 3.8vw, 16.5px); }
+
+/* 入手の窓口。
+   ここは App Store のサポートURLなので、店から来た人には要らない。
+   要るのは母屋の小座布団から来た人で、その人は「で、どこで貰えるのか」を
+   探している。無いと、読み終えてから引き返すことになる。
+
+   言葉を「入手する」にしたのは、App Store の無料アプリのボタンが
+   まさに「入手」と出るから。押した先で同じ言葉が待っていれば、迷わない。
+   「買う」系の言葉は使わない。ここは無料の場所なので、事実と違う。
+
+   大きさは母屋の小座布団と同じ作法。指でも、手が震えても狙いを外さない面積を先に取る。 */
+.nyushu { margin: 26px 0 0; }
+.nyushu a {
+  display: inline-block;
+  padding: 14px 22px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 11px;
+  font-size: 15.5px;
+  letter-spacing: .03em;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.nyushu a:hover, .nyushu a:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px #00000017;
+  border-color: var(--accent);
+  outline: none;
+}
 
 section { margin-top: 46px; padding-top: 30px; border-top: 1px solid var(--rule); }
 h2 {
@@ -105,6 +137,12 @@ footer { margin-top: 48px; font-size: 12.5px; color: var(--ink-soft); }
   <p class="lead">
     落ちてくるのは、星です。<br>
     iPhone用の落ちものパズル。無料、広告なし、通信なし。
+  </p>
+
+  <!-- 説明を読み終える前に押したい人も居るので、いちばん上に置く。
+       下まで読ませてから窓口を出すのは、こちらの都合の順番になる。 -->
+  <p class="nyushu">
+    <a href="https://apps.apple.com/jp/app/ochi-gee-%E6%98%9F%E3%81%AE%E3%81%8A%E3%81%A1%E3%82%82%E3%81%AE/id6794781236">App Store で入手する</a>
   </p>
 
   <section>
