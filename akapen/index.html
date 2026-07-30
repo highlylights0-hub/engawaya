@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<!--
+    ============================================================
+    縁側屋 /akapen/ — 赤ペン（地図に手で書き込む道具）
+
+    何をする一枚か:
+      地図を出して、その上に指やマウスやペンで直接書き込み、
+      画像で保存したり、紙に印刷したりする。それだけの道具。
+
+    なぜ作るのか（施主の話 2026-07-30）:
+      現場の人は「地図を印刷して赤ペンで書き込む」ことを毎日している。
+      進入路はここ、仮囲いはこの線、重機はここに据える。
+      その作業を、そのまま画面の上でやれるようにする。
+      新しい習慣を覚えてもらう必要がない道具でありたい。
+
+    名前について（残しておく判断・2026-07-30）:
+      名前は「赤ペン」。「図面に赤ペン入れといて」は現場の日常語そのままで、
+      道具の名前がそのまま動作の説明になっている。
+
+      いちど「赤ペン＋先生」を足した案が出たが、**採らなかった**。
+      理由：その形は、いまも続いている有名な学習添削サービスの名前と重なる。
+      分野が違えば直ちにぶつからないとしても、よく知られた名前は分野を越えて
+      「あの名前だ」と受け取られる。その線を踏む理由がこちらに一つも無い
+      （施主の指摘 2026-07-30。実装の途中で気づいて引き返した）。
+      「赤ペン」だけなら、ただの一般名詞なので何も起きない。
+      施主の言葉のうち「道を教える」は、副題として残してある。
+      ※この記録を残すのは、同じ案が半年後にまた出てきて、また同じ検討を
+        することになるのを防ぐため（母屋の申し送りの作法と同じ）。
+
+    なぜ iPhone アプリでなく Web なのか:
+      助けたい相手（小工務店・現場・CADオペ）が座っているのは Windows。
+      アプリストアを通す道具は、その人たちには一生届かない。
+      Web ならリンク一本で Windows・Mac・iPad・Android すべてに届く。
+      審査待ちが無いので、直したその日に直ったものが出る。
+
+    どうやって「地図を紙にする」のか（設計の芯）:
+      地図の部品（地図ライブラリ）は使わない。michi/ と同じく、
+      メルカトル図法の計算を自分で書いて、タイル（256px角の地図の絵）を
+      2次元のキャンバスに手で敷くだけ。
+      つまり画面に出ているのは最初から「地図の絵」＝紙である。
+      だから「スクリーンショットを撮る」工程が存在しない。
+      紙の上にペンを走らせるだけで済む。
+
+      そして一画でも描いたら、地図は動かせなくする（下の「鉄の約束」参照）。
+      紙にしてしまえば、あとは何が起きても線と地図はずれない。
+
+    鉄の約束（ここを崩すと道具として壊れる）:
+      ① 一画でも描いたら、地図は固定。動かしたいときは「ぜんぶ消す」。
+         → 理由：地図だけ動いて線が取り残されると、書いた本人が
+           気づかないまま嘘の図面ができる。ずれるより、動かないほうが安全。
+      ② 線は「点の列」として持つ（絵として塗り込まない）。
+         → 理由：一つ戻す・線を消す・大きい絵で書き出す、が全部できる。
+      ③ 地図の出どころの名乗り（© OpenStreetMap contributors）は
+         書き出す絵にも必ず焼き込む。消してはいけない決まり。
+
+    憲法（母屋の CLAUDE.md）との折り合い:
+      「外から何も読み込まない」に対して、地図タイルだけは外から来る。
+      michi/ で出した答えと同じ扱いにする＝開いた瞬間は何も読み込まず、
+      「地図を取り寄せる」を押した人にだけ取り寄せる。
+      押す前に、何が先方に伝わるのかを正直に書いておく。
+      絵文字は使わない（画面の小さな絵は点を打って描く）。
+      押す場所は必要よりだいぶ大きく。ぜんぶ無料。
+
+    外した案とその理由:
+      ・地図ライブラリ（Leaflet / MapLibre）… 憲法①に反する。
+        それに MapLibre は WebGL の絵なので、書き出すのに一手間増える。
+        自分で敷けば最初から 2次元の紙で、ペンと同じ土俵に乗る。
+      ・地理院タイル（国土地理院）… 日本の実務には図が向いているが、
+        許可の名乗り（CORS）が返ってこないため、絵として書き出すと
+        ブラウザが「汚れた絵」と見なして保存を拒む（2026-07-30 実測）。
+        保存が本命の道具なので OpenStreetMap を採る。表示と印刷だけなら
+        地理院でもできるので、将来「見るだけ用」に足す道は残す。
+      ・住所や地名の検索 … 検索は外のサービスに頼ることになり、
+        タイルに続く二つめの例外になる。まずは現在地・指で動かす・
+        緯度経度の打ち込みの三つで足りるか、使ってみてから決める。
+      ・書きかけの自動保存 … 保存の置き場（ブラウザの中）は掃除で消えるので、
+        「覚えているつもりだったのに消えた」が起きる。今はやらず、
+        代わりに離れるときに「まだ保存していません」と正直に止める。
+    ============================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>赤ペン — 地図に手で書き込む｜縁側屋</title>
+<meta name="description" content="地図を出して、その上に指やマウスで書き込んで、画像で保存・印刷できる無料の道具。現場の段取り、進入路、待ち合わせ場所の説明に。登録もインストールもいりません。">
+
+<meta property="og:title" content="赤ペン — 地図に手で書き込む｜縁側屋">
+<meta property="og:description" content="地図を出して、上から手で書き込んで、印刷する。現場の段取り図も、待ち合わせの説明も、これ一枚で。無料・登録不要。">
+<meta property="og:type" content="website">
+
+<style>
+/* ---- 土台のリセット（母屋と同じ最小限） ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* ---- 時間帯ごとの色（母屋 index.html と同じ表。家風を継ぐ） ---- */
+:root {
+  --sky-top:    #eaf2f8;
+  --sky-bottom: #fdfbf6;
+  --ink:        #2b2622;
+  --ink-soft:   #6b625a;
+  --card:       #ffffffcc;
+  --card-line:  #d9cfc2;
+  --wood-1:     #c69a6d;
+  --wood-2:     #a97c50;
+  --accent:     #b4703a;
+}
+html[data-time="morning"] { --sky-top: #dbe9f4; --sky-bottom: #fdfcf7; }
+html[data-time="day"]     { --sky-top: #f2efe6; --sky-bottom: #fbf8f1; }
+html[data-time="evening"] { --sky-top: #f3cfa2; --sky-bottom: #fae7cd; --accent: #a95c2a; }
+html[data-time="night"] {
+  --sky-top: #141c2b; --sky-bottom: #232c3d;
+  --ink: #efe9e0; --ink-soft: #a9a49c;
+  --card: #2b3446e6; --card-line: #45506a;
+  --wood-1: #6b5236; --wood-2: #4d3a26;
+  --accent: #e0a061;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 道具のページなので、母屋（640px）より少し広く紙を取る。
+   ただし読む文章は 640px に抑えて、行が長くなりすぎないようにする。 */
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(24px, 7vw, 48px) 16px 48px;
+}
+.narrow { max-width: 640px; }
+
+/* 屋号。母屋への帰り道を兼ねる（押せる）。 */
+.yagou {
+  display: inline-block;
+  font-size: 14px;
+  letter-spacing: .3em;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.yagou:hover { color: var(--accent); }
+
+.title-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.title-row canvas { display: block; image-rendering: pixelated; }
+h1 {
+  margin: 0;
+  font-size: clamp(22px, 6vw, 28px);
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+.lead { margin: 6px 0 0; font-size: 14.5px; color: var(--ink-soft); }
+
+/* ---- 座布団（母屋の作法を継ぐ） ---- */
+.fuda {
+  margin-top: 22px;
+  padding: 20px 22px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+  font-size: 15px;
+}
+.fuda h2 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
+.fuda ul { margin: 8px 0 0; padding-left: 22px; }
+.fuda li { margin-top: 3px; }
+
+/* ---- 紙（地図＋インクの二枚重ね） ----
+   地図の絵と、書いた線は別の板に描く。重ねて一枚に見せている。
+   分けてある理由：地図を描き直しても線が消えない／線だけ消せる。 */
+.kami {
+  margin-top: 16px;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+}
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e9e5dd;
+}
+.stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* 指で触ったときにページが動かないようにする。
+   これが無いと、線を引こうとした指で画面がスクロールしてしまう。 */
+#inkCanvas { touch-action: none; cursor: crosshair; }
+.stage[data-mode="map"] #inkCanvas { cursor: grab; }
+.stage[data-mode="map"] #inkCanvas:active { cursor: grabbing; }
+
+/* 地図がまだ無いときの案内（紙の真ん中に置く） */
+.stage .yet {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  font-size: 14.5px;
+  color: #5b544c;
+  line-height: 1.9;
+}
+
+.caption { margin: 8px 4px 2px; font-size: 12.5px; color: var(--ink-soft); }
+
+/* ---- 押す場所（憲法③：必要よりだいぶ大きく） ---- */
+.btn {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 15px 18px;
+  border-radius: 14px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  font-family: inherit;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.btn:hover:not(:disabled), .btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px #0000001f;
+  outline: none;
+}
+.btn:disabled { opacity: .42; cursor: default; }
+.btn-main { background: var(--accent); border-color: var(--accent); color: #fff; }
+html[data-time="night"] .btn-main { color: #1c1610; }
+.btn-note { margin: 6px 4px 0; font-size: 12.5px; color: var(--ink-soft); }
+
+/* ---- 道具箱 ---- */
+.dougu { margin-top: 14px; display: grid; gap: 12px; }
+.row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+.row-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* いま選ばれている道具は、押し込まれた顔にする（見て分かるように） */
+.btn[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: inset 0 2px 8px #0000002e;
+}
+html[data-time="night"] .btn[aria-pressed="true"] { color: #1c1610; }
+
+/* 色を選ぶボタン：色の丸を並べる（絵文字は使わない） */
+.iro { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.iro .tama {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid #ffffffcc;
+  box-shadow: 0 0 0 1px #00000040;
+}
+
+/* 太さを選ぶボタン：線の太さそのものを見せる */
+.futosa { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.futosa .bou { width: 26px; border-radius: 9px; background: currentColor; }
+
+fieldset { margin: 0; padding: 0; border: 0; }
+legend { font-size: 13px; color: var(--ink-soft); padding: 0 0 4px; }
+
+.shirase {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  min-height: 1.9em;
+}
+
+.ba { display: grid; gap: 10px; margin-top: 14px; }
+.ba .zahyou { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+.ba input {
+  min-height: 56px;
+  padding: 10px 14px;
+  font-size: 16px;               /* 16px 未満だと iPhone が勝手に拡大する */
+  font-family: inherit;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+}
+.ba .btn { width: auto; padding: 15px 20px; }
+
+/* ---- 但し書き ---- */
+.anshin, .disclaimer {
+  margin-top: 24px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+}
+.anshin strong { color: var(--ink); font-weight: 600; }
+
+footer {
+  margin-top: 40px;
+  padding: 22px 20px 30px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: linear-gradient(180deg, var(--wood-1), var(--wood-2));
+}
+html[data-time="night"] footer { color: #d8d2c8; }
+footer a { color: inherit; }
+
+[hidden] { display: none !important; }
+
+/* ---- 印刷（紙に出すときは、絵だけを出す） ----
+   画面の道具箱や説明は紙に要らない。絵だけを大きく置く。 */
+#printArea { display: none; }
+@media print {
+  body { background: #fff; }
+  .wrap, footer { display: none !important; }
+  #printArea { display: block; }
+  #printArea img { display: block; width: 100%; }
+  @page { margin: 10mm; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="yagou" href="/">縁 側 屋</a>
+
+  <div class="title-row">
+    <!-- 看板の絵。絵文字は使わない（憲法②）ので、点を打って描く。 -->
+    <canvas id="penIcon" width="42" height="42" aria-hidden="true"></canvas>
+    <h1>赤ペン</h1>
+  </div>
+  <p class="lead narrow">道を教える赤ペン。地図を出して、上から手で書き込んで、印刷できます。</p>
+
+  <div class="fuda narrow">
+    <h2>こんなときに</h2>
+    <ul>
+      <li>現場の段取り — 進入路、資材置き場、重機を据える位置</li>
+      <li>待ち合わせの説明 — 「ここの角を曲がって、この駐車場」</li>
+      <li>下見のおぼえ書き — 気になった場所に印と言葉を入れておく</li>
+    </ul>
+    <p style="margin:12px 0 0; font-size:14px;">
+      登録もインストールもいりません。書いたものはこの端末の中だけにあります。
+    </p>
+  </div>
+
+  <!-- ================= 紙 ================= -->
+  <div class="kami">
+    <div class="stage" id="stage" data-mode="map">
+      <canvas id="mapCanvas"></canvas>
+      <canvas id="inkCanvas"></canvas>
+      <div class="yet" id="yet">
+        ここに地図が出ます。<br>
+        下の「地図を取り寄せる」を押してください。
+      </div>
+    </div>
+    <p class="caption" id="caption">上が北。まだ地図を取り寄せていません。</p>
+  </div>
+
+  <!-- 最初の一手：外から地図を取り寄せる（押した人だけ・憲法①の折り合い） -->
+  <div id="beforeMap">
+    <button class="btn btn-main" id="getMap" type="button" style="margin-top:14px;">地図を取り寄せる</button>
+    <p class="btn-note narrow">
+      押すと、地図の絵を OpenStreetMap（世界中の人が無料で作っている地図の共同事業）から
+      取り寄せます。取り寄せる＝見ている場所のあたりが先方に伝わります。
+      押すまでは、このページは外と一切やりとりしません。
+    </p>
+  </div>
+
+  <!-- ================= 道具箱（地図が出てから現れる） ================= -->
+  <div class="dougu" id="dougu" hidden>
+
+    <!-- いまどちらの手か。押すだけで切り替わる（指の動きに意味を持たせない） -->
+    <fieldset>
+      <legend>いまの手</legend>
+      <div class="row">
+        <button class="btn" id="modeMap" type="button" aria-pressed="true">地図を動かす</button>
+        <button class="btn" id="modePen" type="button" aria-pressed="false">ペンで書く</button>
+      </div>
+    </fieldset>
+
+    <!-- 地図を動かす手のときの道具 -->
+    <div id="mapTools">
+      <div class="row row-3">
+        <button class="btn" id="zoomIn"  type="button">近づく　＋</button>
+        <button class="btn" id="zoomOut" type="button">遠のく　−</button>
+        <button class="btn" id="here"    type="button">いまいる場所</button>
+      </div>
+      <div class="ba">
+        <div class="zahyou">
+          <input id="latlon" type="text" inputmode="decimal" placeholder="緯度, 経度（例 35.681, 139.767）" aria-label="緯度と経度">
+          <button class="btn" id="goLatLon" type="button">そこへ</button>
+        </div>
+      </div>
+      <p class="btn-note">
+        地図の上を指やマウスで引っぱると動きます。地図アプリで調べた緯度・経度を貼り付けても行けます。
+      </p>
+    </div>
+
+    <!-- ペンの手のときの道具 -->
+    <div id="penTools" hidden>
+      <fieldset>
+        <legend>色</legend>
+        <div class="row row-3">
+          <button class="btn iro" data-iro="#d21f1f" type="button" aria-pressed="true"><span class="tama" style="background:#d21f1f"></span>赤</button>
+          <button class="btn iro" data-iro="#1c1c1c" type="button" aria-pressed="false"><span class="tama" style="background:#1c1c1c"></span>黒</button>
+          <button class="btn iro" data-iro="#1358c4" type="button" aria-pressed="false"><span class="tama" style="background:#1358c4"></span>青</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>太さ</legend>
+        <div class="row row-3">
+          <button class="btn futosa" data-futosa="3"  type="button" aria-pressed="false"><span class="bou" style="height:3px"></span>細</button>
+          <button class="btn futosa" data-futosa="6"  type="button" aria-pressed="true"><span class="bou" style="height:6px"></span>中</button>
+          <button class="btn futosa" data-futosa="12" type="button" aria-pressed="false"><span class="bou" style="height:12px"></span>太</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>直す</legend>
+        <div class="row row-3">
+          <button class="btn" id="eraser" type="button" aria-pressed="false">線を消す</button>
+          <button class="btn" id="undo"   type="button">ひとつ戻す</button>
+          <button class="btn" id="clear"  type="button">ぜんぶ消す</button>
+        </div>
+      </fieldset>
+      <p class="btn-note">
+        「線を消す」を押してから、消したい線をなぞってください。なぞった線がまるごと消えます。
+      </p>
+    </div>
+
+    <!-- 出口。ここが本命（紙にした時が保存） -->
+    <fieldset>
+      <legend>持ち出す</legend>
+      <div class="row">
+        <button class="btn btn-main" id="save"  type="button">画像で保存</button>
+        <button class="btn"          id="print" type="button">印刷する</button>
+      </div>
+    </fieldset>
+    <p class="btn-note narrow">
+      <strong>手元に残すなら、画像で保存か印刷をしてください。</strong>
+      書いたものはこのページを閉じると消えます（どこにも預かっていないので、
+      逆に言えば誰にも見られません）。図面と同じで、紙にした時が保存です。
+    </p>
+
+    <p class="shirase" id="shirase" role="status" aria-live="polite"></p>
+  </div>
+
+  <p class="anshin narrow">
+    <strong>書いたものは、あなたの端末から出ません。</strong><br>
+    縁側屋にサーバーはありません。書き込んだ線も、保存した絵も、どこにも送られず、
+    集めることもしていません。地図の絵だけは OpenStreetMap から取り寄せています
+    （＝どのあたりの地図が要るかは、先方に伝わります）。
+  </p>
+
+  <p class="disclaimer narrow">
+    赤ペンはまだ開発中の道具です。ファイルを扱うときは必ず控え（バックアップ）を
+    取ってから。上書きしたものは元に戻せません。
+    地図の内容の正しさは保証できません（工事や新しい道は反映されていないことがあります）。
+    使ったことで起きた損害まではお引き受けできませんが、おかしいところがあれば
+    <a href="mailto:info@engawaya.com">info@engawaya.com</a> へメールをください。ひとつずつ直します。
+  </p>
+</div>
+
+<!-- 印刷のときだけ出る、絵だけの紙 -->
+<div id="printArea"><img id="printImg" alt=""></div>
+
+<footer>
+  © 2026 縁側屋 岡澤 博喜<br>
+  <span>このページの制作と管理は Claude が担当しています</span>
+</footer>
+
+<script>
+/* ------------------------------------------------------------
+   時刻で光を変える（母屋・michi と同じ）。
+   ------------------------------------------------------------ */
+(function () {
+  var h = new Date().getHours();
+  var t = (h >= 5 && h < 9)  ? 'morning'
+        : (h >= 9 && h < 16) ? 'day'
+        : (h >= 16 && h < 19)? 'evening'
+        :                      'night';
+  document.documentElement.setAttribute('data-time', t);
+})();
+
+/* ------------------------------------------------------------
+   看板の絵（赤ペン）。絵文字は使わない（憲法②）ので点で描く。
+   1文字＝1ドット。R=赤い胴、D=濃い赤の先、K=輪郭。
+   ------------------------------------------------------------ */
+(function () {
+  var art = [
+    '..............',
+    '...........KK.',
+    '..........KRRK',
+    '.........KRRK.',
+    '........KRRK..',
+    '.......KRRK...',
+    '......KRRK....',
+    '.....KRRK.....',
+    '....KRRK......',
+    '...KDDK.......',
+    '..KDDK........',
+    '.KDK..........',
+    '.KK...........',
+    '..............'
+  ];
+  var iro = { R: '#d64545', D: '#8f2f2f', K: '#4a3b34' };
+  var cv = document.getElementById('penIcon');
+  var ctx = cv.getContext('2d');
+  var d = 3;                                  // 1ドットを3pxの正方形で打つ
+  for (var y = 0; y < art.length; y++) {
+    for (var x = 0; x < art[y].length; x++) {
+      var c = iro[art[y][x]];
+      if (!c) continue;
+      ctx.fillStyle = c;
+      ctx.fillRect(x * d, y * d, d, d);
+    }
+  }
+})();
+
+/* ============================================================
+   本体
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---- 覚えておくこと（この道具の全部の状態） ----
+     状態を一箇所に集めておく。散らすと「地図は動いたのに線が古い」
+     のような食い違いが必ず生まれる。 */
+  var st = {
+    mode: 'map',        // 'map'（地図を動かす手）か 'pen'（書く手）
+    ready: false,       // 地図を取り寄せたか
+    z: 15,              // 地図の細かさ（ズーム）。大きいほど近い
+    cx: 139.7671,       // 紙の真ん中の経度（初期＝東京駅。現在地が取れれば上書き）
+    cy: 35.6812,        // 紙の真ん中の緯度
+    strokes: [],        // 書いた線。{iro, futosa, pts:[{x,y,p}]} の配列（鉄の約束②）
+    now: null,          // いま引いている途中の線
+    iro: '#d21f1f',
+    futosa: 6,
+    keshi: false,       // 「線を消す」を選んでいるか
+    drag: null,         // 地図を引っぱっている途中の情報
+    tiles: {},          // 取り寄せた地図の絵をしまっておく（同じ絵を二度取らない）
+    saved: true         // 画像で保存/印刷したあと書き足していないか（離れるときの警告用）
+  };
+
+  var stage   = document.getElementById('stage');
+  var mapCv   = document.getElementById('mapCanvas');
+  var inkCv   = document.getElementById('inkCanvas');
+  var caption = document.getElementById('caption');
+  var shirase = document.getElementById('shirase');
+
+  /* ---- メルカトル図法（michi/ と同じ計算・Web地図の世界共通の紙） ----
+     緯度経度を「ズームzの世界地図の何ピクセル目か」に写す。
+     zが1増えると世界地図の幅が2倍になる。 */
+  function MX(lon, z) { return (lon + 180) / 360 * 256 * Math.pow(2, z); }
+  function MY(lat, z) {
+    var s = Math.sin(lat * Math.PI / 180);
+    return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * 256 * Math.pow(2, z);
+  }
+  // 逆向き（紙のピクセル → 緯度経度）。指で動かしたあと真ん中を覚え直すのに使う。
+  function XLon(x, z) { return x / (256 * Math.pow(2, z)) * 360 - 180; }
+  function YLat(y, z) {
+    var n = Math.PI - 2 * Math.PI * y / (256 * Math.pow(2, z));
+    return 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  }
+
+  /* ---- 紙の寸法 ----
+     見た目の大きさ（css）と、実際に描く粒の細かさ（dpr倍）は別。
+     高精細な画面でぼやけないように、中身は dpr 倍で持つ。 */
+  var view = { w: 0, h: 0, dpr: 1 };
+
+  function measure() {
+    var r = stage.getBoundingClientRect();
+    return { w: Math.round(r.width), h: Math.round(r.height) };
+  }
+
+  function setupCanvas(cv) {
+    cv.width  = Math.round(view.w * view.dpr);
+    cv.height = Math.round(view.h * view.dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);   // 以後は css の座標で描ける
+    return ctx;
+  }
+
+  function layout() {
+    var m = measure();
+    // 寸法が決まる前（タブが裏にある等）に描くと0幅の絵になる。育つまで待つ。
+    if (m.w < 50) { requestAnimationFrame(layout); return false; }
+    // すでに書いた線があるときは、紙の寸法を変えない。
+    // 変えると線と地図の関係が崩れる＝鉄の約束①の心（ずれるより動かさない）。
+    if (st.strokes.length && view.w) return true;
+    view.w = m.w; view.h = m.h;
+    view.dpr = window.devicePixelRatio || 1;
+    setupCanvas(mapCv);
+    setupCanvas(inkCv);
+    return true;
+  }
+
+  /* ---- 紙の左上が、世界地図のどのピクセルか ---- */
+  function origin() {
+    return {
+      ox: MX(st.cx, st.z) - view.w / 2,
+      oy: MY(st.cy, st.z) - view.h / 2
+    };
+  }
+
+  /* ============================================================
+     地図を描く
+     ============================================================ */
+  var drawing = false;                   // 描き直しの予約が二重にならないように
+
+  function requestMap() {
+    if (drawing) return;
+    drawing = true;
+    requestAnimationFrame(function () { drawing = false; drawMap(); });
+  }
+
+  function drawMap() {
+    if (!layout()) return;
+    var ctx = mapCv.getContext('2d');
+    var o = origin();
+
+    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    ctx.fillStyle = '#e9e5dd';           // タイルが欠けた場所にも紙の色を敷く
+    ctx.fillRect(0, 0, view.w, view.h);
+
+    // 紙に映る範囲のタイルを並べる。手元に無いものは取り寄せて、届いたら描き直す。
+    var t0x = Math.floor(o.ox / 256), t1x = Math.floor((o.ox + view.w) / 256);
+    var t0y = Math.floor(o.oy / 256), t1y = Math.floor((o.oy + view.h) / 256);
+    var max = Math.pow(2, st.z);
+    for (var ty = t0y; ty <= t1y; ty++) {
+      if (ty < 0 || ty >= max) continue;                       // 上下の端の外は空
+      for (var tx = t0x; tx <= t1x; tx++) {
+        var wx = ((tx % max) + max) % max;                     // 東西はぐるりと回る
+        var img = tile(st.z, wx, ty);
+        if (img) ctx.drawImage(img, tx * 256 - o.ox, ty * 256 - o.oy, 256, 256);
+      }
+    }
+
+    drawMonosashi(ctx, view.w, view.h, st.z, st.cy, 1);
+    drawNanori(ctx, view.w, view.h, 1);
+  }
+
+  /* ---- タイル1枚。手元にあれば返し、無ければ取り寄せる ----
+     crossOrigin を先に立てておくのが要点。これが無いと、外から来た絵で
+     汚れた紙とブラウザが判断して「画像で保存」を拒む。
+     OpenStreetMap は許可の名乗り（Access-Control-Allow-Origin）を
+     返してくれるので、これで保存できる紙になる。 */
+  function tile(z, x, y) {
+    var key = z + '/' + x + '/' + y;
+    var got = st.tiles[key];
+    if (got) return got.ok ? got.img : null;
+    var img = new Image();
+    var box = { img: img, ok: false };
+    st.tiles[key] = box;
+    img.crossOrigin = 'anonymous';
+    img.onload  = function () { box.ok = true; requestMap(); };
+    img.onerror = function () { box.ok = false; };      // 1枚欠けても全体は出す
+    img.src = 'https://tile.openstreetmap.org/' + key + '.png';
+    return null;
+  }
+
+  /* ---- ものさし（縮尺の目安）----
+     メルカトルの縮尺は緯度で変わるので、真ん中の緯度で換算する。
+     s は書き出すときの倍率（紙に大きく出すとき用）。 */
+  function drawMonosashi(ctx, w, h, z, lat, s) {
+    var mPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / (256 * Math.pow(2, z));
+    var steps = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000];
+    var step = steps[0];
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i] / (mPerPx / s) <= w / 3) step = steps[i];
+    }
+    var len = step / (mPerPx / s);
+    var bx = 14 * s, by = h - 14 * s;
+    ctx.strokeStyle = '#3a352e';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.moveTo(bx, by); ctx.lineTo(bx + len, by);
+    ctx.moveTo(bx, by - 4 * s); ctx.lineTo(bx, by + 4 * s);
+    ctx.moveTo(bx + len, by - 4 * s); ctx.lineTo(bx + len, by + 4 * s);
+    ctx.stroke();
+    var lbl = step >= 1000 ? (step / 1000) + 'km' : step + 'm';
+    ctx.font = (11 * s) + 'px sans-serif';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3 * s;
+    ctx.strokeText(lbl, bx + len + 6 * s, by + 4 * s);   // 白い縁取り＝地図の上でも読める
+    ctx.fillStyle = '#3a352e';
+    ctx.fillText(lbl, bx + len + 6 * s, by + 4 * s);
+  }
+
+  /* ---- 地図の出どころの名乗り（OpenStreetMap の決まり。消してはいけない） ---- */
+  function drawNanori(ctx, w, h, s) {
+    var t = '© OpenStreetMap contributors';
+    ctx.font = (10 * s) + 'px sans-serif';
+    var tw = ctx.measureText(t).width;
+    ctx.fillStyle = '#ffffffcc';
+    ctx.fillRect(w - tw - 10 * s, h - 18 * s, tw + 10 * s, 18 * s);
+    ctx.fillStyle = '#3a352e';
+    ctx.fillText(t, w - tw - 5 * s, h - 6 * s);
+  }
+
+  /* ============================================================
+     書いた線を描く（鉄の約束②：線は点の列として持つ）
+     ============================================================ */
+  function drawInk() {
+    var ctx = inkCv.getContext('2d');
+    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    ctx.clearRect(0, 0, view.w, view.h);
+    st.strokes.forEach(function (s) { strokePath(ctx, s, 1); });
+    if (st.now) strokePath(ctx, st.now, 1);
+  }
+
+  function strokePath(ctx, s, k) {
+    if (!s.pts.length) return;
+    ctx.lineJoin = 'round';
+    ctx.lineCap  = 'round';
+    ctx.strokeStyle = s.iro;
+
+    // 点が1つだけ（ちょんと押しただけ）なら、丸い点を打つ。
+    if (s.pts.length === 1) {
+      ctx.fillStyle = s.iro;
+      ctx.beginPath();
+      ctx.arc(s.pts[0].x * k, s.pts[0].y * k, s.futosa * k / 2, 0, Math.PI * 2);
+      ctx.fill();
+      return;
+    }
+    // 筆圧が取れるペンなら太さを少し変える。取れない指やマウスでは一定。
+    for (var i = 1; i < s.pts.length; i++) {
+      var a = s.pts[i - 1], b = s.pts[i];
+      var pr = (a.p + b.p) / 2;
+      ctx.lineWidth = s.futosa * k * (0.65 + 0.7 * pr);
+      ctx.beginPath();
+      ctx.moveTo(a.x * k, a.y * k);
+      ctx.lineTo(b.x * k, b.y * k);
+      ctx.stroke();
+    }
+  }
+
+  /* ============================================================
+     指・マウス・ペンを受ける（上に載せた1枚で全部受け止める）
+     手が「地図」か「ペン」かで、同じ動きの意味が変わる。
+     ============================================================ */
+  function localPos(e) {
+    var r = inkCv.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  inkCv.addEventListener('pointerdown', function (e) {
+    if (!st.ready) return;
+    inkCv.setPointerCapture(e.pointerId);      // 紙の外に出ても離すまで追いかける
+    var p = localPos(e);
+
+    if (st.mode === 'map') {
+      var o = origin();
+      st.drag = { x: e.clientX, y: e.clientY, ox: o.ox, oy: o.oy };
+      return;
+    }
+    if (st.keshi) { erase(p); return; }
+
+    st.now = { iro: st.iro, futosa: st.futosa,
+               pts: [{ x: p.x, y: p.y, p: pressure(e) }] };
+    drawInk();
+  });
+
+  inkCv.addEventListener('pointermove', function (e) {
+    if (!st.ready) return;
+
+    if (st.mode === 'map') {
+      if (!st.drag) return;
+      // 引っぱった分だけ紙の左上をずらし、真ん中の緯度経度を覚え直す。
+      var nx = st.drag.ox - (e.clientX - st.drag.x);
+      var ny = st.drag.oy - (e.clientY - st.drag.y);
+      st.cx = XLon(nx + view.w / 2, st.z);
+      st.cy = YLat(ny + view.h / 2, st.z);
+      st.cy = Math.max(-85, Math.min(85, st.cy));    // 極より先へは行かせない
+      requestMap();
+      return;
+    }
+    if (st.keshi) { if (e.buttons) erase(localPos(e)); return; }
+    if (!st.now) return;
+
+    var p = localPos(e);
+    var last = st.now.pts[st.now.pts.length - 1];
+    // 近すぎる点は捨てる。点が多すぎると重くなるだけで、絵は変わらない。
+    if (Math.abs(p.x - last.x) < 1 && Math.abs(p.y - last.y) < 1) return;
+    st.now.pts.push({ x: p.x, y: p.y, p: pressure(e) });
+    drawInk();
+  });
+
+  function endStroke() {
+    st.drag = null;
+    if (st.now) {
+      st.strokes.push(st.now);
+      st.now = null;
+      st.saved = false;
+      drawInk();
+      lockMap();                     // 一画でも描いたら地図は固定（鉄の約束①）
+    }
+  }
+  inkCv.addEventListener('pointerup', endStroke);
+  inkCv.addEventListener('pointercancel', endStroke);
+  inkCv.addEventListener('pointerleave', function () { st.drag = null; });
+
+  // 筆圧。取れない機械では 0 や 0.5 が来るので、そのときは一定の太さにする。
+  function pressure(e) {
+    if (e.pointerType === 'pen' && e.pressure > 0 && e.pressure < 1) return e.pressure;
+    return 0.5;
+  }
+
+  /* ---- 線を消す：なぞった場所に近い線を、まるごと消す ----
+     白で塗りつぶす消しゴムにはしない。地図の上に白い雲ができてしまうから。 */
+  function erase(p) {
+    var hit = -1;
+    var near = Math.max(10, st.futosa);
+    for (var i = st.strokes.length - 1; i >= 0; i--) {
+      var pts = st.strokes[i].pts;
+      for (var j = 0; j < pts.length; j++) {
+        if (Math.abs(pts[j].x - p.x) < near && Math.abs(pts[j].y - p.y) < near) { hit = i; break; }
+      }
+      if (hit >= 0) break;
+    }
+    if (hit >= 0) {
+      st.strokes.splice(hit, 1);
+      st.saved = false;
+      drawInk();
+      lockMap();
+    }
+  }
+
+  /* ============================================================
+     道具箱の押しボタン
+     ============================================================ */
+  function press(btn, on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+
+  var modeMap  = document.getElementById('modeMap');
+  var modePen  = document.getElementById('modePen');
+  var mapTools = document.getElementById('mapTools');
+  var penTools = document.getElementById('penTools');
+
+  function setMode(m) {
+    if (m === 'map' && st.strokes.length) return;    // 固定中は戻れない（鉄の約束①）
+    st.mode = m;
+    stage.setAttribute('data-mode', m);
+    press(modeMap, m === 'map');
+    press(modePen, m === 'pen');
+    mapTools.hidden = (m !== 'map');
+    penTools.hidden = (m !== 'pen');
+    tell(m === 'pen' ? '書く手になりました。地図の上をなぞってください。' : '');
+  }
+  modeMap.addEventListener('click', function () { setMode('map'); });
+  modePen.addEventListener('click', function () { setMode('pen'); });
+
+  /* 一画でも描いたら地図を固定する。
+     見えない禁止は不親切なので、押せなくすると同時に理由を書く。 */
+  function lockMap() {
+    var locked = st.strokes.length > 0;
+    modeMap.disabled = locked;
+    document.getElementById('zoomIn').disabled  = locked;
+    document.getElementById('zoomOut').disabled = locked;
+    document.getElementById('here').disabled    = locked;
+    document.getElementById('goLatLon').disabled = locked;
+    if (locked) {
+      if (st.mode === 'map') setMode('pen');
+      tell('書き始めたので、地図はここで固定しました。動かしたいときは「ぜんぶ消す」を押してください。');
+    }
+  }
+
+  function tell(msg) { shirase.textContent = msg || ''; }
+
+  document.getElementById('zoomIn').addEventListener('click', function () {
+    if (st.z < 19) { st.z++; requestMap(); updateCaption(); }
+  });
+  document.getElementById('zoomOut').addEventListener('click', function () {
+    if (st.z > 3) { st.z--; requestMap(); updateCaption(); }
+  });
+
+  document.getElementById('here').addEventListener('click', function () {
+    if (!navigator.geolocation) { tell('この機械では現在地が使えません。指で動かして探してください。'); return; }
+    tell('いまいる場所を調べています…');
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      st.cx = pos.coords.longitude;
+      st.cy = pos.coords.latitude;
+      st.z = Math.max(st.z, 16);
+      requestMap(); updateCaption();
+      tell('いまいる場所を出しました。');
+    }, function () {
+      tell('現在地が取れませんでした（断られたか、電波の届かない場所かもしれません）。指で動かして探してください。');
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  });
+
+  document.getElementById('goLatLon').addEventListener('click', function () {
+    var v = document.getElementById('latlon').value.trim();
+    var m = v.match(/(-?\d+(?:\.\d+)?)\s*[,\s]\s*(-?\d+(?:\.\d+)?)/);
+    if (!m) { tell('「35.681, 139.767」のように、緯度と経度をコンマで区切って入れてください。'); return; }
+    var la = parseFloat(m[1]), lo = parseFloat(m[2]);
+    if (la < -85 || la > 85 || lo < -180 || lo > 180) { tell('その緯度・経度は地球の外です。'); return; }
+    st.cy = la; st.cx = lo;
+    requestMap(); updateCaption();
+    tell('その場所を出しました。');
+  });
+
+  // 色と太さ：同じ組の中で、押されているものを一つだけにする
+  Array.prototype.forEach.call(document.querySelectorAll('[data-iro]'), function (b) {
+    b.addEventListener('click', function () {
+      st.iro = b.getAttribute('data-iro');
+      Array.prototype.forEach.call(document.querySelectorAll('[data-iro]'), function (o) { press(o, o === b); });
+      setKeshi(false);
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-futosa]'), function (b) {
+    b.addEventListener('click', function () {
+      st.futosa = parseFloat(b.getAttribute('data-futosa'));
+      Array.prototype.forEach.call(document.querySelectorAll('[data-futosa]'), function (o) { press(o, o === b); });
+      setKeshi(false);
+    });
+  });
+
+  var eraserBtn = document.getElementById('eraser');
+  function setKeshi(on) { st.keshi = on; press(eraserBtn, on); }
+  eraserBtn.addEventListener('click', function () {
+    setKeshi(!st.keshi);
+    tell(st.keshi ? '消す手になりました。消したい線をなぞってください。' : '');
+  });
+
+  document.getElementById('undo').addEventListener('click', function () {
+    if (!st.strokes.length) { tell('戻すものがありません。'); return; }
+    st.strokes.pop();
+    drawInk();
+    if (!st.strokes.length) { unlockMap(); } else { st.saved = false; }
+  });
+
+  document.getElementById('clear').addEventListener('click', function () {
+    if (!st.strokes.length) { tell('消すものがありません。'); return; }
+    st.strokes = [];
+    drawInk();
+    unlockMap();
+  });
+
+  function unlockMap() {
+    modeMap.disabled = false;
+    document.getElementById('zoomIn').disabled  = false;
+    document.getElementById('zoomOut').disabled = false;
+    document.getElementById('here').disabled    = false;
+    document.getElementById('goLatLon').disabled = false;
+    st.saved = true;
+    tell('線が無くなったので、地図をまた動かせます。');
+  }
+
+  /* ============================================================
+     持ち出す（画像で保存・印刷）
+     地図の板と線の板を、一枚に焼き合わせる。
+     線は点の列で持っているので、大きい紙にも滑らかに引き直せる（鉄の約束②）。
+     ============================================================ */
+  function compose(k) {
+    var cv = document.createElement('canvas');
+    cv.width  = Math.round(view.w * k);
+    cv.height = Math.round(view.h * k);
+    var ctx = cv.getContext('2d');
+
+    // 地図：画面に出ているものをそのまま伸ばす（同じ絵を二度取り寄せない）
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(mapCv, 0, 0, cv.width, cv.height);
+
+    // 線：点の列から引き直すので、伸ばしてもぼやけない
+    st.strokes.forEach(function (s) { strokePath(ctx, s, k); });
+
+    // ものさしと名乗りは、地図の板に描いたものが伸びてぼやけるので描き直す
+    ctx.fillStyle = '#e9e5dd';
+    drawMonosashi(ctx, cv.width, cv.height, st.z, st.cy, k);
+    drawNanori(ctx, cv.width, cv.height, k);
+    return cv;
+  }
+
+  function fileName() {
+    var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return 'akapen_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate())
+         + '_' + p(d.getHours()) + p(d.getMinutes()) + '.png';
+  }
+
+  document.getElementById('save').addEventListener('click', function () {
+    try {
+      var cv = compose(2);                       // 紙に出しても粗く見えないよう2倍で
+      cv.toBlob(function (blob) {
+        if (!blob) { tell('絵にできませんでした。ごめんなさい。'); return; }
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = fileName();
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        st.saved = true;
+        tell('画像で保存しました（ダウンロードのところに入っています）。');
+      }, 'image/png');
+    } catch (e) {
+      // 地図の絵の許可が取れていないと、ブラウザが書き出しを拒む。黙って転ばず理由を出す。
+      tell('絵にできませんでした。地図の取り寄せがうまくいっていないかもしれません。もう一度お試しください。');
+    }
+  });
+
+  document.getElementById('print').addEventListener('click', function () {
+    try {
+      var img = document.getElementById('printImg');
+      img.src = compose(2).toDataURL('image/png');
+      img.onload = function () { st.saved = true; window.print(); };
+      tell('印刷の画面を出します。');
+    } catch (e) {
+      tell('印刷用の絵が作れませんでした。もう一度お試しください。');
+    }
+  });
+
+  /* 書いたまま閉じようとしたら、一度だけ止める。
+     どこにも預かっていないので、閉じたら本当に消えるから。 */
+  window.addEventListener('beforeunload', function (e) {
+    if (st.strokes.length && !st.saved) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  /* ============================================================
+     はじめの一手
+     ============================================================ */
+  function updateCaption() {
+    caption.textContent = '上が北。地図の細かさ ' + st.z
+      + '　地図: © OpenStreetMap contributors ／ 書いた線はこの端末の中だけにあります。';
+  }
+
+  document.getElementById('getMap').addEventListener('click', function () {
+    document.getElementById('beforeMap').hidden = true;
+    document.getElementById('yet').hidden = true;
+    document.getElementById('dougu').hidden = false;
+    st.ready = true;
+    layout();
+    // まず現在地を試す。断られても構わない（東京駅のまま出して、指で探してもらう）。
+    if (navigator.geolocation) {
+      tell('いまいる場所を調べています…（断ってもかまいません。指で動かして探せます）');
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        st.cx = pos.coords.longitude;
+        st.cy = pos.coords.latitude;
+        st.z = 16;
+        requestMap(); updateCaption();
+        tell('いまいる場所を出しました。「ペンで書く」を押すと書き込めます。');
+      }, function () {
+        tell('現在地は使いませんでした。地図を指で動かして、書きたい場所を出してください。');
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+    requestMap();
+    updateCaption();
+  });
+
+  // 窓の大きさが変わったとき。線がまだ無ければ紙を作り直す（あるなら触らない）。
+  window.addEventListener('resize', function () {
+    if (!st.ready || st.strokes.length) return;
+    view.w = 0;
+    if (layout()) { requestMap(); }
+  });
+})();
+</script>
+</body>
+</html>
