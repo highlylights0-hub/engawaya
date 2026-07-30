@@ -479,11 +479,32 @@ h1 {
 /* 風鈴。軒から吊るした体で、板の上空に置く。
    支点は紐の上端（transform-origin を上端中央に）。そこを軸に、
    風でゆっくり左右へ。周期を長めにして、せわしなくしない。 */
+/* 天井から吊るための決まり（2026-07-30 施主指定「縁側の天井」）。
+
+   風鈴とランプは、縁側の板（.engawa）を基準に置いてある。だから
+   天井まで戻すには「景色の高さぶん上へ、天井の厚みぶん下へ」。
+   その二つの寸法は景色を描く側（script）が知っているので、
+   --keshiki-h と --tenjou-h として渡してもらっている。
+   画面幅で景色の高さが変わっても、吊り位置がずれない。
+
+   吊り紐は ::before の細い線で足す。絵（svg）そのものは
+   一マスも触らない——打ち直すと必ずどこかが変わるから。 */
+.furin, .rampu {
+  top: calc(var(--tenjou-h, 27px) - var(--keshiki-h, 240px));
+  transform-origin: 50% 0;      /* 天井に当たる紐の上端が軸 */
+}
+.furin::before, .rampu::before {
+  content: "";
+  display: block;
+  width: 3px;
+  margin: 0 auto;
+}
+.furin::before { height: 40px; background: #9a8a63; }   /* 風鈴の紐 */
+.rampu::before { height: 34px; background: #4a3a28; }   /* ランプのコード */
+
 .furin {
   left: 15%;
-  top: -84px;
   width: 27px;
-  transform-origin: 50% 6%;
   animation: furin-yure 4.6s ease-in-out infinite;
 }
 @keyframes furin-yure {
@@ -591,6 +612,62 @@ footer .by {
   display: inline-block;
   margin-top: 4px;
   opacity: .75;
+}
+
+/* ---- 夜のランプ（夜だけ出る） ---------------------------------
+   施主の指定（2026-07-30）:
+     「夜は、ランプで光源みたいにすると、みんな明るい」
+     「昼は、いりませんけどね。すこし、遊び心。気がつく人がいたら面白い」
+
+   だから昼は出さない。夜に来た人だけが見つける。
+
+   夏の景物の掟に「光らせない」とあるが、あれは点滅や派手な演出を
+   しないという意味。これは明るさの動かない光源なので、破っていない。
+   揺れは風鈴より小さく・遅く。風鈴が揺れているのだから風はあるが、
+   吊り下げた電球は重いので、そこまで振れない。
+
+   笠はトタン。施主が四歳まで美瑛町にいた頃の、
+   「トタン作りで、隙間から外の雪が見えた」風呂の材料と同じもの。
+   ------------------------------------------------------------ */
+.rampu {
+  position: absolute;
+  left: 62%;
+  width: 26px;
+  line-height: 0;
+  pointer-events: none;
+  display: none;                       /* 昼は出さない */
+  animation: rampu-yure 7.2s ease-in-out infinite;
+  /* 光。二枚重ねて、近くは強く遠くは薄く。 */
+  filter: drop-shadow(0 0 9px #ffc46a99) drop-shadow(0 0 22px #ffab4a4d);
+}
+.rampu svg { display: block; width: 100%; height: auto; }
+@keyframes rampu-yure {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50%      { transform: rotate(1.6deg); }
+}
+html[data-time="night"] .rampu { display: block; }
+
+/* ランプが照らす板の面。夜だけ、真下が明るくなる。
+   板の木目（縞）の上に薄く乗せるので、縞は消えない。 */
+.engawa::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background: radial-gradient(ellipse 46% 150% at 62% -6%,
+                #ffcf8a42 0%, #ffb85e21 38%, #ffb85e00 72%);
+}
+html[data-time="night"] .engawa::before { opacity: 1; }
+
+/* 夜は、景物にランプの色が回る。
+   暗い板の上で日中の色のまま並んでいると「なぜ明るいのか」の
+   説明がつかない。温かい縁を一枚足すと、照らされている側になる。 */
+html[data-time="night"] .natsu,
+html[data-time="night"] .ice {
+  filter: drop-shadow(0 3px 4px #00000055)
+          drop-shadow(0 0 7px #ffcf8a80);
 }
 
 /* 動きが苦手な人のために、OS 設定を尊重して全部止める。
@@ -786,6 +863,54 @@ footer .by {
      「夏の景物」の項に書いてある。1マス＝1ドットの矩形の集まり。 -->
 <div class="engawa">
   <div class="whisper" id="whisper"></div>
+
+  <!-- 夜のランプ。トタンの笠をかぶせた裸電球を、軒から吊る。
+       昼は CSS で消してある（施主「昼は、いりませんけどね」）。
+       夜に来た人だけが見つける。色は夜の値で決め打ちしてある
+       ＝昼に出ないものに、昼の色を持たせる必要がない。 -->
+  <div class="rampu" aria-hidden="true">
+    <svg viewBox="0 0 16 21" shape-rendering="crispEdges">
+      <!-- 吊りコード -->
+      <rect x="7" y="0" width="2" height="8" fill="#4a3a28"/>
+      <!-- 笠（トタン）。上が狭く下が広い円錐を、段で作る。 -->
+      <g fill="#96a09c">
+        <rect x="6" y="8"  width="4"  height="1"/>
+        <rect x="5" y="9"  width="6"  height="1"/>
+        <rect x="4" y="10" width="8"  height="1"/>
+        <rect x="3" y="11" width="10" height="1"/>
+        <rect x="2" y="12" width="12" height="1"/>
+      </g>
+      <!-- 笠の光が当たる側（左上）。一段明るくするだけで金物に見える -->
+      <g fill="#c6cec9">
+        <rect x="5" y="9"  width="1" height="1"/>
+        <rect x="4" y="10" width="1" height="1"/>
+        <rect x="3" y="11" width="1" height="1"/>
+      </g>
+      <!-- 笠のふち（下の口）。ここで笠が終わる線を締める -->
+      <rect x="2" y="13" width="12" height="1" fill="#6d7672"/>
+      <!-- 笠の内側。電球の光を受けて温かくなる場所 -->
+      <rect x="5" y="13" width="6" height="1" fill="#e8b878"/>
+      <!-- 首（ソケット） -->
+      <rect x="6" y="13" width="4" height="1" fill="#7a6a52"/>
+      <!-- 電球。上が広く下が丸くしぼむ洋梨の形 -->
+      <g fill="#ffe3a3">
+        <rect x="5" y="14" width="6" height="1"/>
+        <rect x="4" y="15" width="8" height="3"/>
+        <rect x="5" y="18" width="6" height="1"/>
+        <rect x="6" y="19" width="4" height="1"/>
+      </g>
+      <!-- 光の当たる側（左上）。ガラスに見せる一点 -->
+      <g fill="#fff6dc">
+        <rect x="5" y="15" width="2" height="1"/>
+        <rect x="5" y="16" width="1" height="1"/>
+      </g>
+      <!-- フィラメント。ここが光っている本体だと分かる二点 -->
+      <g fill="#ff9a3c">
+        <rect x="8" y="16" width="1" height="1"/>
+        <rect x="7" y="17" width="2" height="1"/>
+      </g>
+    </svg>
+  </div>
 
   <!-- 風鈴。紐で吊るし、椀の下に短冊が下がる。揺れるが鳴らさない。 -->
   <div class="natsu furin" aria-hidden="true">
@@ -1191,6 +1316,15 @@ footer .by {
   }
   function Y(v){ return v * SC; }         /* 高さ160の座標を、いまの板の高さへ */
 
+  /* 整数から 0〜1 の決まった値を作る。
+     乱数（Math.random）は使わない。使うと開くたびに星の位置が変わり、
+     「同じ家の同じ夜空」でなくなる。同じ数を入れれば必ず同じ値が返る
+     計算で散らして、位置を固定する。 */
+  function tane(n){
+    var t = Math.sin(n * 12.9898 + 78.233) * 43758.5453;
+    return t - Math.floor(t);
+  }
+
   /* ------------------------------------------------------------
      季節ごとの色。
      美瑛の丘は「畑の色の帯」でできているので、丘ごとに三色。
@@ -1498,6 +1632,47 @@ footer .by {
     tree(p, 1, 0.68, 2.0, 1.35, bare, 1.7, sil);
   }
 
+  /* ------------------------------------------------------------
+     縁側の天井（軒天）。
+
+     施主の指定（2026-07-30）:
+       「風鈴と電気を上に持ってきてもいいですね。縁側の天井」
+       「CGの窓の中の上の事です」
+
+     風鈴とランプは軒から吊るものなのに、吊る先が無かったので
+     宙に浮いて見えていた。景色の上端に天井を描いて、そこから
+     下げる。深い庇の下から外を見ている形になる。
+
+     板の色は CSS の --wood-1 / --wood-2 から取る。縁側の板と
+     同じ木にしたいので、色を二重に持たない。時刻で板の色が
+     変わる仕掛けにも、これだけで乗る。
+     ------------------------------------------------------------ */
+  var TENJOU = 16;                        /* 高さ160の座標での天井の厚み */
+  function woodColor(name, fallback){
+    var v = '';
+    try { v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    catch (e) { v = ''; }
+    return /^#[0-9a-fA-F]{6}$/.test(v) ? v : fallback;
+  }
+  function drawTenjou(){
+    var w1 = woodColor('--wood-1', '#c69a6d');
+    var w2 = woodColor('--wood-2', '#a97c50');
+    var h  = Y(TENJOU);
+
+    px(0, 0, W, h, w1);
+    /* 天井板の継ぎ目。細い縦線を等間隔に。 */
+    var step = Math.max(8, Math.round(Y(22)));
+    for (var x = step; x < W; x += step) px(x, 0, 1, h, w2);
+    /* 軒先（手前の小口）。ここで天井が終わる線を締める。 */
+    px(0, h - 2, W, 2, w2);
+    /* 天井の下に落ちる影。空が一段暗くなって、奥行きが出る。 */
+    g.globalAlpha = 0.22;
+    px(0, h, W, Math.max(1, Math.round(Y(3))), '#000000');
+    g.globalAlpha = 0.10;
+    px(0, h + Math.max(1, Math.round(Y(3))), W, Math.max(1, Math.round(Y(3))), '#000000');
+    g.globalAlpha = 1;
+  }
+
   /* 冬の地吹雪。横に細い白い筋を薄く流す。 */
   function drawJifubuki(p, t){
     if (p !== PAL.winter) return;
@@ -1534,11 +1709,19 @@ footer .by {
     g.globalAlpha = 1;
 
     /* 夜だけ、星を置く。位置は毎回同じ（乱数を使わない）。
-       瞬かせない——縁側の作法として、光らせないため。 */
+       瞬かせない——縁側の作法として、光らせないため。
+
+       ⚠ ここは一度しくじった。最初は「黄金角 137.5 を板の幅で割った
+       余り」で散らしていたが、板の幅は画面幅で決まるので、
+       137.5 と幅が割り切れる時（幅 275 など）に x が二種類しか出ず、
+       **星が縦一列に並んで点線になった**。
+       幅に依らない散らし方にする必要がある。だから位置は
+       整数から作る決まった値（下の tane）で出して、最後に幅を掛ける。
+       これなら幅が何であっても並び方は変わらない。 */
     if (time === 'night'){
       for (var i = 0; i < 46; i++){
-        var x = (i * 137.5) % W;                    /* 黄金角で散らすと偏らない */
-        var y = ((i * 61.8) % 100) / 100 * Y(66);
+        var x = tane(i) * W;
+        var y = tane(i + 100) * Y(64);
         if (y > mtnY(x) - Y(3)) continue;           /* 山にかぶるものは置かない */
         px(x, y, 1, 1, (i % 5 === 0) ? '#ffffff' : '#c8d4e8');
       }
@@ -1569,6 +1752,7 @@ footer .by {
     drawRoad(p);
     drawJifubuki(p, t);
     drawTrees(p, sil);
+    drawTenjou();          /* いちばん手前。景色の上に庇がかぶる */
     drawTint(time);
 
     /* 小さい板を、ぼかさずに拡大する。ここがドット絵の要。 */
@@ -1598,6 +1782,12 @@ footer .by {
     cv.width  = W * S; cv.height = H * S;
     cv.style.width  = (W * S) + 'px';
     cv.style.height = (H * S) + 'px';
+    /* 風鈴とランプを天井から吊るために、景色の高さと天井の厚みを
+       CSS 側へ渡す。あの二つは縁側の板（.engawa）を基準に置いて
+       あるので、そこから景色ぶん上へ戻して、天井の下端に合わせる。 */
+    var root = document.documentElement.style;
+    root.setProperty('--keshiki-h', (H * S) + 'px');
+    root.setProperty('--tenjou-h',  Math.round(TENJOU * SC) * S + 'px');
     draw(moving ? ((((window.performance && performance.now) ? performance.now() : Date.now()) - t0) / 1000) : 0);
   }
 
