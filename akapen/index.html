@@ -896,8 +896,10 @@ footer a { color: inherit; }
      一本＝動かす／書く、二本＝つまんで縮尺。スマホの地図の当たり前の動きに合わせる。
      （ボタンは残してある。ジェスチャーを知らない人でも押すだけで足りるように） */
   var yubi = {};
-  var pinch = null;       // 指ごとの知らせで数える方式（Android・Windows のさわる画面）
+  var pinch = null;       // pointer の知らせで数える方式（さわる画面が無い機械の保険）
   var gesture = null;     // WebKit（iPhone・iPad）だけが出す「つまみ」の知らせ
+  var yubiPinch = null;   // touch の知らせで受ける方式（本命。さわる画面はこれ）
+  var sawattaKoto = false;// 一度でも指で触られたか（触る機械では pointer 方式を使わない）
   function yubiKazu() { return Object.keys(yubi).length; }
 
   function startPinch() {
@@ -948,7 +950,9 @@ footer a { color: inherit; }
       st.now = null;
       st.drag = null;
       drawInk();
-      if (!gesture) startPinch();     // Safari は下の gesture で受けるので二重にしない
+      // 指で触られている機械では、下の touch の知らせで受ける（そちらが確実）。
+      // ここが働くのは、さわる画面を持たない機械だけ。二重には効かせない。
+      if (!gesture && !yubiPinch && !sawattaKoto) startPinch();
       return;
     }
     if (yubiKazu() > 2) return;                    // 三本目以降は見ない
@@ -969,7 +973,7 @@ footer a { color: inherit; }
     if (!st.ready) return;
     if (e.pointerId in yubi) yubi[e.pointerId] = localPos(e);
 
-    if (gesture) return;                                    // Safari のつまみ中は触らない
+    if (gesture || yubiPinch) return;                       // つまみ中は線を引かない
     if (pinch && yubiKazu() >= 2) { movePinch(); return; }
 
     if (st.mode === 'map') {
@@ -1022,34 +1026,94 @@ footer a { color: inherit; }
   inkCv.addEventListener('pointerup', hanasu);
   inkCv.addEventListener('pointercancel', hanasu);
 
-  /* ============================================================
-     iPhone・iPad のつまみ（WebKit 専用の知らせ）
-
-     なぜ別に書くのか（2026-07-30 実機で判明。Mac では再現しない）:
-       iOS の WebKit は、指が二本になった時点で「ページを拡大するつもりだな」と
-       自分で解釈し、指ごとの知らせを途中で取り下げてしまう（pointercancel）。
-       そのため「指が二本になったら」という数え方が、iPhone では永久に成立しない。
-       代わりに WebKit だけが出す gesture の知らせを使う。開いた倍率（scale）が
-       そのまま入ってくるので、こちらの計算はむしろ簡単になる。
-       ついでに preventDefault で、ページ全体が拡大するのも止める。
-
-       ※iPhone の中では Chrome も Firefox も中身は WebKit なので、
-         これ一つで iPhone のブラウザ全部に効く。
-     ============================================================ */
-  inkCv.addEventListener('gesturestart', function (e) {
-    if (!st.ready) return;
-    e.preventDefault();
-    // 一本目の知らせが先に取り下げられて、短い線が確定してしまうことがある。
-    // つまんだだけで点が残らないように、直前に入った短い線は取り消す。
+  /* つまみ始めの片付け。
+     二本目が触れる直前に、一本目が引いた短い線が確定してしまうことがある。
+     つまんだだけで点や短い線が残ると、いちいち消す手間になるので取り消す。 */
+  function tsumamiHajime() {
     var last = st.strokes[st.strokes.length - 1];
     if (last && last.pts.length < 5 && Date.now() - (last.at || 0) < 600) st.strokes.pop();
-    st.now = null; st.drag = null; pinch = null; yubi = {};
+    st.now = null;
+    st.drag = null;
+    pinch = null;
+    yubi = {};
     drawInk();
+  }
+
+  /* ============================================================
+     さわる画面のつまみ（本命の経路）
+
+     なぜ pointer の知らせでなく touch の知らせで受けるのか
+     （2026-07-30・施主の iPhone 実機報告から。Mac では絶対に出ない）:
+       iOS の WebKit は、指が二本になった時点で「ページを拡大するつもりだな」と
+       自分で解釈し、指ごとの知らせ（pointer）を途中で取り下げてしまう
+       （pointercancel）。そのため「pointer が二本になったら」という数え方は
+       iPhone では永久に成立しない。
+       touch の知らせは、触っている指を e.touches として毎回まとめて渡してくれる
+       ので、取り下げの影響を受けない。いちばん確実な受け口。
+       preventDefault で、ページ全体が拡大するのも止める。
+       ※iPhone の中では Chrome も Firefox も中身は WebKit なので、これ一つで
+         iPhone のブラウザ全部に効く（施主は Chrome で見ていた）。
+       ※Android のさわる画面も同じ知らせを出すので、一本で両方まかなえる。
+     ============================================================ */
+  function futatsuNoYubi(e) {
+    var a = e.touches[0], b = e.touches[1];
+    var r = inkCv.getBoundingClientRect();
+    var ax = a.clientX - r.left, ay = a.clientY - r.top;
+    var bx = b.clientX - r.left, by = b.clientY - r.top;
+    return {
+      haba: Math.max(1, Math.hypot(ax - bx, ay - by)),
+      mid: { x: (ax + bx) / 2, y: (ay + by) / 2 }
+    };
+  }
+
+  inkCv.addEventListener('touchstart', function (e) {
+    sawattaKoto = true;                       // 触る機械だと分かった＝pointer方式は使わない
+    if (!st.ready || e.touches.length < 2) return;
+    e.preventDefault();
+    tsumamiHajime();
+    var m = futatsuNoYubi(e);
+    yubiPinch = { haba: m.haba, z0: st.z, jimen: toGround(m.mid, 0.5) };
+  }, { passive: false });
+
+  inkCv.addEventListener('touchmove', function (e) {
+    if (!yubiPinch || e.touches.length < 2) return;
+    e.preventDefault();
+    var m = futatsuNoYubi(e);
+    // 指の間が2倍に開いたら1段近づく（縮尺は距離の対数で決まる）
+    st.z = clampZ(yubiPinch.z0 + Math.log(m.haba / yubiPinch.haba) / Math.LN2);
+    anchor(yubiPinch.jimen, m.mid);           // つまんだ地面を指の真ん中に留める
+    requestMap();
+    updateCaption();
+  }, { passive: false });
+
+  function yubiPinchOwari(e) {
+    if (!yubiPinch) return;
+    if (e.touches && e.touches.length >= 2) return;   // まだ二本残っているなら続ける
+    yubiPinch = null;
+    st.z = clampZ(Math.round(st.z));         // 近い段に落ち着かせる（絵をぼやけさせない）
+    requestMap();
+    updateCaption();
+  }
+  inkCv.addEventListener('touchend', yubiPinchOwari);
+  inkCv.addEventListener('touchcancel', yubiPinchOwari);
+
+  /* ============================================================
+     iPhone・iPad のつまみ（WebKit 専用の知らせ・上の touch が効かないときの控え）
+
+     WebKit は二本指の「つまみ」を、開いた倍率（scale）付きの知らせとしても出す。
+     上の touch の受け口で足りるはずだが、こちらは万一 touch が
+     （touch-action の指定などで）思うように来なかったときの控え。
+     touch で受けている間は働かせない（二重に縮尺が動くのを防ぐ）。
+     ============================================================ */
+  inkCv.addEventListener('gesturestart', function (e) {
+    if (!st.ready || yubiPinch) return;
+    e.preventDefault();
+    tsumamiHajime();
     gesture = { z0: st.z, jimen: toGround(localPos(e), 0.5) };
   }, { passive: false });
 
   inkCv.addEventListener('gesturechange', function (e) {
-    if (!gesture) return;
+    if (!gesture || yubiPinch) return;
     e.preventDefault();
     // scale＝つまみ始めからの開き具合。2倍に開いたら1段近づく。
     st.z = clampZ(gesture.z0 + Math.log(Math.max(0.02, e.scale || 1)) / Math.LN2);
