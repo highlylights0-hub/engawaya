@@ -144,7 +144,7 @@ body {
 .wrap {
   flex: 1;
   width: 100%;
-  max-width: 780px;
+  max-width: 980px;
   margin: 0 auto;
   padding: clamp(24px, 7vw, 48px) 16px 48px;
 }
@@ -200,6 +200,15 @@ h1 {
   border-radius: 8px;
   overflow: hidden;
   background: #e9e5dd;
+}
+
+/* 縦に細い機械（スマホ）では、横4:3の紙は低すぎて地図が見づらい。
+   画面の高さから取って、紙を大きくする。ふちの余白も削って幅を稼ぐ。
+   dvh＝アドレスバーの出入りで高さが変わっても正しく計れる単位。 */
+@media (max-width: 700px) {
+  .wrap { padding-left: 10px; padding-right: 10px; }
+  .kami { padding: 6px; }
+  .stage { aspect-ratio: auto; height: 62vh; height: 62dvh; }
 }
 .stage canvas {
   position: absolute;
@@ -887,7 +896,8 @@ footer a { color: inherit; }
      一本＝動かす／書く、二本＝つまんで縮尺。スマホの地図の当たり前の動きに合わせる。
      （ボタンは残してある。ジェスチャーを知らない人でも押すだけで足りるように） */
   var yubi = {};
-  var pinch = null;
+  var pinch = null;       // 指ごとの知らせで数える方式（Android・Windows のさわる画面）
+  var gesture = null;     // WebKit（iPhone・iPad）だけが出す「つまみ」の知らせ
   function yubiKazu() { return Object.keys(yubi).length; }
 
   function startPinch() {
@@ -901,6 +911,18 @@ footer a { color: inherit; }
     };
   }
 
+  /* つかんだ地面（jimen）が、紙の上のその点（tenn）の下に留まるように、
+     紙の真ん中を決め直す。これをやらないと、つまんだ場所ではなく画面の中心を
+     軸に伸び縮みして「見ていた場所がどこかへ行く」感じになる。 */
+  function anchor(jimen, tenn) {
+    var ox = MX(jimen.lon, st.z) - tenn.x;
+    var oy = MY(jimen.lat, st.z) - tenn.y;
+    st.cx = XLon(ox + view.w / 2, st.z);
+    st.cy = Math.max(-85, Math.min(85, YLat(oy + view.h / 2, st.z)));
+  }
+
+  function clampZ(z) { return Math.max(3, Math.min(19, z)); }
+
   function movePinch() {
     var id = Object.keys(yubi);
     var a = yubi[id[0]], b = yubi[id[1]];
@@ -908,15 +930,8 @@ footer a { color: inherit; }
     var mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
 
     // 指の間が2倍に開いたら1段近づく（＝縮尺は距離の対数で決まる）
-    st.z = Math.max(3, Math.min(19, pinch.z0 + Math.log(haba / pinch.haba) / Math.LN2));
-
-    // つかんだ地面が、指の真ん中の下に留まるように紙の真ん中を計算し直す。
-    // これをやらないと、つまんだ場所ではなく画面の中心を軸に伸び縮みして
-    // 「見ていた場所がどこかへ行く」感じになる。
-    var ox = MX(pinch.jimen.lon, st.z) - mid.x;
-    var oy = MY(pinch.jimen.lat, st.z) - mid.y;
-    st.cx = XLon(ox + view.w / 2, st.z);
-    st.cy = Math.max(-85, Math.min(85, YLat(oy + view.h / 2, st.z)));
+    st.z = clampZ(pinch.z0 + Math.log(haba / pinch.haba) / Math.LN2);
+    anchor(pinch.jimen, mid);
     requestMap();
     updateCaption();
   }
@@ -933,7 +948,7 @@ footer a { color: inherit; }
       st.now = null;
       st.drag = null;
       drawInk();
-      startPinch();
+      if (!gesture) startPinch();     // Safari は下の gesture で受けるので二重にしない
       return;
     }
     if (yubiKazu() > 2) return;                    // 三本目以降は見ない
@@ -954,6 +969,7 @@ footer a { color: inherit; }
     if (!st.ready) return;
     if (e.pointerId in yubi) yubi[e.pointerId] = localPos(e);
 
+    if (gesture) return;                                    // Safari のつまみ中は触らない
     if (pinch && yubiKazu() >= 2) { movePinch(); return; }
 
     if (st.mode === 'map') {
@@ -982,6 +998,7 @@ footer a { color: inherit; }
   function endStroke() {
     st.drag = null;
     if (st.now) {
+      st.now.at = Date.now();        // いつ確定したか（下のつまみ取り消しで見る）
       st.strokes.push(st.now);
       st.now = null;
       st.saved = false;
@@ -1004,6 +1021,73 @@ footer a { color: inherit; }
   }
   inkCv.addEventListener('pointerup', hanasu);
   inkCv.addEventListener('pointercancel', hanasu);
+
+  /* ============================================================
+     iPhone・iPad のつまみ（WebKit 専用の知らせ）
+
+     なぜ別に書くのか（2026-07-30 実機で判明。Mac では再現しない）:
+       iOS の WebKit は、指が二本になった時点で「ページを拡大するつもりだな」と
+       自分で解釈し、指ごとの知らせを途中で取り下げてしまう（pointercancel）。
+       そのため「指が二本になったら」という数え方が、iPhone では永久に成立しない。
+       代わりに WebKit だけが出す gesture の知らせを使う。開いた倍率（scale）が
+       そのまま入ってくるので、こちらの計算はむしろ簡単になる。
+       ついでに preventDefault で、ページ全体が拡大するのも止める。
+
+       ※iPhone の中では Chrome も Firefox も中身は WebKit なので、
+         これ一つで iPhone のブラウザ全部に効く。
+     ============================================================ */
+  inkCv.addEventListener('gesturestart', function (e) {
+    if (!st.ready) return;
+    e.preventDefault();
+    // 一本目の知らせが先に取り下げられて、短い線が確定してしまうことがある。
+    // つまんだだけで点が残らないように、直前に入った短い線は取り消す。
+    var last = st.strokes[st.strokes.length - 1];
+    if (last && last.pts.length < 5 && Date.now() - (last.at || 0) < 600) st.strokes.pop();
+    st.now = null; st.drag = null; pinch = null; yubi = {};
+    drawInk();
+    gesture = { z0: st.z, jimen: toGround(localPos(e), 0.5) };
+  }, { passive: false });
+
+  inkCv.addEventListener('gesturechange', function (e) {
+    if (!gesture) return;
+    e.preventDefault();
+    // scale＝つまみ始めからの開き具合。2倍に開いたら1段近づく。
+    st.z = clampZ(gesture.z0 + Math.log(Math.max(0.02, e.scale || 1)) / Math.LN2);
+    anchor(gesture.jimen, localPos(e));      // つまんだ地面を指の真ん中に留める
+    requestMap();
+    updateCaption();
+  }, { passive: false });
+
+  function gestureOwari(e) {
+    if (!gesture) return;
+    if (e && e.preventDefault) e.preventDefault();
+    gesture = null;
+    st.z = clampZ(Math.round(st.z));          // 近い段に落ち着かせる（絵をぼやけさせない）
+    requestMap();
+    updateCaption();
+  }
+  inkCv.addEventListener('gestureend', gestureOwari, { passive: false });
+
+  /* ---- パソコンのタッチパッドの「つまむ」 ----
+     Mac も Windows も、つまむ動きは「ctrl を押しながらのホイール」として届く。
+     ふつうのホイール（ページの上下）は横取りしない＝地図の上でも
+     ページはいつも通り動く。憲法③のボタンも残っているので、これは上乗せ。 */
+  var wheelMachi = null;
+  inkCv.addEventListener('wheel', function (e) {
+    if (!st.ready || !e.ctrlKey) return;
+    e.preventDefault();
+    var tenn = localPos(e);
+    var jimen = toGround(tenn, 0.5);
+    st.z = clampZ(st.z - e.deltaY * 0.012);
+    anchor(jimen, tenn);
+    requestMap();
+    updateCaption();
+    clearTimeout(wheelMachi);
+    wheelMachi = setTimeout(function () {
+      st.z = clampZ(Math.round(st.z));
+      requestMap(); updateCaption();
+    }, 320);
+  }, { passive: false });
 
   // 筆圧。取れない機械では 0 や 0.5 が来るので、そのときは一定の太さにする。
   function pressure(e) {
