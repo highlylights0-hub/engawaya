@@ -376,8 +376,31 @@ h1 {
    ページのいちばん下に、実際に板を敷いた。
    ここが「座る場所」。上に載っているのはアイスひとつだけ。
    ------------------------------------------------------------ */
-.engawa {
+/* ---- 縁側の外の景色（美瑛の丘） --------------------------------
+   施主の記憶（2026-07-30）:
+     「四歳で上京。でも、花や、どこまでも続く一本道、
+       その道が空につながるようでした。
+       冬の豪雪、一面真っ白の大地に、木がポツン、ポツン。」
+
+   縁側は「座る場所」なので、座って見るものが要る。
+   ここに美瑛の丘を置いて、縁側の景物（猫・スズメ・風鈴）が
+   その手前に来るようにした。＝縁側に座って外を見ている形。
+
+   写真は一枚も使っていない。丘も山も道も木も、開いた時に
+   計算して描いている（憲法①「外から何も読み込まない」）。
+   小さな板に描いてから、ぼかさずに拡大しているので、
+   一マスが点として残る＝猫やアイスと同じドット絵の肌ざわりになる
+   （憲法②）。滑らかに描くと、景色だけ写真みたいに浮く。
+   ------------------------------------------------------------ */
+.keshiki {
   margin-top: 72px;
+  line-height: 0;              /* canvas の下に隙間ができるのを防ぐ */
+  overflow: hidden;
+}
+.keshiki canvas { display: block; }
+
+.engawa {
+  margin-top: 0;               /* 景色の真下に板が来る。間を空けない */
   position: relative;
   height: 132px;
   background:
@@ -745,6 +768,19 @@ footer .by {
 
 </div>
 
+<!-- 縁側の外の景色。美瑛の丘。
+     写真は一枚も使っていない（憲法①）。開いた時に計算して描く。
+     小さな板に描いてから、ぼかさずに拡大している（憲法②）ので、
+     一マスが点として残り、下の猫やアイスと同じ肌ざわりで並ぶ。
+
+     季節は今日の日付で、光は今の時刻で決まる。
+     どちらも選ばせない。縁側の外の景色は、座った人が選ぶものでは
+     ないからです（時刻で光が変わる、という母屋の作法と同じ）。 -->
+<div class="keshiki">
+  <canvas id="keshiki" role="img"
+          aria-label="縁側から見た美瑛の丘。波打つ丘のむこうに大雪山、丘を越えて空へ続く一本道、幹の傾いた木が一本。"></canvas>
+</div>
+
 <!-- 縁側。座る場所。夏のあいだは、ここに景物を置く。
      すべて絵文字ではなく手打ちのドット絵。理由は <style> の
      「夏の景物」の項に書いてある。1マス＝1ドットの矩形の集まり。 -->
@@ -1095,6 +1131,484 @@ footer .by {
       whisper.classList.remove('show');
     }, 2600);
   });
+})();
+
+/* ============================================================
+   縁側の外の景色 ── 美瑛の丘
+
+   施主の記憶（2026-07-30）
+     「四歳で上京。でも、花や、どこまでも続く一本道、
+       その道が空につながるようでした。
+       冬の豪雪、一面真っ白の大地に、木がポツン、ポツン。」
+
+   ------------------------------------------------------------
+   なぜこの作り方なのか
+
+   ① 写真を使わない
+      丘も山も道も木も、開いた時に計算して描く。合計で数キロバイト。
+      憲法①「外から何も読み込まない」を崩さずに景色を持てる唯一の道。
+
+   ② 小さく描いて、ぼかさずに伸ばす
+      360 前後の幅の小さな板に描いてから、整数倍に拡大している。
+      imageSmoothingEnabled=false なので色が混ざらず、一マスが
+      正方形の点として残る＝ドット絵のまま大きくなる。
+      滑らかに描くと、景色だけ写真みたいになって、
+      すぐ下にいる猫やアイス（手打ちのドット絵）から浮く。
+
+   ③ 季節は日付で、光は時刻で決まる。選ばせない
+      母屋はもともと時刻で光が変わる。縁側の外の景色も同じ扱いに
+      した。座った人が空の色を選べないのと同じ理由。
+      （季節を切り替えて確かめたい時は、手元の試作の一枚で見る）
+
+   ④ 動きは、雲がゆっくり流れるだけ
+      風鈴と同じ作法。音は出さない・光らせない。
+      動きを嫌う設定（prefers-reduced-motion）の人には止めて出す。
+   ============================================================ */
+(function () {
+  var cv = document.getElementById('keshiki');
+  if (!cv || !cv.getContext) return;      /* 古い機械では景色だけ出ない。他は無事 */
+
+  var vg  = cv.getContext('2d');
+  var off = document.createElement('canvas');
+  var g   = off.getContext('2d');
+
+  var W = 360, H = 120, S = 3;            /* 板の幅・高さ・拡大倍率（resize で決める） */
+  var SC = 1;                             /* 下の座標は「高さ160の板」で書いてある。その縮尺 */
+
+  /* --- 色の道具（外部の部品を使わないので自前で持つ） --- */
+  function hex(s){
+    return [parseInt(s.substr(1,2),16), parseInt(s.substr(3,2),16), parseInt(s.substr(5,2),16)];
+  }
+  function mix(a, b, t){
+    return 'rgb(' + Math.round(a[0]+(b[0]-a[0])*t) + ','
+                  + Math.round(a[1]+(b[1]-a[1])*t) + ','
+                  + Math.round(a[2]+(b[2]-a[2])*t) + ')';
+  }
+  /* 一マス塗る。整数に丸めるので点がぶれない。 */
+  function px(x, y, w, h, c){
+    g.fillStyle = c;
+    g.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
+  }
+  function Y(v){ return v * SC; }         /* 高さ160の座標を、いまの板の高さへ */
+
+  /* ------------------------------------------------------------
+     季節ごとの色。
+     美瑛の丘は「畑の色の帯」でできているので、丘ごとに三色。
+     実際の畑も、作っている物が畝単位で違う。
+     ------------------------------------------------------------ */
+  var PAL = {
+    spring: { skyTop:'#7fb4d8', skyBot:'#cfe4ee', cloud:'#ffffff',
+              mtn:'#7d8ba0', snow:'#eef3f8', mtnShade:'#5f6b7e',
+              hills:[['#8a9a6e','#7d8e63','#98a878'],
+                     ['#6f5c3f','#7d6846','#5f4e35'],
+                     ['#7f8f5c','#8e9d69','#6f7e4e']],
+              road:'#d8cfb8', roadEdge:'#b7ab90',
+              tree:'#4d5c3b', trunk:'#4a3a28', flower:null },
+    summer: { skyTop:'#4f95c9', skyBot:'#bcdcee', cloud:'#ffffff',
+              mtn:'#7f8da2', snow:'#f2f6fa', mtnShade:'#616e82',
+              hills:[['#7d9b5a','#8fab68','#6d8a4c'],
+                     ['#c9b25e','#d8c26c','#b6a052'],
+                     ['#6f9a4e','#7fab5c','#5f8a41']],
+              road:'#ded5bd', roadEdge:'#bcb094',
+              tree:'#3f5f33', trunk:'#4a3a28', flower:'#8e7bb5' },
+    autumn: { skyTop:'#6fa2c4', skyBot:'#e2ddc9', cloud:'#fdfaf2',
+              mtn:'#78849a', snow:'#eef3f8', mtnShade:'#5b6678',
+              hills:[['#b39a5c','#c4aa68','#a08a4f'],
+                     ['#8c6b43','#9c7a4e','#7a5c39'],
+                     ['#a89050','#b89f5d','#937d43']],
+              road:'#d5cbb2', roadEdge:'#b3a68b',
+              tree:'#6b5a2f', trunk:'#4a3a28', flower:null },
+    /* 冬。山は淡く置く。地面が真っ白なので、夏と同じ濃さで山を
+       置くと山が手前に飛び出して見えて、奥行きが壊れる。 */
+    winter: { skyTop:'#9fb9cc', skyBot:'#e8eff4', cloud:'#f7fbfd',
+              mtn:'#b6c5d3', snow:'#ffffff', mtnShade:'#9aaab9',
+              hills:[['#f2f6f9','#e6eef4','#fbfdfe'],
+                     ['#eaf2f7','#dde8f0','#f5f9fc'],
+                     ['#f6fafc','#e9f1f6','#ffffff']],
+              road:'#dfe8ef', roadEdge:'#c3d2dd',
+              tree:'#41505e', trunk:'#3a4550', flower:null }
+  };
+
+  /* 丘の稜線。正弦波を重ねただけ。山を「作る」のではなく、
+     波を足すと勝手に丘になる、という性質を借りている。 */
+  var HILLS = [
+    { base: 84, a1:4.5, f1:0.021, p1:0.4, a2:2.0, f2:0.057, p2:1.9 },
+    { base:100, a1:7.0, f1:0.016, p1:2.1, a2:2.8, f2:0.041, p2:0.6 },
+    { base:124, a1:9.5, f1:0.011, p1:4.3, a2:3.8, f2:0.033, p2:2.8 }
+  ];
+  function ridge(x, h){
+    return Y(h.base)
+         + Y(h.a1) * Math.sin(x * h.f1 + h.p1)
+         + Y(h.a2) * Math.sin(x * h.f2 + h.p2)
+         + Y(h.a1 * 0.35) * Math.sin(x * h.f1 * 2.7 + h.p1 * 1.7);
+  }
+
+  /* ------------------------------------------------------------
+     大雪山（施主の指定「縁側の景色、大雪山」）。
+
+     美瑛の丘からは南東に十勝岳連峰、北東に大雪山系が見える。
+     博喜さんが覚えているのは大雪山なので、そちらを描く。
+
+     大雪山は一つの尖った山ではなく広い山塊。だから主峰をひとつ
+     立てて、その左右へ長く高いままうねらせる。とがった三角を
+     並べると富士山の親戚になって、北海道の山にならない。
+     夏でも雪渓が残るので、季節によらず稜線の下まで白を置く。
+     ------------------------------------------------------------ */
+  function mtnY(x){
+    var peakX = W * 0.34, spread = W * 0.20;
+    var d = (x - peakX) / spread;
+    return Y(70)
+         - Y(30) * Math.exp(-d * d)                 /* 主峰（旭岳のあたり） */
+         + Y(3.0) * Math.sin(x * 0.09 + 0.5)        /* 稜線のぎざぎざ */
+         + Y(2.0) * Math.sin(x * 0.21 + 1.7)
+         + Y(1.2) * Math.sin(x * 0.37 + 2.9);
+  }
+
+  function drawSky(p){
+    var c1 = hex(p.skyTop), c2 = hex(p.skyBot);
+    var lim = Y(84);
+    for (var y = 0; y < lim; y++){
+      var t = Math.round((y / lim) * 12) / 12;      /* 12段に量子化＝段を見せる */
+      px(0, y, W, 1, mix(c1, c2, t));
+    }
+  }
+
+  function drawClouds(p, t){
+    var seeds = [[0.10,16,0.15,4],[0.42,11,0.10,3],[0.70,24,0.18,5],[0.92,15,0.08,3]];
+    for (var i = 0; i < seeds.length; i++){
+      var s = seeds[i];
+      var w = W * s[2], h = Y(s[3]);
+      var x = (W * s[0] + t * (6 + i * 2)) % (W + w * 1.6) - w * 0.8;
+      px(x + w * 0.18, Y(s[1]),        w * 0.64, h,     p.cloud);
+      px(x,            Y(s[1]) + h,    w,        h*0.8, p.cloud);
+      px(x + w * 0.30, Y(s[1]) - h*0.5, w * 0.4, h*0.5, p.cloud);
+    }
+  }
+
+  function drawMountains(p){
+    for (var x = 0; x < W; x++){
+      var y = Math.round(mtnY(x));
+      px(x, y, 1, Y(108) - y, p.mtn);
+      /* 雪。稜線から深めに。冬はさらに下まで。 */
+      var line = (p === PAL.winter) ? Y(58) : Y(50);
+      var snow = Math.max(0, Math.round((line - y) * 1.15));
+      if (snow > 0) px(x, y, 1, snow, p.snow);
+      /* 影。右下がりの斜面だけ、稜線のすぐ下に短く。
+         等間隔の縦縞にすると柵の柱に見えるので、傾きで決める。 */
+      var sl = mtnY(x + 1) - mtnY(x - 1);
+      if (sl > 0.25) px(x, y + snow, 1, Y(3) + sl * 2, p.mtnShade);
+    }
+    /* 前山。山塊と丘のあいだに低い山なみをもう一列。
+       これが無いと山の胴体が一枚板になって「青い塀」に見える。
+       遠いものは空の色に近づく（空気遠近法）ので、混ぜた色で。 */
+    var far = mix(hex(p.mtn), hex(p.skyBot), 0.42);
+    var lip = mix(hex(p.mtn), [255,255,255], 0.55);
+    for (var x2 = 0; x2 < W; x2++){
+      var y2 = Math.round(Y(80)
+             + Y(4.0) * Math.sin(x2 * 0.014 + 1.2)
+             + Y(2.0) * Math.sin(x2 * 0.037 + 3.4)
+             + Y(1.0) * Math.sin(x2 * 0.089 + 0.7));
+      px(x2, y2, 1, Y(108) - y2, far);
+      px(x2, y2, 1, 1, lip);
+    }
+  }
+
+  function drawHills(p){
+    for (var i = 0; i < HILLS.length; i++){
+      var h = HILLS[i], c = p.hills[i];
+      var lip = mix(hex(c[0]), [255,255,255], 0.30);
+      for (var x = 0; x < W; x++){
+        var y = Math.round(ridge(x, h));
+        px(x, y, 1, H - y, c[0]);
+        /* 畑の帯。稜線に沿って曲がる＝美瑛のパッチワークの正体。 */
+        px(x, y + Y(4),  1, Y(5), c[1]);
+        px(x, y + Y(13), 1, Y(6), c[2]);
+        px(x, y, 1, 1, lip);                       /* 光が乗る稜線 */
+      }
+      /* 冬は稜線の北側に青い影。真っ白のままだと起伏が読めない。 */
+      if (p === PAL.winter){
+        for (var x3 = 0; x3 < W; x3++){
+          var sl = ridge(x3 + 1, h) - ridge(x3 - 1, h);
+          if (sl > 0.18) px(x3, ridge(x3, h) + 1, 1, Math.min(Y(9), sl * 14), '#cfdde8');
+        }
+      }
+    }
+    /* 夏だけ、手前の丘に花の帯を一本。 */
+    if (p.flower){
+      var h3 = HILLS[2];
+      for (var x4 = 0; x4 < W; x4++){
+        var y4 = ridge(x4, h3);
+        px(x4, y4 + Y(20), 1, Y(5), p.flower);
+        if ((x4 % 3) === 0) px(x4, y4 + Y(20), 1, 1, '#a794c8');
+        if ((x4 % 5) === 0) px(x4, y4 + Y(24), 1, 1, '#7a67a0');
+      }
+    }
+  }
+
+  /* 一本道。手前で幅広く、消える先で幅ゼロ。
+     消える先は二番目の丘の稜線の上に置く。そこで道は無くなり、
+     そのむこうは空しかない＝「道が空につながる」の作り方。 */
+  function drawRoad(p){
+    var vpx = W * 0.56, vpy = ridge(vpx, HILLS[1]);
+    for (var y = Math.round(vpy); y < H; y++){
+      var t = (y - vpy) / (H - vpy);
+      var w = 0.6 + Y(26) * Math.pow(t, 1.7);
+      var cx = vpx + (W * 0.40 - vpx) * Math.pow(t, 1.25) + Math.sin(t * 3.1) * Y(9) * t;
+      px(cx - w/2, y, w, 1, p.road);
+      px(cx - w/2, y, Math.max(1, w*0.12), 1, p.roadEdge);
+      px(cx + w/2 - Math.max(1, w*0.12), y, Math.max(1, w*0.12), 1, p.roadEdge);
+    }
+  }
+
+  /* ============================================================
+     木
+
+        ┌──────────────────────────────────┐
+        │            立     札             │
+        │                                  │
+        │   哲学の木                        │
+        │                                  │
+        │   美瑛町の畑に、一本だけ立って    │
+        │   いた木。幹が傾き、枝が一本      │
+        │   のびていて、顎に手を添えて      │
+        │   考えこんでいる人に見えたので、  │
+        │   そう呼ばれた。                  │
+        │                                  │
+        │   二〇一六年二月、伐採。          │
+        │   畑に人が入りすぎたため。        │
+        │                                  │
+        │   もう無い木です。                │
+        │   ここでは、立っています。        │
+        │                                  │
+        │   施主の望みにより                │
+        │   二〇二六年七月三十日            │
+        └──────────────────────────────────┘
+
+     この札は訪ねてきた人には見えません。屋根裏の棟札と同じ扱い。
+
+     形について（施主が実物の写真を見せてくれて直したこと）
+       ・細長いポプラではない。傘のように横へ広がった大きな樹冠。
+         幹は太く短い。（細長いのは同じ美瑛の「ケンとメリーの木」）
+       ・幹の傾きと、そこから一本のびる枝が、この木のぜんぶ。
+         まっすぐ立てたら別の木になる。
+       ・冬は葉が落ちて、細い枝が扇のように大きく広がる。
+       ・朝と夕は、空を背にした真っ黒なシルエットになる。
+         いちばん有名な姿なので、時刻で黒く落とす。
+     ============================================================ */
+  function tree(p, hi, xr, scale, lean, bare, bend, silhouette){
+    var h  = HILLS[hi], x = W * xr;
+    var gy = ridge(x, h);
+    var th = Y(20) * scale;
+    var trunkH = th * 0.38;                    /* 短くて太い幹 */
+    var leaf  = silhouette ? mix(hex(p.tree),  [12,12,16], 0.72) : p.tree;
+    var bark  = silhouette ? mix(hex(p.trunk), [12,12,16], 0.72) : p.trunk;
+
+    /* 幹。上へ行くほど傾く。bend を上げると傾きが上で強くなる
+       ＝「首をかたむけて考えこんでいる」形。 */
+    var tipX = x, tipY = gy - trunkH;
+    for (var i = 0; i < trunkH; i++){
+      var u  = i / trunkH;
+      tipX = x + lean * th * 0.20 * Math.pow(u, bend);
+      px(tipX - (2.6 - u * 1.2) * scale * SC / 2, gy - i,
+         (2.6 - u * 1.2) * scale * SC, 1, bark);
+    }
+
+    /* 樹冠の半径。横 7 : 縦 6 ＝ 丸に近い。
+       tetugaku.png の実物がこの比率で、横に潰すと別の木になる。 */
+    var rx = Y(7.0) * scale, ry = Y(6.1) * scale;
+    var cx = tipX + lean * Y(1.2) * scale;
+    var cy = tipY - ry * 0.72;
+
+    if (bare){
+      /* 冬。枝を扇に広げる。太い枝から細い枝へ二段。 */
+      var n = Math.max(7, Math.round(9 * scale));
+      for (var b = 0; b < n; b++){
+        var ang = -Math.PI/2 + (b / (n - 1) - 0.5) * 2.15 + lean * 0.20;
+        var len = ry * (1.5 + 0.55 * Math.sin(b * 2.1));
+        for (var s2 = 0; s2 < len; s2++){
+          var f = s2 / len;
+          px(tipX + Math.cos(ang) * s2 * 1.25 + Math.sin(f * 3) * ry * 0.10,
+             tipY + Math.sin(ang) * s2,
+             1, 1, leaf);
+        }
+        /* 枝先の小枝。点をいくつか散らすと冬の樹形になる。 */
+        for (var k = 0; k < 3; k++){
+          px(tipX + Math.cos(ang + (k - 1) * 0.30) * len * 1.28,
+             tipY + Math.sin(ang + (k - 1) * 0.30) * len * 1.02,
+             1, 1, leaf);
+        }
+      }
+    } else {
+      /* 樹冠。
+         形は Ochi-Gee のヘルプ画面の背景（tetugaku.png）に合わせた。
+         あれは博喜さんが二〇二一年に落ちゲーへ入れた哲学の木の
+         シルエットで、つまりこの木は五年前から博喜さんの作った
+         ものの中に立っていた。同じ木にしないと意味がない。
+
+         実物に合わせて直したこと:
+           ・横に潰さない。丸に近い（横 : 縦 ＝ おおよそ 7 : 6）
+           ・輪郭を葉の塊でゴツゴツさせる。周期の違う波を三つ重ねて
+             出っぱりと引っこみを作る。きれいな楕円は木に見えない
+           ・下側に切れ込みを入れる。枝の間から空が見えるので、
+             底が一本の線で閉じない */
+      var hi2 = mix(hex(p.tree), [255,255,255], 0.22);
+      for (var dy = -ry; dy <= ry; dy++){
+        var t2 = dy / ry;
+        var half = rx * Math.sqrt(Math.max(0, 1 - t2 * t2));
+        /* 葉の塊。三つの波を重ねると、規則性が見えなくなる。 */
+        half *= 1
+              + 0.13 * Math.sin(dy * 1.30 + 0.7)
+              + 0.09 * Math.sin(dy * 2.70 + 2.2)
+              + 0.06 * Math.sin(dy * 4.10 + 4.1);
+        if (half < 0.6) continue;
+
+        if (t2 > 0.45){
+          /* 樹冠の下のほう。枝のあいだが透けるので、
+             左右に分けて中央に隙間を残す。 */
+          var gap = half * 0.30 * (t2 - 0.45) / 0.55;
+          px(cx - half, cy + dy, half - gap, 1, leaf);
+          px(cx + gap,  cy + dy, half - gap, 1, leaf);
+        } else {
+          px(cx - half, cy + dy, half * 2, 1, leaf);
+        }
+        if (dy < 0 && !silhouette) px(cx - half * 0.9, cy + dy, half * 0.7, 1, hi2);
+      }
+    }
+
+    /* 腕。顎に添えた手。幹から樹冠の下側へ一本上げる。 */
+    if (scale > 1.2){
+      var armLen = ry * 1.9;
+      for (var a = 0; a < armLen; a++){
+        var v = a / armLen;
+        px(x + lean * (1.4 + v * 5.2) * scale * SC,
+           gy - trunkH * 0.42 - a * 0.62,
+           Math.max(1, 1.6 * scale * SC * (1 - v * 0.5)), 1, bark);
+      }
+    }
+    px(x - 1.5 * scale * SC, gy, 3 * scale * SC, 1, bark);
+  }
+
+  function drawTrees(p, sil){
+    var bare = (p === PAL.winter);
+    tree(p, 0, 0.17, 0.7, -0.4, bare, 1,   sil);
+    tree(p, 2, 0.89, 1.0,  0.4, bare, 1,   sil);
+    tree(p, 2, 0.12, 0.8, -0.3, bare, 1,   sil);
+    /* ── 哲学の木 ── 中ほどの丘の稜線に一本だけ。
+       まわりに何も置かない。一本だけであることが、この木の中身。 */
+    tree(p, 1, 0.68, 2.0, 1.35, bare, 1.7, sil);
+  }
+
+  /* 冬の地吹雪。横に細い白い筋を薄く流す。 */
+  function drawJifubuki(p, t){
+    if (p !== PAL.winter) return;
+    g.globalAlpha = 0.35;
+    for (var i = 0; i < 7; i++){
+      var x = ((t * (18 + i * 6)) % (W + W * 0.4)) - W * 0.2;
+      px(x, Y(112 + i * 4), W * (0.08 + i * 0.012), 1, '#ffffff');
+    }
+    g.globalAlpha = 1;
+  }
+
+  /* ------------------------------------------------------------
+     時刻の光を、絵ぜんたいに掛ける。
+     母屋の CSS が朝昼夕夜で色を変えているので、外の景色も同じ
+     時刻に従わせる。景色だけ時刻を無視すると、そこだけ嘘になる。
+     掛け算（multiply）で重ねるのは、光を弱めるのが影の作り方で、
+     色を上から塗るのとは別物だから。
+     ------------------------------------------------------------ */
+  var TINT = {
+    morning: ['#d6e8f6', 0.20],
+    day:     [null,      0],
+    evening: ['#f0a55a', 0.40],
+    /* 夜は深く落とす。母屋の本文の背景が #141c2b の濃紺なので、
+       景色を浅く落とすと、そこだけ明るくて浮く。同じ夜にする。 */
+    night:   ['#26365c', 0.84]
+  };
+  function drawTint(time){
+    var t = TINT[time] || TINT.day;
+    if (!t[0]) return;
+    g.globalCompositeOperation = 'multiply';
+    g.globalAlpha = t[1];
+    px(0, 0, W, H, t[0]);
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+
+    /* 夜だけ、星を置く。位置は毎回同じ（乱数を使わない）。
+       瞬かせない——縁側の作法として、光らせないため。 */
+    if (time === 'night'){
+      for (var i = 0; i < 46; i++){
+        var x = (i * 137.5) % W;                    /* 黄金角で散らすと偏らない */
+        var y = ((i * 61.8) % 100) / 100 * Y(66);
+        if (y > mtnY(x) - Y(3)) continue;           /* 山にかぶるものは置かない */
+        px(x, y, 1, 1, (i % 5 === 0) ? '#ffffff' : '#c8d4e8');
+      }
+    }
+  }
+
+  function seasonNow(){
+    var m = new Date().getMonth() + 1;
+    if (m >= 3  && m <= 5)  return 'spring';
+    if (m >= 6  && m <= 8)  return 'summer';
+    if (m >= 9  && m <= 11) return 'autumn';
+    return 'winter';
+  }
+
+  var moving = !(window.matchMedia &&
+                 window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+
+  function draw(t){
+    var p    = PAL[seasonNow()];
+    var time = document.documentElement.getAttribute('data-time') || 'day';
+    var sil  = (time === 'evening' || time === 'night');   /* 朝夕はシルエット */
+
+    drawSky(p);
+    drawClouds(p, t);
+    drawMountains(p);
+    drawHills(p);
+    drawRoad(p);
+    drawJifubuki(p, t);
+    drawTrees(p, sil);
+    drawTint(time);
+
+    /* 小さい板を、ぼかさずに拡大する。ここがドット絵の要。 */
+    vg.imageSmoothingEnabled = false;
+    vg.mozImageSmoothingEnabled = false;
+    vg.webkitImageSmoothingEnabled = false;
+    vg.msImageSmoothingEnabled = false;
+    vg.drawImage(off, 0, 0, W, H, 0, 0, cv.width, cv.height);
+  }
+
+  function frame(now){
+    draw(moving ? (now - t0) / 1000 : 0);
+    if (moving) requestAnimationFrame(frame);
+  }
+
+  /* 画面の幅に合わせて、拡大の倍率を「整数で」決める。
+     小数倍にすると点の大きさが揃わず、ドット絵が汚れる。
+     倍率を先に決め、板の幅をそこから割り出すので、
+     画面が広い人には横に長い景色が見える（丘が増える）。 */
+  function resize(){
+    var vw = document.documentElement.clientWidth || 360;
+    S  = (vw >= 900) ? 3 : 2;
+    W  = Math.ceil(vw / S);
+    H  = 120;
+    SC = H / 160;
+    off.width = W; off.height = H;
+    cv.width  = W * S; cv.height = H * S;
+    cv.style.width  = (W * S) + 'px';
+    cv.style.height = (H * S) + 'px';
+    draw(moving ? ((((window.performance && performance.now) ? performance.now() : Date.now()) - t0) / 1000) : 0);
+  }
+
+  var rt = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(resize, 150);        /* 幅を動かしている間は描き直さない */
+  });
+
+  resize();
+  if (moving) requestAnimationFrame(frame);
 })();
 
 /* ------------------------------------------------------------
