@@ -29,6 +29,15 @@
       縁側屋はサーバーを持たない静的なページのままでこれができる。
 
     データの形（v1・鉄の約束）:
+      #以降 = base64url( deflate圧縮( UTF-8 の JSON ) )
+      圧縮は raw deflate（zlibヘッダ無し）。ブラウザ内蔵の
+      DecompressionStream('deflate-raw') で解ける＝外部ライブラリ不要。
+      iOS 16.4以降・2022年以降のChromeで使える。それより古い機械では
+      解けないので、正直に「ブラウザが古いかも」と言う。
+      圧縮する理由：LINEは長いリンクを途中で切る（2026-07-30 実地試験で
+      1,560文字のリンクが切られた）。圧縮で約4割縮む＝切られにくくなる。
+      圧縮無しの裸のJSONも読める（圧縮導入前に配られたリンクへの義理）。
+      （以下は圧縮を解いた後の中身）
       #以降 = base64url( UTF-8 の JSON )
       JSON = {
         v:  1,                    // 形式の世代番号（gmem と同じ思想。最初は1）
@@ -328,8 +337,10 @@ footer a { color: inherit; }
   <!-- リンクが読めなかったとき（途中で切れた等）。正直に言う。 -->
   <div id="badData" class="empty" hidden>
     ごめんなさい、このリンクの中の道が読めませんでした。<br>
-    リンクが途中で切れている（長い文字列の一部だけコピーされた）ことが多いです。
+    リンクが途中で切れている（長い文字列の一部だけ届いた）ことが多いです。
     送ってくれた人に、もう一度リンク全体を送ってもらってください。<br>
+    お使いのブラウザが古い場合も開けないことがあります。Safari や Chrome を
+    新しくしてから、もう一度お試しください。<br>
     それでも読めないときは <a href="mailto:info@engawaya.com">info@engawaya.com</a> へ。ひとつずつ直します。
   </div>
 
@@ -379,29 +390,27 @@ footer a { color: inherit; }
     return;
   }
 
-  var data;
-  try {
-    data = parsePayload(hash);
-  } catch (e) {
+  // 圧縮を解く工程が非同期（ブラウザ内蔵の解凍機の決まり）なので、
+  // ここから先はまとめて非同期で進める。転んだら正直に「読めませんでした」。
+  parsePayload(hash).then(function (data) {
+    // 世代番号の検品（gmem と同じ思想）。知らない新しさなら正直に断る。
+    if (!data || data.v > 1 || typeof data.p !== 'string') {
+      document.getElementById('badData').hidden = false;
+      return;
+    }
+    var points = decodePolyline(data.p);
+    if (points.length < 2) {           // 1点では線にならない
+      document.getElementById('badData').hidden = false;
+      return;
+    }
+    showRoute(data, points);
+  }).catch(function () {
     document.getElementById('badData').hidden = false;
-    return;
-  }
+  });
 
-  // 世代番号の検品（gmem と同じ思想）。知らない新しさなら正直に断る。
-  if (!data || data.v > 1 || typeof data.p !== 'string') {
-    document.getElementById('badData').hidden = false;
-    return;
-  }
-
-  var points = decodePolyline(data.p);
-  if (points.length < 2) {             // 1点では線にならない
-    document.getElementById('badData').hidden = false;
-    return;
-  }
-
-  showRoute(data, points);
-
-  /* ---- base64url → UTF-8 → JSON ---- */
+  /* ---- base64url → (deflate解凍) → UTF-8 → JSON ----
+     荷物は「圧縮あり」が今の形。ただし圧縮導入前に配られたリンクも
+     見捨てない：まず裸のJSONとして読み、駄目なら解凍してから読む。 */
   function parsePayload(s) {
     // base64url を普通の base64 に戻す（- _ を + / へ、詰め物 = を足す）
     var b64 = s.replace(/-/g, '+').replace(/_/g, '/');
@@ -409,7 +418,22 @@ footer a { color: inherit; }
     var bin = atob(b64);
     var bytes = new Uint8Array(bin.length);
     for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    var text = new TextDecoder('utf-8').decode(bytes);
+    try {
+      return Promise.resolve(JSON.parse(text));   // 圧縮無しの古い形
+    } catch (e) {
+      // 圧縮された形。ブラウザ内蔵の解凍機（deflate-raw）で解く。
+      if (typeof DecompressionStream === 'undefined') {
+        // 古いブラウザには解凍機が無い。黙って転ばず、理由ごと断る
+        // （badData の文面に「ブラウザが古い場合」の一行を入れてある）。
+        return Promise.reject(new Error('old browser'));
+      }
+      var stream = new Blob([bytes]).stream()
+        .pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Response(stream).arrayBuffer().then(function (buf) {
+        return JSON.parse(new TextDecoder('utf-8').decode(new Uint8Array(buf)));
+      });
+    }
   }
 
   /* ---- Google Encoded Polyline を点列に戻す（公開仕様・精度1e-5） ----
