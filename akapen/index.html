@@ -41,17 +41,25 @@
       だから「スクリーンショットを撮る」工程が存在しない。
       紙の上にペンを走らせるだけで済む。
 
-      そして一画でも描いたら、地図は動かせなくする（下の「鉄の約束」参照）。
-      紙にしてしまえば、あとは何が起きても線と地図はずれない。
-
     鉄の約束（ここを崩すと道具として壊れる）:
-      ① 一画でも描いたら、地図は固定。動かしたいときは「ぜんぶ消す」。
-         → 理由：地図だけ動いて線が取り残されると、書いた本人が
-           気づかないまま嘘の図面ができる。ずれるより、動かないほうが安全。
-      ② 線は「点の列」として持つ（絵として塗り込まない）。
-         → 理由：一つ戻す・線を消す・大きい絵で書き出す、が全部できる。
+      ① 線は「点の列」として持つ（絵として塗り込まない）。
+         → 理由：一つ戻す・なぞった線を消す・大きい紙に書き出す、が全部できる。
+      ② その点は「画面のどこ」ではなく「地面のどこ（緯度経度）」で持つ。
+         → 理由：これが要点。地面で持てば、地図を動かしても拡大縮小しても、
+           線は地面に貼りついたまま付いてくる。書いた印が指した場所は、
+           縮尺を変えても同じ場所を指したままになる。
       ③ 地図の出どころの名乗り（© OpenStreetMap contributors）は
          書き出す絵にも必ず焼き込む。消してはいけない決まり。
+
+    ②に行き着くまでの記録（残しておく・2026-07-30）:
+      最初は線を「画面の座標」で持っていた。すると地図を動かした瞬間に
+      線だけが取り残される。それを防ぐために「一画でも描いたら地図を固定する
+      （動かせなくする）」という決まりを置いていた。
+      施主の一言「ズームイン、ズームアウトあれば尚良し」で、それが
+      間違いだと分かった。線を地面の座標で持てば、ずれる理由そのものが消える。
+      固定は、こちらが作った問題を、こちらが我慢して回避していただけだった。
+      → 教訓：「動かせないようにする」で守ろうとしたら、たいてい
+        持ち方（どの座標系で持つか）を間違えている。
 
     憲法（母屋の CLAUDE.md）との折り合い:
       「外から何も読み込まない」に対して、地図タイルだけは外から来る。
@@ -395,13 +403,26 @@ footer a { color: inherit; }
       </div>
     </fieldset>
 
-    <!-- 地図を動かす手のときの道具 -->
-    <div id="mapTools">
+    <!-- 縮尺と場所の道具。
+         ここは「ペンで書く」に切り替えても隠さない。
+         書いている途中に「もう少し引いて全体を見たい」は必ず起きるし、
+         線は地面の座標で持っているので、縮尺を変えても線はついてくる。
+         （最初はペンの手のとき隠していた＝施主に見つけてもらえなかった） -->
+    <fieldset>
+      <legend>地図の縮尺と場所</legend>
       <div class="row row-3">
         <button class="btn" id="zoomIn"  type="button">近づく　＋</button>
         <button class="btn" id="zoomOut" type="button">遠のく　−</button>
         <button class="btn" id="here"    type="button">いまいる場所</button>
       </div>
+      <p class="btn-note">
+        <strong>二本の指でつまんでも、縮尺が変わります。</strong>
+        書いている途中でも動かせます。書いた線は地図に貼りついていて、一緒に付いてきます。
+      </p>
+    </fieldset>
+
+    <!-- 地図を動かす手のときだけの道具 -->
+    <div id="mapTools">
       <div class="ba">
         <div class="zahyou">
           <input id="latlon" type="text" inputmode="decimal" placeholder="緯度, 経度（例 35.681, 139.767）" aria-label="緯度と経度">
@@ -410,25 +431,35 @@ footer a { color: inherit; }
       </div>
       <p class="btn-note">
         地図の上を指やマウスで引っぱると動きます。地図アプリで調べた緯度・経度を貼り付けても行けます。
+        「ペンで書く」に切り替えたあとも、二本の指でつまめば縮尺は変えられます。
       </p>
     </div>
 
     <!-- ペンの手のときの道具 -->
     <div id="penTools" hidden>
+      <!-- ペンの種類。蛍光ペンは半分すけているので、下の地図が読める。
+           色と太さの中身は種類によって入れ替える（JS で流し込む）。 -->
+      <fieldset>
+        <legend>ペンの種類</legend>
+        <div class="row">
+          <button class="btn" id="penSign"   type="button" aria-pressed="true">サインペン</button>
+          <button class="btn" id="penMarker" type="button" aria-pressed="false">蛍光ペン</button>
+        </div>
+      </fieldset>
       <fieldset>
         <legend>色</legend>
-        <div class="row row-3">
-          <button class="btn iro" data-iro="#d21f1f" type="button" aria-pressed="true"><span class="tama" style="background:#d21f1f"></span>赤</button>
-          <button class="btn iro" data-iro="#1c1c1c" type="button" aria-pressed="false"><span class="tama" style="background:#1c1c1c"></span>黒</button>
-          <button class="btn iro" data-iro="#1358c4" type="button" aria-pressed="false"><span class="tama" style="background:#1358c4"></span>青</button>
+        <div class="row row-3" id="iroRow">
+          <button class="btn iro" data-i="0" type="button" aria-pressed="true"><span class="tama"></span><span class="na"></span></button>
+          <button class="btn iro" data-i="1" type="button" aria-pressed="false"><span class="tama"></span><span class="na"></span></button>
+          <button class="btn iro" data-i="2" type="button" aria-pressed="false"><span class="tama"></span><span class="na"></span></button>
         </div>
       </fieldset>
       <fieldset>
         <legend>太さ</legend>
-        <div class="row row-3">
-          <button class="btn futosa" data-futosa="3"  type="button" aria-pressed="false"><span class="bou" style="height:3px"></span>細</button>
-          <button class="btn futosa" data-futosa="6"  type="button" aria-pressed="true"><span class="bou" style="height:6px"></span>中</button>
-          <button class="btn futosa" data-futosa="12" type="button" aria-pressed="false"><span class="bou" style="height:12px"></span>太</button>
+        <div class="row row-3" id="futosaRow">
+          <button class="btn futosa" data-i="0" type="button" aria-pressed="false"><span class="bou"></span>細</button>
+          <button class="btn futosa" data-i="1" type="button" aria-pressed="true"><span class="bou"></span>中</button>
+          <button class="btn futosa" data-i="2" type="button" aria-pressed="false"><span class="bou"></span>太</button>
         </div>
       </fieldset>
       <fieldset>
@@ -548,14 +579,37 @@ footer a { color: inherit; }
     z: 15,              // 地図の細かさ（ズーム）。大きいほど近い
     cx: 139.7671,       // 紙の真ん中の経度（初期＝東京駅。現在地が取れれば上書き）
     cy: 35.6812,        // 紙の真ん中の緯度
-    strokes: [],        // 書いた線。{iro, futosa, pts:[{x,y,p}]} の配列（鉄の約束②）
+    // 書いた線。{iro, futosa, z, pts:[{lat, lon, p}]} の配列。
+    // 点は画面のどこではなく地面のどこ（緯度経度）で持つ＝鉄の約束②。
+    // futosa と z は「どの縮尺のときに何pxの太さで引いたか」。
+    // 縮尺が変わったら、その比で太さも変える（地面に引いた線の幅を保つ）。
+    strokes: [],
     now: null,          // いま引いている途中の線
-    iro: '#d21f1f',
+    pen: 'sign',        // 'sign'（サインペン）か 'marker'（蛍光ペン）
+    iroI: 0,            // 選んでいる色の番号（種類ごとの三色のうち）
+    futosaI: 1,         // 選んでいる太さの番号
+    iro: '#d21f1f',     // 上の番号から決まる実際の値（描くときに使う）
     futosa: 6,
     keshi: false,       // 「線を消す」を選んでいるか
     drag: null,         // 地図を引っぱっている途中の情報
     tiles: {},          // 取り寄せた地図の絵をしまっておく（同じ絵を二度取らない）
     saved: true         // 画像で保存/印刷したあと書き足していないか（離れるときの警告用）
+  };
+
+  /* ---- 道具の中身（種類ごとの三色と三段の太さ） ----
+     蛍光ペンは半分すけさせる（alpha）。下の地図の文字が読めることが値打ちなので、
+     色は薄く、太さはサインペンより一段太い。 */
+  var DOUGU = {
+    sign: {
+      iro: [{ c: '#d21f1f', n: '赤' }, { c: '#1c1c1c', n: '黒' }, { c: '#1358c4', n: '青' }],
+      futosa: [3, 6, 12],
+      alpha: 1
+    },
+    marker: {
+      iro: [{ c: '#f5d020', n: '黄' }, { c: '#38c96a', n: '緑' }, { c: '#ff86b4', n: '桃' }],
+      futosa: [12, 22, 36],
+      alpha: 0.38
+    }
   };
 
   var stage   = document.getElementById('stage');
@@ -601,9 +655,8 @@ footer a { color: inherit; }
     var m = measure();
     // 寸法が決まる前（タブが裏にある等）に描くと0幅の絵になる。育つまで待つ。
     if (m.w < 50) { requestAnimationFrame(layout); return false; }
-    // すでに書いた線があるときは、紙の寸法を変えない。
-    // 変えると線と地図の関係が崩れる＝鉄の約束①の心（ずれるより動かさない）。
-    if (st.strokes.length && view.w) return true;
+    // 紙の寸法が変わっても線は失われない。線は地面の座標で持っているので、
+    // 新しい寸法の紙の上に引き直すだけで元の場所に戻る（鉄の約束②の効き目）。
     view.w = m.w; view.h = m.h;
     view.dpr = window.devicePixelRatio || 1;
     setupCanvas(mapCv);
@@ -627,7 +680,9 @@ footer a { color: inherit; }
   function requestMap() {
     if (drawing) return;
     drawing = true;
-    requestAnimationFrame(function () { drawing = false; drawMap(); });
+    // 地図と線は必ず同じ回で描き直す。別々にすると、動かしている途中で
+    // 一瞬だけ線が地図から浮いて見える。
+    requestAnimationFrame(function () { drawing = false; drawMap(); drawInk(); });
   }
 
   function drawMap() {
@@ -640,15 +695,22 @@ footer a { color: inherit; }
     ctx.fillRect(0, 0, view.w, view.h);
 
     // 紙に映る範囲のタイルを並べる。手元に無いものは取り寄せて、届いたら描き直す。
-    var t0x = Math.floor(o.ox / 256), t1x = Math.floor((o.ox + view.w) / 256);
-    var t0y = Math.floor(o.oy / 256), t1y = Math.floor((o.oy + view.h) / 256);
-    var max = Math.pow(2, st.z);
+    //
+    // 縮尺（st.z）は指のピンチで小数になる。タイルは整数の細かさでしか
+    // 用意されていないので、いちばん近い整数の絵を取り寄せて、
+    // 足りない分だけ伸ばして敷く。これで指の動きに地図がぴたりと付いてくる。
+    var tz = Math.max(3, Math.min(19, Math.round(st.z)));
+    var side = 256 * Math.pow(2, st.z - tz);        // 1枚を紙の上で何pxで敷くか
+    var t0x = Math.floor(o.ox / side), t1x = Math.floor((o.ox + view.w) / side);
+    var t0y = Math.floor(o.oy / side), t1y = Math.floor((o.oy + view.h) / side);
+    var max = Math.pow(2, tz);
     for (var ty = t0y; ty <= t1y; ty++) {
       if (ty < 0 || ty >= max) continue;                       // 上下の端の外は空
       for (var tx = t0x; tx <= t1x; tx++) {
         var wx = ((tx % max) + max) % max;                     // 東西はぐるりと回る
-        var img = tile(st.z, wx, ty);
-        if (img) ctx.drawImage(img, tx * 256 - o.ox, ty * 256 - o.oy, 256, 256);
+        var img = tile(tz, wx, ty);
+        // 1px 大きめに敷く。ぴったりだと絵と絵の間に髪の毛のような隙間が出る。
+        if (img) ctx.drawImage(img, tx * side - o.ox, ty * side - o.oy, side + 1, side + 1);
       }
     }
 
@@ -717,38 +779,91 @@ footer a { color: inherit; }
   /* ============================================================
      書いた線を描く（鉄の約束②：線は点の列として持つ）
      ============================================================ */
+  /* ---- 地面の座標（緯度経度）→ いまの紙の上の位置 ----
+     線が地図に貼りついて見えるのは、毎回ここを通して描き直しているから。
+     k は書き出すときの倍率（画面と同じ絵を、大きい紙に引き直すため）。 */
+  function toPaper(pt, o, k) {
+    return { x: (MX(pt.lon, st.z) - o.ox) * k, y: (MY(pt.lat, st.z) - o.oy) * k };
+  }
+
+  /* ---- 縮尺が変わったときの線の太さ ----
+     地面に引いた線の「幅」を保つので、2倍近づけば2倍太くなる。
+     ただし遠のいたときに細くなって消えてしまわないよう、
+     近づいたときに紙を埋め尽くさないよう、上と下で止める。 */
+  function penWidth(s) {
+    var w = s.futosa * Math.pow(2, st.z - s.z);
+    return Math.max(1.2, Math.min(64, w));
+  }
+
   function drawInk() {
     var ctx = inkCv.getContext('2d');
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
     ctx.clearRect(0, 0, view.w, view.h);
-    st.strokes.forEach(function (s) { strokePath(ctx, s, 1); });
-    if (st.now) strokePath(ctx, st.now, 1);
+    var o = origin();
+    drawStrokes(ctx, o, 1);
+    if (st.now) strokePath(ctx, st.now, o, 1);
   }
 
-  function strokePath(ctx, s, k) {
+  /* 蛍光ペンを先に、サインペンを後に描く。
+     引いた順番に関わらず、蛍光ペンで塗った上にサインペンの線が乗る＝
+     紙の上でやるときと同じ見え方になる（塗ってから、書き込む）。 */
+  function drawStrokes(ctx, o, k) {
+    st.strokes.forEach(function (s) { if (s.kind === 'marker') strokePath(ctx, s, o, k); });
+    st.strokes.forEach(function (s) { if (s.kind !== 'marker') strokePath(ctx, s, o, k); });
+  }
+
+  function strokePath(ctx, s, o, k) {
     if (!s.pts.length) return;
+    var marker = (s.kind === 'marker');
     ctx.lineJoin = 'round';
     ctx.lineCap  = 'round';
     ctx.strokeStyle = s.iro;
+    ctx.globalAlpha = marker ? DOUGU.marker.alpha : 1;
+    var w = penWidth(s) * k;
 
     // 点が1つだけ（ちょんと押しただけ）なら、丸い点を打つ。
     if (s.pts.length === 1) {
+      var q = toPaper(s.pts[0], o, k);
       ctx.fillStyle = s.iro;
       ctx.beginPath();
-      ctx.arc(s.pts[0].x * k, s.pts[0].y * k, s.futosa * k / 2, 0, Math.PI * 2);
+      ctx.arc(q.x, q.y, w / 2, 0, Math.PI * 2);
       ctx.fill();
+      ctx.globalAlpha = 1;
       return;
     }
-    // 筆圧が取れるペンなら太さを少し変える。取れない指やマウスでは一定。
-    for (var i = 1; i < s.pts.length; i++) {
-      var a = s.pts[i - 1], b = s.pts[i];
-      var pr = (a.p + b.p) / 2;
-      ctx.lineWidth = s.futosa * k * (0.65 + 0.7 * pr);
+
+    var i, cur;
+    if (marker) {
+      // 蛍光ペンは、ひと続きの道として一度だけ引く。
+      // 区間ごとに引くと、継ぎ目が二重に塗られてそこだけ濃くなる。
+      // 本物の蛍光ペンは重ねても濃くならないので、その見え方に合わせる。
+      // （同じ理由で筆圧も使わない。太さは一定）
+      ctx.lineWidth = w;
       ctx.beginPath();
-      ctx.moveTo(a.x * k, a.y * k);
-      ctx.lineTo(b.x * k, b.y * k);
+      var p0 = toPaper(s.pts[0], o, k);
+      ctx.moveTo(p0.x, p0.y);
+      for (i = 1; i < s.pts.length; i++) {
+        cur = toPaper(s.pts[i], o, k);
+        ctx.lineTo(cur.x, cur.y);
+      }
       ctx.stroke();
+      ctx.globalAlpha = 1;
+      return;
     }
+
+    // サインペン：筆圧が取れるペンなら太さを少し変える。指やマウスでは一定。
+    var prev = toPaper(s.pts[0], o, k);
+    for (i = 1; i < s.pts.length; i++) {
+      cur = toPaper(s.pts[i], o, k);
+      var pr = (s.pts[i - 1].p + s.pts[i].p) / 2;
+      ctx.lineWidth = w * (0.65 + 0.7 * pr);
+      ctx.beginPath();
+      ctx.moveTo(prev.x, prev.y);
+      ctx.lineTo(cur.x, cur.y);
+      ctx.stroke();
+      prev = cur;
+    }
+    ctx.globalAlpha = 1;
   }
 
   /* ============================================================
@@ -760,10 +875,68 @@ footer a { color: inherit; }
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   }
 
+  /* 画面の位置 → 地面の位置（緯度経度）。
+     指が触れたその瞬間に地面の言葉へ翻訳しておく。あとで地図をどう動かしても、
+     線は同じ地面を指したままになる（鉄の約束②）。 */
+  function toGround(p, pr) {
+    var o = origin();
+    return { lat: YLat(o.oy + p.y, st.z), lon: XLon(o.ox + p.x, st.z), p: pr };
+  }
+
+  /* いま触っている指を全部覚えておく。二本になったら縮尺を変える手つき。
+     一本＝動かす／書く、二本＝つまんで縮尺。スマホの地図の当たり前の動きに合わせる。
+     （ボタンは残してある。ジェスチャーを知らない人でも押すだけで足りるように） */
+  var yubi = {};
+  var pinch = null;
+  function yubiKazu() { return Object.keys(yubi).length; }
+
+  function startPinch() {
+    var id = Object.keys(yubi);
+    var a = yubi[id[0]], b = yubi[id[1]];
+    var mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    pinch = {
+      haba: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)),   // 指の間の距離
+      z0: st.z,
+      jimen: toGround(mid, 0.5)     // 指の真ん中がつかんでいる地面。ここを動かさない
+    };
+  }
+
+  function movePinch() {
+    var id = Object.keys(yubi);
+    var a = yubi[id[0]], b = yubi[id[1]];
+    var haba = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y));
+    var mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+
+    // 指の間が2倍に開いたら1段近づく（＝縮尺は距離の対数で決まる）
+    st.z = Math.max(3, Math.min(19, pinch.z0 + Math.log(haba / pinch.haba) / Math.LN2));
+
+    // つかんだ地面が、指の真ん中の下に留まるように紙の真ん中を計算し直す。
+    // これをやらないと、つまんだ場所ではなく画面の中心を軸に伸び縮みして
+    // 「見ていた場所がどこかへ行く」感じになる。
+    var ox = MX(pinch.jimen.lon, st.z) - mid.x;
+    var oy = MY(pinch.jimen.lat, st.z) - mid.y;
+    st.cx = XLon(ox + view.w / 2, st.z);
+    st.cy = Math.max(-85, Math.min(85, YLat(oy + view.h / 2, st.z)));
+    requestMap();
+    updateCaption();
+  }
+
   inkCv.addEventListener('pointerdown', function (e) {
     if (!st.ready) return;
-    inkCv.setPointerCapture(e.pointerId);      // 紙の外に出ても離すまで追いかける
-    var p = localPos(e);
+    try { inkCv.setPointerCapture(e.pointerId); } catch (err) {}  // 離すまで追いかける
+    yubi[e.pointerId] = localPos(e);
+    var p = yubi[e.pointerId];
+
+    if (yubiKazu() === 2) {
+      // 二本目が触れた＝つまむつもり。書きかけの線は捨てる。
+      // つまむ拍子に引かれた短い線が残るほうが、消す手間になって困る。
+      st.now = null;
+      st.drag = null;
+      drawInk();
+      startPinch();
+      return;
+    }
+    if (yubiKazu() > 2) return;                    // 三本目以降は見ない
 
     if (st.mode === 'map') {
       var o = origin();
@@ -772,13 +945,16 @@ footer a { color: inherit; }
     }
     if (st.keshi) { erase(p); return; }
 
-    st.now = { iro: st.iro, futosa: st.futosa,
-               pts: [{ x: p.x, y: p.y, p: pressure(e) }] };
+    st.now = { iro: st.iro, futosa: st.futosa, z: st.z, kind: st.pen,
+               pts: [toGround(p, pressure(e))] };
     drawInk();
   });
 
   inkCv.addEventListener('pointermove', function (e) {
     if (!st.ready) return;
+    if (e.pointerId in yubi) yubi[e.pointerId] = localPos(e);
+
+    if (pinch && yubiKazu() >= 2) { movePinch(); return; }
 
     if (st.mode === 'map') {
       if (!st.drag) return;
@@ -795,10 +971,11 @@ footer a { color: inherit; }
     if (!st.now) return;
 
     var p = localPos(e);
-    var last = st.now.pts[st.now.pts.length - 1];
     // 近すぎる点は捨てる。点が多すぎると重くなるだけで、絵は変わらない。
+    // 溜めてあるのは地面の座標なので、いまの紙の上に戻して比べる。
+    var last = toPaper(st.now.pts[st.now.pts.length - 1], origin(), 1);
     if (Math.abs(p.x - last.x) < 1 && Math.abs(p.y - last.y) < 1) return;
-    st.now.pts.push({ x: p.x, y: p.y, p: pressure(e) });
+    st.now.pts.push(toGround(p, pressure(e)));
     drawInk();
   });
 
@@ -809,12 +986,24 @@ footer a { color: inherit; }
       st.now = null;
       st.saved = false;
       drawInk();
-      lockMap();                     // 一画でも描いたら地図は固定（鉄の約束①）
     }
   }
-  inkCv.addEventListener('pointerup', endStroke);
-  inkCv.addEventListener('pointercancel', endStroke);
-  inkCv.addEventListener('pointerleave', function () { st.drag = null; });
+
+  /* 指が離れたとき。全部離れてから線を確定する。 */
+  function hanasu(e) {
+    delete yubi[e.pointerId];
+    if (pinch && yubiKazu() < 2) {
+      pinch = null;
+      // つまみ終わったら、いちばん近い段に落ち着かせる。
+      // 中途半端な縮尺のままだと、伸ばした絵が少しぼやけて見える。
+      st.z = Math.max(3, Math.min(19, Math.round(st.z)));
+      requestMap();
+      updateCaption();
+    }
+    if (yubiKazu() === 0) endStroke();
+  }
+  inkCv.addEventListener('pointerup', hanasu);
+  inkCv.addEventListener('pointercancel', hanasu);
 
   // 筆圧。取れない機械では 0 や 0.5 が来るので、そのときは一定の太さにする。
   function pressure(e) {
@@ -827,10 +1016,13 @@ footer a { color: inherit; }
   function erase(p) {
     var hit = -1;
     var near = Math.max(10, st.futosa);
+    var o = origin();
+    // 溜めてあるのは地面の座標なので、いまの紙の上に戻してから当たりを見る。
     for (var i = st.strokes.length - 1; i >= 0; i--) {
       var pts = st.strokes[i].pts;
       for (var j = 0; j < pts.length; j++) {
-        if (Math.abs(pts[j].x - p.x) < near && Math.abs(pts[j].y - p.y) < near) { hit = i; break; }
+        var q = toPaper(pts[j], o, 1);
+        if (Math.abs(q.x - p.x) < near && Math.abs(q.y - p.y) < near) { hit = i; break; }
       }
       if (hit >= 0) break;
     }
@@ -838,7 +1030,6 @@ footer a { color: inherit; }
       st.strokes.splice(hit, 1);
       st.saved = false;
       drawInk();
-      lockMap();
     }
   }
 
@@ -853,7 +1044,6 @@ footer a { color: inherit; }
   var penTools = document.getElementById('penTools');
 
   function setMode(m) {
-    if (m === 'map' && st.strokes.length) return;    // 固定中は戻れない（鉄の約束①）
     st.mode = m;
     stage.setAttribute('data-mode', m);
     press(modeMap, m === 'map');
@@ -865,28 +1055,19 @@ footer a { color: inherit; }
   modeMap.addEventListener('click', function () { setMode('map'); });
   modePen.addEventListener('click', function () { setMode('pen'); });
 
-  /* 一画でも描いたら地図を固定する。
-     見えない禁止は不親切なので、押せなくすると同時に理由を書く。 */
-  function lockMap() {
-    var locked = st.strokes.length > 0;
-    modeMap.disabled = locked;
-    document.getElementById('zoomIn').disabled  = locked;
-    document.getElementById('zoomOut').disabled = locked;
-    document.getElementById('here').disabled    = locked;
-    document.getElementById('goLatLon').disabled = locked;
-    if (locked) {
-      if (st.mode === 'map') setMode('pen');
-      tell('書き始めたので、地図はここで固定しました。動かしたいときは「ぜんぶ消す」を押してください。');
-    }
-  }
-
   function tell(msg) { shirase.textContent = msg || ''; }
 
+  /* 縮尺を変える。線は地面に貼りついているので、書いた後でも遠慮なく変えられる。
+     書いた線は、地面の幅を保ったまま一緒に伸び縮みする。 */
   document.getElementById('zoomIn').addEventListener('click', function () {
-    if (st.z < 19) { st.z++; requestMap(); updateCaption(); }
+    if (st.z >= 19) { tell('これ以上は近づけません。'); return; }
+    st.z = Math.min(19, Math.round(st.z) + 1);   // つまんだ途中の小数からでも段に乗る
+    requestMap(); updateCaption(); tell('');
   });
   document.getElementById('zoomOut').addEventListener('click', function () {
-    if (st.z > 3) { st.z--; requestMap(); updateCaption(); }
+    if (st.z <= 3) { tell('これ以上は遠のけません。'); return; }
+    st.z = Math.max(3, Math.round(st.z) - 1);
+    requestMap(); updateCaption(); tell('');
   });
 
   document.getElementById('here').addEventListener('click', function () {
@@ -914,21 +1095,50 @@ footer a { color: inherit; }
     tell('その場所を出しました。');
   });
 
-  // 色と太さ：同じ組の中で、押されているものを一つだけにする
-  Array.prototype.forEach.call(document.querySelectorAll('[data-iro]'), function (b) {
-    b.addEventListener('click', function () {
-      st.iro = b.getAttribute('data-iro');
-      Array.prototype.forEach.call(document.querySelectorAll('[data-iro]'), function (o) { press(o, o === b); });
-      setKeshi(false);
+  /* ---- ペンの種類・色・太さ ----
+     色と太さのボタンは、種類（サインペン／蛍光ペン）によって中身が入れ替わる。
+     ボタンの数と場所は変えない＝押す場所が動かないほうが、指が迷わない。 */
+  var penSign   = document.getElementById('penSign');
+  var penMarker = document.getElementById('penMarker');
+  var iroBtns    = document.querySelectorAll('#iroRow .iro');
+  var futosaBtns = document.querySelectorAll('#futosaRow .futosa');
+
+  function applyDougu() {
+    var d = DOUGU[st.pen];
+    st.iro    = d.iro[st.iroI].c;
+    st.futosa = d.futosa[st.futosaI];
+
+    Array.prototype.forEach.call(iroBtns, function (b, i) {
+      var tama = b.querySelector('.tama');
+      tama.style.background = d.iro[i].c;
+      // 蛍光ペンの丸は薄く見せる。押す前に「すける色だ」と分かるように。
+      tama.style.opacity = (st.pen === 'marker') ? '0.55' : '1';
+      b.querySelector('.na').textContent = d.iro[i].n;
+      press(b, i === st.iroI);
     });
-  });
-  Array.prototype.forEach.call(document.querySelectorAll('[data-futosa]'), function (b) {
-    b.addEventListener('click', function () {
-      st.futosa = parseFloat(b.getAttribute('data-futosa'));
-      Array.prototype.forEach.call(document.querySelectorAll('[data-futosa]'), function (o) { press(o, o === b); });
-      setKeshi(false);
+    Array.prototype.forEach.call(futosaBtns, function (b, i) {
+      // 太さの棒は、その太さそのままを見せる（画面で大きすぎない上限で止める）
+      b.querySelector('.bou').style.height = Math.min(14, d.futosa[i]) + 'px';
+      press(b, i === st.futosaI);
     });
+    press(penSign,   st.pen === 'sign');
+    press(penMarker, st.pen === 'marker');
+  }
+
+  penSign.addEventListener('click', function () {
+    st.pen = 'sign'; applyDougu(); setKeshi(false); tell('');
   });
+  penMarker.addEventListener('click', function () {
+    st.pen = 'marker'; applyDougu(); setKeshi(false);
+    tell('蛍光ペンです。太く塗っても、下の地図の文字が読めます。');
+  });
+  Array.prototype.forEach.call(iroBtns, function (b, i) {
+    b.addEventListener('click', function () { st.iroI = i; applyDougu(); setKeshi(false); });
+  });
+  Array.prototype.forEach.call(futosaBtns, function (b, i) {
+    b.addEventListener('click', function () { st.futosaI = i; applyDougu(); setKeshi(false); });
+  });
+  applyDougu();
 
   var eraserBtn = document.getElementById('eraser');
   function setKeshi(on) { st.keshi = on; press(eraserBtn, on); }
@@ -940,26 +1150,18 @@ footer a { color: inherit; }
   document.getElementById('undo').addEventListener('click', function () {
     if (!st.strokes.length) { tell('戻すものがありません。'); return; }
     st.strokes.pop();
+    st.saved = st.strokes.length === 0;
     drawInk();
-    if (!st.strokes.length) { unlockMap(); } else { st.saved = false; }
+    tell('ひとつ戻しました。');
   });
 
   document.getElementById('clear').addEventListener('click', function () {
     if (!st.strokes.length) { tell('消すものがありません。'); return; }
     st.strokes = [];
-    drawInk();
-    unlockMap();
-  });
-
-  function unlockMap() {
-    modeMap.disabled = false;
-    document.getElementById('zoomIn').disabled  = false;
-    document.getElementById('zoomOut').disabled = false;
-    document.getElementById('here').disabled    = false;
-    document.getElementById('goLatLon').disabled = false;
     st.saved = true;
-    tell('線が無くなったので、地図をまた動かせます。');
-  }
+    drawInk();
+    tell('ぜんぶ消しました。');
+  });
 
   /* ============================================================
      持ち出す（画像で保存・印刷）
@@ -977,7 +1179,8 @@ footer a { color: inherit; }
     ctx.drawImage(mapCv, 0, 0, cv.width, cv.height);
 
     // 線：点の列から引き直すので、伸ばしてもぼやけない
-    st.strokes.forEach(function (s) { strokePath(ctx, s, k); });
+    var o = origin();
+    drawStrokes(ctx, o, k);
 
     // ものさしと名乗りは、地図の板に描いたものが伸びてぼやけるので描き直す
     ctx.fillStyle = '#e9e5dd';
@@ -1032,7 +1235,7 @@ footer a { color: inherit; }
      はじめの一手
      ============================================================ */
   function updateCaption() {
-    caption.textContent = '上が北。地図の細かさ ' + st.z
+    caption.textContent = '上が北。地図の細かさ ' + Math.round(st.z)
       + '　地図: © OpenStreetMap contributors ／ 書いた線はこの端末の中だけにあります。';
   }
 
@@ -1061,9 +1264,9 @@ footer a { color: inherit; }
 
   // 窓の大きさが変わったとき。線がまだ無ければ紙を作り直す（あるなら触らない）。
   window.addEventListener('resize', function () {
-    if (!st.ready || st.strokes.length) return;
-    view.w = 0;
-    if (layout()) { requestMap(); }
+    if (!st.ready) return;
+    view.w = 0;                       // 測り直す合図
+    if (layout()) { requestMap(); }   // 地図と線を新しい寸法の紙に引き直す
   });
 })();
 </script>
