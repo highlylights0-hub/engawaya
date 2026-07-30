@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<!--
+    ============================================================
+    縁側屋 /michi/ — GeoMemory「道のおすそわけ」受け皿ページ
+
+    何をする一枚か:
+      GeoMemory アプリが作る共有リンク
+        https://engawaya.com/michi/#<データ>
+      を開いた人に、その道の中身（名前・どこからどこまで・形・メモ）を
+      見せて、「GeoMemory で受け取る」へ橋渡しする。
+
+    なぜファイル（.gmem）でなくリンクなのか:
+      .gmem をLINE等で送ると「知らない拡張子＝ウイルスかも」と
+      警戒されて受け取ってもらえない（2026-07-30 施主の実体験）。
+      リンクなら誰も警戒しない。タップすればこのページが開いて、
+      中身が見える。ファイルの姿をしていないことが解決策そのもの。
+
+    データはどこにあるのか（いちばん大事な話）:
+      道の中身は、リンクの「#」より後ろの文字の中に全部入っている。
+      「#」より後ろはブラウザの決まりでサーバーへ送られない。
+      つまりこのページを開いても、道のデータはどこのサーバーにも
+      渡らず、開いた人の端末の中だけで絵になる。
+      縁側屋はサーバーを持たない静的なページのままでこれができる。
+
+    データの形（v1・鉄の約束）:
+      #以降 = base64url( UTF-8 の JSON )
+      JSON = {
+        v:  1,                    // 形式の世代番号（gmem と同じ思想。最初は1）
+        app:"TaxiVoice",          // 書き出したアプリの印
+        n:  "道の名前",
+        m:  "メモ",
+        sp: "どこから（町名）",
+        ep: "どこまで（町名）",
+        c:  "2026-07-27T10:44:11Z", // 記録した日時（ISO8601）
+        p:  "ポリライン文字列",     // 道の点列。Google Encoded Polyline（精度1e-5）
+        pm: [ {i:点番号, t:"メモ本文", s:"印"} ]  // 点メモ（無ければ空）
+      }
+      base64url = 普通のbase64の「+ / =」を「- _ （無し）」にした、
+      URLにそのまま置ける版。
+      ポリライン符号化はGoogleが地図のために作った公開仕様で、
+      緯度経度の列を「前の点との差分」で縮めて文字にする。
+      5mおきの点なら1点あたり2〜4文字＝JSONの生座標の10分の1以下になる。
+
+    作り方は縁側屋の憲法どおり:
+      外から何も読み込まない・絵文字を使わない・押す場所は大きく・無料。
+      地図タイル（OpenStreetMap等）も「外から読み込むもの」なので使わない。
+      道の形は点列から自分の手で描く。本当の地図の上で見るのは、
+      アプリで受け取った先のお楽しみ、という分担。
+    ============================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>道のおすそわけ — GeoMemory｜縁側屋</title>
+<meta name="description" content="GeoMemory の共有リンクの受け皿。届いた道の名前と形をここで確かめて、アプリで受け取れます。道のデータはリンクの中にあり、サーバーには保存されません。">
+<!-- 検索に載せない：中身は毎回リンク次第で、検索から来ても空のページだから。 -->
+<meta name="robots" content="noindex">
+
+<style>
+/* ---- 土台のリセット（母屋と同じ最小限） ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* ---- 時間帯ごとの色（母屋 index.html と同じ表。家風を継ぐ） ---- */
+:root {
+  --sky-top:    #eaf2f8;
+  --sky-bottom: #fdfbf6;
+  --ink:        #2b2622;
+  --ink-soft:   #6b625a;
+  --card:       #ffffffcc;
+  --card-line:  #d9cfc2;
+  --wood-1:     #c69a6d;
+  --wood-2:     #a97c50;
+  --accent:     #b4703a;
+  /* 道の絵に使う色。線＝GeoMemoryのシアン系だと夜空に沈むので、
+     昼夜どちらでも読める青緑を昼夜で少し変える。 */
+  --route:      #0f766e;
+  --route-start:#1a7f37;   /* 出発の印（緑） */
+  --route-goal: #c0392b;   /* 到着の印（赤） */
+}
+html[data-time="morning"] { --sky-top: #dbe9f4; --sky-bottom: #fdfcf7; }
+html[data-time="day"]     { --sky-top: #f2efe6; --sky-bottom: #fbf8f1; }
+html[data-time="evening"] { --sky-top: #f3cfa2; --sky-bottom: #fae7cd; --accent: #a95c2a; }
+html[data-time="night"] {
+  --sky-top: #141c2b; --sky-bottom: #232c3d;
+  --ink: #efe9e0; --ink-soft: #a9a49c;
+  --card: #2b3446e6; --card-line: #45506a;
+  --wood-1: #6b5236; --wood-2: #4d3a26;
+  --accent: #e0a061;
+  --route: #4dd0c4; --route-start: #58c472; --route-goal: #e0705f;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: clamp(28px, 8vw, 56px) 20px 48px;
+}
+
+/* 屋号。母屋への帰り道を兼ねる（押せる）。 */
+.yagou {
+  display: inline-block;
+  font-size: 14px;
+  letter-spacing: .3em;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.yagou:hover { color: var(--accent); }
+
+h1 {
+  margin: 10px 0 0;
+  font-size: clamp(22px, 6vw, 28px);
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+.lead {
+  margin: 6px 0 0;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+
+/* ---- 道の札（座布団の作法を継ぐ） ---- */
+.fuda {
+  margin-top: 26px;
+  padding: 22px 24px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+}
+.fuda .name {
+  font-size: clamp(20px, 5.4vw, 24px);
+  font-weight: 600;
+  letter-spacing: .04em;
+  overflow-wrap: anywhere;   /* 長い道の名前でも札からはみ出させない */
+}
+.fuda .fromto {
+  margin-top: 4px;
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.fuda .facts {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.fuda .memo {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--card-line);
+  font-size: 15px;
+  white-space: pre-wrap;         /* メモの改行をそのまま生かす */
+  overflow-wrap: anywhere;
+}
+
+/* ---- 道の絵 ---- */
+.ezu {
+  margin-top: 16px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+  padding: 10px;
+}
+.ezu canvas { display: block; width: 100%; height: auto; border-radius: 8px; }
+.ezu .caption {
+  margin: 6px 4px 2px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+/* ---- 点メモの一覧 ---- */
+.tenmemo { margin-top: 16px; }
+.tenmemo ol {
+  margin: 8px 0 0;
+  padding-left: 26px;
+  font-size: 14.5px;
+}
+.tenmemo li { margin-top: 4px; overflow-wrap: anywhere; }
+.tenmemo .head { font-size: 14px; color: var(--ink-soft); }
+
+/* ---- 受け取りのボタン（押す場所は必要よりだいぶ大きく） ---- */
+.actions { margin-top: 26px; display: grid; gap: 14px; }
+.btn {
+  display: block;
+  padding: 18px 22px;
+  border-radius: 14px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  border: 1px solid var(--card-line);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.btn:hover, .btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px #0000001f;
+  outline: none;
+}
+.btn-main {                     /* アプリで受け取る＝主役 */
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+html[data-time="night"] .btn-main { color: #1c1610; }
+.btn-sub {                      /* App Store＝入っていない人の道 */
+  background: var(--card);
+  color: inherit;
+}
+.btn-note {
+  margin: -4px 4px 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+/* ---- 安心の但し書き ---- */
+.anshin, .disclaimer {
+  margin-top: 26px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+}
+.anshin strong { color: var(--ink); font-weight: 600; }
+
+footer {
+  margin-top: 40px;
+  padding: 22px 20px 30px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: linear-gradient(180deg, var(--wood-1), var(--wood-2));
+}
+html[data-time="night"] footer { color: #d8d2c8; }
+footer a { color: inherit; }
+
+/* 中身が無いとき・読めないときの案内 */
+.empty {
+  margin-top: 26px;
+  padding: 22px 24px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+  font-size: 15px;
+}
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="yagou" href="/">縁 側 屋</a>
+  <h1>道のおすそわけ</h1>
+  <p class="lead">GeoMemory で覚えた道が、リンクになって届きました。</p>
+
+  <!-- 道の中身がある時だけ現れる本体。最初は隠しておき、JSが読めたら開く。 -->
+  <div id="michi" hidden>
+    <div class="fuda">
+      <div class="name" id="routeName"></div>
+      <div class="fromto" id="fromTo" hidden></div>
+      <div class="facts" id="facts"></div>
+      <div class="memo" id="routeMemo" hidden></div>
+    </div>
+
+    <div class="ezu">
+      <canvas id="ezuCanvas"></canvas>
+      <div class="caption">道の形（上が北）。本当の地図の上で見るのは、アプリで受け取ってから。</div>
+    </div>
+
+    <div class="tenmemo" id="tenMemo" hidden>
+      <div class="head">道の途中に刺さっているメモ（絵の中の番号の場所）：</div>
+      <ol id="tenMemoList"></ol>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-main" id="openApp" href="#">GeoMemory で道を受け取る</a>
+      <p class="btn-note">iPhone に GeoMemory が入っている人は、これを押すとアプリが開いて「覚えた道」に入ります。</p>
+      <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
+    </div>
+
+    <p class="anshin">
+      <strong>この道のデータは、リンクの文字の中に入っています。</strong><br>
+      どこのサーバーにも保存されていませんし、このページを開いても外へは送られません。
+      上の絵は、あなたの端末の中だけで描いています。
+    </p>
+  </div>
+
+  <!-- リンクに中身が無いとき（ページだけ直接開いた人向け） -->
+  <div id="noData" class="empty" hidden>
+    ここは GeoMemory の「道の共有リンク」を受け取るためのページです。<br>
+    GeoMemory アプリで道を「リンクで共有」すると、ここのリンクが作られます。<br><br>
+    GeoMemory は、走った道・歩いた道を憶えて、あとで再生できる無料のアプリです。<br><br>
+    <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
+  </div>
+
+  <!-- リンクが読めなかったとき（途中で切れた等）。正直に言う。 -->
+  <div id="badData" class="empty" hidden>
+    ごめんなさい、このリンクの中の道が読めませんでした。<br>
+    リンクが途中で切れている（長い文字列の一部だけコピーされた）ことが多いです。
+    送ってくれた人に、もう一度リンク全体を送ってもらってください。<br>
+    それでも読めないときは <a href="mailto:info@engawaya.com">info@engawaya.com</a> へ。ひとつずつ直します。
+  </div>
+
+  <p class="disclaimer">
+    GeoMemory はまだ開発中の道具です。移動経路は自宅・職場などが推測されうる大切な個人情報です。
+    もらった道も、人に渡すときは相手と中身をよく確かめてから。
+    使ったことで起きた損害まではお引き受けできませんが、おかしいところがあれば
+    メールをください。ひとつずつ直します。
+  </p>
+</div>
+
+<footer>
+  © 2026 縁側屋 岡澤 博喜<br>
+  <span>このページの制作と管理は Claude が担当しています</span>
+</footer>
+
+<script>
+/* ------------------------------------------------------------
+   時刻で光を変える（母屋と同じ）。
+   ------------------------------------------------------------ */
+(function () {
+  var h = new Date().getHours();
+  var t = (h >= 5 && h < 9)  ? 'morning'
+        : (h >= 9 && h < 16) ? 'day'
+        : (h >= 16 && h < 19)? 'evening'
+        :                      'night';
+  document.documentElement.setAttribute('data-time', t);
+})();
+
+/* ------------------------------------------------------------
+   ここから道の読み取り。
+   手順：#以降を取り出す → base64url を戻す → JSON にする →
+         ポリラインを点列に戻す → 札と絵にする。
+   どこで転んでも「読めませんでした」を正直に出す（黙って白紙にしない）。
+   ------------------------------------------------------------ */
+(function () {
+  var hash = location.hash.replace(/^#/, '');
+
+  if (!hash) {                         // リンクに中身が無い＝説明だけ出す
+    document.getElementById('noData').hidden = false;
+    return;
+  }
+
+  var data;
+  try {
+    data = parsePayload(hash);
+  } catch (e) {
+    document.getElementById('badData').hidden = false;
+    return;
+  }
+
+  // 世代番号の検品（gmem と同じ思想）。知らない新しさなら正直に断る。
+  if (!data || data.v > 1 || typeof data.p !== 'string') {
+    document.getElementById('badData').hidden = false;
+    return;
+  }
+
+  var points = decodePolyline(data.p);
+  if (points.length < 2) {             // 1点では線にならない
+    document.getElementById('badData').hidden = false;
+    return;
+  }
+
+  showRoute(data, points);
+
+  /* ---- base64url → UTF-8 → JSON ---- */
+  function parsePayload(s) {
+    // base64url を普通の base64 に戻す（- _ を + / へ、詰め物 = を足す）
+    var b64 = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4) b64 += '=';
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+  }
+
+  /* ---- Google Encoded Polyline を点列に戻す（公開仕様・精度1e-5） ----
+     仕組み：各点は「前の点との差」を5ビットずつに刻んで文字にしてある。
+     ここではその逆をやる。30行足らずで書ける、よくできた仕様。 */
+  function decodePolyline(str) {
+    var pts = [], index = 0, lat = 0, lon = 0;
+    while (index < str.length) {
+      lat += nextDelta();
+      lon += nextDelta();
+      pts.push({ lat: lat / 1e5, lon: lon / 1e5 });
+    }
+    return pts;
+
+    function nextDelta() {
+      var result = 0, shift = 0, b;
+      do {
+        b = str.charCodeAt(index++) - 63;      // 文字 → 5ビットの塊
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);                     // 続きの印が立っている間つなぐ
+      // 最下位ビットが符号（ジグザグ符号化の逆）
+      return (result & 1) ? ~(result >> 1) : (result >> 1);
+    }
+  }
+
+  /* ---- 札・絵・ボタンに流し込む ---- */
+  function showRoute(d, pts) {
+    document.getElementById('michi').hidden = false;
+
+    document.getElementById('routeName').textContent = d.n || '名前のない道';
+
+    if (d.sp || d.ep) {
+      var ft = document.getElementById('fromTo');
+      ft.textContent = (d.sp || '…') + ' → ' + (d.ep || '…');
+      ft.hidden = false;
+    }
+
+    var meters = totalMeters(pts);
+    var facts = distText(meters);
+    if (d.c) {
+      var t = new Date(d.c);
+      if (!isNaN(t)) {
+        facts += '　' + t.getFullYear() + '/' + (t.getMonth() + 1) + '/' + t.getDate() + ' に記録';
+      }
+    }
+    document.getElementById('facts').textContent = facts;
+
+    if (d.m) {
+      var memo = document.getElementById('routeMemo');
+      memo.textContent = d.m;
+      memo.hidden = false;
+    }
+
+    // 点メモ：絵の中に番号を打ち、下に本文を並べる
+    var memos = (d.pm || []).filter(function (m) {
+      return m && typeof m.i === 'number' && m.i >= 0 && m.i < pts.length && m.t;
+    });
+    if (memos.length) {
+      var list = document.getElementById('tenMemoList');
+      memos.forEach(function (m) {
+        var li = document.createElement('li');
+        li.textContent = m.t;                  // textContent＝もらった文字をそのまま文字として出す（安全）
+        list.appendChild(li);
+      });
+      document.getElementById('tenMemo').hidden = false;
+    }
+
+    // アプリへの引き渡し：同じ荷物を geomemory:// に積み替えるだけ
+    document.getElementById('openApp').href = 'geomemory://michi#' + hash;
+
+    drawRoute(pts, memos, meters);
+  }
+
+  /* ---- 距離（点の間隔を足し合わせる。地球を丸として計算） ---- */
+  function totalMeters(pts) {
+    var sum = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var a = pts[i - 1], b = pts[i];
+      var dLat = (b.lat - a.lat) * Math.PI / 180;
+      var dLon = (b.lon - a.lon) * Math.PI / 180;
+      var la = a.lat * Math.PI / 180, lb = b.lat * Math.PI / 180;
+      var h = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+            + Math.cos(la) * Math.cos(lb) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      sum += 6371000 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+    return sum;
+  }
+  function distText(m) {
+    return m >= 1000 ? '約 ' + (m / 1000).toFixed(1) + ' km の道' : '約 ' + Math.round(m) + ' m の道';
+  }
+
+  /* ---- 道の形を描く ----
+     地図タイルは使わない（外から読み込まない）ので、点列そのものを描く。
+     経度は緯度によって1度の長さが違うため cos(中央の緯度) で幅を直してから
+     縦横おなじ縮尺で紙に収める。上が北。 */
+  function drawRoute(pts, memos, meters) {
+    var canvas = document.getElementById('ezuCanvas');
+    var cssWidth = canvas.parentElement.clientWidth - 20;   // 親の内side幅
+    var cssHeight = Math.round(cssWidth * 0.75);            // 紙の縦横比 4:3
+    var dpr = window.devicePixelRatio || 1;                 // 高精細画面でぼやけさせない
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+    canvas.style.width = cssWidth + 'px';
+    canvas.style.height = cssHeight + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    var style = getComputedStyle(document.documentElement);
+    var routeColor = style.getPropertyValue('--route').trim();
+    var startColor = style.getPropertyValue('--route-start').trim();
+    var goalColor  = style.getPropertyValue('--route-goal').trim();
+    var inkSoft    = style.getPropertyValue('--ink-soft').trim();
+
+    // 緯度経度 → 平面。経度に cos(中央緯度) を掛けて縦横の縮尺を揃える。
+    var midLat = 0;
+    pts.forEach(function (p) { midLat += p.lat; });
+    midLat = (midLat / pts.length) * Math.PI / 180;
+    var k = Math.cos(midLat);
+
+    var xs = pts.map(function (p) { return p.lon * k; });
+    var ys = pts.map(function (p) { return p.lat; });
+    var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+    var spanX = Math.max(maxX - minX, 1e-9);
+    var spanY = Math.max(maxY - minY, 1e-9);
+
+    var pad = 30;                                           // 紙のふち
+    var scale = Math.min((cssWidth - pad * 2) / spanX, (cssHeight - pad * 2) / spanY);
+    var offX = (cssWidth  - spanX * scale) / 2;
+    var offY = (cssHeight - spanY * scale) / 2;
+    function px(i) { return offX + (xs[i] - minX) * scale; }
+    function py(i) { return cssHeight - offY - (ys[i] - minY) * scale; }  // 緯度は上が大きい
+
+    // 道の線
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(0));
+    for (var i = 1; i < pts.length; i++) ctx.lineTo(px(i), py(i));
+    ctx.strokeStyle = routeColor;
+    ctx.lineWidth = 3;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // 出発（緑）と到着（赤）。丸を打ち、文字を添える（絵文字は使わない）。
+    mark(px(0), py(0), startColor, '出発');
+    mark(px(pts.length - 1), py(pts.length - 1), goalColor, '到着');
+    function mark(x, y, color, label) {
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillStyle = color;
+      // 文字が紙からはみ出す側なら反対側に置く
+      var tx = x + 10 + ctx.measureText(label).width > cssWidth ? x - 10 - ctx.measureText(label).width : x + 10;
+      var ty = Math.min(Math.max(y + 4, 14), cssHeight - 6);
+      ctx.fillText(label, tx, ty);
+    }
+
+    // 点メモの番号（1,2,3…）。丸に白抜き数字。
+    memos.forEach(function (m, n) {
+      var x = px(m.i), y = py(m.i);
+      ctx.beginPath();
+      ctx.arc(x, y, 9, 0, Math.PI * 2);
+      ctx.fillStyle = inkSoft;
+      ctx.fill();
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(n + 1), x, y + 0.5);
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'alphabetic';
+    });
+
+    // ものさし（縮尺の目安）。切りのいい長さを左下に。
+    var target = meters / 4;                                // 紙の1/4くらいの長さで
+    var steps = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
+    var step = steps[0];
+    for (var s = 0; s < steps.length; s++) { if (steps[s] <= target) step = steps[s]; }
+    // stepメートルが紙の上で何pxか：緯度1度≒111,320m を使って換算
+    var pxPerMeter = scale / 111320;
+    var barLen = step * pxPerMeter;
+    if (barLen > 10) {                                      // 短すぎるなら描かない
+      var bx = pad, by = cssHeight - 14;
+      ctx.strokeStyle = inkSoft;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(bx, by); ctx.lineTo(bx + barLen, by);
+      ctx.moveTo(bx, by - 4); ctx.lineTo(bx, by + 4);
+      ctx.moveTo(bx + barLen, by - 4); ctx.lineTo(bx + barLen, by + 4);
+      ctx.stroke();
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = inkSoft;
+      ctx.fillText(step >= 1000 ? (step / 1000) + 'km' : step + 'm', bx + barLen + 6, by + 4);
+    }
+  }
+})();
+</script>
+</body>
+</html>

@@ -43,6 +43,7 @@ iPhone のクロード・Mac のクロード・web のクロードは、**記憶
 | なぜ | `naze/index.html` | **なぜこう作ったかの説明**。ここが憲法の出どころ |
 | 遊び場 | `asobiba/index.html` | 星つなぎ |
 | Ochi-Gee | `ochigee/index.html` | 落ちものパズルの紹介 |
+| 道のおすそわけ | `michi/index.html` | GeoMemory の道の共有リンクの受け皿。道のデータはリンクの#以降に丸ごと入っていて、サーバーへは送られない。リンクの形と読み方はファイル冒頭の板書に |
 | プライバシー | `ochigee/privacy/index.html` | Ochi-Gee のプライバシーポリシー（App Store 提出に必須） |
 | アイコン | `icon/` | ホーム画面用アイコンの生成スクリプト（Pillow不要） |
 
