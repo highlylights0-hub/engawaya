@@ -305,7 +305,12 @@ footer a { color: inherit; }
 
     <div class="ezu">
       <canvas id="ezuCanvas"></canvas>
-      <div class="caption">道の形（上が北）。本当の地図の上で見るのは、アプリで受け取ってから。</div>
+      <div class="caption" id="ezuCaption">道の形（上が北）。</div>
+      <!-- 本物の地図は「押した人だけ」取り寄せる。
+           開いた瞬間は外から何も読み込まない＝憲法①の心（軽さ）は守ったまま、
+           見たい人にだけ例外を開く。施主裁定 2026-07-30「ならば絵を出しますよ」。 -->
+      <button class="btn btn-sub" id="showMap" type="button" style="width:100%; margin-top:10px;">本物の地図の上で見る</button>
+      <p class="btn-note" id="mapNote">押すと、地図の絵を OpenStreetMap（無料の地図の共同事業）から取り寄せます。取り寄せる＝道のあたりの地図が先方に伝わります。</p>
     </div>
 
     <div class="tenmemo" id="tenMemo" hidden>
@@ -506,6 +511,15 @@ footer a { color: inherit; }
     document.getElementById('openApp').href = 'geomemory://michi#' + hash;
 
     drawRoute(pts, memos, meters);
+
+    // 本物の地図は「押した人だけ」（施主裁定 2026-07-30）。
+    // 難しい説明はぜんぶスルーされる。ならば絵を出す、の一手。
+    var mapBtn = document.getElementById('showMap');
+    mapBtn.addEventListener('click', function () {
+      mapBtn.disabled = true;
+      mapBtn.textContent = '地図を取り寄せています…';
+      drawOnMap(pts, memos, meters);
+    });
   }
 
   /* ---- 距離（点の間隔を足し合わせる。地球を丸として計算） ---- */
@@ -533,6 +547,12 @@ footer a { color: inherit; }
   function drawRoute(pts, memos, meters) {
     var canvas = document.getElementById('ezuCanvas');
     var cssWidth = canvas.parentElement.clientWidth - 20;   // 親の内side幅
+    // 画面の寸法がまだ決まっていない（タブが裏にある等）うちに描くと
+    // 0幅の絵になって消える。寸法が育つまで、次の描画機会を待つ。
+    if (cssWidth < 50) {
+      requestAnimationFrame(function () { drawRoute(pts, memos, meters); });
+      return;
+    }
     var cssHeight = Math.round(cssWidth * 0.75);            // 紙の縦横比 4:3
     var dpr = window.devicePixelRatio || 1;                 // 高精細画面でぼやけさせない
     canvas.width = cssWidth * dpr;
@@ -631,6 +651,175 @@ footer a { color: inherit; }
       ctx.fillStyle = inkSoft;
       ctx.fillText(step >= 1000 ? (step / 1000) + 'km' : step + 'm', bx + barLen + 6, by + 4);
     }
+  }
+
+  /* ---- 本物の地図の上に道を重ねる（押した人だけ）----
+     地図ライブラリは使わない。Web地図の紙（メルカトル図法）の計算と、
+     OpenStreetMap のタイル（256px角の地図の絵）を自分の手で敷くだけ。
+     道の線と印を重ねるのは、これまでどおり端末の中。 */
+  function drawOnMap(pts, memos, meters) {
+    var canvas = document.getElementById('ezuCanvas');
+    var cssW = canvas.parentElement.clientWidth - 20;
+    var cssH = Math.round(cssW * 0.75);
+    var dpr = window.devicePixelRatio || 1;
+    // 簡略図と同じ用心：寸法が決まる前に描くと0幅の絵になる。
+    if (cssW < 50) {
+      requestAnimationFrame(function () { drawOnMap(pts, memos, meters); });
+      return;
+    }
+
+    // メルカトル図法：緯度経度を「ズームzの世界地図のピクセル」へ写す。
+    // Web地図の世界共通の紙。z が1増えると世界地図の幅が2倍になる。
+    function MX(lon, z) { return (lon + 180) / 360 * 256 * Math.pow(2, z); }
+    function MY(lat, z) {
+      var s = Math.sin(lat * Math.PI / 180);
+      return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * 256 * Math.pow(2, z);
+    }
+
+    var lats = pts.map(function (p) { return p.lat; });
+    var lons = pts.map(function (p) { return p.lon; });
+    var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
+    var minLon = Math.min.apply(null, lons), maxLon = Math.max.apply(null, lons);
+
+    // ズームを決める：道の全体が紙に収まる、いちばん細かい縮尺。
+    var z = 18;
+    while (z > 2) {
+      if (MX(maxLon, z) - MX(minLon, z) <= cssW - 70 &&
+          MY(minLat, z) - MY(maxLat, z) <= cssH - 70) break;
+      z--;
+    }
+
+    // 紙の左上が世界のどのピクセルか（道の真ん中を紙の真ん中に置く）。
+    var ox = (MX(minLon, z) + MX(maxLon, z)) / 2 - cssW / 2;
+    var oy = (MY(minLat, z) + MY(maxLat, z)) / 2 - cssH / 2;
+
+    // 必要なタイルを数え上げて取り寄せる。一枚欠けても全体は出す（onerrorでも進む）。
+    var jobs = [];
+    var t0x = Math.floor(ox / 256), t1x = Math.floor((ox + cssW) / 256);
+    var t0y = Math.floor(oy / 256), t1y = Math.floor((oy + cssH) / 256);
+    for (var ty = t0y; ty <= t1y; ty++) {
+      for (var tx = t0x; tx <= t1x; tx++) {
+        (function (tx, ty) {
+          jobs.push(new Promise(function (done) {
+            var img = new Image();
+            img.onload = function () { done({ img: img, tx: tx, ty: ty }); };
+            img.onerror = function () { done(null); };
+            img.src = 'https://tile.openstreetmap.org/' + z + '/' + tx + '/' + ty + '.png';
+          }));
+        })(tx, ty);
+      }
+    }
+
+    Promise.all(jobs).then(function (tiles) {
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+      canvas.style.width = cssW + 'px';
+      canvas.style.height = cssH + 'px';
+      var ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      // 下地（タイルが欠けた場所にも紙の色を敷いておく）
+      ctx.fillStyle = '#e9e5dd';
+      ctx.fillRect(0, 0, cssW, cssH);
+      tiles.forEach(function (t) {
+        if (t) ctx.drawImage(t.img, t.tx * 256 - ox, t.ty * 256 - oy, 256, 256);
+      });
+
+      var style = getComputedStyle(document.documentElement);
+      var routeColor = style.getPropertyValue('--route').trim();
+      function px(p) { return MX(p.lon, z) - ox; }
+      function py(p) { return MY(p.lat, z) - oy; }
+
+      // 道の線：地図の上で埋もれないよう、白いフチ→色の線の二度描き。
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      [['#ffffff', 6.5], [routeColor, 3.5]].forEach(function (pen) {
+        ctx.beginPath();
+        ctx.moveTo(px(pts[0]), py(pts[0]));
+        for (var i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i]), py(pts[i]));
+        ctx.strokeStyle = pen[0];
+        ctx.lineWidth = pen[1];
+        ctx.stroke();
+      });
+
+      // 出発（緑）・到着（赤）。白い輪郭つきで地図から浮かせる。
+      mark(pts[0], style.getPropertyValue('--route-start').trim(), '出発');
+      mark(pts[pts.length - 1], style.getPropertyValue('--route-goal').trim(), '到着');
+      function mark(p, color, label) {
+        ctx.beginPath();
+        ctx.arc(px(p), py(p), 7, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.font = 'bold 13px sans-serif';
+        var w = ctx.measureText(label).width;
+        var tx0 = px(p) + 12 + w > cssW ? px(p) - 12 - w : px(p) + 12;
+        var ty0 = Math.min(Math.max(py(p) + 5, 16), cssH - 8);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.strokeText(label, tx0, ty0);   // 白い縁取り文字＝地図の上でも読める
+        ctx.fillStyle = color;
+        ctx.fillText(label, tx0, ty0);
+      }
+
+      // 点メモの番号（1,2,3…）
+      memos.forEach(function (m, n) {
+        var x = px(pts[m.i]), y = py(pts[m.i]);
+        ctx.beginPath();
+        ctx.arc(x, y, 9, 0, Math.PI * 2);
+        ctx.fillStyle = '#4a443c';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(n + 1), x, y + 0.5);
+        ctx.textAlign = 'start';
+        ctx.textBaseline = 'alphabetic';
+      });
+
+      // ものさし：メルカトルの縮尺は緯度で変わるので、道の真ん中の緯度で換算する。
+      var midLat = (minLat + maxLat) / 2 * Math.PI / 180;
+      var mPerPx = 40075016.686 * Math.cos(midLat) / (256 * Math.pow(2, z));
+      var steps = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+      var step = steps[0];
+      for (var s = 0; s < steps.length; s++) { if (steps[s] / mPerPx <= cssW / 3) step = steps[s]; }
+      var barLen = step / mPerPx, bx = 14, by = cssH - 14;
+      ctx.strokeStyle = '#3a352e';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(bx, by); ctx.lineTo(bx + barLen, by);
+      ctx.moveTo(bx, by - 4); ctx.lineTo(bx, by + 4);
+      ctx.moveTo(bx + barLen, by - 4); ctx.lineTo(bx + barLen, by + 4);
+      ctx.stroke();
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = '#3a352e';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      var lbl = step >= 1000 ? (step / 1000) + 'km' : step + 'm';
+      ctx.strokeText(lbl, bx + barLen + 6, by + 4);
+      ctx.fillText(lbl, bx + barLen + 6, by + 4);
+
+      // 地図の出どころの名乗り（OpenStreetMapの決まり。消してはいけない）。
+      var credit = '© OpenStreetMap contributors';
+      ctx.font = '10px sans-serif';
+      var cw = ctx.measureText(credit).width;
+      ctx.fillStyle = '#ffffffcc';
+      ctx.fillRect(cssW - cw - 10, cssH - 18, cw + 10, 18);
+      ctx.fillStyle = '#3a352e';
+      ctx.fillText(credit, cssW - cw - 5, cssH - 6);
+
+      // ボタンは役目を終える。説明書きも畳んで、出どころだけ残す。
+      document.getElementById('showMap').hidden = true;
+      document.getElementById('mapNote').hidden = true;
+      document.getElementById('ezuCaption').textContent =
+        '地図: © OpenStreetMap contributors ／ 道の線と印は、あなたの端末の中で重ねています。';
+    });
   }
 })();
 </script>
