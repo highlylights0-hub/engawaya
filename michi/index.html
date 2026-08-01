@@ -71,8 +71,20 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <title>道メモ — 地図に道を描いて渡す｜縁側屋</title>
 <meta name="description" content="地図をなぞるだけで道が作れて、リンク・絵・ファイルにして渡せます。GeoMemory の共有リンクの受け皿でもあります。道のデータはリンクの中にあり、サーバーには保存されません。">
-<!-- 検索に載せない：中身は毎回リンク次第で、検索から来ても空のページだから。 -->
-<meta name="robots" content="noindex">
+<!-- 【検索の扱い・2026-08-01 施主判断で変更】
+     以前は一律 noindex にしていた（中身は毎回リンク次第で、検索から来ても
+     空のページだったから）。母屋の座布団に「道メモ」として並べた日に、
+     素で開いても道具として立つページになったので、道具のページは載せる。
+
+     ただし **?d= や # に道の入ったリンクは、絶対に載せない**。
+     中身は誰かが実際に走った道＝このページ自身が「自宅・職場が推測されうる
+     大切な個人情報」と断り書きしているもの。載る道を作ってはいけない。
+     → 下の script が、道を持って開かれたときだけ noindex を差し込む。
+
+     robots.txt で弾く手は**採らない**。弾くと Google は中身を読めないまま
+     URL だけを載せることがあり、**その URL の中に道のデータが入っている**。
+     載せないつもりが、いちばん見せたくない物を晒す形になる。 -->
+<link rel="canonical" href="https://engawaya.com/michi/">
 
 <!-- LINE 等がリンクをカードにするときの札（OGP）。
      絵は ogp.png（作り方と理由は ogp_image.py の板書に）。最初は母屋の
@@ -683,6 +695,17 @@ footer a { color: inherit; }
   var hash = location.hash.replace(/^#/, '');
   if (!hash) {
     hash = new URLSearchParams(location.search).get('d') || '';
+  }
+
+  /* 道を持って開かれたなら、そのURLは検索に載せない（頭の板書参照）。
+     中身は誰かの実際の道＝生活圏。人に渡すためのリンクであって、
+     世界に置くためのリンクではない。noarchive も付けて、控えも残させない。
+     道具として素で開かれたとき（hash が空）は何も足さない＝ふつうに載る。 */
+  if (hash) {
+    var fuda = document.createElement('meta');
+    fuda.name = 'robots';
+    fuda.content = 'noindex, noarchive';
+    document.head.appendChild(fuda);
   }
 
   /* 【2026-08-01 の落とし穴・記録】ここは以前「中身が無ければ return」で
