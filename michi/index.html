@@ -283,6 +283,15 @@ h1 {
 }
 .tenmemo li { margin-top: 4px; overflow-wrap: anywhere; }
 .tenmemo .head { font-size: 14px; color: var(--ink-soft); }
+/* メモの本文は押せる。押すとその場所へ地図が寄る。
+   ボタンらしく飾り立てず、下の点線だけで「押せる」を伝える。 */
+.memo-tobu {
+  display: inline; padding: 0; border: none; background: none;
+  font: inherit; color: inherit; text-align: left;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--accent);
+}
+.memo-tobu:hover, .memo-tobu:focus-visible { color: var(--accent); outline: none; }
 
 /* ---- 受け取りのボタン（押す場所は必要よりだいぶ大きく） ---- */
 .actions { margin-top: 26px; display: grid; gap: 14px; }
@@ -388,7 +397,7 @@ footer a { color: inherit; }
     </div>
 
     <div class="tenmemo" id="tenMemo" hidden>
-      <div class="head">道の途中に刺さっているメモ（絵の中の番号の場所）：</div>
+      <div class="head">道の途中に刺さっているメモ（絵の中の番号の場所）。<strong>押すと、その場所へ地図が寄ります。</strong></div>
       <ol id="tenMemoList"></ol>
     </div>
 
@@ -575,7 +584,16 @@ footer a { color: inherit; }
       var list = document.getElementById('tenMemoList');
       memos.forEach(function (m) {
         var li = document.createElement('li');
-        li.textContent = m.t;                  // textContent＝もらった文字をそのまま文字として出す（安全）
+        // メモは押せる。押すとその場所へ地図が寄る（2026-08-01）。
+        // 道の値打ちは形ではなく「なぜここを通るか」の方にある。
+        // 施主の言葉：「狭いけど、確実に渋滞を回避できるんです」——
+        // その理由が書いてある場所へ、読む人を連れて行ってやる。
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'memo-tobu';
+        b.textContent = m.t;                   // textContent＝もらった文字をそのまま文字として出す（安全）
+        b.addEventListener('click', function () { memoHeTobu(pts, memos, meters, m.i); });
+        li.appendChild(b);
         list.appendChild(li);
       });
       document.getElementById('tenMemo').hidden = false;
@@ -786,6 +804,24 @@ footer a { color: inherit; }
 
     tsukeruSousa(canvas);
     kakinaosu();
+  }
+
+  /* メモの本文を押したら、その場所へ地図を寄せる。
+     地図をまだ出していない人には、ここで初めて取り寄せる（押した人だけ、の掟は守る）。 */
+  function memoHeTobu(pts, memos, meters, i) {
+    var ten = pts[i];
+    if (!ten) return;
+    if (!chizu) {
+      var b = document.getElementById('showMap');
+      if (b && !b.hidden) { b.disabled = true; b.textContent = '地図を取り寄せています…'; }
+      drawOnMap(pts, memos, meters);
+    }
+    chizu.z = clampZ(17);          // 街路の名前が読める近さ
+    chizu.cx = ten.lon;
+    chizu.cy = ten.lat;
+    clampChushin();
+    render();
+    document.getElementById('ezuBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   // 道の全体が紙に収まる縮尺と中心へ戻す（「ぜんぶ」ボタンの中身でもある）。
