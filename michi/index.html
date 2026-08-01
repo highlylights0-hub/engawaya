@@ -710,16 +710,22 @@ footer a { color: inherit; }
     // アプリへの引き渡し：同じ荷物を geomemory:// に積み替えるだけ
     document.getElementById('openApp').href = 'geomemory://michi#' + hash;
 
+    // まず外から何も読まない簡略図を出す（地図の絵が届くまでの間、形だけは見える）。
     drawRoute(pts, memos, meters);
 
-    // 本物の地図は「押した人だけ」（施主裁定 2026-07-30）。
-    // 難しい説明はぜんぶスルーされる。ならば絵を出す、の一手。
+    /* そのまま本物の地図へ（施主裁定 2026-08-01「開いた瞬間に地図を取り寄せる
+       をしても良い気がしました」）。
+       もとは「押した人だけ」にしていた（2026-07-30）。地図の絵を取り寄せると
+       道のあたりが OpenStreetMap 側に伝わるので、先に知らせる意味だった。
+       だがこのページは道を見せるためだけにあり、地図が出ないと用を成さない。
+       受け取った人は道を見たくて開いている。ならば一手間は要らない——
+       **ただし但し書きは消さない**（隠すのではなく、順番を変えただけ）。 */
     var mapBtn = document.getElementById('showMap');
     mapBtn.addEventListener('click', function () {
       mapBtn.disabled = true;
-      mapBtn.textContent = '地図を取り寄せています…';
       drawOnMap(pts, memos, meters);
     });
+    drawOnMap(pts, memos, meters);
   }
 
   /* ---- 距離（点の間隔を足し合わせる。地球を丸として計算） ---- */
@@ -907,8 +913,9 @@ footer a { color: inherit; }
     document.getElementById('mapCtl').hidden = false;
     document.getElementById('showMap').hidden = true;
     document.getElementById('mapNote').hidden = true;
+    // 但し書きは消さない。地図の絵を取り寄せる＝道のあたりが先方に伝わる、を正直に。
     document.getElementById('ezuCaption').textContent =
-      'つまむ・なぞる・ボタンで動かせます ／ 地図: © OpenStreetMap contributors ／ 道の線と印は、あなたの端末の中で重ねています。';
+      'つまむ・なぞる・ボタンで動かせます ／ 地図の絵は OpenStreetMap（無料の地図の共同事業）から取り寄せています＝道のあたりの地図が先方に伝わります。© OpenStreetMap contributors ／ 道の線と印は、あなたの端末の中だけで重ねています。';
 
     tsukeruSousa(canvas);
     kakinaosu();
