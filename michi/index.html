@@ -430,8 +430,10 @@ footer a { color: inherit; }
     <div class="fuda" id="tsukuruFuda" hidden>
       <div class="name" style="font-size:20px;">新しい道を作る</div>
       <p style="margin:8px 0 0; font-size:14px; color:var(--ink-soft);">
-        地図を動かして、真ん中の十字を<strong>曲がり角</strong>に合わせ、「ここに点」を押していきます。
-        点と点はまっすぐ結ばれるので、角ごとに打てば道の形になります。
+        <strong>地図の曲がり角を、そのまま押す（指でもマウスでも）。</strong>それだけで点が増えていきます。
+        地図を動かしたいときは、押したまま引きずってください。<br>
+        正確に置きたいときは、真ん中の十字を合わせて「ここに点」。点と点はまっすぐ結ばれるので、
+        角ごとに打てば道の形になります。
       </p>
       <div class="tsukuru-ran">
         <label>道の名前 <input id="tName" type="text" maxlength="40" placeholder="例：代官山交番から蛇崩"></label>
@@ -1230,12 +1232,29 @@ footer a { color: inherit; }
       return { x: t.clientX - r.left, y: t.clientY - r.top };
     }
 
+    /* 「押しただけ」か「動かした」かを見分ける。
+       施主の要望「PCマウスで点直接打つ、スマホ指で点を打っていく」（2026-08-01）。
+       ちょっと押しただけなら点を打つ。少しでも引きずったら地図の移動。
+       十字＋ボタンの道も残してあるので、正確に置きたいときはそちらで。 */
+    function tapKa(st, x, y) {
+      if (!st) return false;
+      return Math.hypot(x - st.x0, y - st.y0) < 8 && (Date.now() - st.t0) < 600;
+    }
+    function utsuKoko(x, y) {
+      if (!chizu || !chizu.tsukuruChu) return;      // 作っているときだけ打てる
+      var j = jimenNi(x, y);
+      chizu.pts.push({ lat: j.lat, lon: j.lon });
+      render();
+      kazuKousin();
+    }
+
     // ── さわる画面：一本指でなぞる／二本指でつまむ ──
     var nazori = null, tsumami = null;
     canvas.addEventListener('touchstart', function (e) {
       if (!chizu) return;
       if (e.touches.length === 1) {
         nazori = canvasNoTen(e.touches[0]);
+        nazori.x0 = nazori.x; nazori.y0 = nazori.y; nazori.t0 = Date.now();
         tsumami = null;
       } else if (e.touches.length >= 2) {
         nazori = null;
@@ -1264,12 +1283,18 @@ footer a { color: inherit; }
       } else if (nazori && e.touches.length === 1) {
         var p = canvasNoTen(e.touches[0]);
         ugokasu(p.x - nazori.x, p.y - nazori.y);
+        p.x0 = nazori.x0; p.y0 = nazori.y0; p.t0 = nazori.t0;   // 押し始めは持ち越す
         nazori = p;
       }
       e.preventDefault();
     }, { passive: false });
 
-    function owari() {
+    function owari(e) {
+      // 指を離した場所が押し始めとほぼ同じなら「点を打った」とみなす。
+      if (e && e.changedTouches && e.changedTouches.length === 1 && !tsumami && nazori) {
+        var q = canvasNoTen(e.changedTouches[0]);
+        if (tapKa(nazori, q.x, q.y)) utsuKoko(q.x, q.y);
+      }
       nazori = null;
       if (tsumami) {
         tsumami = null;
@@ -1279,21 +1304,25 @@ footer a { color: inherit; }
       }
     }
     canvas.addEventListener('touchend', owari);
-    canvas.addEventListener('touchcancel', owari);
+    canvas.addEventListener('touchcancel', function () { nazori = null; tsumami = null; });
 
     // ── マウス：押してなぞる／ホイールで拡大縮小 ──
     var oshi = null;
     canvas.addEventListener('pointerdown', function (e) {
       if (!chizu || e.pointerType === 'touch') return;   // さわる画面は上の経路にまかせる
-      oshi = { x: e.offsetX, y: e.offsetY };
+      oshi = { x: e.offsetX, y: e.offsetY, x0: e.offsetX, y0: e.offsetY, t0: Date.now() };
       canvas.setPointerCapture(e.pointerId);
     });
     canvas.addEventListener('pointermove', function (e) {
       if (!oshi) return;
       ugokasu(e.offsetX - oshi.x, e.offsetY - oshi.y);
-      oshi = { x: e.offsetX, y: e.offsetY };
+      oshi.x = e.offsetX; oshi.y = e.offsetY;            // 押し始め（x0/y0/t0）は持ち越す
     });
-    canvas.addEventListener('pointerup', function () { oshi = null; });
+    canvas.addEventListener('pointerup', function (e) {
+      // 引きずらずに離したなら「そこに点を打った」とみなす。
+      if (tapKa(oshi, e.offsetX, e.offsetY)) utsuKoko(e.offsetX, e.offsetY);
+      oshi = null;
+    });
     canvas.addEventListener('pointercancel', function () { oshi = null; });
 
     canvas.addEventListener('wheel', function (e) {
@@ -1426,7 +1455,7 @@ footer a { color: inherit; }
     if (n === 0) { el.textContent = 'まだ点がありません。曲がり角に十字を合わせて「ここに点」。'; return; }
     if (n === 1) { el.textContent = '点が1つ。あと1つ打つと、道になります。'; return; }
     // distText は「約 4.1 km の道」を返す（札での言い回し）。ここでは長さだけ使う。
-    el.textContent = '点が ' + n + ' つ ／ ' + distText(totalMeters(chizu.pts)).replace(/ の道$/, '') + 'の長さ。';
+    el.textContent = '点が ' + n + ' つ ／ ' + distText(totalMeters(chizu.pts)).replace(/ の道$/, '') + ' の長さ。';
     document.getElementById('dekita').hidden = true;   // 道が変わったら、前のリンクは古い
   }
 
