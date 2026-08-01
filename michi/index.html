@@ -274,6 +274,56 @@ h1 {
 }
 .ezu.zenmen .btn, .ezu.zenmen .btn-note { display: none; }
 
+/* ---- 道を作るときの道具立て（2026-08-01）----
+   施主「スクショ手書き地図、本当によく見ます」「この自由度が、スクショを超えます」。
+   絵に描くのではなく、点を打って**地面の座標**で持つ。だから拡大しても崩れない。 */
+
+/* 真ん中の十字。地図を動かして、ここに曲がり角を合わせる。 */
+.jyuji { position: absolute; inset: 0; pointer-events: none; }
+.jyuji span {
+  position: absolute; left: 50%; top: 50%;
+  background: #d8483c; box-shadow: 0 0 0 1px #ffffffcc;
+}
+.jyuji span:nth-child(1) { width: 42px; height: 2px; transform: translate(-50%, -50%); }
+.jyuji span:nth-child(2) { width: 2px; height: 42px; transform: translate(-50%, -50%); }
+
+.tsukuru-ran { margin-top: 14px; display: grid; gap: 10px; }
+.tsukuru-ran label { display: grid; gap: 4px; font-size: 13.5px; color: var(--ink-soft); }
+.tsukuru-ran input, .tsukuru-ran textarea {
+  font: inherit; font-size: 16px;         /* 16px 未満だと iPhone が勝手に拡大する */
+  color: var(--ink);
+  padding: 10px 12px;
+  border: 1px solid var(--card-line);
+  border-radius: 10px;
+  background: #ffffffb3;
+  width: 100%; box-sizing: border-box;
+}
+html[data-time="night"] .tsukuru-ran input,
+html[data-time="night"] .tsukuru-ran textarea { background: #ffffff14; }
+
+.dougu-bar { margin-top: 14px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; }
+.dougu-main, .dougu-sub {
+  font: inherit; font-weight: 600;
+  padding: 16px 10px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--card-line);
+}
+.dougu-main { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 17px; }
+html[data-time="night"] .dougu-main { color: #1c1610; }
+.dougu-sub { background: var(--card); color: inherit; font-size: 14px; }
+.dougu-main:active, .dougu-sub:active { transform: translateY(1px); }
+.dougu-kazu { margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); }
+
+.dekita { margin-top: 16px; }
+.dekita .head { font-size: 14px; color: var(--ink-soft); margin-bottom: 6px; }
+.dekita textarea {
+  width: 100%; box-sizing: border-box;
+  font-size: 13px; font-family: ui-monospace, monospace;
+  padding: 10px; border-radius: 10px;
+  border: 1px solid var(--card-line); background: #ffffffb3;
+  overflow-wrap: anywhere;
+}
+html[data-time="night"] .dekita textarea { background: #ffffff14; color: var(--ink); }
+
 /* ---- 点メモの一覧 ---- */
 .tenmemo { margin-top: 16px; }
 .tenmemo ol {
@@ -365,20 +415,38 @@ footer a { color: inherit; }
 <div class="wrap">
   <a class="yagou" href="/">縁 側 屋</a>
   <h1>道のおすそわけ</h1>
-  <p class="lead">GeoMemory で覚えた道が、リンクになって届きました。</p>
+  <p class="lead" id="lead">GeoMemory で覚えた道が、リンクになって届きました。</p>
 
   <!-- 道の中身がある時だけ現れる本体。最初は隠しておき、JSが読めたら開く。 -->
   <div id="michi" hidden>
-    <div class="fuda">
+    <div class="fuda" id="uketoriFuda">
       <div class="name" id="routeName"></div>
       <div class="fromto" id="fromTo" hidden></div>
       <div class="facts" id="facts"></div>
       <div class="memo" id="routeMemo" hidden></div>
     </div>
 
+    <!-- 道を作るときの札（受け取りの札と入れ替わる） -->
+    <div class="fuda" id="tsukuruFuda" hidden>
+      <div class="name" style="font-size:20px;">新しい道を作る</div>
+      <p style="margin:8px 0 0; font-size:14px; color:var(--ink-soft);">
+        地図を動かして、真ん中の十字を<strong>曲がり角</strong>に合わせ、「ここに点」を押していきます。
+        点と点はまっすぐ結ばれるので、角ごとに打てば道の形になります。
+      </p>
+      <div class="tsukuru-ran">
+        <label>道の名前 <input id="tName" type="text" maxlength="40" placeholder="例：代官山交番から蛇崩"></label>
+        <label>どこから <input id="tFrom" type="text" maxlength="24" placeholder="例：恵比寿南"></label>
+        <label>どこまで <input id="tTo" type="text" maxlength="24" placeholder="例：上馬"></label>
+        <label>おぼえがき <textarea id="tMemo" rows="2" maxlength="300" placeholder="例：狭いけれど、中目黒立体の渋滞を確実に避けられます"></textarea></label>
+      </div>
+    </div>
+
     <div class="ezu" id="ezuBox">
       <div class="ban">
         <canvas id="ezuCanvas"></canvas>
+        <!-- 真ん中の十字。地図を動かして、ここに曲がり角を合わせる。
+             指でつまむのと点を打つのが喧嘩しない＝アプリのクロスヘアと同じ作法。 -->
+        <div class="jyuji" id="jyuji" hidden><span></span><span></span></div>
         <!-- 地図を出した人にだけ現れる操作の道具。指のつまみが効かない機械でも
              これだけで拡大・縮小・元に戻すができる（ジェスチャー頼みにしない）。 -->
         <div class="mapctl" id="mapCtl" hidden>
@@ -401,7 +469,30 @@ footer a { color: inherit; }
       <ol id="tenMemoList"></ol>
     </div>
 
-    <div class="actions">
+    <!-- 道を作るときの道具（打つ・戻す・消す）と、できた道の出口 -->
+    <div id="tsukuruDougu" hidden>
+      <div class="dougu-bar">
+        <button class="dougu-main" id="tenUtsu" type="button">ここに点</button>
+        <button class="dougu-sub"  id="ichiModosu" type="button">ひとつ戻す</button>
+        <button class="dougu-sub"  id="zenbuKesu" type="button">ぜんぶ消す</button>
+      </div>
+      <div class="dougu-kazu" id="tsukuruKazu">まだ点がありません。曲がり角に十字を合わせて「ここに点」。</div>
+
+      <div class="actions">
+        <button class="btn btn-main" id="linkNisuru" type="button">リンクにする（そのまま送れます）</button>
+        <p class="btn-note">できたリンクを LINE などに貼るだけ。受け取った人はアプリなしで見られます。</p>
+        <button class="btn btn-sub" id="ePng"  type="button">いま見えている範囲を絵で保存（PNG）</button>
+        <button class="btn btn-sub" id="eGmem" type="button">GeoMemory のファイルで保存（.gmem）</button>
+        <button class="btn btn-sub" id="eGpx"  type="button">GPX で保存（他の地図ソフト用）</button>
+      </div>
+      <div class="dekita" id="dekita" hidden>
+        <div class="head">できたリンク：</div>
+        <textarea id="dekitaLink" rows="3" readonly></textarea>
+        <button class="btn btn-sub" id="linkCopy" type="button">リンクをコピーする</button>
+      </div>
+    </div>
+
+    <div class="actions" id="uketoriActions">
       <a class="btn btn-main" id="openApp" href="#">GeoMemory で道を受け取る</a>
       <p class="btn-note">iPhone に GeoMemory が入っている人は、これを押すとアプリが開いて「覚えた道」に入ります。</p>
       <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
@@ -420,6 +511,14 @@ footer a { color: inherit; }
     GeoMemory アプリで道を「リンクで共有」すると、ここのリンクが作られます。<br><br>
     GeoMemory は、走った道・歩いた道を憶えて、あとで再生できる無料のアプリです。<br><br>
     <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
+
+    <!-- 道を手で作る（2026-08-01）。スクショに手で描いた地図の置き換え。
+         アプリが無くても、Windows でも、ここで道が作れて渡せる。 -->
+    <hr style="margin:22px 0; border:none; border-top:1px solid var(--card-line);">
+    <strong style="font-size:16px;">道を、ここで作ることもできます。</strong><br>
+    地図を動かして、曲がり角に点を打っていくだけ。できた道はリンク・絵・ファイルにして渡せます。
+    アプリも登録もいりません。<br><br>
+    <button class="btn btn-main" id="tsukuruHajime" type="button" style="width:100%;">新しく道を作る</button>
   </div>
 
   <!-- リンクが読めなかったとき（途中で切れた等）。正直に言う。 -->
@@ -465,6 +564,8 @@ footer a { color: inherit; }
    どこで転んでも「読めませんでした」を正直に出す（黙って白紙にしない）。
    ------------------------------------------------------------ */
 (function () {
+  tsukuruHaisen();          // 道具の配線は、何より先に（下の return より前で）
+
   // 読み口は二つ（冒頭の板書参照）。
   //   #<データ>   … 堅いがLINEのカード経由で落ちる（2026-07-30 実地試験）
   //   ?d=<データ> … LINE経由でも落ちない。アプリはこちらの形で作る
@@ -473,28 +574,33 @@ footer a { color: inherit; }
     hash = new URLSearchParams(location.search).get('d') || '';
   }
 
+  /* 【2026-08-01 の落とし穴・記録】ここは以前「中身が無ければ return」で
+     打ち切っていた。ところがこの下には `var tileMemo = {}` のような
+     **状態の初期化**が並んでいる。var の宣言は巻き上げられても、代入は
+     実行されなければ undefined のまま——つまり道を作りに来た人のときだけ
+     地図の控え箱が空っぽで、タイルが一枚も出なかった。
+     打ち切らず、読むときだけ読む形にする。 */
   if (!hash) {                         // リンクに中身が無い＝説明だけ出す
     document.getElementById('noData').hidden = false;
-    return;
+  } else {
+    // 圧縮を解く工程が非同期（ブラウザ内蔵の解凍機の決まり）なので、
+    // ここから先はまとめて非同期で進める。転んだら正直に「読めませんでした」。
+    parsePayload(hash).then(function (data) {
+      // 世代番号の検品（gmem と同じ思想）。知らない新しさなら正直に断る。
+      if (!data || data.v > 1 || typeof data.p !== 'string') {
+        document.getElementById('badData').hidden = false;
+        return;
+      }
+      var points = decodePolyline(data.p);
+      if (points.length < 2) {           // 1点では線にならない
+        document.getElementById('badData').hidden = false;
+        return;
+      }
+      showRoute(data, points);
+    }).catch(function () {
+      document.getElementById('badData').hidden = false;
+    });
   }
-
-  // 圧縮を解く工程が非同期（ブラウザ内蔵の解凍機の決まり）なので、
-  // ここから先はまとめて非同期で進める。転んだら正直に「読めませんでした」。
-  parsePayload(hash).then(function (data) {
-    // 世代番号の検品（gmem と同じ思想）。知らない新しさなら正直に断る。
-    if (!data || data.v > 1 || typeof data.p !== 'string') {
-      document.getElementById('badData').hidden = false;
-      return;
-    }
-    var points = decodePolyline(data.p);
-    if (points.length < 2) {           // 1点では線にならない
-      document.getElementById('badData').hidden = false;
-      return;
-    }
-    showRoute(data, points);
-  }).catch(function () {
-    document.getElementById('badData').hidden = false;
-  });
 
   /* ---- base64url → (deflate解凍) → UTF-8 → JSON ----
      荷物は「圧縮あり」が今の形。ただし圧縮導入前に配られたリンクも
@@ -827,7 +933,18 @@ footer a { color: inherit; }
   // 道の全体が紙に収まる縮尺と中心へ戻す（「ぜんぶ」ボタンの中身でもある）。
   function zenTaiHe() {
     var s = ezuSize();
+    // 作っている最中は、いま打ってある点から囲みを取り直す（増えるたびに変わるから）。
+    if (chizu.tsukuruChu) {
+      if (chizu.pts.length < 2) return;      // 点が1つ以下では「全体」が決まらない
+      var la = chizu.pts.map(function (p) { return p.lat; });
+      var lo = chizu.pts.map(function (p) { return p.lon; });
+      chizu.hako = {
+        minLat: Math.min.apply(null, la), maxLat: Math.max.apply(null, la),
+        minLon: Math.min.apply(null, lo), maxLon: Math.max.apply(null, lo)
+      };
+    }
     var h = chizu.hako;
+    if (!h) return;
     // 右上にボタンが浮いているぶん、道の置き場所は狭い。
     // その幅を先に差し引いてから縮尺を決め、道じたいも少し左へ寄せる
     //（そうしないと「出発」の印がボタンの下に隠れる）。
@@ -862,8 +979,11 @@ footer a { color: inherit; }
   function clampZ(z) { return Math.max(chizu.zMin, Math.min(19, z)); }
 
   // 中心を道の近くに留める（遠くへ行って迷子にならないための手すり）。
+  // 作っている最中は手すりを外す＝どこへでも行けないと道が作れない。
   function clampChushin() {
+    if (chizu.tsukuruChu) return;
     var h = chizu.hako;
+    if (!h) return;
     var yobi = 0.35;   // 道の広がりの何割まで外へ出てよいか
     var dLon = Math.max((h.maxLon - h.minLon) * yobi, 0.004);
     var dLat = Math.max((h.maxLat - h.minLat) * yobi, 0.003);
@@ -939,18 +1059,36 @@ footer a { color: inherit; }
     var futo = Math.max(0.7, Math.min(2.2, Math.pow(2, z - 15) * 0.55 + 0.75));
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
-    [['#ffffff', 6.5 * futo], [routeColor, 3.5 * futo]].forEach(function (pen) {
-      ctx.beginPath();
-      ctx.moveTo(px(pts[0]), py(pts[0]));
-      for (var i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i]), py(pts[i]));
-      ctx.strokeStyle = pen[0];
-      ctx.lineWidth = pen[1];
-      ctx.stroke();
-    });
+    if (pts.length >= 2) {
+      [['#ffffff', 6.5 * futo], [routeColor, 3.5 * futo]].forEach(function (pen) {
+        ctx.beginPath();
+        ctx.moveTo(px(pts[0]), py(pts[0]));
+        for (var i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i]), py(pts[i]));
+        ctx.strokeStyle = pen[0];
+        ctx.lineWidth = pen[1];
+        ctx.stroke();
+      });
+    }
+
+    /* 作っている最中は、打った点そのものを見せる（どこを押さえたかが分かるように）。
+       出来上がった道を見るときは出さない＝線がガタガタして見えるだけだから。 */
+    if (chizu.tsukuruChu) {
+      pts.forEach(function (p, i) {
+        var x = px(p), y = py(p);
+        if (x < -20 || x > s.w + 20 || y < -20 || y > s.h + 20) return;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = (i === pts.length - 1) ? '#d8483c' : '#ffffff';  // 最後の点だけ赤
+        ctx.fill();
+        ctx.strokeStyle = (i === pts.length - 1) ? '#ffffff' : routeColor;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    }
 
     // 出発（緑）・到着（赤）。白い輪郭つきで地図から浮かせる。
-    mark(pts[0], style.getPropertyValue('--route-start').trim(), '出発');
-    mark(pts[pts.length - 1], style.getPropertyValue('--route-goal').trim(), '到着');
+    if (pts.length >= 1) mark(pts[0], style.getPropertyValue('--route-start').trim(), '出発');
+    if (pts.length >= 2) mark(pts[pts.length - 1], style.getPropertyValue('--route-goal').trim(), '到着');
     function mark(p, color, label) {
       var x = px(p), y = py(p);
       if (x < -60 || x > s.w + 60 || y < -60 || y > s.h + 60) return;  // 画面の外なら描かない
@@ -1050,6 +1188,11 @@ footer a { color: inherit; }
     var e = tileMemo[key];
     if (e) return e;
     var img = new Image();
+    /* 【大事】外から来た絵を canvas に敷くと、ブラウザは「汚れた紙」と見なして
+       画像での保存（toBlob）を拒む。OpenStreetMap は「持ち出してよい」と
+       返してくれるので、こう頼んでおけば汚れない＝あとで絵にして渡せる。
+       （赤ペンで実測。地理院タイルはこれを返さないので保存できなかった。）*/
+    img.crossOrigin = 'anonymous';
     e = { img: img, ok: false };
     tileMemo[key] = e;
     img.onload = function () { e.ok = true; kakinaosu(); };
@@ -1198,6 +1341,269 @@ footer a { color: inherit; }
 
     // 窓の幅が変わったら（横向きにした・画面を分けた）描き直す。
     window.addEventListener('resize', function () { if (chizu) kakinaosu(); });
+  }
+
+  /* ==================================================================
+     道を、ここで作る（2026-08-01）
+     ------------------------------------------------------------------
+     施主の実務：地図をスクリーンショットして、ペンで道を描いて LINE で送る。
+     「スクショ手書き地図、本当によく見ます」——世の中みんなやっている。
+
+     それを絵ではなく**データ**にする。点は地面の座標で持つので、
+     「前後関係、拡大縮小しても崩れない」（施主）。描いた後から直せるし、
+     受け取った人は寄って確かめられるし、アプリに取り込めば再生もできる。
+
+     出口は四つ：リンク（そのまま送れる）／PNG（いま見えている範囲）／
+     .gmem（GeoMemory に入る）／GPX（他の地図ソフトへ）。
+     ================================================================== */
+
+  var tsukuruDekiru = false;   // 作成モードに入ったか
+
+  function tsukuruHajimeru() {
+    document.getElementById('noData').hidden = true;
+    document.getElementById('michi').hidden = false;
+    document.getElementById('uketoriFuda').hidden = true;    // 受け取りの札は引っ込める
+    document.getElementById('lead').textContent =
+      '地図の上に点を打って、道を作ります。できた道はリンク・絵・ファイルで渡せます。';
+    document.getElementById('tsukuruFuda').hidden = false;
+    document.getElementById('tsukuruDougu').hidden = false;
+    document.getElementById('uketoriActions').hidden = true;
+    document.getElementById('jyuji').hidden = false;
+    document.getElementById('showMap').hidden = true;
+    document.getElementById('mapNote').hidden = true;
+    document.getElementById('ezuCaption').textContent =
+      '地図を動かして、十字を曲がり角へ ／ 地図: © OpenStreetMap contributors';
+
+    var canvas = document.getElementById('ezuCanvas');
+    canvas.classList.add('ugoku');
+    document.getElementById('ezuBox').classList.add('chizu');
+    document.getElementById('mapCtl').hidden = false;
+
+    // 出だしの場所。分かれば今いるところ、断られたら東京駅のあたり。
+    chizu = { pts: [], memos: [], hako: null,
+              cx: 139.7671, cy: 35.6812, z: 16, zMin: 3, tsukuruChu: true };
+    tsukeruSousa(canvas);
+    render();
+    kazuKousin();
+    tsukuruDekiru = true;
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        if (!chizu || chizu.pts.length) return;    // もう打ち始めていたら動かさない
+        chizu.cx = pos.coords.longitude;
+        chizu.cy = pos.coords.latitude;
+        chizu.z = clampZ(17);
+        render();
+      }, function () { /* 断られても何もしない。東京駅のままで動く */ },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
+    }
+  }
+
+  // いま十字が指している場所に、点をひとつ打つ。
+  function tenUtsu() {
+    if (!chizu || !chizu.tsukuruChu) return;
+    chizu.pts.push({ lat: chizu.cy, lon: chizu.cx });
+    render();
+    kazuKousin();
+  }
+  function ichiModosu() {
+    if (!chizu || !chizu.pts.length) return;
+    chizu.pts.pop();
+    render();
+    kazuKousin();
+  }
+  function zenbuKesu() {
+    if (!chizu || !chizu.pts.length) return;
+    if (!window.confirm('打った点をぜんぶ消します。よろしいですか。')) return;
+    chizu.pts = [];
+    render();
+    kazuKousin();
+  }
+
+  function kazuKousin() {
+    var el = document.getElementById('tsukuruKazu');
+    var n = chizu ? chizu.pts.length : 0;
+    if (n === 0) { el.textContent = 'まだ点がありません。曲がり角に十字を合わせて「ここに点」。'; return; }
+    if (n === 1) { el.textContent = '点が1つ。あと1つ打つと、道になります。'; return; }
+    // distText は「約 4.1 km の道」を返す（札での言い回し）。ここでは長さだけ使う。
+    el.textContent = '点が ' + n + ' つ ／ ' + distText(totalMeters(chizu.pts)).replace(/ の道$/, '') + 'の長さ。';
+    document.getElementById('dekita').hidden = true;   // 道が変わったら、前のリンクは古い
+  }
+
+  /* ---- 荷物づくり（リンク・ファイルの共通の中身）---- */
+
+  function tsukuruTane() {
+    return {
+      name: (document.getElementById('tName').value || '').trim() || '名前のない道',
+      from: (document.getElementById('tFrom').value || '').trim(),
+      to:   (document.getElementById('tTo').value   || '').trim(),
+      memo: (document.getElementById('tMemo').value || '').trim(),
+      pts:  chizu ? chizu.pts : []
+    };
+  }
+
+  // 点が2つ無いと道にならない。押した人に、なぜ駄目かを正直に言う。
+  function michiAruka() {
+    if (chizu && chizu.pts.length >= 2) return true;
+    window.alert('まだ道になっていません。曲がり角に十字を合わせて「ここに点」を、2つ以上打ってください。');
+    return false;
+  }
+
+  /* Google のポリライン符号化（読む側＝decodePolyline の裏返し）。
+     前の点との差だけを5ビット刻みの文字にする。5mおきなら1点2〜4文字。 */
+  function encodePolyline(pts) {
+    var out = '', plat = 0, plon = 0;
+    function hitotsu(v) {
+      v = v < 0 ? ~(v << 1) : (v << 1);
+      var s = '';
+      while (v >= 0x20) { s += String.fromCharCode((0x20 | (v & 0x1f)) + 63); v >>>= 5; }
+      return s + String.fromCharCode(v + 63);
+    }
+    for (var i = 0; i < pts.length; i++) {
+      var la = Math.round(pts[i].lat * 1e5), lo = Math.round(pts[i].lon * 1e5);
+      out += hitotsu(la - plat) + hitotsu(lo - plon);
+      plat = la; plon = lo;
+    }
+    return out;
+  }
+
+  // 日本語を含む文字列を base64url へ（読む側の裏返し）。
+  function b64url(s) {
+    var bin = '', b = new TextEncoder().encode(s);
+    for (var i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]);
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  function linkNisuru() {
+    if (!michiAruka()) return;
+    var t = tsukuruTane();
+    var payload = {
+      v: 1, app: '縁側屋 道づくり', n: t.name, m: t.memo,
+      sp: t.from, ep: t.to, c: new Date().toISOString(),
+      p: encodePolyline(t.pts), pm: []
+    };
+    var url = 'https://engawaya.com/michi/?d=' + b64url(JSON.stringify(payload));
+    var box = document.getElementById('dekita');
+    var ta = document.getElementById('dekitaLink');
+    ta.value = url;
+    box.hidden = false;
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (url.length > 7000) {
+      window.alert('リンクが長くなりました（' + url.length + '文字）。'
+        + 'LINE などで切られることがあります。点を減らすか、ファイルで渡してください。');
+    }
+  }
+
+  // 出来上がったものを持ち帰らせる共通の口。
+  function otosu(blob, namae) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = namae;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  // ファイル名に使えない文字を安全な形へ。
+  function anzenNa(namae) {
+    return (namae || '道').replace(/[\/\\:?%*|"<>]/g, '_');
+  }
+
+  /* いま画面に見えている範囲を、そのまま絵にする。
+     施主「PNGでも、なんでも自分の好きなサイズに切り取って渡す」——
+     枠を決めるのは撮る人。十字やボタンは canvas の外にあるので写らない。 */
+  function ePng() {
+    var canvas = document.getElementById('ezuCanvas');
+    var t = tsukuruTane();
+    try {
+      canvas.toBlob(function (blob) {
+        if (!blob) { window.alert('絵にできませんでした。地図が出てから、もう一度お試しください。'); return; }
+        otosu(blob, anzenNa(t.name) + '.png');
+      }, 'image/png');
+    } catch (e) {
+      window.alert('絵にできませんでした（地図の絵を取り寄せ直すと直ることがあります）。');
+    }
+  }
+
+  /* GeoMemory がそのまま開けるファイル。アプリ側は何も直さなくていい
+     ＝ここで作った道が、iPhone の「覚えた道」に入って再生までできる。 */
+  function eGmem() {
+    if (!michiAruka()) return;
+    var t = tsukuruTane();
+    var now = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    var file = {
+      appName: '縁側屋 道づくり',
+      author: '',
+      exportedAt: now,
+      formatVersion: 1,
+      route: {
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())).toUpperCase(),
+        name: t.name,
+        memo: t.memo,
+        startPlace: t.from,
+        endPlace: t.to,
+        createdAt: now,
+        points: t.pts.map(function (p) {
+          return { lat: Math.round(p.lat * 1e6) / 1e6, lon: Math.round(p.lon * 1e6) / 1e6 };
+        }),
+        pointMemos: []
+      }
+    };
+    otosu(new Blob([JSON.stringify(file)], { type: 'application/json' }),
+          anzenNa(t.name) + '.gmem');
+  }
+
+  /* GPX＝ヤマレコ・カーナビなど「ソフト宛て」の形式。
+     人に送る形ではないが、自分のデータを持ち出せる証にはなる。 */
+  function eGpx() {
+    if (!michiAruka()) return;
+    var t = tsukuruTane();
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    var now = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    var x = '<?xml version="1.0" encoding="UTF-8"?>\n'
+          + '<gpx version="1.1" creator="縁側屋 道づくり (engawaya.com)"\n'
+          + '     xmlns="http://www.topografix.com/GPX/1/1">\n'
+          + '  <metadata><name>' + esc(t.name) + '</name>'
+          + '<desc>' + esc(t.memo) + '</desc><time>' + now + '</time></metadata>\n'
+          + '  <trk><name>' + esc(t.name) + '</name>'
+          + '<desc>' + esc(t.memo) + '</desc><trkseg>\n';
+    t.pts.forEach(function (p) {
+      x += '    <trkpt lat="' + p.lat.toFixed(6) + '" lon="' + p.lon.toFixed(6) + '"></trkpt>\n';
+    });
+    x += '  </trkseg></trk>\n</gpx>\n';
+    otosu(new Blob([x], { type: 'application/gpx+xml' }), anzenNa(t.name) + '.gpx');
+  }
+
+  /* 道具を配線する。
+     【落とし穴】この下の「リンクに中身が無い＝説明だけ出して return」より後ろに
+     置くと、道を作りに来た人のときだけ配線が走らない（まさにそれで一度転んだ）。
+     関数の宣言は巻き上げられるので、呼ぶのは入口のいちばん先で。 */
+  function tsukuruHaisen() {
+    var h = document.getElementById('tsukuruHajime');
+    if (h) h.addEventListener('click', tsukuruHajimeru);
+    document.getElementById('tenUtsu').addEventListener('click', tenUtsu);
+    document.getElementById('ichiModosu').addEventListener('click', ichiModosu);
+    document.getElementById('zenbuKesu').addEventListener('click', zenbuKesu);
+    document.getElementById('linkNisuru').addEventListener('click', linkNisuru);
+    document.getElementById('ePng').addEventListener('click', ePng);
+    document.getElementById('eGmem').addEventListener('click', eGmem);
+    document.getElementById('eGpx').addEventListener('click', eGpx);
+    document.getElementById('linkCopy').addEventListener('click', function () {
+      var ta = document.getElementById('dekitaLink');
+      ta.select();
+      ta.setSelectionRange(0, 99999);          // iPhone はこれが要る
+      var btn = document.getElementById('linkCopy');
+      function tsutaeru() { btn.textContent = 'コピーしました'; setTimeout(function () { btn.textContent = 'リンクをコピーする'; }, 2000); }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(ta.value).then(tsutaeru, function () {
+          try { document.execCommand('copy'); tsutaeru(); } catch (e) {}
+        });
+      } else {
+        try { document.execCommand('copy'); tsutaeru(); } catch (e) {}
+      }
+    });
   }
 })();
 </script>
