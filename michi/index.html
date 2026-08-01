@@ -89,6 +89,9 @@
 /* ---- 土台のリセット（母屋と同じ最小限） ---- */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* iPhone が勝手に文字を太らせる（font boosting）のを止める。
+   遊び場と同じ一行。無いと、狭い箱の中の文字だけが不揃いに大きくなる。 */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 /* ---- 時間帯ごとの色（母屋 index.html と同じ表。家風を継ぐ） ---- */
 :root {
@@ -261,6 +264,13 @@ h1 {
   background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
   display: grid; grid-template-rows: 1fr auto;
   overflow: hidden;              /* はみ出した分で画面が伸びないように */
+  /* 【大事】全画面の間は、この板の上のつまみを Safari に渡さない。
+     施主の実測（iPhone・2026-08-01）＝**地図の外**（ボタンや札の上）で
+     二本指を広げると、ページごと拡大されて道具が巨大化した。
+     canvas だけ touch-action:none にしてあったので、指が数ピクセル外に
+     落ちただけで「二本指」の意味が変わっていた＝混同の穴。板ごと塞ぐ。
+     （小さい地図のときは外す＝ページの拡大は読む人の権利） */
+  touch-action: none;
 }
 /* grid の子は既定で「中身より小さくならない」ので、min-height:0 で解いてやる。
    これが無いと canvas の高さが枠を押し広げ、下の札が画面の外へ落ちる。 */
@@ -1562,6 +1572,14 @@ footer a { color: inherit; }
       // 紙の大きさが変わるので、道の全体が入るところへ取り直す。
       requestAnimationFrame(function () { zenTaiHe(); render(); });
     });
+
+    /* Safari だけが出す「つまみ」の知らせ。全画面の間はこれも断る。
+       touch-action だけでは取りこぼす版の iOS があるので、二重に止める。
+       全画面でないとき（小さい地図・受け取りページ）は素通し＝
+       ページを拡大して読む権利は、いつでも読む人のもの。 */
+    document.addEventListener('gesturestart', function (e) {
+      if (box.classList.contains('zenmen')) e.preventDefault();
+    }, { passive: false });
 
     // 窓の幅が変わったら（横向きにした・画面を分けた）描き直す。
     window.addEventListener('resize', function () { if (chizu) kakinaosu(); });
