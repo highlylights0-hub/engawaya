@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<!--
+    ============================================================
+    縁側屋 /meter/ — メーター引き（納金の計算）
+
+    何をする一枚か:
+      ひと晩走り終えたあと、メーターに出た税込の運収から
+      「消費税はいくらか」「税抜の運収はいくらか」
+      「結局いくら納めるのか」を出す。それだけの道具。
+
+    誰のための一枚か（施主の言葉・2026-08-01）:
+      「20時間走った仲間、死にそうな顔での納金作業。早く家にかえってね」
+      「ゾンビみたいな顔の仲間。納金できれば帰れる」
+      「何を割ったら良いんだい〜！ がくっ」
+
+      これがこの一枚の全部です。使う人は、頭が働く状態ではありません。
+      だから守ることが二つあります。
+        ① 開いた瞬間に打ち始められること（探させない・迷わせない）
+        ② 打ち込む欄と答えが**ひとつづき**であること
+           （打ち終わってから答えを探してスクロールさせない）
+      「計算が速い」ことではなく、**その人が早く家に帰れる**ことが目的です。
+
+    なぜ途中の数字まで全部出すのか:
+      疲れているなら答えだけでいい、とはならないからです。
+      納金は**間違えたときに自分の財布から出る**。
+      だから「合っているか自分の目で追える」ことのほうが、字数の少なさより大事。
+      ただし置き場所は分けてあります。答えは上、道すじはその下。
+      いつもは見なくていい。合わなかった晩だけ、下を見れば足がつく。
+
+    なぜ iPhone アプリでなく Web なのか:
+      元は Xcode で作りかけた iPhone アプリ（~/Desktop/MC/）。同じ計算です。
+      Web にしたのは、渡す相手が「仲間」だから。
+      アプリだと「入れてみて」から始まる。リンクなら、送ったその場で開く。
+      審査待ちも無いので、直したその晩に直ったものが使える。
+      ※ Swift 版は残してあるが、いまはこの一枚が正。
+
+    計算の順番と、その理由:
+      ① 税込運収 − 調整金 ＝ 修正後の税込運収
+         調整金を先に引くのは、取り消した売上には税も付いていないから。
+         税を出したあとに引くと、消えた売上の分の税まで納めることになる。
+      ② 修正後 ÷ 11 ＝ 消費税（10円単位に四捨五入）
+         税込は本体の 1.1 倍。税込のうち税は 10/110 ＝ ちょうど 1/11。
+         だから「÷11」で税だけ取り出せる。
+      ③ 修正後 − 消費税 ＝ 税抜の運収
+      ④ ＋ 高速代など ＝ 納める金額
+         高速代を**最後に足す**のが、この計算でいちばん間違えやすいところ。
+         高速代は売上ではなく、お客様から預かって会社へ渡すだけのお金（立替）。
+         売上に混ぜると、預かっただけの金に消費税がかかってしまう。
+         だから税の計算が全部終わってから、最後に足す。
+
+    決めごと:
+      ・丸めは10円単位の四捨五入（.5 は切り上げ）。
+      ・引き算の結果がマイナスになるときは 0 で止める。
+        打ち間違いで「−3,000円納める」のような数字を出さないため。
+      ・「＝」の押しものは置かない。打つそばから計算する。
+        押し忘れて古い数字を見る、という間違いをそもそも作らないため。
+
+    例に置く数字について:
+      調整金の例は **500円**。以前は320円だったが、いまは500円（施主 2026-08-01）。
+      例に置くのは実額なので、古いままだと「それが正しい額」として伝わる。
+      直すときは、この行ごと直すこと。
+
+    「例」の見せ方（施主の指摘「頑固おじさんたちなので」2026-08-01）:
+      裸の数字を薄く置くだけでは足りない。
+      **箱の中に数字が見えたら、それは例ではなく「もう入っている値」に見える**。
+      消してから打つのか、上から打つのかで迷わせてしまう。
+      だから ①頭に「例」の字を付け ②濃さと大きさの両方を変える
+      （打ち込む字26px・くっきり／例18px・うすく）。
+      うすくしすぎないこと。読めなくなったら、例を置いた意味が消える。
+
+    まだ確かめていないこと（施主に聞いてある）:
+      ・チップ … Swift 版のコメントには「運収＋税＋高速代＋チップ」とあるが、
+        入力欄が無かった。要るなら足す。いまは入っていない。
+      ・丸めの単位 … 会社の伝票が10円単位でなければ、ここを変える。
+      ・高速代の向き … 足す（預かった現金を納める）で合っているか。
+
+    憲法（母屋の CLAUDE.md）に沿っていること:
+      ・外から何も読み込まない（この一枚だけで完結。地図も無いので例外ゼロ）
+      ・絵文字を使わない
+      ・押す場所・打ち込む場所は必要よりだいぶ大きく（欄の高さ58px）
+      ・ぜんぶ無料
+      色は母屋と同じ表。朝・昼・夕・夜で表情が変わる。
+      夜が暗くなるのは飾りではない。この道具を開く時刻は、たいてい夜だから。
+
+    外した案とその理由:
+      ・打ち込んだ数字の保存 … 置き場（ブラウザの中）は掃除で消える。
+        「覚えているつもりだったのに消えた」が起きるくらいなら、
+        毎回打ち直すほうが安全。数字は3つしかない。
+      ・日ごとの記録・集計 … それは別の道具の仕事。
+        一枚でやることを増やすと、いちばん使う「今日の納金」が遠くなる。
+      ・画面の下に貼りつく答えの帯 … iPhone はキーボードが出ると
+        貼りついた帯をその裏に隠してしまう（直そうとすると仕掛けが増える）。
+        欄を詰めて、答えを打ち込みと同じ座布団に入れるほうが、
+        仕掛けが要らないうえに「打つ→出る」が一続きに見える。
+    ============================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>メーター引き — 納金の計算｜縁側屋</title>
+<meta name="description" content="タクシーの納金計算。税込の運収を打ち込むだけで、消費税・税抜運収・納める金額が出ます。途中の数字も全部出るので、伝票と見比べられます。無料・登録もインストールも不要。">
+
+<meta property="og:title" content="メーター引き — 納金の計算｜縁側屋">
+<meta property="og:description" content="ひと晩の運収から、納める金額を。消費税も税抜運収も、途中の式ごと出ます。ブラウザで開けば、すぐ使えます。無料・登録不要。">
+<meta property="og:type" content="website">
+
+<style>
+/* ---- 土台のリセット（母屋と同じ最小限） ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* ---- 時間帯ごとの色（母屋 index.html と同じ表。家風を継ぐ） ----
+   JS が <html data-time="morning|day|evening|night"> を付ける。 */
+:root {
+  --sky-top:    #eaf2f8;
+  --sky-bottom: #fdfbf6;
+  --ink:        #2b2622;
+  --ink-soft:   #6b625a;
+  --card:       #ffffffdd;
+  --card-line:  #d9cfc2;
+  --wood-1:     #c69a6d;
+  --wood-2:     #a97c50;
+  --accent:     #b4703a;
+  --minus:      #a33b2a;   /* 引く数の色 */
+  --field:      #fffdf8;   /* 打ち込む欄の地の色 */
+}
+html[data-time="morning"] { --sky-top: #dbe9f4; --sky-bottom: #fdfcf7; }
+html[data-time="day"]     { --sky-top: #f2efe6; --sky-bottom: #fbf8f1; }
+html[data-time="evening"] { --sky-top: #f3cfa2; --sky-bottom: #fae7cd; --accent: #a95c2a; }
+html[data-time="night"] {
+  --sky-top: #141c2b; --sky-bottom: #232c3d;
+  --ink: #efe9e0; --ink-soft: #a9a49c;
+  --card: #2b3446ee; --card-line: #45506a;
+  --wood-1: #6b5236; --wood-2: #4d3a26;
+  --accent: #e0a061;
+  --minus: #e08a72;
+  --field: #1c2333;
+}
+
+/* ---- 全体 ---- */
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  /* 数字は「桁が縦に揃う」書き方に。伝票を目で追うときに効く。 */
+  font-variant-numeric: tabular-nums;
+}
+.wrap {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 18px 16px 44px;
+}
+
+/* 屋号。母屋への帰り道を兼ねる（押せる）。 */
+.yagou {
+  display: inline-block;
+  font-size: 14px;
+  letter-spacing: .3em;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.yagou:hover { color: var(--accent); }
+
+h1 {
+  margin: 8px 0 2px;
+  font-size: clamp(22px, 6vw, 28px);
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+.lead {
+  margin: 2px 0 16px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+/* ---- 座布団（母屋の作法を継ぐ） ---- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.card > h2 {
+  font-size: 14px;
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+
+/* ---- 打ち込む欄 ----------------------------------------------
+   高さを 58px 取っているのは見た目のためではない。
+   20時間走ったあとの手で、揺れる車内で、狙いを外さず押せるため。 */
+.field { margin-bottom: 12px; }
+.field label {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.field .hint {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+.inputwrap { position: relative; }
+.inputwrap input {
+  width: 100%;
+  height: 58px;
+  padding: 0 42px 0 14px;
+  font-size: 26px;              /* 16px 未満だと iPhone が勝手に拡大する。大きく取る */
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+  background: var(--field);
+  border: 2px solid var(--card-line);
+  border-radius: 10px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.inputwrap input:focus { border-color: var(--accent); }
+.inputwrap .yen {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 17px;
+  color: var(--ink-soft);
+  pointer-events: none;         /* 「円」を押しても欄が反応するように */
+}
+
+/* ---- 例の見せ方（薄く・小さく）--------------------------------
+   打ち込む数字は 26px でくっきり、例は 18px でうすく。
+   大きさと濃さの両方を変えているのは、
+   「これは打ち込まれた数字ではなく、ただの例だ」が
+   一目で伝わらないといけないから。同じ見た目だと、
+   すでに何か入っていると思われて、消すのか上書きなのかで迷わせる。
+   ※うすくしすぎない。読めなくなったら、例を置いた意味が消える。 */
+.inputwrap input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.55;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+/* ---- 答え ----------------------------------------------------
+   打ち込む欄と同じ座布団の中、いちばん下に置く。
+   別の座布団に分けると、打ち終わってから答えを探すことになる。
+   疲れている人にスクロールを一回させる意味は無い。 */
+.answer {
+  margin-top: 16px;
+  padding: 14px 16px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--accent);
+  text-align: center;
+}
+.answer .name {
+  font-size: 13px;
+  color: var(--ink-soft);
+  letter-spacing: .16em;
+}
+.answer .num {
+  font-size: clamp(34px, 11vw, 44px);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+/* ---- 伝票（計算の道すじ） ---- */
+.step {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--card-line);
+}
+.step:last-child { border-bottom: none; }
+.step .line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.step .name { font-size: 15px; }
+.step .num  { font-size: 21px; white-space: nowrap; }
+.step .why {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-top: 2px;
+}
+.step .shiki {                  /* 実際に使った式を、そのまま見せる行 */
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 3px;
+}
+.minus .num, .minus .name { color: var(--minus); }
+
+/* 小計の行（点線でなく実線で締める） */
+.subtotal {
+  border-top: 2px solid var(--card-line);
+  border-bottom: none;
+  margin-top: 4px;
+  padding-top: 10px;
+}
+.subtotal .name, .subtotal .num { font-weight: 600; }
+
+/* まだ何も打ち込まれていないときの、うすい表示。
+   「0円」が答えとして出ているように見えないように。 */
+.empty .num, .empty .shiki { opacity: 0.35; }
+
+/* ---- 押しもの ---- */
+.btn {
+  display: block;
+  width: 100%;
+  min-height: 58px;
+  font-size: 17px;
+  font-family: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--card-line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.btn:active { border-color: var(--accent); }
+
+/* ---- たたんである説明 ---- */
+details {
+  border: 1px solid var(--card-line);
+  border-radius: 12px;
+  padding: 0 14px;
+  margin-top: 16px;
+  background: var(--card);
+}
+details > summary {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 15px;
+  list-style: none;
+}
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: "＋";
+  margin-right: 8px;
+  color: var(--accent);
+  font-weight: 700;
+}
+details[open] > summary::before { content: "−"; }
+details .body {
+  font-size: 14px;
+  padding-bottom: 14px;
+  border-top: 1px dashed var(--card-line);
+  padding-top: 12px;
+}
+details .body p { margin: 0 0 10px; }
+details .body p:last-child { margin-bottom: 0; }
+details .body .zu {           /* 帯で見せる図（画像は使わない） */
+  display: flex;
+  margin: 12px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 12px;
+  text-align: center;
+  line-height: 34px;
+  color: #fff;
+}
+details .body .zu .honntai { flex: 10; background: #7d8f6e; }
+details .body .zu .zei     { flex: 1;  background: #b4703a; }
+
+/* ---- 断り書き ---- */
+.kotowari, .disclaimer {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.85;
+  margin: 20px 2px 0;
+}
+
+/* ---- 縁側の板（母屋と同じ足元） ---- */
+footer {
+  flex: 0 0 auto;
+  margin-top: 32px;
+  padding: 22px 20px 30px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: linear-gradient(180deg, var(--wood-1), var(--wood-2));
+}
+html[data-time="night"] footer { color: #d8d2c8; }
+footer a { color: inherit; }
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+  <a class="yagou" href="/">縁 側 屋</a>
+
+  <h1>メーター引き</h1>
+  <!-- 一行目は「何ができるか」ではなく「あなたは何もしなくていい」と書く。
+       施主が見ている場面（2026-08-01）:
+         20時間走ったゾンビみたいな顔の仲間が、電卓の前で
+         「何を割ったら良いんだい〜！」でがくっと来ている。
+       つまり最初に消したい不安は「何で割るんだっけ」。
+       だから看板の一行目でそこに答える＝**割り算はこちらでやります**。
+       道具の自慢（消費税も税抜も出ます）は、その次の行で足りる。 -->
+  <p class="lead">数字を打つだけ。<b>割り算はこちらでやります。</b><br>
+    消費税も、税抜の運収も、納める金額も出ます。</p>
+
+  <!-- ============ 打ち込む → 答え（ひとつづき） ============
+       打ち込む欄と答えを同じ座布団に入れてあるのは、
+       「打ち終わってから答えを探す」を無くすため。 -->
+  <section class="card">
+    <h2>打ち込む</h2>
+
+    <div class="field">
+      <label for="gross">税込の運収（メーターの合計）</label>
+      <span class="hint">メーターに出た、税込みの合計。</span>
+      <div class="inputwrap">
+        <!-- 例は「例 51340」とだけ書く。右はしの「円」は箱が持っているので、
+             並ぶと「例 51340　円」と読める。placeholder に「円」まで書くと二つ出る。
+             autofocus ＝ 開いた瞬間にここから打てる（探させない）。 -->
+        <input id="gross" type="text" inputmode="decimal" placeholder="例 51340"
+               autocomplete="off" enterkeyhint="next" autofocus>
+        <span class="yen">円</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="adjust">調整金（引く分）</label>
+      <span class="hint">取り消し・値引きなど。無ければ空のまま。</span>
+      <div class="inputwrap">
+        <!-- 500円。以前は320円だったが、いまの調整金は500円（施主 2026-08-01）。
+             古い値段を例に置くと、それが正しい額だと思われてしまう。 -->
+        <input id="adjust" type="text" inputmode="decimal" placeholder="例 500"
+               autocomplete="off" enterkeyhint="next">
+        <span class="yen">円</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="highway">高速代など（立替）</label>
+      <span class="hint">お客様から預かって、会社へ渡すだけのお金。</span>
+      <div class="inputwrap">
+        <input id="highway" type="text" inputmode="decimal" placeholder="例 1000"
+               autocomplete="off" enterkeyhint="done">
+        <span class="yen">円</span>
+      </div>
+    </div>
+
+    <div class="answer">
+      <div class="name">納 め る 金 額</div>
+      <div class="num" id="outFinal">0円</div>
+    </div>
+  </section>
+
+  <button class="btn" id="clear" type="button">はじめから（打ち込んだ数字を消す）</button>
+
+  <!-- ============ 道すじ ============
+       いつもは見なくていい。合わなかった晩に、足がつくように置いてある。 -->
+  <div style="height:16px"></div>
+  <section class="card">
+    <h2>その数字の出どころ</h2>
+
+    <div class="step" id="rowGross">
+      <div class="line"><span class="name">① 税込の運収</span><span class="num" id="outGross">0円</span></div>
+      <div class="why">メーターに出たままの数字。</div>
+    </div>
+
+    <div class="step minus" id="rowAdjust">
+      <div class="line"><span class="name">② 調整金をひく</span><span class="num" id="outAdjust">−0円</span></div>
+      <div class="why">先に引く。取り消した売上には、その分の税も付いていないから。</div>
+    </div>
+
+    <div class="step subtotal" id="rowAdjusted">
+      <div class="line"><span class="name">修正後の税込運収</span><span class="num" id="outAdjusted">0円</span></div>
+    </div>
+
+    <div class="step" id="rowTax">
+      <div class="line"><span class="name">③ 消費税をとりだす</span><span class="num" id="outTax">0円</span></div>
+      <div class="why">税込のうち、税はちょうど 1/11。だから 11 で割ると税だけ出る。</div>
+      <div class="shiki" id="shikiTax">— ÷ 11 ＝ —　→　10円単位に四捨五入</div>
+    </div>
+
+    <div class="step" id="rowNet">
+      <div class="line"><span class="name">④ 税抜の運収</span><span class="num" id="outNet">0円</span></div>
+      <div class="shiki" id="shikiNet">— − — ＝ —</div>
+    </div>
+
+    <div class="step" id="rowHighway">
+      <div class="line"><span class="name">⑤ 高速代などを足す</span><span class="num" id="outHighway">＋0円</span></div>
+      <div class="why">預かっただけのお金なので、税の計算が終わってから最後に足す。</div>
+    </div>
+
+    <div class="step subtotal" id="rowFinal2">
+      <div class="line"><span class="name">＝ 納める金額</span><span class="num" id="outFinal2">0円</span></div>
+      <div class="shiki" id="shikiFinal">— ＋ — ＋ — ＝ —</div>
+    </div>
+  </section>
+
+  <!-- ============ たたんである説明 ============ -->
+  <details>
+    <summary>なぜ「11 で割る」と消費税が出るのか</summary>
+    <div class="body">
+      <p>本体が 100 円のとき、消費税は 10 円。お客様が払うのは 110 円です。</p>
+      <div class="zu">
+        <div class="honntai">本体 100</div>
+        <div class="zei">税 10</div>
+      </div>
+      <p>この 110 円のうち、税の部分は <b>10 ÷ 110 ＝ 1/11</b>。
+         帯の右はしの、ちょうど 11 分の 1 です。</p>
+      <p>だから、税込みの金額を 11 で割れば、それが消費税になります。
+         「1.1 で割って本体を出し、引き算する」でも同じ答えになりますが、
+         割り算がひとつで済むこちらのほうが、途中で間違えにくい。</p>
+      <p>割り切れないときは、10 円単位に四捨五入しています
+         （たとえば 4,638 円 → 4,640 円）。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>なぜ高速代だけ、あとから足すのか</summary>
+    <div class="body">
+      <p>高速代は<b>売上ではありません</b>。お客様から預かって、会社へそのまま渡すお金です。
+         いったん自分の財布を通るだけで、自分の稼ぎには一円も入っていません。</p>
+      <p>これを運収に混ぜてしまうと、預かっただけのお金にまで消費税がかかった計算になり、
+         その分だけ税を多く納めることになります。</p>
+      <p>だから消費税の計算は、高速代を入れないまま進めて、
+         全部終わってから最後に足します。この一枚が計算の順番をわざわざ全部見せているのは、
+         ここが<b>いちばん間違えやすいところ</b>だからです。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>合わないときに、どこを見るか</summary>
+    <div class="body">
+      <p><b>数十円だけ合わない</b>…… 丸めの単位を疑ってください。ここは 10 円単位で
+         四捨五入しています。会社の伝票が 1 円単位や 100 円単位なら、
+         メールをいただければ直します。</p>
+      <p><b>税が多い／少ない</b>…… 高速代を運収に混ぜていないか、
+         調整金を税の計算のあとに引いていないか。順番が違うと、この二つでずれます。</p>
+      <p><b>まるごと合わない</b>…… 「税込の運収」に、税抜の数字を打っていないか。
+         この一枚は、いちばん上に<b>税込み</b>の数字が入る前提で計算しています。</p>
+    </div>
+  </details>
+
+  <p class="kotowari">
+    <strong>打ち込んだ数字は、あなたの端末から出ません。</strong><br>
+    縁側屋にサーバーはありません。運収も納金額も、どこにも送られず、
+    保存もしていません（画面を閉じれば消えます）。
+    一度開いてしまえば、電波の届かない駐車場でも動きます。
+  </p>
+
+  <p class="disclaimer">
+    メーター引きはまだ開発中の道具です。<strong>計算は必ずご自身の伝票と見比べて、
+    確かめてからお使いください。</strong>会社によって調整金の額も、丸めの単位も違います。
+    使ったことで起きた損害まではお引き受けできませんが、おかしいところがあれば
+    <a href="mailto:info@engawaya.com">info@engawaya.com</a> へメールをください。ひとつずつ直します。
+  </p>
+</div>
+
+<footer>
+  © 2026 縁側屋 岡澤 博喜<br>
+  <span>このページの制作と管理は Claude が担当しています</span>
+</footer>
+
+<script>
+/* ------------------------------------------------------------
+   時間帯で色を変える（母屋 index.html と同じ判定）。
+   夜が暗いのは飾りではない。この道具を開く時刻は、たいてい夜だから。
+   ------------------------------------------------------------ */
+(function () {
+  var h = new Date().getHours();
+  var t = (h >= 5 && h < 9)  ? 'morning'
+        : (h >= 9 && h < 16) ? 'day'
+        : (h >= 16 && h < 19)? 'evening'
+        :                      'night';
+  document.documentElement.setAttribute('data-time', t);
+})();
+
+/* ------------------------------------------------------------
+   計算のところ。
+   ------------------------------------------------------------ */
+(function () {
+  var elGross   = document.getElementById('gross');
+  var elAdjust  = document.getElementById('adjust');
+  var elHighway = document.getElementById('highway');
+
+  /* 打ち込まれた字を数にする。
+     全角で打たれることも、カンマや「円」を付けて打たれることもあるので、
+     どれも受ける。読めなければ 0 として扱う（止まらない）。
+     疲れている人に「打ち方が違います」と言い返す画面は作らない。 */
+  function yomu(text) {
+    var s = String(text || '')
+      .replace(/[０-９．，]/g, function (c) {          // 全角を半角へ
+        return String.fromCharCode(c.charCodeAt(0) - 0xFEE0);
+      })
+      .replace(/[,、\s円¥￥]/g, '');                   // 区切りと単位を落とす
+    var n = parseFloat(s);
+    return isFinite(n) ? n : 0;
+  }
+
+  /* 数を「51,340円」の形に。桁区切りは、目で桁を数えなくて済むように。 */
+  function en(n) {
+    var minus = n < 0 ? '−' : '';
+    var v = Math.abs(n);
+    var seisu = Math.floor(v);
+    var shosu = v - seisu;
+    var s = String(seisu).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    /* 小数が出るのは打ち込みが小数のときだけ。出たら丸めずそのまま見せる */
+    if (shosu > 0) { s += String(Math.round(shosu * 100) / 100).slice(1); }
+    return minus + s + '円';
+  }
+  /* 説明の式の中で使う、単位を付けない形 */
+  function kazu(n) { return en(n).replace('円', ''); }
+
+  function keisan() {
+    var gross   = yomu(elGross.value);
+    var adjust  = yomu(elAdjust.value);
+    var highway = yomu(elHighway.value);
+
+    /* ① 調整金を引いた、修正後の税込運収。
+          マイナスにはしない（打ち間違いで妙な納金額を出さないため）。 */
+    var adjusted = Math.max(0, gross - adjust);
+
+    /* ② 消費税＝税込 ÷ 11 を、10円単位に四捨五入。
+          割った生の値も、画面に式として出すために取っておく。 */
+    var taxRaw = adjusted / 11;
+    var tax    = Math.round(taxRaw / 10) * 10;
+
+    /* ③ 税抜の運収 */
+    var net = Math.max(0, adjusted - tax);
+
+    /* ④ 納める金額＝税抜運収 ＋ 消費税 ＋ 高速代
+          （税抜＋税は修正後の税込に戻るが、伝票と同じ足し方で書いておく。
+            そのほうが、伝票の行と一行ずつ突き合わせられる） */
+    var final = net + tax + highway;
+
+    /* --- 画面へ --- */
+    var karappo = (gross === 0 && adjust === 0 && highway === 0);
+
+    put('outGross',    en(gross));
+    put('outAdjust',   '−' + en(adjust));
+    put('outAdjusted', en(adjusted));
+    put('outTax',      en(tax));
+    put('outNet',      en(net));
+    put('outHighway',  '＋' + en(highway));
+    put('outFinal',    en(final));
+    put('outFinal2',   en(final));
+
+    /* 式は、実際に使った数字をそのまま並べる。
+       割り算の生の値は小数第2位まで（…を付けて「まだ続く」と分かるように） */
+    var rawShow = Math.floor(taxRaw * 100) / 100;
+    var tsuzuki = (rawShow !== taxRaw) ? '…' : '';
+    put('shikiTax',
+        kazu(adjusted) + ' ÷ 11 ＝ ' + kazu(rawShow) + tsuzuki +
+        '　→　10円単位に四捨五入して ' + kazu(tax));
+    put('shikiNet',
+        kazu(adjusted) + ' − ' + kazu(tax) + ' ＝ ' + kazu(net));
+    put('shikiFinal',
+        kazu(net) + ' ＋ ' + kazu(tax) + ' ＋ ' + kazu(highway) + ' ＝ ' + kazu(final));
+
+    /* まだ何も打っていないうちは、数字をうすくしておく。 */
+    var rows = document.querySelectorAll('.step, .answer');
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].classList.toggle('empty', karappo);
+    }
+  }
+
+  function put(id, text) {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = text; }
+  }
+
+  /* 打つそばから計算する。押して確定する「＝」は置かない。
+     押し忘れて古い数字を見る、という間違いをそもそも作らないため。 */
+  [elGross, elAdjust, elHighway].forEach(function (el) {
+    el.addEventListener('input', keisan);
+  });
+
+  document.getElementById('clear').addEventListener('click', function () {
+    elGross.value = ''; elAdjust.value = ''; elHighway.value = '';
+    keisan();
+    elGross.focus();
+  });
+
+  keisan();   /* 開いた時点の表示を作っておく */
+})();
+</script>
+</body>
+</html>
