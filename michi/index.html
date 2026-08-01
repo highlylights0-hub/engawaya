@@ -221,24 +221,35 @@ h1 {
 .ezu canvas.ugoku { touch-action: none; cursor: grab; }
 .ezu canvas.ugoku:active { cursor: grabbing; }
 
+/* ボタンは GeoMemory の地図と同じ作法＝丸くて、地図の上に浮いている。
+   施主「ジオメモリーみたいにフローティングだと優しくて親切です」（2026-08-01）。
+   アプリで見慣れた形をそのまま持ってくる＝はじめての人にも読み方が要らない。 */
 .mapctl {
   position: absolute;
-  right: 8px; top: 8px;
-  display: grid; gap: 8px;
+  right: 10px; top: 10px;
+  display: grid; gap: 10px;
 }
 .mapctl button {
-  width: 46px; height: 46px;         /* 指で押せる大きさ。必要よりだいぶ大きく */
-  border-radius: 12px;
-  border: 1px solid var(--card-line);
-  background: #ffffffe6;
-  color: #2b261f;
-  font-size: 22px; font-weight: 700; line-height: 1;
+  width: 54px; height: 54px;         /* 指で押せる大きさ。必要よりだいぶ大きく */
+  border-radius: 50%;
+  border: none;
+  background: #3c3c3ccc;             /* 濃い半透明＝地図の色に負けない */
+  color: #fff;
+  font-size: 26px; font-weight: 600; line-height: 1;
   display: grid; place-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px #00000026;
+  box-shadow: 0 3px 10px #00000038;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
 }
-.mapctl button:active { transform: translateY(1px); }
-.mapctl button.small { font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+.mapctl button:active { transform: scale(0.94); }
+.mapctl button.small { font-size: 13px; font-weight: 600; letter-spacing: .02em; }
+
+/* 地図を出したら、絵を枠いっぱいまで広げる（施主「地図を、全体に」）。
+   カードの余白は、地図が主役になった時点で邪魔になる。 */
+.ezu.chizu { padding: 0; overflow: hidden; }
+.ezu.chizu canvas { border-radius: 14px 14px 0 0; }
+.ezu.chizu .caption { margin: 0; padding: 10px 14px; }
 
 /* 大きく見る＝画面いっぱいに開く。閉じれば元のページのまま。 */
 .ezu.zenmen {
@@ -766,6 +777,7 @@ footer a { color: inherit; }
     chizu.zMin = Math.max(3, chizu.z - 1.5);   // 迷子よけ：全体より少しだけ引ける
 
     canvas.classList.add('ugoku');
+    document.getElementById('ezuBox').classList.add('chizu');   // 絵を枠いっぱいへ
     document.getElementById('mapCtl').hidden = false;
     document.getElementById('showMap').hidden = true;
     document.getElementById('mapNote').hidden = true;
@@ -780,14 +792,18 @@ footer a { color: inherit; }
   function zenTaiHe() {
     var s = ezuSize();
     var h = chizu.hako;
+    // 右上にボタンが浮いているぶん、道の置き場所は狭い。
+    // その幅を先に差し引いてから縮尺を決め、道じたいも少し左へ寄せる
+    //（そうしないと「出発」の印がボタンの下に隠れる）。
+    var yoke = 74;
     var z = 18;
     while (z > 3) {
-      if (MX(h.maxLon, z) - MX(h.minLon, z) <= s.w - 70 &&
+      if (MX(h.maxLon, z) - MX(h.minLon, z) <= s.w - 70 - yoke &&
           MY(h.minLat, z) - MY(h.maxLat, z) <= s.h - 70) break;
       z--;
     }
     chizu.z = z;
-    chizu.cx = (h.minLon + h.maxLon) / 2;
+    chizu.cx = XLon(MX((h.minLon + h.maxLon) / 2, z) + yoke / 2, z);
     chizu.cy = (h.minLat + h.maxLat) / 2;
   }
 
@@ -864,7 +880,15 @@ footer a { color: inherit; }
         if (ty < 0 || ty >= kazu) continue;                  // 南北の外は空
         var wx = ((tx % kazu) + kazu) % kazu;                // 東西は地球一周でつながる
         var e = tileWo(tz, wx, ty);
-        if (e && e.ok) ctx.drawImage(e.img, tx * side - ox, ty * side - oy, side, side);
+        if (e && e.ok) {
+          ctx.drawImage(e.img, tx * side - ox, ty * side - oy, side, side);
+        } else {
+          // まだ届いていないなら、すでに控えにある「一段引いた絵」の
+          // その部分を引き伸ばして敷く。ぼやけた絵→届いたら鮮明な絵、と入れ替わる。
+          // 白く抜けるより、ぼやけていても地図が続いている方がずっと分かりやすい。
+          // ※さかのぼるのは控えにある絵だけ。新たに取り寄せには行かない。
+          oyaWo(ctx, tz, wx, ty, tx * side - ox, ty * side - oy, side);
+        }
       }
     }
 
@@ -961,6 +985,26 @@ footer a { color: inherit; }
     ctx.fillRect(s.w - cw - 10, s.h - 18, cw + 10, 18);
     ctx.fillStyle = '#3a352e';
     ctx.fillText(credit, s.w - cw - 5, s.h - 6);
+  }
+
+  /* まだ届いていないところに、控えの中の「引いた絵」を引き伸ばして敷く。
+     三代さかのぼって探し、見つかった絵の該当する一画だけを切り出して使う。
+     見つからなければ何もしない（下地の紙の色が残るだけ）。 */
+  function oyaWo(ctx, tz, tx, ty, dx, dy, side) {
+    for (var d = 1; d <= 3; d++) {
+      var pz = tz - d;
+      if (pz < 3) return;
+      var k = Math.pow(2, d);                 // 何分の一に縮まるか
+      var px = Math.floor(tx / k), py = Math.floor(ty / k);
+      var e = tileMemo[pz + '/' + px + '/' + py];
+      if (e && e.ok) {
+        var kire = 256 / k;                   // 親の絵から切り出す一辺
+        ctx.drawImage(e.img,
+          (tx - px * k) * kire, (ty - py * k) * kire, kire, kire,
+          dx, dy, side, side);
+        return;
+      }
+    }
   }
 
   /* 地図の絵を一枚さがす。控えに無ければ取り寄せて、届いたら描き直す。
