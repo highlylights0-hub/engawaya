@@ -210,6 +210,59 @@ h1 {
   color: var(--ink-soft);
 }
 
+/* ---- 地図を動かすための道具立て（2026-08-01）----
+   施主の見立て「画像は拡大縮小についていけない」への答え。
+   絵を貼るのではなく、動かせる地図にする。指のつまみだけに頼らず
+   押すだけのボタンも必ず添える（母屋の掟・昭和おじさん基準）。 */
+.ezu .ban { position: relative; }        /* ボタンを絵の上に重ねるための土台 */
+
+/* 地図を出したあとの canvas は、指の動きをページのスクロールに渡さない
+   （渡すと、地図を動かそうとして画面が流れる）。 */
+.ezu canvas.ugoku { touch-action: none; cursor: grab; }
+.ezu canvas.ugoku:active { cursor: grabbing; }
+
+.mapctl {
+  position: absolute;
+  right: 8px; top: 8px;
+  display: grid; gap: 8px;
+}
+.mapctl button {
+  width: 46px; height: 46px;         /* 指で押せる大きさ。必要よりだいぶ大きく */
+  border-radius: 12px;
+  border: 1px solid var(--card-line);
+  background: #ffffffe6;
+  color: #2b261f;
+  font-size: 22px; font-weight: 700; line-height: 1;
+  display: grid; place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #00000026;
+}
+.mapctl button:active { transform: translateY(1px); }
+.mapctl button.small { font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+
+/* 大きく見る＝画面いっぱいに開く。閉じれば元のページのまま。 */
+.ezu.zenmen {
+  position: fixed; inset: 0; z-index: 50;
+  margin: 0; border-radius: 0; border: none;
+  padding: 0;
+  /* 札（--card）は半透明の白で、空の上に浮いている作り。だから全画面のときは
+     その空を自分の下に敷く。敷かないと後ろのページの文字が透けて重なる。 */
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+  display: grid; grid-template-rows: 1fr auto;
+  overflow: hidden;              /* はみ出した分で画面が伸びないように */
+}
+/* grid の子は既定で「中身より小さくならない」ので、min-height:0 で解いてやる。
+   これが無いと canvas の高さが枠を押し広げ、下の札が画面の外へ落ちる。 */
+.ezu.zenmen .ban { height: 100%; min-height: 0; overflow: hidden; }
+.ezu.zenmen canvas { height: 100%; width: 100%; border-radius: 0; }
+/* 札には必ず地の色を敷く。敷かないと、後ろのページの文字が透けて重なる。 */
+.ezu.zenmen .caption {
+  margin: 0; padding: 10px 14px;
+  background: var(--card);
+  border-top: 1px solid var(--card-line);
+}
+.ezu.zenmen .btn, .ezu.zenmen .btn-note { display: none; }
+
 /* ---- 点メモの一覧 ---- */
 .tenmemo { margin-top: 16px; }
 .tenmemo ol {
@@ -303,8 +356,18 @@ footer a { color: inherit; }
       <div class="memo" id="routeMemo" hidden></div>
     </div>
 
-    <div class="ezu">
-      <canvas id="ezuCanvas"></canvas>
+    <div class="ezu" id="ezuBox">
+      <div class="ban">
+        <canvas id="ezuCanvas"></canvas>
+        <!-- 地図を出した人にだけ現れる操作の道具。指のつまみが効かない機械でも
+             これだけで拡大・縮小・元に戻すができる（ジェスチャー頼みにしない）。 -->
+        <div class="mapctl" id="mapCtl" hidden>
+          <button type="button" id="zoomIn"  aria-label="拡大">＋</button>
+          <button type="button" id="zoomOut" aria-label="縮小">−</button>
+          <button type="button" id="zoomAll" class="small" aria-label="道の全体を見る">ぜんぶ</button>
+          <button type="button" id="zenmen"  class="small" aria-label="大きく見る">大きく</button>
+        </div>
+      </div>
       <div class="caption" id="ezuCaption">道の形（上が北）。</div>
       <!-- 本物の地図は「押した人だけ」取り寄せる。
            開いた瞬間は外から何も読み込まない＝憲法①の心（軽さ）は守ったまま、
@@ -656,170 +719,405 @@ footer a { color: inherit; }
   /* ---- 本物の地図の上に道を重ねる（押した人だけ）----
      地図ライブラリは使わない。Web地図の紙（メルカトル図法）の計算と、
      OpenStreetMap のタイル（256px角の地図の絵）を自分の手で敷くだけ。
-     道の線と印を重ねるのは、これまでどおり端末の中。 */
+     道の線と印を重ねるのは、これまでどおり端末の中。
+
+     【2026-08-01 の作り直し】施主の見立て
+       「画像は、拡大縮小についていけない。ポリラインで渡してあげたい」
+     に応えて、一度描いて終わりだった絵を **動かせる地図** にした。
+     線を画面の座標ではなく緯度経度で持っているので、縮めれば線も縮み、
+     拡げれば拡がる。赤ペン（/akapen/）で確かめた作法をこちらへ戻したもの。 */
+
+  // メルカトル図法：緯度経度を「ズームzの世界地図のピクセル」へ写す。
+  // Web地図の世界共通の紙。z が1増えると世界地図の幅が2倍になる。
+  function MX(lon, z) { return (lon + 180) / 360 * 256 * Math.pow(2, z); }
+  function MY(lat, z) {
+    var s = Math.sin(lat * Math.PI / 180);
+    return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * 256 * Math.pow(2, z);
+  }
+  // 逆向き（紙のピクセル → 緯度経度）。指で動かした量を地面の量へ戻すのに要る。
+  function XLon(x, z) { return x / (256 * Math.pow(2, z)) * 360 - 180; }
+  function YLat(y, z) {
+    var n = Math.PI - 2 * Math.PI * y / (256 * Math.pow(2, z));
+    return 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  }
+
+  // 地図の今の様子。「本物の地図の上で見る」を押した後だけ中身が入る。
+  var chizu = null;      // { pts, memos, cx, cy, z, zMin, hako:{minLat..} }
+  var tileMemo = {};     // 取り寄せた地図の絵の控え（同じ絵を二度取りに行かない）
+  var machi = null;      // 描き直しの待ち合わせ（連続で動かしても描くのは一度）
+
   function drawOnMap(pts, memos, meters) {
     var canvas = document.getElementById('ezuCanvas');
-    var cssW = canvas.parentElement.clientWidth - 20;
-    var cssH = Math.round(cssW * 0.75);
-    var dpr = window.devicePixelRatio || 1;
     // 簡略図と同じ用心：寸法が決まる前に描くと0幅の絵になる。
-    if (cssW < 50) {
+    if (canvas.parentElement.clientWidth < 50) {
       requestAnimationFrame(function () { drawOnMap(pts, memos, meters); });
       return;
     }
 
-    // メルカトル図法：緯度経度を「ズームzの世界地図のピクセル」へ写す。
-    // Web地図の世界共通の紙。z が1増えると世界地図の幅が2倍になる。
-    function MX(lon, z) { return (lon + 180) / 360 * 256 * Math.pow(2, z); }
-    function MY(lat, z) {
-      var s = Math.sin(lat * Math.PI / 180);
-      return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * 256 * Math.pow(2, z);
-    }
-
     var lats = pts.map(function (p) { return p.lat; });
     var lons = pts.map(function (p) { return p.lon; });
-    var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
-    var minLon = Math.min.apply(null, lons), maxLon = Math.max.apply(null, lons);
+    var hako = {
+      minLat: Math.min.apply(null, lats), maxLat: Math.max.apply(null, lats),
+      minLon: Math.min.apply(null, lons), maxLon: Math.max.apply(null, lons)
+    };
 
-    // ズームを決める：道の全体が紙に収まる、いちばん細かい縮尺。
+    chizu = { pts: pts, memos: memos, hako: hako, cx: 0, cy: 0, z: 15, zMin: 3 };
+    zenTaiHe();                      // まず道の全体が収まるところへ
+    chizu.zMin = Math.max(3, chizu.z - 1.5);   // 迷子よけ：全体より少しだけ引ける
+
+    canvas.classList.add('ugoku');
+    document.getElementById('mapCtl').hidden = false;
+    document.getElementById('showMap').hidden = true;
+    document.getElementById('mapNote').hidden = true;
+    document.getElementById('ezuCaption').textContent =
+      'つまむ・なぞる・ボタンで動かせます ／ 地図: © OpenStreetMap contributors ／ 道の線と印は、あなたの端末の中で重ねています。';
+
+    tsukeruSousa(canvas);
+    kakinaosu();
+  }
+
+  // 道の全体が紙に収まる縮尺と中心へ戻す（「ぜんぶ」ボタンの中身でもある）。
+  function zenTaiHe() {
+    var s = ezuSize();
+    var h = chizu.hako;
     var z = 18;
-    while (z > 2) {
-      if (MX(maxLon, z) - MX(minLon, z) <= cssW - 70 &&
-          MY(minLat, z) - MY(maxLat, z) <= cssH - 70) break;
+    while (z > 3) {
+      if (MX(h.maxLon, z) - MX(h.minLon, z) <= s.w - 70 &&
+          MY(h.minLat, z) - MY(h.maxLat, z) <= s.h - 70) break;
       z--;
     }
+    chizu.z = z;
+    chizu.cx = (h.minLon + h.maxLon) / 2;
+    chizu.cy = (h.minLat + h.maxLat) / 2;
+  }
 
-    // 紙の左上が世界のどのピクセルか（道の真ん中を紙の真ん中に置く）。
-    var ox = (MX(minLon, z) + MX(maxLon, z)) / 2 - cssW / 2;
-    var oy = (MY(minLat, z) + MY(maxLat, z)) / 2 - cssH / 2;
+  // いまの紙の大きさ（全画面かどうかで変わるので、その都度測る）。
+  function ezuSize() {
+    var canvas = document.getElementById('ezuCanvas');
+    var ban = canvas.parentElement;
+    var box = document.getElementById('ezuBox');
+    var w = Math.max(50, ban.clientWidth);
+    // 狭い画面（スマホ）では縦長ぎみに。横長のままだと地図が薄く、
+    // 右に並んだボタンが絵の大半を覆ってしまう。
+    var wari = w < 420 ? 1.0 : 0.75;
+    var h = box.classList.contains('zenmen')
+          ? Math.max(50, ban.clientHeight)
+          : Math.round(w * wari);
+    return { w: w, h: h };
+  }
 
-    // 必要なタイルを数え上げて取り寄せる。一枚欠けても全体は出す（onerrorでも進む）。
-    var jobs = [];
-    var t0x = Math.floor(ox / 256), t1x = Math.floor((ox + cssW) / 256);
-    var t0y = Math.floor(oy / 256), t1y = Math.floor((oy + cssH) / 256);
+  // 縮尺を決まった幅に収める。近づきすぎ（19）も、離れすぎ（zMin）も止める。
+  function clampZ(z) { return Math.max(chizu.zMin, Math.min(19, z)); }
+
+  // 中心を道の近くに留める（遠くへ行って迷子にならないための手すり）。
+  function clampChushin() {
+    var h = chizu.hako;
+    var yobi = 0.35;   // 道の広がりの何割まで外へ出てよいか
+    var dLon = Math.max((h.maxLon - h.minLon) * yobi, 0.004);
+    var dLat = Math.max((h.maxLat - h.minLat) * yobi, 0.003);
+    chizu.cx = Math.min(Math.max(chizu.cx, h.minLon - dLon), h.maxLon + dLon);
+    chizu.cy = Math.min(Math.max(chizu.cy, h.minLat - dLat), h.maxLat + dLat);
+  }
+
+  // 描き直しの予約。指を動かすたびに描くと重いので、次の一コマにまとめる。
+  function kakinaosu() {
+    if (machi) return;
+    machi = requestAnimationFrame(function () { machi = null; render(); });
+  }
+
+  /* ---- いまの様子で一枚描く ----
+     タイルは「持っているぶんで描いて、届いたらまた描く」。
+     全部そろうのを待たないので、つまんでいる指が止まらない。 */
+  function render() {
+    if (!chizu) return;
+    var canvas = document.getElementById('ezuCanvas');
+    var s = ezuSize();
+    var dpr = window.devicePixelRatio || 1;
+    var z = chizu.z;
+
+    // 紙の左上が、世界地図の何ピクセル目か。
+    var ox = MX(chizu.cx, z) - s.w / 2;
+    var oy = MY(chizu.cy, z) - s.h / 2;
+
+    canvas.width = s.w * dpr;
+    canvas.height = s.h * dpr;
+    canvas.style.width = s.w + 'px';
+    canvas.style.height = s.h + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    // 下地（タイルが欠けた場所にも紙の色を敷いておく）
+    ctx.fillStyle = '#e9e5dd';
+    ctx.fillRect(0, 0, s.w, s.h);
+
+    /* 地図の絵は整数の細かさでしか無いので、つまみ途中の半端な縮尺では
+       いちばん近い整数のタイルを引き伸ばして敷く（赤ペンと同じ作法）。 */
+    var tz = Math.max(3, Math.min(19, Math.round(z)));
+    var side = 256 * Math.pow(2, z - tz);          // 一枚を紙の上で何pxに敷くか
+    var sox = ox / side, soy = oy / side;          // タイル何枚目か（小数）
+    var t0x = Math.floor(sox), t1x = Math.floor((ox + s.w) / side);
+    var t0y = Math.floor(soy), t1y = Math.floor((oy + s.h) / side);
+    var kazu = Math.pow(2, tz);                    // その細かさでの世界の枚数
+
     for (var ty = t0y; ty <= t1y; ty++) {
       for (var tx = t0x; tx <= t1x; tx++) {
-        (function (tx, ty) {
-          jobs.push(new Promise(function (done) {
-            var img = new Image();
-            img.onload = function () { done({ img: img, tx: tx, ty: ty }); };
-            img.onerror = function () { done(null); };
-            img.src = 'https://tile.openstreetmap.org/' + z + '/' + tx + '/' + ty + '.png';
-          }));
-        })(tx, ty);
+        if (ty < 0 || ty >= kazu) continue;                  // 南北の外は空
+        var wx = ((tx % kazu) + kazu) % kazu;                // 東西は地球一周でつながる
+        var e = tileWo(tz, wx, ty);
+        if (e && e.ok) ctx.drawImage(e.img, tx * side - ox, ty * side - oy, side, side);
       }
     }
 
-    Promise.all(jobs).then(function (tiles) {
-      canvas.width = cssW * dpr;
-      canvas.height = cssH * dpr;
-      canvas.style.width = cssW + 'px';
-      canvas.style.height = cssH + 'px';
-      var ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
+    var style = getComputedStyle(document.documentElement);
+    var routeColor = style.getPropertyValue('--route').trim();
+    var pts = chizu.pts, memos = chizu.memos;
+    function px(p) { return MX(p.lon, z) - ox; }
+    function py(p) { return MY(p.lat, z) - oy; }
 
-      // 下地（タイルが欠けた場所にも紙の色を敷いておく）
-      ctx.fillStyle = '#e9e5dd';
-      ctx.fillRect(0, 0, cssW, cssH);
-      tiles.forEach(function (t) {
-        if (t) ctx.drawImage(t.img, t.tx * 256 - ox, t.ty * 256 - oy, 256, 256);
-      });
-
-      var style = getComputedStyle(document.documentElement);
-      var routeColor = style.getPropertyValue('--route').trim();
-      function px(p) { return MX(p.lon, z) - ox; }
-      function py(p) { return MY(p.lat, z) - oy; }
-
-      // 道の線：地図の上で埋もれないよう、白いフチ→色の線の二度描き。
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      [['#ffffff', 6.5], [routeColor, 3.5]].forEach(function (pen) {
-        ctx.beginPath();
-        ctx.moveTo(px(pts[0]), py(pts[0]));
-        for (var i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i]), py(pts[i]));
-        ctx.strokeStyle = pen[0];
-        ctx.lineWidth = pen[1];
-        ctx.stroke();
-      });
-
-      // 出発（緑）・到着（赤）。白い輪郭つきで地図から浮かせる。
-      mark(pts[0], style.getPropertyValue('--route-start').trim(), '出発');
-      mark(pts[pts.length - 1], style.getPropertyValue('--route-goal').trim(), '到着');
-      function mark(p, color, label) {
-        ctx.beginPath();
-        ctx.arc(px(p), py(p), 7, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-        ctx.font = 'bold 13px sans-serif';
-        var w = ctx.measureText(label).width;
-        var tx0 = px(p) + 12 + w > cssW ? px(p) - 12 - w : px(p) + 12;
-        var ty0 = Math.min(Math.max(py(p) + 5, 16), cssH - 8);
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
-        ctx.strokeText(label, tx0, ty0);   // 白い縁取り文字＝地図の上でも読める
-        ctx.fillStyle = color;
-        ctx.fillText(label, tx0, ty0);
-      }
-
-      // 点メモの番号（1,2,3…）
-      memos.forEach(function (m, n) {
-        var x = px(pts[m.i]), y = py(pts[m.i]);
-        ctx.beginPath();
-        ctx.arc(x, y, 9, 0, Math.PI * 2);
-        ctx.fillStyle = '#4a443c';
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(String(n + 1), x, y + 0.5);
-        ctx.textAlign = 'start';
-        ctx.textBaseline = 'alphabetic';
-      });
-
-      // ものさし：メルカトルの縮尺は緯度で変わるので、道の真ん中の緯度で換算する。
-      var midLat = (minLat + maxLat) / 2 * Math.PI / 180;
-      var mPerPx = 40075016.686 * Math.cos(midLat) / (256 * Math.pow(2, z));
-      var steps = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
-      var step = steps[0];
-      for (var s = 0; s < steps.length; s++) { if (steps[s] / mPerPx <= cssW / 3) step = steps[s]; }
-      var barLen = step / mPerPx, bx = 14, by = cssH - 14;
-      ctx.strokeStyle = '#3a352e';
-      ctx.lineWidth = 2;
+    // 道の線：地図の上で埋もれないよう、白いフチ→色の線の二度描き。
+    // 太さは縮尺で少しだけ変える（近づくと太く・引くと細く＝地図らしい見え方）。
+    var futo = Math.max(0.7, Math.min(2.2, Math.pow(2, z - 15) * 0.55 + 0.75));
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    [['#ffffff', 6.5 * futo], [routeColor, 3.5 * futo]].forEach(function (pen) {
       ctx.beginPath();
-      ctx.moveTo(bx, by); ctx.lineTo(bx + barLen, by);
-      ctx.moveTo(bx, by - 4); ctx.lineTo(bx, by + 4);
-      ctx.moveTo(bx + barLen, by - 4); ctx.lineTo(bx + barLen, by + 4);
+      ctx.moveTo(px(pts[0]), py(pts[0]));
+      for (var i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i]), py(pts[i]));
+      ctx.strokeStyle = pen[0];
+      ctx.lineWidth = pen[1];
       ctx.stroke();
-      ctx.font = '11px sans-serif';
-      ctx.fillStyle = '#3a352e';
+    });
+
+    // 出発（緑）・到着（赤）。白い輪郭つきで地図から浮かせる。
+    mark(pts[0], style.getPropertyValue('--route-start').trim(), '出発');
+    mark(pts[pts.length - 1], style.getPropertyValue('--route-goal').trim(), '到着');
+    function mark(p, color, label) {
+      var x = px(p), y = py(p);
+      if (x < -60 || x > s.w + 60 || y < -60 || y > s.h + 60) return;  // 画面の外なら描かない
+      ctx.beginPath();
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.font = 'bold 13px sans-serif';
+      var w = ctx.measureText(label).width;
+      var tx0 = x + 12 + w > s.w ? x - 12 - w : x + 12;
+      var ty0 = Math.min(Math.max(y + 5, 16), s.h - 8);
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 3;
-      var lbl = step >= 1000 ? (step / 1000) + 'km' : step + 'm';
-      ctx.strokeText(lbl, bx + barLen + 6, by + 4);
-      ctx.fillText(lbl, bx + barLen + 6, by + 4);
+      ctx.strokeText(label, tx0, ty0);   // 白い縁取り文字＝地図の上でも読める
+      ctx.fillStyle = color;
+      ctx.fillText(label, tx0, ty0);
+    }
 
-      // 地図の出どころの名乗り（OpenStreetMapの決まり。消してはいけない）。
-      var credit = '© OpenStreetMap contributors';
-      ctx.font = '10px sans-serif';
-      var cw = ctx.measureText(credit).width;
-      ctx.fillStyle = '#ffffffcc';
-      ctx.fillRect(cssW - cw - 10, cssH - 18, cw + 10, 18);
-      ctx.fillStyle = '#3a352e';
-      ctx.fillText(credit, cssW - cw - 5, cssH - 6);
-
-      // ボタンは役目を終える。説明書きも畳んで、出どころだけ残す。
-      document.getElementById('showMap').hidden = true;
-      document.getElementById('mapNote').hidden = true;
-      document.getElementById('ezuCaption').textContent =
-        '地図: © OpenStreetMap contributors ／ 道の線と印は、あなたの端末の中で重ねています。';
+    // 点メモの番号（1,2,3…）
+    memos.forEach(function (m, n) {
+      var x = px(pts[m.i]), y = py(pts[m.i]);
+      if (x < -20 || x > s.w + 20 || y < -20 || y > s.h + 20) return;
+      ctx.beginPath();
+      ctx.arc(x, y, 9, 0, Math.PI * 2);
+      ctx.fillStyle = '#4a443c';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(n + 1), x, y + 0.5);
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'alphabetic';
     });
+
+    // ものさし：メルカトルの縮尺は緯度で変わるので、いま真ん中に見えている緯度で換算する。
+    var mPerPx = 40075016.686 * Math.cos(chizu.cy * Math.PI / 180) / (256 * Math.pow(2, z));
+    var steps = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+    var step = steps[0];
+    for (var i2 = 0; i2 < steps.length; i2++) { if (steps[i2] / mPerPx <= s.w / 3) step = steps[i2]; }
+    var barLen = step / mPerPx, bx = 14, by = s.h - 14;
+    ctx.strokeStyle = '#3a352e';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(bx, by); ctx.lineTo(bx + barLen, by);
+    ctx.moveTo(bx, by - 4); ctx.lineTo(bx, by + 4);
+    ctx.moveTo(bx + barLen, by - 4); ctx.lineTo(bx + barLen, by + 4);
+    ctx.stroke();
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#3a352e';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    var lbl = step >= 1000 ? (step / 1000) + 'km' : step + 'm';
+    ctx.strokeText(lbl, bx + barLen + 6, by + 4);
+    ctx.fillText(lbl, bx + barLen + 6, by + 4);
+
+    // 地図の出どころの名乗り（OpenStreetMapの決まり。消してはいけない）。
+    var credit = '© OpenStreetMap contributors';
+    ctx.font = '10px sans-serif';
+    var cw = ctx.measureText(credit).width;
+    ctx.fillStyle = '#ffffffcc';
+    ctx.fillRect(s.w - cw - 10, s.h - 18, cw + 10, 18);
+    ctx.fillStyle = '#3a352e';
+    ctx.fillText(credit, s.w - cw - 5, s.h - 6);
+  }
+
+  /* 地図の絵を一枚さがす。控えに無ければ取り寄せて、届いたら描き直す。
+     取り寄せは一度きり（失敗した絵も覚えておいて、何度も叩きに行かない）。 */
+  function tileWo(z, x, y) {
+    var key = z + '/' + x + '/' + y;
+    var e = tileMemo[key];
+    if (e) return e;
+    var img = new Image();
+    e = { img: img, ok: false };
+    tileMemo[key] = e;
+    img.onload = function () { e.ok = true; kakinaosu(); };
+    img.onerror = function () { e.ok = false; };
+    img.src = 'https://tile.openstreetmap.org/' + z + '/' + x + '/' + y + '.png';
+    return e;
+  }
+
+  /* ---- 指とボタンの受け口 ----
+     iPhone/iPad の WebKit は二本指になると pointer を取り下げる（pointercancel）ので、
+     つまみは touch で受けるのが本命。Mac では pointer と wheel。
+     どちらも効かない機械のために、押すだけのボタンを必ず残す（母屋の掟）。 */
+  function tsukeruSousa(canvas) {
+    if (canvas.dataset.sousa) return;   // 二度付けない
+    canvas.dataset.sousa = '1';
+
+    // 紙の上の点 → 地面の緯度経度
+    function jimenNi(x, y) {
+      var s = ezuSize();
+      var ox = MX(chizu.cx, chizu.z) - s.w / 2;
+      var oy = MY(chizu.cy, chizu.z) - s.h / 2;
+      return { lat: YLat(oy + y, chizu.z), lon: XLon(ox + x, chizu.z) };
+    }
+    // 「この地面が、紙のこの場所に来る」ように中心をずらす（つまみの軸を固定する）
+    function awaseru(jimen, x, y) {
+      var s = ezuSize();
+      var ox = MX(jimen.lon, chizu.z) - x;
+      var oy = MY(jimen.lat, chizu.z) - y;
+      chizu.cx = XLon(ox + s.w / 2, chizu.z);
+      chizu.cy = Math.max(-85, Math.min(85, YLat(oy + s.h / 2, chizu.z)));
+      clampChushin();
+    }
+    function canvasNoTen(t) {
+      var r = canvas.getBoundingClientRect();
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+
+    // ── さわる画面：一本指でなぞる／二本指でつまむ ──
+    var nazori = null, tsumami = null;
+    canvas.addEventListener('touchstart', function (e) {
+      if (!chizu) return;
+      if (e.touches.length === 1) {
+        nazori = canvasNoTen(e.touches[0]);
+        tsumami = null;
+      } else if (e.touches.length >= 2) {
+        nazori = null;
+        var a = canvasNoTen(e.touches[0]), b = canvasNoTen(e.touches[1]);
+        var mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        tsumami = {
+          haba: Math.hypot(a.x - b.x, a.y - b.y),
+          z0: chizu.z,
+          jimen: jimenNi(mid.x, mid.y)
+        };
+      }
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', function (e) {
+      if (!chizu) return;
+      if (tsumami && e.touches.length >= 2) {
+        var a = canvasNoTen(e.touches[0]), b = canvasNoTen(e.touches[1]);
+        var haba = Math.hypot(a.x - b.x, a.y - b.y);
+        if (haba > 8 && tsumami.haba > 8) {
+          var mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+          chizu.z = clampZ(tsumami.z0 + Math.log(haba / tsumami.haba) / Math.LN2);
+          awaseru(tsumami.jimen, mid.x, mid.y);   // つまんだ場所を動かさない
+          kakinaosu();
+        }
+      } else if (nazori && e.touches.length === 1) {
+        var p = canvasNoTen(e.touches[0]);
+        ugokasu(p.x - nazori.x, p.y - nazori.y);
+        nazori = p;
+      }
+      e.preventDefault();
+    }, { passive: false });
+
+    function owari() {
+      nazori = null;
+      if (tsumami) {
+        tsumami = null;
+        // つまみ終わったら、いちばん近い段に落ち着かせる＝地図の絵がくっきり戻る。
+        chizu.z = clampZ(Math.round(chizu.z));
+        kakinaosu();
+      }
+    }
+    canvas.addEventListener('touchend', owari);
+    canvas.addEventListener('touchcancel', owari);
+
+    // ── マウス：押してなぞる／ホイールで拡大縮小 ──
+    var oshi = null;
+    canvas.addEventListener('pointerdown', function (e) {
+      if (!chizu || e.pointerType === 'touch') return;   // さわる画面は上の経路にまかせる
+      oshi = { x: e.offsetX, y: e.offsetY };
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!oshi) return;
+      ugokasu(e.offsetX - oshi.x, e.offsetY - oshi.y);
+      oshi = { x: e.offsetX, y: e.offsetY };
+    });
+    canvas.addEventListener('pointerup', function () { oshi = null; });
+    canvas.addEventListener('pointercancel', function () { oshi = null; });
+
+    canvas.addEventListener('wheel', function (e) {
+      if (!chizu) return;
+      e.preventDefault();
+      var jimen = jimenNi(e.offsetX, e.offsetY);
+      chizu.z = clampZ(chizu.z - e.deltaY * 0.0025);
+      awaseru(jimen, e.offsetX, e.offsetY);
+      kakinaosu();
+    }, { passive: false });
+
+    // 紙の上で動かした量を、そのぶんだけ地面をずらす形に直す。
+    function ugokasu(dx, dy) {
+      var s = ezuSize();
+      var ox = MX(chizu.cx, chizu.z) - s.w / 2 - dx;
+      var oy = MY(chizu.cy, chizu.z) - s.h / 2 - dy;
+      chizu.cx = XLon(ox + s.w / 2, chizu.z);
+      chizu.cy = Math.max(-85, Math.min(85, YLat(oy + s.h / 2, chizu.z)));
+      clampChushin();
+      kakinaosu();
+    }
+
+    // ── 押すだけのボタン（つまみが効かない機械でも、これで全部できる）──
+    function dan(d) {
+      chizu.z = clampZ(Math.round(chizu.z) + d);
+      kakinaosu();
+    }
+    document.getElementById('zoomIn').addEventListener('click', function () { dan(1); });
+    document.getElementById('zoomOut').addEventListener('click', function () { dan(-1); });
+    document.getElementById('zoomAll').addEventListener('click', function () {
+      zenTaiHe(); kakinaosu();
+    });
+
+    // 大きく見る（画面いっぱい）⇄ 元のページへ戻す。
+    var box = document.getElementById('ezuBox');
+    var btn = document.getElementById('zenmen');
+    btn.addEventListener('click', function () {
+      var hiraku = !box.classList.contains('zenmen');
+      box.classList.toggle('zenmen', hiraku);
+      btn.textContent = hiraku ? '閉じる' : '大きく';
+      document.body.style.overflow = hiraku ? 'hidden' : '';
+      // 紙の大きさが変わるので、道の全体が入るところへ取り直す。
+      requestAnimationFrame(function () { zenTaiHe(); render(); });
+    });
+
+    // 窓の幅が変わったら（横向きにした・画面を分けた）描き直す。
+    window.addEventListener('resize', function () { if (chizu) kakinaosu(); });
   }
 })();
 </script>
