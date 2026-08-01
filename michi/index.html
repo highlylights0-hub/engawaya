@@ -69,8 +69,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="/favicon.png">
-<title>道のおすそわけ — GeoMemory｜縁側屋</title>
-<meta name="description" content="GeoMemory の共有リンクの受け皿。届いた道の名前と形をここで確かめて、アプリで受け取れます。道のデータはリンクの中にあり、サーバーには保存されません。">
+<title>道メモ — 地図に道を描いて渡す｜縁側屋</title>
+<meta name="description" content="地図をなぞるだけで道が作れて、リンク・絵・ファイルにして渡せます。GeoMemory の共有リンクの受け皿でもあります。道のデータはリンクの中にあり、サーバーには保存されません。">
 <!-- 検索に載せない：中身は毎回リンク次第で、検索から来ても空のページだから。 -->
 <meta name="robots" content="noindex">
 
@@ -79,8 +79,8 @@
      家のアイコンが出て「不動産の情報かと思うかも」だったため、道の絵にした。
      受け取った道そのものの絵はここには出せない（カードの絵は LINE の機械が
      先に取りに来る固定画像で、道のデータを読めるのは開いた人の端末だけ）。 -->
-<meta property="og:title" content="道のおすそわけ — GeoMemory">
-<meta property="og:description" content="覚えた道が、リンクになって届きました。道の名前と形を、このページでそのまま確かめられます。">
+<meta property="og:title" content="道メモ — 縁側屋">
+<meta property="og:description" content="地図をなぞるだけで道が作れて、そのまま送れます。届いた道も、このページで確かめられます。">
 <meta property="og:image" content="https://engawaya.com/michi/ogp.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -278,14 +278,18 @@ h1 {
    施主「スクショ手書き地図、本当によく見ます」「この自由度が、スクショを超えます」。
    絵に描くのではなく、点を打って**地面の座標**で持つ。だから拡大しても崩れない。 */
 
-/* 真ん中の十字。地図を動かして、ここに曲がり角を合わせる。 */
-.jyuji { position: absolute; inset: 0; pointer-events: none; }
-.jyuji span {
-  position: absolute; left: 50%; top: 50%;
-  background: #d8483c; box-shadow: 0 0 0 1px #ffffffcc;
+/* 真ん中の十字は撤去（2026-08-01 施主判断「もういらない」）。
+   地図を十字へ寄せる作法は、指でそのままなぞる作法に置き換えた。 */
+
+/* なぞっている手のときだけ、地図の枠を色で囲う。
+   モードの事故は「いまどちらの手か目に見えていない」ときにだけ起きる。
+   だから合図は三重にする＝ボタンの押し込み・この枠・左上の札の文言。 */
+.nazoriwaku {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  border: 3px solid var(--accent);
+  box-shadow: inset 0 0 0 1px #ffffffaa;
 }
-.jyuji span:nth-child(1) { width: 42px; height: 2px; transform: translate(-50%, -50%); }
-.jyuji span:nth-child(2) { width: 2px; height: 42px; transform: translate(-50%, -50%); }
 
 .tsukuru-ran { margin-top: 14px; display: grid; gap: 10px; }
 .tsukuru-ran label { display: grid; gap: 4px; font-size: 13.5px; color: var(--ink-soft); }
@@ -307,12 +311,41 @@ html[data-time="night"] .tsukuru-ran textarea { background: #ffffff14; }
 .utsuctl {
   position: absolute;
   left: 0; right: 0; bottom: 12px;
-  display: flex; justify-content: center; align-items: center; gap: 12px;
+  /* 二段にする。上段＝いま持っている手、下段＝戻す・できた。
+     いちばん大事な「どちらの手か」を、いちばん近くに置く。 */
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;
   /* iPhone のホームバーに重ならないよう、下端を少し持ち上げる。 */
   padding: 0 12px env(safe-area-inset-bottom, 0px);
   pointer-events: none;              /* 隙間ごしに地図を触れるように */
 }
-.utsuctl button {
+.utsuctl .dan { display: flex; justify-content: center; align-items: center; gap: 12px; }
+
+/* ---- 手を持ち替える札（赤ペンと同じ作法）----
+   施主の問い「地図を動かす／拡大縮小と、なぞるを混同させないためには？」への答え。
+   ①手を持ち替える二つのボタン（指一本の意味が変わる）
+   ②指二本のつまみと＋−は、どちらの手でも always 地図（持ち替え忘れの被害を消す）
+   ③いまどちらの手かが、必ず目に見えている。 */
+.tebiki {
+  pointer-events: auto;
+  display: flex;
+  border-radius: 999px; overflow: hidden;
+  box-shadow: 0 3px 12px #00000045;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.tebiki button {
+  font: inherit; font-size: 15px; font-weight: 700;
+  border: none; cursor: pointer;
+  padding: 13px 18px;
+  background: #3c3c3ccc; color: #ffffffb0;
+}
+.tebiki button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+html[data-time="night"] .tebiki button[aria-pressed="true"] { color: #1c1610; }
+.tebiki button:active { transform: scale(0.97); }
+/* なぞる手のときは、マウスの矢印も十字に変える（PCでの合図）。 */
+.ezu.nazori canvas.ugoku { cursor: crosshair; }
+/* 丸ボタンだけの化粧（手を持ち替える札は自前の影を持っているので外す）。 */
+.utsuctl .dan > button {
   pointer-events: auto;
   font: inherit; font-weight: 700;
   border: none;
@@ -321,13 +354,7 @@ html[data-time="night"] .tsukuru-ran textarea { background: #ffffff14; }
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
-/* 打つ手。いちばん大きく、いちばん押しやすい真ん中に。 */
-.utsuctl .utsu {
-  background: var(--accent); color: #fff;
-  font-size: 19px; padding: 18px 30px; border-radius: 999px;
-}
-html[data-time="night"] .utsuctl .utsu { color: #1c1610; }
-/* 脇の丸ボタン。＋−と同じ作法にそろえる。 */
+/* 丸ボタン。＋−と同じ作法にそろえる。 */
 .utsuctl .maru {
   width: 62px; height: 62px; border-radius: 50%;
   font-size: 12.5px; line-height: 1.25;
@@ -335,7 +362,7 @@ html[data-time="night"] .utsuctl .utsu { color: #1c1610; }
 }
 .utsuctl .sub    { background: #3c3c3ccc; color: #fff; }
 .utsuctl .kanryo { background: #2e7d59e0; color: #fff; font-size: 14px; }
-.utsuctl button:active { transform: scale(0.95); }
+.utsuctl .dan > button:active { transform: scale(0.95); }
 
 /* 点の数と長さ。地図の上に小さく置いて、下を見に行かなくて済むように。 */
 .utsukazu {
@@ -462,7 +489,7 @@ footer a { color: inherit; }
 
 <div class="wrap">
   <a class="yagou" href="/">縁 側 屋</a>
-  <h1>道のおすそわけ</h1>
+  <h1>道メモ</h1>
   <p class="lead" id="lead">GeoMemory で覚えた道が、リンクになって届きました。</p>
 
   <!-- 道の中身がある時だけ現れる本体。最初は隠しておき、JSが読めたら開く。 -->
@@ -478,10 +505,10 @@ footer a { color: inherit; }
     <div class="fuda" id="tsukuruFuda" hidden>
       <div class="name" style="font-size:20px;">新しい道を作る</div>
       <p style="margin:8px 0 0; font-size:14px; color:var(--ink-soft);">
-        <strong>地図の曲がり角を、そのまま押す（指でもマウスでも）。</strong>それだけで点が増えていきます。
-        地図を動かしたいときは、押したまま引きずってください。<br>
-        正確に置きたいときは、真ん中の十字を合わせて「ここに点」。点と点はまっすぐ結ばれるので、
-        角ごとに打てば道の形になります。
+        地図の下の札で、手を持ち替えます。<br>
+        <strong>✋ 地図を動かす</strong>＝引きずれば地図が動き、<strong>ちょんと押せばそこに点</strong>（曲がり角だけ拾う手）。<br>
+        <strong>✏️ なぞって道</strong>＝指やマウスで<strong>道の上をなぞると、そのまま道になります</strong>。<br>
+        どちらの手でも、<strong>二本指のつまみと ＋ − は、いつでも地図の拡大縮小</strong>です。
       </p>
       <div class="tsukuru-ran">
         <label>道の名前 <input id="tName" type="text" maxlength="40" placeholder="例：代官山交番から蛇崩"></label>
@@ -494,9 +521,8 @@ footer a { color: inherit; }
     <div class="ezu" id="ezuBox">
       <div class="ban">
         <canvas id="ezuCanvas"></canvas>
-        <!-- 真ん中の十字。地図を動かして、ここに曲がり角を合わせる。
-             指でつまむのと点を打つのが喧嘩しない＝アプリのクロスヘアと同じ作法。 -->
-        <div class="jyuji" id="jyuji" hidden><span></span><span></span></div>
+        <!-- なぞる手のときだけ光る枠。いまどちらの手かを、目に見せるための合図。 -->
+        <div class="nazoriwaku" id="nazoriWaku" hidden></div>
         <!-- 地図を出した人にだけ現れる操作の道具。指のつまみが効かない機械でも
              これだけで拡大・縮小・元に戻すができる（ジェスチャー頼みにしない）。 -->
         <div class="mapctl" id="mapCtl" hidden>
@@ -509,11 +535,20 @@ footer a { color: inherit; }
              作っている間は地図だけの画面にして、押しても画面が動かない。
              書き終えたら「完了」で下へ降りる。 -->
         <div class="utsuctl" id="utsuCtl" hidden>
-          <button type="button" id="ichiModosu" class="maru sub">ひとつ<br>戻す</button>
-          <button type="button" id="tenUtsu"    class="utsu">ここに点</button>
-          <!-- 全画面にしたら、出口を必ず画面の中に見せる。
+          <!-- 上段：いま持っている手。押した方が色で点く。 -->
+          <div class="dan">
+            <div class="tebiki" role="group" aria-label="いま持っている手">
+              <button type="button" id="teMap" aria-pressed="true">✋ 地図を動かす</button>
+              <button type="button" id="teNazori" aria-pressed="false">✏️ なぞって道</button>
+            </div>
+          </div>
+          <!-- 下段：戻す／できた。
+               全画面にしたら、出口を必ず画面の中に見せる。
                出口の見えない全画面は、人を閉じ込める。 -->
-          <button type="button" id="tsukuruKanryo" class="maru kanryo">できた</button>
+          <div class="dan">
+            <button type="button" id="ichiModosu" class="maru sub">ひとつ<br>戻す</button>
+            <button type="button" id="tsukuruKanryo" class="maru kanryo">できた</button>
+          </div>
         </div>
         <!-- 点の数と長さは、地図の上に小さく出す（下を見に行かなくていい）。 -->
         <div class="utsukazu" id="utsuKazu" hidden></div>
@@ -533,7 +568,7 @@ footer a { color: inherit; }
 
     <!-- 道を作るときの道具（打つ・戻す・消す）と、できた道の出口 -->
     <div id="tsukuruDougu" hidden>
-      <div class="dougu-kazu" id="tsukuruKazu">まだ点がありません。曲がり角を押すか、十字を合わせて「ここに点」。</div>
+      <div class="dougu-kazu" id="tsukuruKazu">まだ点がありません。道の上をなぞるか、曲がり角をちょんと押してください。</div>
       <!-- 「ぜんぶ消す」だけは地図から離す。いちばん痛い操作を、いちばん
            押しやすい場所に置かない（確認は最後の砦で、設計で防ぐのが先）。 -->
       <div class="dougu-bar">
@@ -578,8 +613,8 @@ footer a { color: inherit; }
          アプリが無くても、Windows でも、ここで道が作れて渡せる。 -->
     <hr style="margin:22px 0; border:none; border-top:1px solid var(--card-line);">
     <strong style="font-size:16px;">道を、ここで作ることもできます。</strong><br>
-    地図を動かして、曲がり角に点を打っていくだけ。できた道はリンク・絵・ファイルにして渡せます。
-    アプリも登録もいりません。<br><br>
+    地図の上を指でなぞる（マウスなら引きずる）だけ。曲がり角をちょんちょんと押していく手もあります。
+    できた道はリンク・絵・ファイルにして渡せます。アプリも登録もいりません。<br><br>
     <button class="btn btn-main" id="tsukuruHajime" type="button" style="width:100%;">新しく道を作る</button>
   </div>
 
@@ -1147,6 +1182,10 @@ footer a { color: inherit; }
        出来上がった道を見るときは出さない＝線がガタガタして見えるだけだから。 */
     if (chizu.tsukuruChu) {
       pts.forEach(function (p, i) {
+        /* なぞって出来た点（n:1）は、丸を出さない。
+           一本なぞれば何十点にもなるので、全部に丸を打つと線が数珠になって
+           道に見えなくなる。丸は「自分で押さえた点」の目印として取っておく。 */
+        if (p.n && i !== pts.length - 1) return;
         var x = px(p), y = py(p);
         if (x < -20 || x > s.w + 20 || y < -20 || y > s.h + 20) return;
         ctx.beginPath();
@@ -1208,9 +1247,9 @@ footer a { color: inherit; }
     var steps = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
     var step = steps[0];
     for (var i2 = 0; i2 < steps.length; i2++) { if (steps[i2] / mPerPx <= s.w / 3) step = steps[i2]; }
-    /* 道を作っている間は、下側に「ここに点」の道具が浮いている。
+    /* 道を作っている間は、下側に道具が二段ぶん浮いている。
        ものさしと名乗りは、その上へ逃がす（重ねると両方読めなくなる）。 */
-    var sita = chizu.tsukuruChu ? 88 : 0;
+    var sita = chizu.tsukuruChu ? 140 : 0;
     var barLen = step / mPerPx, bx = 14, by = s.h - 14 - sita;
     ctx.strokeStyle = '#3a352e';
     ctx.lineWidth = 2;
@@ -1308,8 +1347,7 @@ footer a { color: inherit; }
 
     /* 「押しただけ」か「動かした」かを見分ける。
        施主の要望「PCマウスで点直接打つ、スマホ指で点を打っていく」（2026-08-01）。
-       ちょっと押しただけなら点を打つ。少しでも引きずったら地図の移動。
-       十字＋ボタンの道も残してあるので、正確に置きたいときはそちらで。 */
+       ちょっと押しただけなら点を打つ。少しでも引きずったら地図の移動。 */
     function tapKa(st, x, y) {
       if (!st) return false;
       return Math.hypot(x - st.x0, y - st.y0) < 8 && (Date.now() - st.t0) < 600;
@@ -1317,12 +1355,72 @@ footer a { color: inherit; }
     function utsuKoko(x, y) {
       if (!chizu || !chizu.tsukuruChu) return;      // 作っているときだけ打てる
       var j = jimenNi(x, y);
+      kugiruMae();                                  // 「ひとつ戻す」の区切りを刻む
       chizu.pts.push({ lat: j.lat, lon: j.lon });
       render();
       kazuKousin();
     }
 
-    // ── さわる画面：一本指でなぞる／二本指でつまむ ──
+    /* ---- なぞりを、点のデータに変える（2026-08-01）----
+       施主「点でデータを扱うので、チャンク、ラインを一定の距離を超えたら点でデータ化」。
+
+       刻みは**紙の上の長さではなく地面の長さ**で測る。画面の何ピクセル、で刻むと
+       近づいて描いた道と引いて描いた道で密度がまるで変わってしまう（同じ手つきなのに
+       できるデータが違う＝あとで「なんで？」になる）。地面で刻めば、どの縮尺で
+       なぞっても道は同じ細かさになる。
+
+       ただし引いた地図では 1px が何十mにもなるので、下限も置く：
+       ・地面で 12m 以上離れたら、点をひとつ
+       ・ただし紙の上で 4px は動いていること（近づいたときに点が団子にならない）
+       曲がり角で点が落ちないよう、向きが 25 度以上変わったら距離を待たずに打つ。 */
+    var KIZAMI = 12;                                 // 刻みの長さ（m）
+    function metersBetween(a, b) {
+      var R = 6371000, t1 = a.lat * Math.PI / 180, t2 = b.lat * Math.PI / 180;
+      var dt = t2 - t1, dl = (b.lon - a.lon) * Math.PI / 180;
+      var x = Math.sin(dt / 2) * Math.sin(dt / 2)
+            + Math.cos(t1) * Math.cos(t2) * Math.sin(dl / 2) * Math.sin(dl / 2);
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(x)));
+    }
+    // なぞりの一本ぶんの覚え書き（最後に打った点と、そのときの紙の上の位置と向き）
+    var suji = null;
+    function nazoriHajime(x, y) {
+      if (!chizu || !chizu.tsukuruChu) return;
+      kugiruMae();                                   // この一本ぶんを、まとめて戻せるように
+      var j = jimenNi(x, y);
+      chizu.pts.push({ lat: j.lat, lon: j.lon, n: 1 });   // n:1＝なぞって出来た点
+      suji = { x: x, y: y, mae: { lat: j.lat, lon: j.lon }, muki: null };
+      render();
+      kazuKousin();
+    }
+    function nazoriTsuzuki(x, y) {
+      if (!suji || !chizu) return;
+      var dx = x - suji.x, dy = y - suji.y;
+      if (Math.hypot(dx, dy) < 4) return;             // 紙の上でほとんど動いていない
+      var j = jimenNi(x, y);
+      var m = metersBetween(suji.mae, j);
+      var muki = Math.atan2(dy, dx);
+      // 曲がったか？（前に進んだ向きと、いまの向きの差）
+      var magari = suji.muki === null ? 0
+                 : Math.abs(Math.atan2(Math.sin(muki - suji.muki), Math.cos(muki - suji.muki)));
+      if (m < KIZAMI && magari < 25 * Math.PI / 180) return;
+      chizu.pts.push({ lat: j.lat, lon: j.lon, n: 1 });
+      suji.x = x; suji.y = y; suji.mae = { lat: j.lat, lon: j.lon }; suji.muki = muki;
+      kakinaosu();
+      kazuKousin();
+    }
+    // 指を離したところは、必ず点にする（線の終わりが手前で切れないように）。
+    function nazoriOwari(x, y) {
+      if (!suji || !chizu) return;
+      var j = jimenNi(x, y);
+      if (metersBetween(suji.mae, j) > 1) chizu.pts.push({ lat: j.lat, lon: j.lon, n: 1 });
+      suji = null;
+      render();
+      kazuKousin();
+    }
+
+    /* ── さわる画面：一本指＝いま持っている手しだい／二本指＝いつでもつまみ ──
+       二本指を「いつでも地図」に固定してあるのが要（施主の問いへの答えの②）。
+       なぞる手のまま拡大縮小できるので、持ち替え忘れで困る場面がそもそも生まれない。 */
     var nazori = null, tsumami = null;
     canvas.addEventListener('touchstart', function (e) {
       if (!chizu) return;
@@ -1330,7 +1428,11 @@ footer a { color: inherit; }
         nazori = canvasNoTen(e.touches[0]);
         nazori.x0 = nazori.x; nazori.y0 = nazori.y; nazori.t0 = Date.now();
         tsumami = null;
+        if (nazoruTe()) nazoriHajime(nazori.x, nazori.y);
       } else if (e.touches.length >= 2) {
+        // 二本目が触れた＝つまむつもり。なぞりかけの筋は捨てる
+        //（つまむ拍子に引かれた短い線が残るほうが、消す手間になって困る）。
+        if (suji) { modosuHitotsu(); suji = null; }
         nazori = null;
         var a = canvasNoTen(e.touches[0]), b = canvasNoTen(e.touches[1]);
         var mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
@@ -1356,7 +1458,11 @@ footer a { color: inherit; }
         }
       } else if (nazori && e.touches.length === 1) {
         var p = canvasNoTen(e.touches[0]);
-        ugokasu(p.x - nazori.x, p.y - nazori.y);
+        if (nazoruTe()) {
+          nazoriTsuzuki(p.x, p.y);        // 書く手：地図は動かさない。線が伸びる
+        } else {
+          ugokasu(p.x - nazori.x, p.y - nazori.y);
+        }
         p.x0 = nazori.x0; p.y0 = nazori.y0; p.t0 = nazori.t0;   // 押し始めは持ち越す
         nazori = p;
       }
@@ -1364,10 +1470,14 @@ footer a { color: inherit; }
     }, { passive: false });
 
     function owari(e) {
-      // 指を離した場所が押し始めとほぼ同じなら「点を打った」とみなす。
-      if (e && e.changedTouches && e.changedTouches.length === 1 && !tsumami && nazori) {
-        var q = canvasNoTen(e.changedTouches[0]);
-        if (tapKa(nazori, q.x, q.y)) utsuKoko(q.x, q.y);
+      var q = (e && e.changedTouches && e.changedTouches.length === 1)
+            ? canvasNoTen(e.changedTouches[0]) : null;
+      if (suji) {
+        if (q) nazoriOwari(q.x, q.y);
+        suji = null;
+      } else if (q && !tsumami && nazori && tapKa(nazori, q.x, q.y)) {
+        // 指を離した場所が押し始めとほぼ同じなら「点を打った」とみなす。
+        utsuKoko(q.x, q.y);
       }
       nazori = null;
       if (tsumami) {
@@ -1378,26 +1488,37 @@ footer a { color: inherit; }
       }
     }
     canvas.addEventListener('touchend', owari);
-    canvas.addEventListener('touchcancel', function () { nazori = null; tsumami = null; });
+    canvas.addEventListener('touchcancel', function () { nazori = null; tsumami = null; suji = null; });
 
-    // ── マウス：押してなぞる／ホイールで拡大縮小 ──
+    /* ── マウス：押してなぞる／ホイールで拡大縮小 ──
+       書く手のときは、ドローソフトと同じ「押して引きずれば線が伸びる」。
+       地図はホイールと ＋− ボタンで動く（ホイールはどちらの手でも always 地図）。 */
     var oshi = null;
     canvas.addEventListener('pointerdown', function (e) {
       if (!chizu || e.pointerType === 'touch') return;   // さわる画面は上の経路にまかせる
       oshi = { x: e.offsetX, y: e.offsetY, x0: e.offsetX, y0: e.offsetY, t0: Date.now() };
       canvas.setPointerCapture(e.pointerId);
+      if (nazoruTe()) nazoriHajime(e.offsetX, e.offsetY);
     });
     canvas.addEventListener('pointermove', function (e) {
       if (!oshi) return;
-      ugokasu(e.offsetX - oshi.x, e.offsetY - oshi.y);
+      if (nazoruTe()) {
+        nazoriTsuzuki(e.offsetX, e.offsetY);             // 書く手：線が伸びる
+      } else {
+        ugokasu(e.offsetX - oshi.x, e.offsetY - oshi.y);
+      }
       oshi.x = e.offsetX; oshi.y = e.offsetY;            // 押し始め（x0/y0/t0）は持ち越す
     });
     canvas.addEventListener('pointerup', function (e) {
-      // 引きずらずに離したなら「そこに点を打った」とみなす。
-      if (tapKa(oshi, e.offsetX, e.offsetY)) utsuKoko(e.offsetX, e.offsetY);
+      if (suji) {
+        nazoriOwari(e.offsetX, e.offsetY);
+      } else if (tapKa(oshi, e.offsetX, e.offsetY)) {
+        // 引きずらずに離したなら「そこに点を打った」とみなす。
+        utsuKoko(e.offsetX, e.offsetY);
+      }
       oshi = null;
     });
-    canvas.addEventListener('pointercancel', function () { oshi = null; });
+    canvas.addEventListener('pointercancel', function () { oshi = null; suji = null; });
 
     canvas.addEventListener('wheel', function (e) {
       if (!chizu) return;
@@ -1467,15 +1588,14 @@ footer a { color: inherit; }
     document.getElementById('michi').hidden = false;
     document.getElementById('uketoriFuda').hidden = true;    // 受け取りの札は引っ込める
     document.getElementById('lead').textContent =
-      '地図の上に点を打って、道を作ります。できた道はリンク・絵・ファイルで渡せます。';
+      '地図をなぞる（または曲がり角を押す）と道になります。できた道はリンク・絵・ファイルで渡せます。';
     document.getElementById('tsukuruFuda').hidden = false;
     document.getElementById('tsukuruDougu').hidden = false;
     document.getElementById('uketoriActions').hidden = true;
-    document.getElementById('jyuji').hidden = false;
     document.getElementById('showMap').hidden = true;
     document.getElementById('mapNote').hidden = true;
     document.getElementById('ezuCaption').textContent =
-      '地図を動かして、十字を曲がり角へ ／ 地図: © OpenStreetMap contributors';
+      '道の上をなぞる（曲がり角を押していってもいい）／ 地図: © OpenStreetMap contributors';
 
     var canvas = document.getElementById('ezuCanvas');
     canvas.classList.add('ugoku');
@@ -1492,9 +1612,12 @@ footer a { color: inherit; }
     document.body.style.overflow = 'hidden';
 
     // 出だしの場所。分かれば今いるところ、断られたら東京駅のあたり。
-    chizu = { pts: [], memos: [], hako: null,
-              cx: 139.7671, cy: 35.6812, z: 16, zMin: 3, tsukuruChu: true };
+    // te='map'（地図を動かす手）で始める。いきなり書く手だと、地図を寄せたい
+    // 最初のひと動作が線になってしまう＝最初の一手で転ばせない。
+    chizu = { pts: [], memos: [], hako: null, kugiri: [],
+              cx: 139.7671, cy: 35.6812, z: 16, zMin: 3, tsukuruChu: true, te: 'map' };
     tsukeruSousa(canvas);
+    setTe('map');
     render();
     kazuKousin();
     tsukuruDekiru = true;
@@ -1511,16 +1634,40 @@ footer a { color: inherit; }
     }
   }
 
-  // いま十字が指している場所に、点をひとつ打つ。
-  function tenUtsu() {
-    if (!chizu || !chizu.tsukuruChu) return;
-    chizu.pts.push({ lat: chizu.cy, lon: chizu.cx });
-    render();
+  /* ---- 手の持ち替え（施主の問い「混同させないためには？」への答え・2026-08-01）----
+     指一本の意味だけを、この札で切り替える。
+     二本指のつまみ・ホイール・＋−ボタンは、どちらの手でも always 地図のまま。
+     赤ペン（engawaya.com/akapen/）で実機検証済みの作法に揃えてある。 */
+  function nazoruTe() { return !!(chizu && chizu.tsukuruChu && chizu.te === 'nazori'); }
+
+  function setTe(m) {
+    if (!chizu) return;
+    chizu.te = m;
+    var a = document.getElementById('teMap'), b = document.getElementById('teNazori');
+    if (a) a.setAttribute('aria-pressed', String(m === 'map'));
+    if (b) b.setAttribute('aria-pressed', String(m === 'nazori'));
+    // 目に見える合図（枠・マウスの矢印・左上の札）。
+    document.getElementById('nazoriWaku').hidden = (m !== 'nazori');
+    document.getElementById('ezuBox').classList.toggle('nazori', m === 'nazori');
     kazuKousin();
   }
+
+  /* 「ひとつ戻す」の区切り。なぞった一本は何十点にもなるので、
+     点ひとつずつ戻していたら日が暮れる。ひと動作＝ひと戻し。 */
+  function kugiruMae() {
+    if (!chizu) return;
+    if (!chizu.kugiri) chizu.kugiri = [];
+    chizu.kugiri.push(chizu.pts.length);
+  }
+  function modosuHitotsu() {
+    if (!chizu || !chizu.pts.length) return;
+    var made = (chizu.kugiri && chizu.kugiri.length) ? chizu.kugiri.pop() : chizu.pts.length - 1;
+    chizu.pts.length = Math.max(0, made);
+  }
+
   function ichiModosu() {
     if (!chizu || !chizu.pts.length) return;
-    chizu.pts.pop();
+    modosuHitotsu();
     render();
     kazuKousin();
   }
@@ -1528,6 +1675,7 @@ footer a { color: inherit; }
     if (!chizu || !chizu.pts.length) return;
     if (!window.confirm('打った点をぜんぶ消します。よろしいですか。')) return;
     chizu.pts = [];
+    chizu.kugiri = [];
     render();
     kazuKousin();
   }
@@ -1538,8 +1686,9 @@ footer a { color: inherit; }
     var n = chizu ? chizu.pts.length : 0;
     var kotoba, mijikai;
     if (n === 0) {
-      kotoba = 'まだ点がありません。曲がり角を押すか、十字を合わせて「ここに点」。';
-      mijikai = '曲がり角を押していきます';
+      kotoba = 'まだ点がありません。道の上をなぞるか、曲がり角をちょんと押してください。';
+      // 左上の札にも、いまどちらの手かを書く（合図の三枚目）。
+      mijikai = nazoruTe() ? '✏️ なぞると道になります' : '✋ 曲がり角を押していきます';
     } else if (n === 1) {
       kotoba = '点が1つ。あと1つ打つと、道になります。';
       mijikai = '点 1 つ';
@@ -1558,6 +1707,8 @@ footer a { color: inherit; }
      道はそのまま生きているので、また地図を触れば続きが打てる。 */
   function tsukuruKanryo() {
     var box = document.getElementById('ezuBox');
+    // 書く手のまま小さい地図に戻ると、動かすつもりの指が線になる。手を置いてから降りる。
+    setTe('map');
     box.classList.remove('zenmen');
     document.body.style.overflow = '';
     document.getElementById('zenmen').hidden = false;   // 「大きく」を戻す
@@ -1584,7 +1735,7 @@ footer a { color: inherit; }
   // 点が2つ無いと道にならない。押した人に、なぜ駄目かを正直に言う。
   function michiAruka() {
     if (chizu && chizu.pts.length >= 2) return true;
-    window.alert('まだ道になっていません。曲がり角に十字を合わせて「ここに点」を、2つ以上打ってください。');
+    window.alert('まだ道になっていません。「✏️ なぞって道」で地図をなぞるか、曲がり角を2つ以上押してください。');
     return false;
   }
 
@@ -1722,7 +1873,8 @@ footer a { color: inherit; }
   function tsukuruHaisen() {
     var h = document.getElementById('tsukuruHajime');
     if (h) h.addEventListener('click', tsukuruHajimeru);
-    document.getElementById('tenUtsu').addEventListener('click', tenUtsu);
+    document.getElementById('teMap').addEventListener('click', function () { setTe('map'); });
+    document.getElementById('teNazori').addEventListener('click', function () { setTe('nazori'); });
     document.getElementById('ichiModosu').addEventListener('click', ichiModosu);
     document.getElementById('zenbuKesu').addEventListener('click', zenbuKesu);
     document.getElementById('tsukuruKanryo').addEventListener('click', tsukuruKanryo);
