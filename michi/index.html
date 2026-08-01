@@ -301,7 +301,55 @@ h1 {
 html[data-time="night"] .tsukuru-ran input,
 html[data-time="night"] .tsukuru-ran textarea { background: #ffffff14; }
 
-.dougu-bar { margin-top: 14px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; }
+/* 打つ道具は地図の中の下側に浮かせる。指も目も、地図から離れなくて済む。
+   施主の実測（iPhone・2026-08-01）＝地図を見る→下へスクロール→押す→また地図、
+   の往復が起きていた。押す場所を、見ている場所に置く。 */
+.utsuctl {
+  position: absolute;
+  left: 0; right: 0; bottom: 12px;
+  display: flex; justify-content: center; align-items: center; gap: 12px;
+  /* iPhone のホームバーに重ならないよう、下端を少し持ち上げる。 */
+  padding: 0 12px env(safe-area-inset-bottom, 0px);
+  pointer-events: none;              /* 隙間ごしに地図を触れるように */
+}
+.utsuctl button {
+  pointer-events: auto;
+  font: inherit; font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 12px #00000045;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+/* 打つ手。いちばん大きく、いちばん押しやすい真ん中に。 */
+.utsuctl .utsu {
+  background: var(--accent); color: #fff;
+  font-size: 19px; padding: 18px 30px; border-radius: 999px;
+}
+html[data-time="night"] .utsuctl .utsu { color: #1c1610; }
+/* 脇の丸ボタン。＋−と同じ作法にそろえる。 */
+.utsuctl .maru {
+  width: 62px; height: 62px; border-radius: 50%;
+  font-size: 12.5px; line-height: 1.25;
+  display: grid; place-items: center;
+}
+.utsuctl .sub    { background: #3c3c3ccc; color: #fff; }
+.utsuctl .kanryo { background: #2e7d59e0; color: #fff; font-size: 14px; }
+.utsuctl button:active { transform: scale(0.95); }
+
+/* 点の数と長さ。地図の上に小さく置いて、下を見に行かなくて済むように。 */
+.utsukazu {
+  position: absolute; left: 10px; top: 10px;
+  max-width: calc(100% - 90px);
+  padding: 8px 12px; border-radius: 10px;
+  background: #3c3c3ccc; color: #fff;
+  font-size: 13px; font-weight: 600;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+.dougu-bar { margin-top: 14px; display: grid; gap: 10px; }
 .dougu-main, .dougu-sub {
   font: inherit; font-weight: 600;
   padding: 16px 10px; border-radius: 12px; cursor: pointer;
@@ -457,6 +505,18 @@ footer a { color: inherit; }
           <button type="button" id="zoomAll" class="small" aria-label="道の全体を見る">ぜんぶ</button>
           <button type="button" id="zenmen"  class="small" aria-label="大きく見る">大きく</button>
         </div>
+        <!-- 打つ道具は、ぜんぶ地図の中に浮かせる（施主案 2026-08-01）。
+             作っている間は地図だけの画面にして、押しても画面が動かない。
+             書き終えたら「完了」で下へ降りる。 -->
+        <div class="utsuctl" id="utsuCtl" hidden>
+          <button type="button" id="ichiModosu" class="maru sub">ひとつ<br>戻す</button>
+          <button type="button" id="tenUtsu"    class="utsu">ここに点</button>
+          <!-- 全画面にしたら、出口を必ず画面の中に見せる。
+               出口の見えない全画面は、人を閉じ込める。 -->
+          <button type="button" id="tsukuruKanryo" class="maru kanryo">できた</button>
+        </div>
+        <!-- 点の数と長さは、地図の上に小さく出す（下を見に行かなくていい）。 -->
+        <div class="utsukazu" id="utsuKazu" hidden></div>
       </div>
       <div class="caption" id="ezuCaption">道の形（上が北）。</div>
       <!-- 本物の地図は「押した人だけ」取り寄せる。
@@ -473,12 +533,12 @@ footer a { color: inherit; }
 
     <!-- 道を作るときの道具（打つ・戻す・消す）と、できた道の出口 -->
     <div id="tsukuruDougu" hidden>
+      <div class="dougu-kazu" id="tsukuruKazu">まだ点がありません。曲がり角を押すか、十字を合わせて「ここに点」。</div>
+      <!-- 「ぜんぶ消す」だけは地図から離す。いちばん痛い操作を、いちばん
+           押しやすい場所に置かない（確認は最後の砦で、設計で防ぐのが先）。 -->
       <div class="dougu-bar">
-        <button class="dougu-main" id="tenUtsu" type="button">ここに点</button>
-        <button class="dougu-sub"  id="ichiModosu" type="button">ひとつ戻す</button>
-        <button class="dougu-sub"  id="zenbuKesu" type="button">ぜんぶ消す</button>
+        <button class="dougu-sub" id="zenbuKesu" type="button">ぜんぶ消して、やり直す</button>
       </div>
-      <div class="dougu-kazu" id="tsukuruKazu">まだ点がありません。曲がり角に十字を合わせて「ここに点」。</div>
 
       <div class="actions">
         <button class="btn btn-main" id="linkNisuru" type="button">リンクにする（そのまま送れます）</button>
@@ -975,13 +1035,17 @@ footer a { color: inherit; }
     var ban = canvas.parentElement;
     var box = document.getElementById('ezuBox');
     var w = Math.max(50, ban.clientWidth);
-    // 狭い画面（スマホ）では縦長ぎみに。横長のままだと地図が薄く、
-    // 右に並んだボタンが絵の大半を覆ってしまう。
-    var wari = w < 420 ? 1.0 : 0.75;
+    /* 「スマホか PC か」は見ない。**幅がいくつか**だけ見る（施主の見立て
+       2026-08-01「iPhoneで最適化してもPCで開いても差はない」——そのとおりで、
+       分かれ目は機械の種類ではなく画面の広さ。UA は iPad が Mac を名乗るなど
+       当てにならないので使わない）。
+       狭い画面では縦長ぎみに大きく。ただし窓の高さは超えない
+       （超えると地図の下の道具まで指が届かなくなる）。 */
+    var wari = w < 420 ? 1.25 : 0.75;
     var h = box.classList.contains('zenmen')
           ? Math.max(50, ban.clientHeight)
-          : Math.round(w * wari);
-    return { w: w, h: h };
+          : Math.round(Math.min(w * wari, (window.innerHeight || 700) * 0.62));
+    return { w: w, h: Math.max(50, h) };
   }
 
   // 縮尺を決まった幅に収める。近づきすぎ（19）も、離れすぎ（zMin）も止める。
@@ -1144,7 +1208,10 @@ footer a { color: inherit; }
     var steps = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
     var step = steps[0];
     for (var i2 = 0; i2 < steps.length; i2++) { if (steps[i2] / mPerPx <= s.w / 3) step = steps[i2]; }
-    var barLen = step / mPerPx, bx = 14, by = s.h - 14;
+    /* 道を作っている間は、下側に「ここに点」の道具が浮いている。
+       ものさしと名乗りは、その上へ逃がす（重ねると両方読めなくなる）。 */
+    var sita = chizu.tsukuruChu ? 88 : 0;
+    var barLen = step / mPerPx, bx = 14, by = s.h - 14 - sita;
     ctx.strokeStyle = '#3a352e';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -1412,8 +1479,17 @@ footer a { color: inherit; }
 
     var canvas = document.getElementById('ezuCanvas');
     canvas.classList.add('ugoku');
-    document.getElementById('ezuBox').classList.add('chizu');
+    var box = document.getElementById('ezuBox');
+    box.classList.add('chizu');
     document.getElementById('mapCtl').hidden = false;
+    document.getElementById('utsuCtl').hidden = false;
+    document.getElementById('utsuKazu').hidden = false;
+    /* 作っている間は地図だけの画面にする（施主案）。
+       全画面なら、点を打っても画面が動かない＝目と指が地図から離れない。
+       「大きく／閉じる」は、作っている間は要らない（出口は「できた」）。 */
+    document.getElementById('zenmen').hidden = true;
+    box.classList.add('zenmen');
+    document.body.style.overflow = 'hidden';
 
     // 出だしの場所。分かれば今いるところ、断られたら東京駅のあたり。
     chizu = { pts: [], memos: [], hako: null,
@@ -1458,12 +1534,39 @@ footer a { color: inherit; }
 
   function kazuKousin() {
     var el = document.getElementById('tsukuruKazu');
+    var ue = document.getElementById('utsuKazu');      // 地図の上の小さい札
     var n = chizu ? chizu.pts.length : 0;
-    if (n === 0) { el.textContent = 'まだ点がありません。曲がり角に十字を合わせて「ここに点」。'; return; }
-    if (n === 1) { el.textContent = '点が1つ。あと1つ打つと、道になります。'; return; }
-    // distText は「約 4.1 km の道」を返す（札での言い回し）。ここでは長さだけ使う。
-    el.textContent = '点が ' + n + ' つ ／ ' + distText(totalMeters(chizu.pts)).replace(/ の道$/, '') + ' の長さ。';
-    document.getElementById('dekita').hidden = true;   // 道が変わったら、前のリンクは古い
+    var kotoba, mijikai;
+    if (n === 0) {
+      kotoba = 'まだ点がありません。曲がり角を押すか、十字を合わせて「ここに点」。';
+      mijikai = '曲がり角を押していきます';
+    } else if (n === 1) {
+      kotoba = '点が1つ。あと1つ打つと、道になります。';
+      mijikai = '点 1 つ';
+    } else {
+      // distText は「約 4.1 km の道」を返す（札での言い回し）。ここでは長さだけ使う。
+      var naga = distText(totalMeters(chizu.pts)).replace(/ の道$/, '');
+      kotoba = '点が ' + n + ' つ ／ ' + naga + ' の長さ。';
+      mijikai = '点 ' + n + ' つ ／ ' + naga;
+      document.getElementById('dekita').hidden = true;   // 道が変わったら、前のリンクは古い
+    }
+    el.textContent = kotoba;
+    ue.textContent = mijikai;
+  }
+
+  /* 「できた」＝地図だけの画面から降りて、名前をつけて渡す段へ移る。
+     道はそのまま生きているので、また地図を触れば続きが打てる。 */
+  function tsukuruKanryo() {
+    var box = document.getElementById('ezuBox');
+    box.classList.remove('zenmen');
+    document.body.style.overflow = '';
+    document.getElementById('zenmen').hidden = false;   // 「大きく」を戻す
+    requestAnimationFrame(function () {
+      zenTaiHe();                                       // 打った道の全体を見せる
+      render();
+      var fuda = document.getElementById('tsukuruFuda');
+      if (fuda) fuda.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   /* ---- 荷物づくり（リンク・ファイルの共通の中身）---- */
@@ -1622,6 +1725,7 @@ footer a { color: inherit; }
     document.getElementById('tenUtsu').addEventListener('click', tenUtsu);
     document.getElementById('ichiModosu').addEventListener('click', ichiModosu);
     document.getElementById('zenbuKesu').addEventListener('click', zenbuKesu);
+    document.getElementById('tsukuruKanryo').addEventListener('click', tsukuruKanryo);
     document.getElementById('linkNisuru').addEventListener('click', linkNisuru);
     document.getElementById('ePng').addEventListener('click', ePng);
     document.getElementById('eGmem').addEventListener('click', eGmem);
