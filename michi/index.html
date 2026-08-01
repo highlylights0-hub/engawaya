@@ -613,19 +613,23 @@ footer a { color: inherit; }
   </div>
 
   <!-- リンクに中身が無いとき（ページだけ直接開いた人向け） -->
+  <!-- 【並び順の理由・2026-08-01】母屋の座布団に「道メモ」として並べた日に、
+       上下を入れ替えた。玄関から来た人は**道を作りに**来ているので、
+       その道具を先に出す。受け取りの説明を先に置くと、看板が嘘をつく
+       （母屋の掟＝札には「この先で動くこと」だけを書く）。
+       受け取りリンクで来た人はそもそもこの箱を見ない（道が出る）ので、
+       この並びで誰も困らない。 -->
   <div id="noData" class="empty" hidden>
-    ここは GeoMemory の「道の共有リンク」を受け取るためのページです。<br>
-    GeoMemory アプリで道を「リンクで共有」すると、ここのリンクが作られます。<br><br>
-    GeoMemory は、走った道・歩いた道を憶えて、あとで再生できる無料のアプリです。<br><br>
-    <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
-
-    <!-- 道を手で作る（2026-08-01）。スクショに手で描いた地図の置き換え。
-         アプリが無くても、Windows でも、ここで道が作れて渡せる。 -->
-    <hr style="margin:22px 0; border:none; border-top:1px solid var(--card-line);">
-    <strong style="font-size:16px;">道を、ここで作ることもできます。</strong><br>
-    地図の上を指でなぞる（マウスなら引きずる）だけ。曲がり角をちょんちょんと押していく手もあります。
+    <strong style="font-size:16px;">地図をなぞれば、道になります。</strong><br>
+    指でなぞる（マウスなら引きずる）だけ。曲がり角をちょんちょんと押していく手もあります。
     できた道はリンク・絵・ファイルにして渡せます。アプリも登録もいりません。<br><br>
     <button class="btn btn-main" id="tsukuruHajime" type="button" style="width:100%;">新しく道を作る</button>
+
+    <hr style="margin:22px 0; border:none; border-top:1px solid var(--card-line);">
+    ここは <strong>GeoMemory の「道の共有リンク」の受け皿</strong>でもあります。<br>
+    GeoMemory アプリで道を「リンクで共有」すると、ここのリンクが作られます。
+    GeoMemory は、走った道・歩いた道を憶えて、あとで再生できる無料のアプリです。<br><br>
+    <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
   </div>
 
   <!-- リンクが読めなかったとき（途中で切れた等）。正直に言う。 -->
@@ -687,8 +691,12 @@ footer a { color: inherit; }
      実行されなければ undefined のまま——つまり道を作りに来た人のときだけ
      地図の控え箱が空っぽで、タイルが一枚も出なかった。
      打ち切らず、読むときだけ読む形にする。 */
-  if (!hash) {                         // リンクに中身が無い＝説明だけ出す
+  if (!hash) {                         // リンクに中身が無い＝道具として開かれた
     document.getElementById('noData').hidden = false;
+    /* 名乗りも、来た人に合わせて替える。玄関の座布団から来た人に
+       「届きました」と言うと、届いていない物を探させることになる。 */
+    document.getElementById('lead').textContent =
+      '地図に道を描いて、リンク・絵・ファイルにして渡せます。アプリも登録もいりません。';
   } else {
     // 圧縮を解く工程が非同期（ブラウザ内蔵の解凍機の決まり）なので、
     // ここから先はまとめて非同期で進める。転んだら正直に「読めませんでした」。
