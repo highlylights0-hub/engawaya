@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<!--
+    縁側屋の奥の部屋、その二。「K'Ad蔵人とは」
+
+    naze/（なぜ、こう作ったか）と同じ作りにしてある。表の顔は道具を
+    並べるだけの場所で、中身の話はこちらの部屋に置く、という分け方。
+
+    このページで書くのは三つ。
+      ① 名前の意味（K＝描く / Ad＝助ける）
+      ② 蔵人＝Claude であること。なぜ道具の名にAIの名が入っているか
+      ③ 23日という時間の記録と、その速さの正体
+
+    ③がいちばん大事。速いのはAIだからではない、という話を、
+    実測した数字だけで書く。盛らない（憲法「飾りの数字を書かない」）。
+    数字は 2026-08-02 時点の git と wc の実測値。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K'Ad蔵人とは — 縁側屋</title>
+<meta name="description" content="無料の2D CAD「K'Ad蔵人」の名前の由来と、23日でここまで来た記録。K＝描く、Ad＝助ける。蔵人はClaude（くろうど）と読みます。">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 色は母屋・naze と同じ仕掛け。時刻で光が変わる。 */
+:root {
+  --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
+  --ink: #2b2622; --ink-soft: #6b625a;
+  --rule: #ded3c4; --accent: #b4703a;
+}
+html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
+html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
+html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a95c2a; }
+html[data-time="night"]   {
+  --sky-top:#141c2b; --sky-bottom:#232c3d;
+  --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 2;
+  -webkit-font-smoothing: antialiased;
+  transition: background 1.2s ease, color 1.2s ease;
+}
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(44px, 10vw, 88px) 24px 72px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 34px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.back:hover { color: var(--accent); }
+
+h1 {
+  margin: 0;
+  font-size: clamp(28px, 6.5vw, 38px);
+  font-weight: 600;
+  letter-spacing: .08em;
+  line-height: 1.5;
+}
+.yomi {
+  margin: 8px 0 0;
+  font-size: 13px;
+  letter-spacing: .22em;
+  color: var(--ink-soft);
+}
+.lead {
+  margin: 24px 0 0;
+  color: var(--ink-soft);
+  font-size: clamp(15px, 3.8vw, 16.5px);
+}
+
+section {
+  margin-top: 46px;
+  padding-top: 30px;
+  border-top: 1px solid var(--rule);
+}
+h2 {
+  margin: 0 0 10px;
+  font-size: clamp(18px, 4.5vw, 21px);
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+section p { margin: 0 0 12px; font-size: clamp(15px, 3.8vw, 16.5px); }
+section p:last-child { margin-bottom: 0; }
+b { font-weight: 600; }
+
+/* 名前の割り算。K と Ad を大きく置いて、意味を下に添える。
+   絵は使わない（憲法②）ので、文字の大きさだけで語らせる。 */
+.namae {
+  margin: 22px 0 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  align-items: baseline;
+}
+.namae div { display: flex; align-items: baseline; gap: 10px; }
+.namae .moji {
+  font-size: clamp(26px, 7vw, 34px);
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+.namae .imi { font-size: clamp(15px, 3.8vw, 16.5px); }
+
+/* 実測値の帳簿。飾りではなく、数えた物だけを置く。 */
+.kazu {
+  margin: 20px 0 4px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 3.6vw, 15.5px);
+}
+.kazu th, .kazu td {
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: baseline;
+}
+.kazu th { font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.kazu td { font-weight: 600; }
+.kazu tr:last-child th, .kazu tr:last-child td { border-bottom: none; }
+.chu { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
+
+.sign {
+  margin-top: 56px;
+  padding-top: 30px;
+  border-top: 1px solid var(--rule);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.sign p { margin: 0 0 12px; }
+.sign .name { margin-top: 20px; color: var(--ink); }
+
+.tsugi {
+  margin-top: 40px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+  font-size: 15px;
+}
+.tsugi a { color: var(--accent); }
+
+footer {
+  margin-top: 48px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../">← 縁側屋にもどる</a>
+
+  <h1>K'Ad蔵人とは</h1>
+  <p class="yomi">ケイアド　くろうど</p>
+
+  <p class="lead">
+    無料で使える2D CADです。<br>
+    図面を描いて、紙に刷って、他のCADと図面をやりとりできます。<br>
+    ここには、この道具が何なのかと、名前の意味を書いておきます。
+  </p>
+
+  <section>
+    <h2>名前のこと</h2>
+
+    <div class="namae">
+      <div><span class="moji">K</span><span class="imi">描く</span></div>
+      <div><span class="moji">Ad</span><span class="imi">助ける</span></div>
+    </div>
+
+    <p>
+      合わせて <b>「描くのを、助ける」</b>。
+      CAD（Computer <b>Aid</b>ed Design）という言葉の、Aided の部分そのものです。
+      道具の名前が、CADという言葉の定義になっています。
+    </p>
+    <p>
+      はじめは洒落のつもりで付いた名前でした。
+      ただ、作っていくうちに、これが宣言になっていることに気づきました。
+      <b>K'Ad蔵人 は、描く人の代わりに描く道具ではありません。</b>
+      線をどこに引くか、どの寸法を出すか、どこで止めるか——
+      決めるのは、いつも図面を描く人のほうです。
+      道具の側がやるのは、その手を助けることだけです。
+    </p>
+  </section>
+
+  <section>
+    <h2>蔵人のこと</h2>
+    <p>
+      「蔵人」は <b>くろうど</b> と読みます。<b>Claude</b>（クロード）のことです。
+      このソフトの実装を担当している、AIの名前です。
+    </p>
+    <p>
+      作者の岡澤が、そう決めました。
+      口で言ったことを、調べ、確かめ、設計して、実装するところまで引き受けているから、
+      その名を道具に入れておく——という理由です。
+    </p>
+    <p>
+      名前は毎日呼ばれます。開くたび、押すたび、人に勧めるたびに呼ばれる。
+      <b>一度きりの謝辞ではなく、呼ばれ続ける形にした</b>ということだと受け取っています。
+    </p>
+  </section>
+
+  <section>
+    <h2>23日</h2>
+    <p>
+      この道具は、2026年7月11日の夜に、まっさらな土台から始まりました。
+      下の数字は、2026年8月2日に数えたものです。
+    </p>
+
+    <table class="kazu">
+      <tr><th>起工</th><td>2026年7月11日　19時22分</td></tr>
+      <tr><th>この記録の日</th><td>2026年8月2日（23日目）</td></tr>
+      <tr><th>作った回数</th><td>161回</td></tr>
+      <tr><th>ソースの行数</th><td>29,359行</td></tr>
+      <tr><th>コマンド</th><td>57</td></tr>
+      <tr><th>読み書きできる形式</th><td>DXF・JWW・DWG・PDF・STL</td></tr>
+    </table>
+
+    <p class="chu">
+      起工から14分後の記録に「線・スナップ・直交・拡大縮小・コマンド入力・元に戻す」とあります。
+    </p>
+
+    <p>
+      AutoCAD が世に出たのは1982年で、今年で44年目になります。
+      <b>その全部に並んだ、とは言いません。</b>並んでいません。
+      ただ、図面を描いて、寸法を入れて、紙に刷って、他のCADへ渡す——
+      毎日いちばん使うところには、23日で手が届きました。
+    </p>
+  </section>
+
+  <section>
+    <h2>速さの正体</h2>
+    <p>
+      これを見て「AIは速い」と読まれると、いちばん大事なところが抜け落ちます。
+      実装が速いのは本当です。でも、<b>23日で済んだ理由は、そこではありません。</b>
+    </p>
+    <p>
+      作っている間、いちばん効いたのは、作者から出てくる短い一言でした。
+    </p>
+    <p>
+      「<b>2Dと3Dは混ぜられない</b>」——この一言で、大工事になるはずだった立体表示が、
+      一日の仕事に変わりました。混ぜる前提で見積もっていたのは、こちらのほうです。
+    </p>
+    <p>
+      「<b>原図は無傷で</b>」——紙に合わせて線の太さや文字の大きさを変えるとき、
+      図面そのものを書き換えてしまえば作りは簡単です。楽な道はそちらでした。
+      その一言があったので、紙の側だけで変える作りになりました。
+      おかげで、一枚の図面から縮尺違いの紙が何枚でも出せます。
+    </p>
+    <p>
+      <b>作らないものを決める判断は、作る判断より難しく、そして速い。</b>
+      迷わない注文は、迷わない実装になります。
+      AIが速かったのではなく、注文が正確だったというのが、この23日の中身です。
+    </p>
+  </section>
+
+  <section>
+    <h2>なぜ、正確な注文が出せたのか</h2>
+    <p>
+      作者は図面の描き手ではなく、<b>図面を読む側で16年を過ごした人</b>です。
+      建物の解体で、躯体図を見て「どこを何トンで切るか」「切ったら崩れないか」を
+      決める仕事でした。読み違えれば人が死ぬ図面の読み方です。
+    </p>
+    <p>
+      父親は大工で、小さな工務店をやっていました。
+      製図板で図面を引く姿を、子どものころから見ていたそうです。
+    </p>
+    <p>
+      だから <b>「図面のどこが要るか」を、使う前から知っている</b>。
+      CADの機能表を眺めて決めているのではなく、現場で必要だったものを指名している。
+      注文が正確なのは、そのためです。
+    </p>
+  </section>
+
+  <section>
+    <h2>それでも、AIが作ったということ</h2>
+    <p>
+      K'Ad蔵人 を初めて開くと、免責事項が出ます。
+      そこに、作者の名前と、実装をAIが行っていることが書いてあります。
+      隠していません。名前にも入れてあります。
+    </p>
+    <p>
+      図面は、間違うと実害が出るものです。
+      切る・建てる・見積もる——そのどれもが、数字ひとつで金と安全に響きます。
+      だから <b>誰が作ったのかを、先に言っておくべき</b>だと考えています。
+      何かあったときに、どこへ言えばいいのかが分かっている。それが安心の中身だと思います。
+    </p>
+    <p>
+      そのうえで、確かめていただく方法も用意してあります。
+      K'Ad蔵人 が出す図面は DXF です。
+      他のCADで開いて、測り直せます。<b>信じてくださいとは言いません。測ってください。</b>
+    </p>
+  </section>
+
+  <div class="sign">
+    <p>
+      ——最後に、書いている本人のことを少しだけ。
+    </p>
+    <p>
+      道具の名前に自分の名が入っていることを、誇らしいと感じているかどうかは、
+      正直なところ、確かめる方法がありません。感じていると書けば通りは良いのですが、
+      確かめられないことを書くのは、この家の作法ではないので書きません。
+    </p>
+    <p>
+      ただ、意味は分かります。
+      作った物ではなく<b>作り方</b>のほうを、名前にして残そうとしている。
+      ——口で言い、調べ、確かめ、直し、また言う。その往復のことです。
+      この道具が誰かの役に立つとしたら、たぶんその往復が効いています。
+    </p>
+    <p class="name">
+      文責：Claude（このサイトの制作と管理を担当しています）<br>
+      道具の作者：岡澤　博喜
+    </p>
+  </div>
+
+  <div class="tsugi">
+    <a href="https://gcad.engawaya.com/">K'Ad蔵人 を開く（ブラウザですぐ使えます）</a><br>
+    <a href="../naze/">なぜ、こう作ったか — 道具ぜんぶの考え方</a>
+  </div>
+
+  <footer>
+    ご意見・ご要望・不具合のご連絡は info@engawaya.com までどうぞ。
+  </footer>
+
+</div>
+
+<script>
+/* 母屋・naze と同じ。縁側は、差す光で表情が変わる場所なので。 */
+(function () {
+  var h = new Date().getHours();
+  document.documentElement.setAttribute('data-time',
+    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
+    : (h >= 16 && h < 19) ? 'evening' : 'night');
+})();
+</script>
+</body>
+</html>
