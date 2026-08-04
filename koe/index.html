@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<!--
+    縁側屋の投書箱。「お困りごと・ご要望」
+
+    施主の言葉（2026-08-05）：
+      「縁側屋に来た人でK'Adについて、要望があるとします。
+        簡単な掲示板で、書くことができて伝えることができるもの。
+        あまりひどいワードが並ぶ荒らす方は表示しないなど。」
+
+    ■ なぜ「掲示板」ではなく「投書箱」にしたか
+
+    NGワードの一覧で弾く方式は、この家では二重に効きが悪い。
+      ① 漏れる。伏せ字（ば☆か）や半角カナにされたら通る。
+         罵り言葉は毎月生まれるので、一覧は永遠に後追いになる。
+      ② 誤爆する。そしてこちらの方が痛い。K'Ad に要望を書く人は
+         建築と図面の人で、「壁を殺す」「捨てコン」「切断解体」は
+         全部その道の普通の言葉。**一番届いてほしい声が一番弾かれる。**
+
+    だから、機械に言葉を judge させない。届く先を施主一人にして、
+    載せるか載せないかを人が決める。荒らしは誰の目にも触れないまま消える。
+    それは施主の心を守る作りでもある——無料で配っている家の壁に
+    罵声が貼りつくと、作り続ける燃料の方が先に尽きる。
+
+    ■ なぜサーバーを持たないか
+
+    この家は GitHub Pages（静的配信）で、受け取る側の仕組みを持たない。
+    持たせることもできるが、それは「Ochi-Gee のランキング」と同じ土台の
+    工事になる（サーバーレス受付係）。先にそちらを建てるなら投書箱は
+    ほぼタダで乗るので、順番を待つ。今日はメールで足りる。
+
+    ■ 憲法の守り方（naze/ に書いてあること）
+
+      ① 外から何も読み込まない  → フォント・画像・部品ゼロ。この一枚で完結。
+      ② 絵文字を使わない        → 記号は一つも使っていない。区切りは罫線だけ。
+      ③ 押す場所を大きく        → 送るボタンは高さ 64px 以上。手が震えても外さない。
+      ④ ぜんぶ無料              → 送るのにアカウントも登録も要らない。
+
+    ■ 正直に書いてあること（隠すと後で信用を失うので、ページの表に出す）
+      ・メールアプリが開くので、送信元のアドレスは施主に見える（＝完全な匿名ではない）
+      ・必ず返事ができるとは限らない（作っているのは一人なので）
+      ・長すぎるとメールアプリが途中で切ることがある → 字数を出して先に知らせる
+
+    ■ メールアドレスを生で書かない理由
+    母屋と同じ作法。公開ページのアドレスは迷惑メール業者の巡回ロボットが
+    拾って歩くので、文字を分けて持ち、開いた瞬間に @ で組み直す。
+    JS が動かない機械でも「アットマーク」の字は人が読めるので、誰も締め出さない。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>お困りごと・ご要望 — 縁側屋</title>
+<meta name="description" content="縁側屋の道具（K'Ad蔵人・GeoMemory・メーター引きなど）について、こうしてほしい・ここが不便、を送る場所。登録もアカウントも要りません。">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 色は母屋・naze・kad と同じ仕掛け。縁側は差す光で表情が変わる場所なので。 */
+:root {
+  --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
+  --ink: #2b2622; --ink-soft: #6b625a;
+  --rule: #ded3c4; --accent: #b4703a;
+  --paper: #fffdf8;
+}
+html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
+html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
+html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a95c2a; }
+html[data-time="night"]   {
+  --sky-top:#141c2b; --sky-bottom:#232c3d;
+  --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
+  --paper:#1c2434;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 2;
+  -webkit-font-smoothing: antialiased;
+  transition: background 1.2s ease, color 1.2s ease;
+}
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(44px, 10vw, 88px) 24px 72px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 34px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.back:hover, .back:focus-visible { color: var(--accent); }
+
+h1 {
+  margin: 0;
+  font-size: clamp(28px, 6.5vw, 38px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+.lead {
+  margin: 18px 0 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+hr.rule {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 40px 0 34px;
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.hint {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* ---- 道具えらび -------------------------------------------------
+   任意。押さなくても送れる。押すと件名に道具の名が入るので、
+   受け取った側が振り分けられる。
+   「どれでもない」を必ず混ぜておく——選択肢に自分の用が無いと、
+   人は書くのをやめてしまうから。                                  */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 30px;
+  padding: 0;
+  list-style: none;
+}
+.tools button {
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.2;
+  /* 押す場所は必要よりだいぶ大きく（憲法③）。指でも、手が震えても外さない。 */
+  min-height: 52px;
+  padding: 14px 20px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+.tools button:hover, .tools button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.tools button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--paper);
+}
+
+/* ---- 本文 ---- */
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 220px;
+  padding: 18px;
+  font: inherit;
+  font-size: 16px;   /* iPhone は 16px 未満だと勝手に拡大する。それを防ぐ寸法。 */
+  line-height: 1.9;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  resize: vertical;
+}
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.count {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: right;
+}
+.count.over { color: var(--accent); }
+
+/* ---- 送る ---- */
+.send {
+  display: block;
+  width: 100%;
+  margin: 26px 0 0;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  /* 一番大事な一手なので、一番大きく。 */
+  min-height: 64px;
+  padding: 18px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fffdf8;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.send:hover, .send:focus-visible { opacity: .88; }
+.send:disabled {
+  opacity: .38;
+  cursor: default;
+  /* 押せない理由は下の一行に書く。灰色にするだけでは理由が伝わらない。 */
+}
+.send-note {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.copy {
+  display: block;
+  width: 100%;
+  margin: 14px 0 0;
+  font: inherit;
+  font-size: 15px;
+  min-height: 56px;
+  padding: 15px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.copy:hover, .copy:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+/* ---- 断り書き ---- */
+.tadashi {
+  margin: 40px 0 0;
+  padding: 22px 20px;
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+.tadashi b { color: var(--ink); }
+.tadashi p { margin: 0 0 12px; }
+.tadashi p:last-child { margin-bottom: 0; }
+
+footer {
+  margin-top: 48px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+footer a { color: var(--ink-soft); }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <a class="back" href="../">縁側屋へもどる</a>
+
+  <h1>お困りごと・ご要望</h1>
+
+  <p class="lead">
+    使っていて「ここが不便だ」「こうしてほしい」と思ったことを、そのまま書いてください。<br>
+    登録もアカウントも要りません。うまく書けていなくて構いません。
+  </p>
+
+  <hr class="rule">
+
+  <h2>どの道具のことですか</h2>
+  <p class="hint">
+    押さなくても送れます。押しておくと、届いたときに何の話か分かりやすくなります。
+  </p>
+  <ul class="tools" id="tools">
+    <li><button type="button" data-tool="K'Ad蔵人" aria-pressed="false">K'Ad蔵人（CAD）</button></li>
+    <li><button type="button" data-tool="GeoMemory" aria-pressed="false">GeoMemory</button></li>
+    <li><button type="button" data-tool="メーター引き" aria-pressed="false">メーター引き</button></li>
+    <li><button type="button" data-tool="道メモ" aria-pressed="false">道メモ</button></li>
+    <li><button type="button" data-tool="赤ペン" aria-pressed="false">赤ペン</button></li>
+    <li><button type="button" data-tool="Ochi-Gee" aria-pressed="false">Ochi-Gee</button></li>
+    <li><button type="button" data-tool="そのほか" aria-pressed="false">そのほか・全体のこと</button></li>
+  </ul>
+
+  <h2>書くところ</h2>
+  <p class="hint">
+    たとえば「この線が思ったところに引けない」「印刷すると文字が消える」「こういう機能がほしい」。
+    箇条書きでも、一行でも構いません。
+  </p>
+
+  <textarea id="honbun" placeholder="ここに書いてください。"></textarea>
+  <p class="count" id="count">0 字</p>
+
+  <button class="send" id="send" type="button" disabled>メールを開いて送る</button>
+  <p class="send-note" id="sendNote">まず、上に何か書いてください。</p>
+
+  <button class="copy" id="copy" type="button">書いた文をコピーする（メールを使わない方へ）</button>
+
+  <div class="tadashi">
+    <p>
+      <b>送る前に、知っておいてほしいこと。</b>
+    </p>
+    <p>
+      押すと、お使いの<b>メールアプリが開きます</b>。書いた文が下書きに入った状態で開くので、
+      そこでもう一度読んでから送れます。開いただけでは送られません。
+    </p>
+    <p>
+      メールで届くため、<b>送り主のアドレスはこちらに見えます</b>。名乗りたくない場合は、
+      本文にお名前を書かないままで構いません。こちらから聞くことはありません。
+    </p>
+    <p>
+      作っているのは一人なので、<b>必ずお返事できるとは限りません</b>。
+      ただ、届いたものは全部読みます。直せるものから、ひとつずつ直していきます。
+    </p>
+    <p>
+      いただいた内容を、そのまま外に出すことはしません。
+      直したことをお知らせに書く場合も、書いた方が分からない形にします。
+    </p>
+  </div>
+
+  <footer>
+    メールが使えない、うまく開かないときは
+    <span class="renraku">info アットマーク engawaya.com</span>
+    まで直接どうぞ。<br>
+    <a href="../naze/">なぜ、こう作ったか</a> ／ <a href="../kad/">K'Ad蔵人とは</a>
+  </footer>
+
+</div>
+
+<script>
+/* 母屋・naze・kad と同じ。縁側は、差す光で表情が変わる場所なので。 */
+(function () {
+  var h = new Date().getHours();
+  document.documentElement.setAttribute('data-time',
+    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
+    : (h >= 16 && h < 19) ? 'evening' : 'night');
+})();
+
+/* ------------------------------------------------------------
+   投書箱の中身。
+
+   受け口はメール一本。窓口を二つ作ると片方が忘れられて
+   「返事が来ない店」になるので、母屋と同じ info@engawaya.com に揃える。
+   ------------------------------------------------------------ */
+(function () {
+  var na = 'info', ie = 'engawaya.com';   /* 生で書かない（母屋と同じ作法） */
+  var atmark = na + '@' + ie;
+
+  /* --- 連絡先の字を、押せるリンクへ組み直す --- */
+  var list = document.querySelectorAll('.renraku');
+  for (var k = 0; k < list.length; k++) {
+    var a = document.createElement('a');
+    a.href = 'mailto:' + atmark
+           + '?subject=' + encodeURIComponent('縁側屋の道具のこと');
+    a.textContent = atmark;
+    list[k].textContent = '';
+    list[k].appendChild(a);
+  }
+
+  var tools   = document.getElementById('tools');
+  var honbun  = document.getElementById('honbun');
+  var count   = document.getElementById('count');
+  var send    = document.getElementById('send');
+  var sendNote= document.getElementById('sendNote');
+  var copy    = document.getElementById('copy');
+
+  var tool = '';   /* 選ばれた道具の名。未選択なら空。 */
+
+  /* --- 道具えらび。もう一度押すと外れる（選び直せないと詰まるので） --- */
+  tools.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    var already = b.getAttribute('aria-pressed') === 'true';
+    var all = tools.querySelectorAll('button');
+    for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', 'false');
+    if (already) { tool = ''; }
+    else { b.setAttribute('aria-pressed', 'true'); tool = b.dataset.tool; }
+  });
+
+  /* --- 字数。
+     なぜ出すか：mailto は長い本文を途中で切る機械がある。
+     切られてから気づくのでは遅いので、先に知らせて逃げ道（コピー）へ導く。 --- */
+  var LIMIT = 1000;
+  function refresh() {
+    var n = honbun.value.trim().length;
+    count.textContent = n + ' 字';
+    count.classList.toggle('over', n > LIMIT);
+    send.disabled = (n === 0);
+    if (n === 0) {
+      sendNote.textContent = 'まず、上に何か書いてください。';
+    } else if (n > LIMIT) {
+      sendNote.textContent =
+        '長い文はメールアプリが途中で切ることがあります。'
+        + '心配なときは下の「コピーする」を使って、ご自分のメールに貼ってください。';
+    } else {
+      sendNote.textContent = '押すとメールアプリが開きます。そこでもう一度読んでから送れます。';
+    }
+  }
+  honbun.addEventListener('input', refresh);
+  refresh();
+
+  /* --- 件名を組み立てる。受け取った側が一目で振り分けられるように。 --- */
+  function subject() {
+    return tool ? ('【' + tool + '】ご要望・お困りごと')
+                : '縁側屋へのご要望・お困りごと';
+  }
+  function body() {
+    var t = honbun.value.trim();
+    return tool ? ('（道具：' + tool + '）\n\n' + t) : t;
+  }
+
+  send.addEventListener('click', function () {
+    if (!honbun.value.trim()) return;
+    location.href = 'mailto:' + atmark
+                  + '?subject=' + encodeURIComponent(subject())
+                  + '&body='    + encodeURIComponent(body());
+  });
+
+  /* --- コピー。
+     メールアプリを持っていない機械（会社のPC・共用機など）でも
+     締め出さないための逃げ道。宛先も一緒に入れておかないと、
+     コピーしたあとで「どこへ送るんだ」になる。 --- */
+  copy.addEventListener('click', function () {
+    var text = '宛先：' + atmark + '\n件名：' + subject() + '\n\n' + body();
+    function done() {
+      copy.textContent = 'コピーしました。ご自分のメールに貼ってお送りください。';
+      setTimeout(function () {
+        copy.textContent = '書いた文をコピーする（メールを使わない方へ）';
+      }, 4000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+
+    /* 古い機械むけ。clipboard が無い／断られたときはこちら。 */
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch (err) {
+        copy.textContent = 'コピーできませんでした。本文を長押しして選んでください。';
+      }
+      document.body.removeChild(ta);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
