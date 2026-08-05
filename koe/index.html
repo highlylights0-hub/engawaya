@@ -211,16 +211,23 @@ textarea:focus {
   transition: opacity .15s;
 }
 .send:hover, .send:focus-visible { opacity: .88; }
-.send:disabled {
-  opacity: .38;
-  cursor: default;
-  /* 押せない理由は下の一行に書く。灰色にするだけでは理由が伝わらない。 */
-}
+
+/* ⚠️ここは一度間違えて建て直した所（2026-08-06）。
+   はじめは本文が空のあいだ disabled にして灰色にしていた。施主が実機で
+   押して**何も起きず**、下のメールアドレスを押して空のメールが飛んだ。
+   家訓「押したら反応」（昭和おじさん基準）に真正面から反している。
+   灰色にすれば理由が伝わると思ったのが間違いで、伝わったのは
+   「壊れている」だった。だから disabled は使わない。押せば必ず何か起きる。
+   薄くするのもやめた——薄い＝押すなに見えるので。 */
 .send-note {
-  margin: 12px 0 0;
-  font-size: 13.5px;
+  margin: 0 0 10px;          /* ボタンの「上」に置く。押す前に読める位置でなければ意味がない */
+  font-size: 15px;           /* 13.5px では、キーボードが出ている画面で目に入らなかった */
+  line-height: 1.7;
   color: var(--ink-soft);
-  text-align: center;
+}
+.send-note.yobikake {        /* 空のまま押されたときだけ、色が付いて呼びかける */
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .copy {
@@ -301,8 +308,10 @@ footer a { color: var(--ink-soft); }
   <textarea id="honbun" placeholder="ここに書いてください。"></textarea>
   <p class="count" id="count">0 字</p>
 
-  <button class="send" id="send" type="button" disabled>メールを開いて送る</button>
-  <p class="send-note" id="sendNote">まず、上に何か書いてください。</p>
+  <!-- 案内はボタンの「上」。押す前に読める位置になければ、後出しになる。
+       disabled は付けない——押して無反応だと「壊れている」に見えるため。 -->
+  <p class="send-note" id="sendNote">押すと、メールアプリが開きます。そこでもう一度読んでから送れます。</p>
+  <button class="send" id="send" type="button">メールを開いて送る</button>
 
   <button class="copy" id="copy" type="button">書いた文をコピーする（メールを使わない方へ）</button>
 
@@ -395,15 +404,15 @@ footer a { color: var(--ink-soft); }
     var n = honbun.value.trim().length;
     count.textContent = n + ' 字';
     count.classList.toggle('over', n > LIMIT);
-    send.disabled = (n === 0);
-    if (n === 0) {
-      sendNote.textContent = 'まず、上に何か書いてください。';
-    } else if (n > LIMIT) {
+    /* ボタンは決して disabled にしない（上の板書のとおり）。
+       空でも押せて、押したら書くところへ連れて行く。 */
+    sendNote.classList.remove('yobikake');
+    if (n > LIMIT) {
       sendNote.textContent =
         '長い文はメールアプリが途中で切ることがあります。'
         + '心配なときは下の「コピーする」を使って、ご自分のメールに貼ってください。';
     } else {
-      sendNote.textContent = '押すとメールアプリが開きます。そこでもう一度読んでから送れます。';
+      sendNote.textContent = '押すと、メールアプリが開きます。そこでもう一度読んでから送れます。';
     }
   }
   honbun.addEventListener('input', refresh);
@@ -420,7 +429,21 @@ footer a { color: var(--ink-soft); }
   }
 
   send.addEventListener('click', function () {
-    if (!honbun.value.trim()) return;
+    /* 空のまま押されたとき。黙って何もしないのが一番いけない
+       （施主が実機でそれに当たり、下のメールアドレスへ逃げて空のメールが飛んだ）。
+       押されたら必ず動く：書くところへ連れて行って、色を付けて呼びかける。 */
+    if (!honbun.value.trim()) {
+      /* 「下の枠」と書いて一度間違えた。案内をボタンの上へ移した結果、
+         案内から見て枠は「上」になっている。画面の実物で確かめないと
+         こういう向きは平気で逆になる。 */
+      sendNote.textContent = 'さきに、すぐ上の枠へ一行だけ書いてください。それだけで送れます。';
+      sendNote.classList.add('yobikake');
+      honbun.focus();
+      /* 画面の真ん中へ運ぶ。キーボードが出ると枠が隠れる機械があるので、
+         位置を合わせてから指を待つ。 */
+      honbun.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
     location.href = 'mailto:' + atmark
                   + '?subject=' + encodeURIComponent(subject())
                   + '&body='    + encodeURIComponent(body());
