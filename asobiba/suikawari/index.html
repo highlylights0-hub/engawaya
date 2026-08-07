@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<!--
+    ┌────────────────────────────────────────────────┐
+    │                                                │
+    │                 棟   札                        │
+    │                                                │
+    │      上棟   二〇二六年 八月 八日               │
+    │                                                │
+    │      施主   岡 澤 博 喜                        │
+    │      大工   Claude （蔵人）                    │
+    │                                                │
+    │      この部屋を建てた理由                      │
+    │        施主が夢を見た。目の見えない女性に      │
+    │        あたたかい食べ物を渡し、                │
+    │        座る場所を探しているところで覚めた。    │
+    │                                                │
+    │        調べたら、遊びの席が空いていた。        │
+    │        「ゲームを遊びたいのに遊べない」——      │
+    │        当事者の、そのままの言葉だった。        │
+    │                                                │
+    │        スイカわりは、もともと目隠しの遊び。    │
+    │        見える人も見えない人も、おなじルール。  │
+    │        誰かのための特別席ではなく、            │
+    │        みんなでおなじ縁側にすわる遊びとして    │
+    │        建てた。                                │
+    │                                                │
+    └────────────────────────────────────────────────┘
+
+    ── この部屋の掟（星つなぎから継いだもの） ──────
+
+    一． 外から何も読み込まない。
+         絵も音も声も、ぜんぶこの一枚の中で作る。効果音は
+         その場で合成し、声は機械に最初から入っている読み上げ
+         （speechSynthesis）だけを使う。通信はしない。
+
+    二． 借り物を置かない。
+         版権のことで誰も困らない状態を保つ。
+
+    三． 押すだけで遊べる。
+         大きなボタンを押せば動く。キーボードでも遊べるが、
+         無くても遊べる。時間制限は置かない——「急かされて
+         タイムアウトする」が当事者の困りごとの定番だから。
+
+    四． 音は黙って出さない。
+         このゲームは音そのものが本体だが、それでも玄関で
+         「音が出ます」と先に言い、「あそぶ」を押した人にだけ
+         鳴らす。勝手には鳴らさない。
+
+    五． 目が疲れる光を出さない。
+         点滅で殴らない。prefers-reduced-motion の人には
+         動きを止めて出す。文字は大きく、色の差は強く（弱視の
+         方の「薄い字が読めない」に応える）。
+
+    ── 読み上げソフト（VoiceOver / NVDA 等）との同居 ──
+
+         このゲームは手番制（押してから次を考える）なので、
+         読み上げソフトの二度タップ操作でそのまま遊べる。
+         声の出どころは設定で選べる：
+           ・「ゲームのこえ」…ゲーム自身がしゃべる（既定）
+           ・「よみあげソフトにまかせる」…ゲームは黙り、
+             画面の文字を aria-live で読み上げソフトへ渡す
+         二重にしゃべって聞き取れなくなるのを防ぐための札。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>スイカわり — 縁側屋</title>
+<meta name="description" content="縁側屋の遊び場。音をたよりにスイカをさがして、わる。目をつかわないで遊べるゲームです。無料・インストール不要・ブラウザだけで遊べます。">
+
+<style>
+/* ============================================================
+   スイカわり
+
+   画面の作り：
+     ・案内の言葉・歩数などは HTML の文字。読み上げソフトに届き、
+       拡大してもにじまない。
+     ・スイカの絵は canvas のドット絵（1マス＝1ドット）。
+       絵文字は使わない（機械によって絵柄が変わるため）。
+     ・操作は本物の <button>。手が震えても外さない大きさ。
+   色の方針：
+     ・弱視の方の「薄い色の字が読めない」に応えて、
+       背景は濃く、文字は明るく、差を強くとる。
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+:root {
+  /* 夏の夕方の庭。星つなぎの夜空より少しだけ明るい藍 */
+  --sora-ue:   #101a2e;
+  --sora-shita:#1c2942;
+  --ink:       #f2f4fa;   /* 文字。背景との差を強く */
+  --ink-soft:  #aab3c8;   /* 補足の文字 */
+  --waku:      #43507000; /* （未使用の名残を消すための透明） */
+  --wakusen:   #435070;   /* 枠線 */
+  --waku-akari:#7d90ba;   /* 明るい枠線 */
+  --akari:     #ffd166;   /* 差し色（灯り） */
+  --suika-mi:  #ff5a5a;   /* スイカの実の赤。当たりの色 */
+  --ha:        #3fae5a;   /* スイカの皮の緑 */
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sora-ue) 0%, var(--sora-shita) 70%, #24334f 100%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 14px 14px 0;
+}
+
+/* ---- 上の帯（もどる／題）---- */
+.obi {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.back {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 15px;
+  border-bottom: 1px solid var(--wakusen);
+  padding-bottom: 1px;
+}
+.back:hover { color: var(--ink); border-color: var(--waku-akari); }
+h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.obi .fuda {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ---- 説明の紙 ---- */
+.kami {
+  background: rgba(255,255,255,0.045);
+  border: 1px solid var(--wakusen);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 12px 0;
+  font-size: 17px;          /* 説明文も大きめ。ここから既に本番 */
+}
+.kami p { margin: 0.5em 0; }
+.kami strong { color: var(--akari); font-weight: 700; }
+
+/* ---- スイカのドット絵（飾り兼、割れたときのごほうび）---- */
+.suika-e {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 2px;
+}
+.suika-e canvas {
+  image-rendering: pixelated;   /* 整数倍で拡大してもドットの角を保つ */
+}
+
+/* ---- 大きい言葉（みんなの声が文字でも出る場所）---- */
+#koeText {
+  min-height: 3.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 26px;              /* 弱視の方に一番読んでほしい行。最大級 */
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--akari);
+  background: rgba(0,0,0,0.25);
+  border: 2px solid var(--wakusen);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+
+/* ---- 歩数などの帳面 ---- */
+.choumen {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  font-size: 17px;
+  color: var(--ink-soft);
+}
+.choumen b { color: var(--ink); font-size: 20px; }
+
+/* ---- 操作ボタン ----
+   手番制なので反射神経は要らない。その分、押し間違いだけが敵。
+   だから「大きく・離して・文字で」。 */
+.sousa {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0 10px;
+}
+button {
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  background: #2a3855;
+  border: 2px solid var(--waku-akari);
+  border-radius: 14px;
+  min-height: 72px;             /* 指でも、震える手でも外さない高さ */
+  padding: 8px 10px;
+  cursor: pointer;
+  touch-action: manipulation;   /* 二度押しで画面が拡大してしまうのを防ぐ */
+  line-height: 1.4;
+}
+button:active { background: #38497000; background: #384970; }
+button:disabled { opacity: 0.35; cursor: default; }
+button:focus-visible { outline: 3px solid var(--akari); outline-offset: 2px; }
+
+/* わるボタンだけは主役。色でも大きさでも迷わせない */
+#btnWaru {
+  grid-column: 1 / -1;
+  min-height: 84px;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  background: #7a2e2e;
+  border-color: #d97b7b;
+}
+#btnWaru:active { background: #944040; }
+
+/* 補助ボタン（おしえて・もういちど）は控えめに */
+.hojo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.hojo button { min-height: 58px; font-size: 17px; font-weight: 400; }
+
+/* あそぶ（開始）ボタン */
+#btnStart {
+  width: 100%;
+  min-height: 84px;
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  background: #2e5c3a;
+  border-color: #6fbc85;
+}
+#btnStart:active { background: #3a7049; }
+
+/* ---- 設定の札 ---- */
+.settei {
+  border-top: 1px solid var(--wakusen);
+  margin-top: 14px;
+  padding-top: 12px;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.settei .gyo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.settei button {
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 400;
+  padding: 6px 16px;
+}
+
+/* こたえの地図（付きそいの人・確かめ用。既定は閉じている） */
+#kotaeArea { display: none; justify-content: center; margin: 10px 0; }
+#kotaeArea.miseru { display: flex; }
+#kotaeArea canvas {
+  border: 1px solid var(--wakusen);
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
+
+/* ---- あそびかた・足元 ---- */
+.asobikata {
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin: 18px 0;
+}
+.asobikata h2 { font-size: 17px; color: var(--ink); margin: 0 0 6px; }
+.asobikata ul { margin: 6px 0; padding-left: 1.4em; }
+.asobikata li { margin: 4px 0; }
+
+footer {
+  border-top: 1px solid var(--wakusen);
+  margin-top: 8px;
+  padding: 16px 14px 26px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.9;
+}
+footer a { color: var(--ink-soft); }
+
+/* 動きを止めたい人へ：飾りのゆれを全部止める（掟の五） */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* 当たったときだけ、灯りの色がひと呼吸ゆれる（点滅はしない） */
+@keyframes pakan {
+  0%   { background: rgba(255, 90, 90, 0.35); }
+  100% { background: rgba(0,0,0,0.25); }
+}
+#koeText.pakan { animation: pakan 1.2s ease-out 1; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="obi">
+    <a class="back" href="../">← あそびば</a>
+    <a class="back" href="../../oto/">← 音の縁側</a>
+    <h1>スイカわり</h1>
+    <span class="fuda">目をつかわないで あそべます</span>
+  </div>
+
+  <!-- スイカのドット絵。ふだんは丸のまま、割れたら割れた絵に変わる -->
+  <div class="suika-e"><canvas id="suikaCanvas" width="160" height="110" aria-hidden="true"></canvas></div>
+
+  <!-- ====== 玄関（はじめる前の説明） ====== -->
+  <div class="kami" id="genkan">
+    <p><strong>音をたよりに、スイカをさがして、わる遊び</strong>です。</p>
+    <p>スイカわりは、もともと目かくしでやる遊びです。
+       だからこのゲームは、目の見える人も見えない人も、<strong>おなじルール</strong>で遊びます。</p>
+    <p>まわりのみんなが「もうちょっと みぎ！」「ちかいよ！」と声をかけてくれます。
+       その声をたよりに歩いて、ここだと思ったら、わってください。</p>
+    <p><strong>音と声が出ます。</strong>音量をたしかめてから、下の「あそぶ」を押してください。
+       いそがなくて大丈夫。時間制限はありません。</p>
+    <button id="btnStart" type="button">あそぶ（音が出ます）</button>
+  </div>
+
+  <!-- ====== 遊んでいる間の画面 ====== -->
+  <div id="asobiArea" hidden>
+
+    <!-- みんなの声。耳で聞こえるものと同じ言葉が、文字でも出る。
+         aria-live は設定「よみあげソフトにまかせる」のときだけ入れる
+         （ゲームの声と読み上げソフトが二重にしゃべるのを防ぐため） -->
+    <div id="koeText" role="status"></div>
+
+    <div class="choumen">
+      <span>あるいた <b id="hosuu">0</b> ぽ</span>
+      <span>ふった <b id="furisuu">0</b> かい</span>
+      <span id="kirokuBako" hidden>さいこう <b id="kiroku">-</b> ぽ</span>
+    </div>
+
+    <!-- こたえの地図（付きそい用）。既定は出さない -->
+    <div id="kotaeArea"><canvas id="kotaeCanvas" width="220" height="220"></canvas></div>
+
+    <div class="sousa">
+      <button id="btnHidari" type="button">← ひだりを<br>むく</button>
+      <button id="btnSusumu" type="button">↑<br>すすむ</button>
+      <button id="btnMigi"   type="button">みぎを →<br>むく</button>
+      <button id="btnWaru"   type="button">えいっ！（わる）</button>
+    </div>
+    <div class="hojo">
+      <button id="btnOshiete" type="button">もういちど おしえて</button>
+      <button id="btnMou" type="button" hidden>もういちど あそぶ</button>
+    </div>
+
+    <!-- 設定の札。遊びの外なので下に置く -->
+    <div class="settei">
+      <div class="gyo">
+        <span>こえの出どころ（読み上げソフトをお使いの方は「まかせる」へ）</span>
+        <button id="btnKoeMode" type="button" aria-live="off">ゲームのこえ</button>
+      </div>
+      <div class="gyo">
+        <span>こたえの地図（付きそいの人が見るためのもの）</span>
+        <button id="btnKotae" type="button">みない</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== あそびかた ====== -->
+  <div class="asobikata">
+    <h2>あそびかた</h2>
+    <ul>
+      <li>スイカは、どこか近くの地面にあります。場所は毎回かわります。</li>
+      <li>ボタンは4つ。「ひだりをむく」「みぎをむく」「すすむ」、そして「えいっ！（わる）」。</li>
+      <li>むきを変えたり歩いたりするたびに、みんなが声で教えてくれます。</li>
+      <li>イヤホンで聞くと、音のする方向でも分かります（なくても遊べます）。</li>
+      <li>キーボードなら、ひだり・みぎ・うえの矢印キーと、スペースキー（わる）でも遊べます。</li>
+      <li>読み上げソフト（VoiceOver・NVDAなど）でも遊べます。二重にしゃべってしまうときは、設定の「こえの出どころ」を「よみあげソフトにまかせる」にしてください。</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  スイカわりは開発中の遊びです。おかしいところがあれば
+  <a href="../../#renraku">縁側屋の連絡先</a>まで教えてください。ひとつずつ直します。<br>
+  © 2026 縁側屋 岡澤 博喜
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   スイカわり 本体
+
+   仕組みの全体像：
+     ・手番制。ボタンを押す → 体が動く → 音が鳴る → みんなの声。
+       次を考える時間はいくらでもある（時間制限を置かない）。
+     ・プレイヤーは向き（8方位）と位置を持つ。スイカは毎回
+       ちがう場所。声は「向きのずれ」と「距離」から作る。
+     ・音は Web Audio でその場で合成。声は speechSynthesis。
+       どちらも外から何も読み込まない（掟の一）。
+   ============================================================ */
+
+/* ---------- 道具：あちこちで使う小さな関数 ---------- */
+const $ = (id) => document.getElementById(id);
+
+/* ---------- ゲームの状態 ---------- */
+const G = {
+  x: 0, y: 0,          // 自分の位置（歩数単位。1歩＝1.0）
+  muki: 0,             // 向き。0=きた から 45度きざみで時計回り（8方位）
+  sx: 0, sy: 0,        // スイカの位置
+  hosuu: 0,            // 歩いた歩数
+  furisuu: 0,          // ふった回数
+  asonderu: false,     // いま遊んでいる最中か
+  wareta: false,       // 割れたか
+};
+
+/* 向き（8方位）を単位ベクトルへ。0=きた(0,-1)、2=ひがし(1,0) */
+function mukiVec(m) {
+  const rad = (m * 45) * Math.PI / 180;
+  return { x: Math.sin(rad), y: -Math.cos(rad) };
+}
+
+/* スイカまでの距離 */
+function kyori() {
+  return Math.hypot(G.sx - G.x, G.sy - G.y);
+}
+
+/* 自分の向きから見て、スイカが何度ずれているか（-180〜180。正=みぎ）
+   声の「みぎ！」「ひだり！」と、イヤホンの左右の音は全部ここから作る */
+function zure() {
+  const target = Math.atan2(G.sx - G.x, -(G.sy - G.y)) * 180 / Math.PI; // 北=0で時計回り
+  let d = target - G.muki * 45;
+  while (d > 180) d -= 360;
+  while (d < -180) d += 360;
+  return d;
+}
+
+/* ---------- 音：Web Audio でその場で合成 ----------
+   音源ファイルは持たない（掟の一）。全部ここで生まれる音。 */
+let AC = null;   // AudioContext。iPhoneの決まりで、ボタンを押した時に作る
+
+function otoJunbi() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+}
+
+/* ピッという音。pan(-1〜1)で左右、freqで高さ。
+   スイカが近いほど高く鳴らして「あたたかさ」を耳に伝える */
+function beep(freq, dur, pan, vol) {
+  if (!AC) return;
+  const t = AC.currentTime;
+  const osc = AC.createOscillator();
+  const g = AC.createGain();
+  const p = (AC.createStereoPanner) ? AC.createStereoPanner() : null;
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  osc.connect(g);
+  if (p) { p.pan.value = Math.max(-1, Math.min(1, pan)); g.connect(p); p.connect(AC.destination); }
+  else { g.connect(AC.destination); }  // 古い機械はパン無しで鳴らす
+  osc.start(t); osc.stop(t + dur + 0.05);
+}
+
+/* ざっという音（足音・空振り・パカーンの芯）。ノイズをこして作る */
+function zaza(dur, filterFreq, vol) {
+  if (!AC) return;
+  const t = AC.currentTime;
+  const len = Math.max(1, Math.floor(AC.sampleRate * dur));
+  const buf = AC.createBuffer(1, len, AC.sampleRate);
+  const ch = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / len); // 減衰つき
+  const src = AC.createBufferSource();
+  src.buffer = buf;
+  const f = AC.createBiquadFilter();
+  f.type = "bandpass"; f.frequency.value = filterFreq; f.Q.value = 0.8;
+  const g = AC.createGain(); g.gain.value = vol;
+  src.connect(f); f.connect(g); g.connect(AC.destination);
+  src.start(t);
+}
+
+/* 足音：草をふむ、しゃっ、という短い音 */
+function ashioto() { zaza(0.12, 900, 0.5); }
+
+/* むきを変える音：衣ずれのような、もっと短い音 */
+function kisire() { zaza(0.07, 1600, 0.25); }
+
+/* 素振りの音：ぶんっ */
+function bun() { zaza(0.18, 400, 0.7); }
+
+/* 地面をたたいた音：どすっ */
+function dosu() {
+  if (!AC) return;
+  bun();
+  beep(90, 0.25, 0, 0.5);
+}
+
+/* パカーン！：割れた音とファンファーレ。この部屋いちばんのごほうび */
+function pakan() {
+  if (!AC) return;
+  zaza(0.3, 2500, 0.9);          // パリッという殻の音
+  beep(180, 0.3, 0, 0.5);        // 実のずしっという低み
+  // ちいさなファンファーレ（ドミソド）。音源なしでも祝える
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((f, i) => {
+    setTimeout(() => { beep(f, 0.35, 0, 0.35); }, 180 + i * 130);
+  });
+}
+
+/* スイカの方角から聞こえる「案内のピッ」。
+   近いほど高く・大きく。イヤホンならずれの方向から聞こえる */
+function annaiBeep() {
+  const d = kyori();
+  const z = zure();
+  const chikasa = Math.max(0, 1 - d / 12);              // 0(遠い)〜1(近い)
+  const freq = 330 + chikasa * 550;
+  const pan = Math.sin(z * Math.PI / 180);              // ずれの向きへパン
+  beep(freq, 0.22, pan, 0.28 + chikasa * 0.25);
+  if (d <= 1.6) setTimeout(() => beep(freq * 1.2, 0.18, pan, 0.5), 240); // ほぼ真上なら二度鳴き
+}
+
+/* ---------- 声：speechSynthesis ----------
+   機械に最初から入っている読み上げの声だけを使う。
+   「よみあげソフトにまかせる」設定のときは黙る（二重しゃべり防止）。 */
+let koeMode = "game";   // "game" = ゲームのこえ / "sr" = よみあげソフトにまかせる
+let jaVoice = null;
+
+function koeJunbi() {
+  if (!("speechSynthesis" in window)) return;
+  const erabu = () => {
+    const vs = speechSynthesis.getVoices();
+    jaVoice = vs.find(v => v.lang && v.lang.startsWith("ja")) || null;
+  };
+  erabu();
+  // 声の名簿はあとから届く機械があるので、届いたらもう一度選ぶ
+  speechSynthesis.onvoiceschanged = erabu;
+}
+
+/* しゃべる＋画面に出す。耳と目に同じ言葉を出すのがこの家の作法 */
+function koe(text) {
+  const box = $("koeText");
+  box.textContent = text;
+  if (koeMode === "game" && "speechSynthesis" in window) {
+    speechSynthesis.cancel();               // 前の言葉が残っていたら譲ってもらう
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ja-JP";
+    if (jaVoice) u.voice = jaVoice;
+    u.rate = 1.05;
+    speechSynthesis.speak(u);
+  }
+}
+
+/* ---------- みんなの声を作る（このゲームの心臓） ----------
+   向きのずれと距離から、スイカわりらしい掛け声を組み立てる。
+   条件は「遠い方から順に」ではなく「言われて嬉しい順」に選ぶ。 */
+function kakegoe() {
+  const d = kyori();
+  const z = zure();
+  const az = Math.abs(z);
+
+  // まず向き。まっすぐ向けているかどうか
+  let mukiKoe;
+  if (az <= 22.5)      mukiKoe = "そのまま まっすぐ！";
+  else if (az >= 135)  mukiKoe = "うしろ！ぐるっと まわって！";
+  else if (z > 0)      mukiKoe = (az >= 68) ? "うんと みぎ！" : "もうちょっと みぎ！";
+  else                 mukiKoe = (az >= 68) ? "うんと ひだり！" : "もうちょっと ひだり！";
+
+  // つぎに距離。近いときは向きより先に「そこ！」と言いたい
+  if (d <= 1.2) return (az <= 45) ? "そこ！そこだ！わって！" : "あしもと！むきを かえて…" + mukiKoe;
+  if (d <= 2.5) return mukiKoe + " ちかいよ、ちかい！";
+  if (d <= 5)   return mukiKoe + " そのちょうし！";
+  return mukiKoe + " まだ とおいよ。";
+}
+
+/* ---------- 画面：ドット絵 ----------
+   絵文字は使わない（掟）。スイカは点をひとつずつ打って描く。 */
+const IRO = {
+  G: "#1e6b33",  // 皮のこい緑
+  g: "#3fae5a",  // 皮のあかるい緑
+  s: "#144d24",  // しま
+  w: "#bfe8c9",  // つや
+  R: "#ff5a5a",  // 実の赤
+  r: "#e04848",  // 実のかげ
+  B: "#2b1c14",  // たね
+};
+
+/* まるのままのスイカ（16×11）。
+   明るい緑の体に、こい縦じま二本と、左上のつや。 */
+const SUIKA_MARU = [
+  "....GGGGGGGG....",
+  "..GGgsgggsggGG..",
+  ".GGgwsgggsgggGG.",
+  ".GggwsgggsggggG.",
+  "GGgggsgggsggggGG",
+  "GGgggsgggsggggGG",
+  "GGgggsgggsggggGG",
+  ".GgggsgggsggggG.",
+  ".GGggsgggsgggGG.",
+  "..GGgsgggsggGG..",
+  "....GGGGGGGG....",
+];
+
+/* ぱっかり割れたスイカ（16×11）。赤い実とたねが見える */
+const SUIKA_WARETA = [
+  "................",
+  "..RRRRR..RRRRR..",
+  ".RRBRRR..RRBRRR.",
+  ".RRRRBR..RBRRRR.",
+  "GgRRRRR..RRRRRgG",
+  "GgrRRRR..RRRRrgG",
+  "GGgrrrR..Rrrrggg",
+  ".GGggggGGggggGG.",
+  ".GGsGGgggggGsGG.",
+  "..GGGGGGGGGGGG..",
+  "................",
+];
+
+function egaku(rows) {
+  const cv = $("suikaCanvas");
+  const ctx = cv.getContext("2d");
+  const scale = 10;                       // 1ドット＝10px。整数倍で拡大（にじませない）
+  cv.width = rows[0].length * scale;
+  cv.height = rows.length * scale;
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  rows.forEach((row, y) => {
+    [...row].forEach((ch, x) => {
+      if (ch === ".") return;
+      ctx.fillStyle = IRO[ch] || "#ffffff";
+      ctx.fillRect(x * scale, y * scale, scale, scale);
+    });
+  });
+}
+
+/* こたえの地図（付きそい用）。上がきた。自分=矢印、スイカ=赤い丸 */
+function kotaeEgaku() {
+  if (!$("kotaeArea").classList.contains("miseru")) return;
+  const cv = $("kotaeCanvas");
+  const ctx = cv.getContext("2d");
+  const w = cv.width, h = cv.height;
+  ctx.fillStyle = "#0d1626";
+  ctx.fillRect(0, 0, w, h);
+  const px = (v) => w / 2 + v * 9;   // 1歩=9px。中央が原点
+  // スイカ
+  ctx.fillStyle = IRO.R;
+  ctx.beginPath(); ctx.arc(px(G.sx), px(G.sy), 6, 0, Math.PI * 2); ctx.fill();
+  // 自分（向きつきの三角）
+  const v = mukiVec(G.muki);
+  const mx = px(G.x), my = px(G.y);
+  ctx.fillStyle = "#ffd166";
+  ctx.beginPath();
+  ctx.moveTo(mx + v.x * 10, my + v.y * 10);
+  ctx.lineTo(mx - v.y * 6 - v.x * 5, my + v.x * 6 - v.y * 5);
+  ctx.lineTo(mx + v.y * 6 - v.x * 5, my - v.x * 6 - v.y * 5);
+  ctx.closePath(); ctx.fill();
+}
+
+/* ---------- 帳面の書き替え ---------- */
+function choumen() {
+  $("hosuu").textContent = G.hosuu;
+  $("furisuu").textContent = G.furisuu;
+}
+
+/* ---------- 一局のはじまり ---------- */
+function hajimeru() {
+  G.x = 0; G.y = 0;
+  G.muki = Math.floor(Math.random() * 8);          // 向きも毎回ばらばら
+  // スイカは5〜9歩はなれた、どこかの方角へ
+  const kaku = Math.random() * Math.PI * 2;
+  const tooSa = 5 + Math.random() * 4;
+  G.sx = Math.sin(kaku) * tooSa;
+  G.sy = -Math.cos(kaku) * tooSa;
+  G.hosuu = 0; G.furisuu = 0;
+  G.asonderu = true; G.wareta = false;
+  egaku(SUIKA_MARU);
+  choumen();
+  kotaeEgaku();
+  $("btnMou").hidden = true;
+  botanKirikae(true);
+  $("koeText").classList.remove("pakan");
+  koe("スイカわり、はじめるよ！ " + kakegoe());
+  setTimeout(annaiBeep, 900);
+}
+
+/* 遊び中のボタンの生き死に。割れたら休ませる */
+function botanKirikae(ikiru) {
+  ["btnHidari", "btnMigi", "btnSusumu", "btnWaru", "btnOshiete"].forEach(id => {
+    $(id).disabled = !ikiru;
+  });
+}
+
+/* ---------- それぞれの手 ---------- */
+function teMuki(migi) {
+  if (!G.asonderu) return;
+  otoJunbi();
+  G.muki = (G.muki + (migi ? 1 : -1) + 8) % 8;
+  kisire();
+  kotaeEgaku();
+  koe(kakegoe());
+  setTimeout(annaiBeep, 700);
+}
+
+function teSusumu() {
+  if (!G.asonderu) return;
+  otoJunbi();
+  const mae = kyori();
+  const v = mukiVec(G.muki);
+  G.x += v.x; G.y += v.y;
+  G.hosuu++;
+  ashioto();
+  choumen();
+  kotaeEgaku();
+  const ato = kyori();
+  // とおざかったときは、掛け声の前にひとこと入れる。
+  // 黙って進ませ続けるのは、教えないのと同じだから
+  const hitokoto = (ato > mae + 0.2) ? "あっ、とおくなった！ " : "";
+  koe(hitokoto + kakegoe());
+  setTimeout(annaiBeep, 700);
+}
+
+function teWaru() {
+  if (!G.asonderu) return;
+  otoJunbi();
+  G.furisuu++;
+  choumen();
+  const d = kyori();
+  if (d <= 1.2) {
+    // みごと！
+    G.asonderu = false; G.wareta = true;
+    pakan();
+    egaku(SUIKA_WARETA);
+    $("koeText").classList.add("pakan");
+    botanKirikae(false);
+    $("btnMou").hidden = false;
+    kirokuKakikae();
+    koe("パッカーン！ みごと！ " + G.hosuu + "ぽ、" + G.furisuu + "ふりで われました！ みんなで たべよう！");
+  } else if (d <= 2.5) {
+    bun();
+    setTimeout(dosu, 150);
+    koe("おしい！ かすった！ " + kakegoe());
+    setTimeout(annaiBeep, 1200);
+  } else {
+    bun();
+    setTimeout(dosu, 150);
+    koe("ぶんっ…じめんを たたいた！ " + kakegoe());
+    setTimeout(annaiBeep, 1200);
+  }
+}
+
+function teOshiete() {
+  if (!G.asonderu) return;
+  otoJunbi();
+  koe(kakegoe());
+  setTimeout(annaiBeep, 700);
+}
+
+/* ---------- さいこう記録（この機械の中だけに残す。外へは送らない） ---------- */
+function kirokuKakikae() {
+  try {
+    const key = "engawaya-suikawari-kiroku";
+    const ima = G.hosuu;
+    const mukashi = parseInt(localStorage.getItem(key) || "", 10);
+    if (!Number.isFinite(mukashi) || ima < mukashi) localStorage.setItem(key, String(ima));
+    const saikou = localStorage.getItem(key);
+    if (saikou) { $("kiroku").textContent = saikou; $("kirokuBako").hidden = false; }
+  } catch (e) { /* プライベートモード等で使えない機械では、記録なしで遊べればよい */ }
+}
+
+/* ---------- 設定の札 ---------- */
+function koeModeKirikae() {
+  const box = $("koeText");
+  if (koeMode === "game") {
+    koeMode = "sr";
+    $("btnKoeMode").textContent = "よみあげソフトにまかせる";
+    // ゲームは黙り、文字を読み上げソフトへ渡す
+    box.setAttribute("aria-live", "assertive");
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+  } else {
+    koeMode = "game";
+    $("btnKoeMode").textContent = "ゲームのこえ";
+    box.removeAttribute("aria-live");
+  }
+}
+
+function kotaeKirikae() {
+  const area = $("kotaeArea");
+  const mise = !area.classList.contains("miseru");
+  area.classList.toggle("miseru", mise);
+  $("btnKotae").textContent = mise ? "みている" : "みない";
+  if (mise) kotaeEgaku();
+}
+
+/* ---------- 配線 ---------- */
+$("btnStart").addEventListener("click", () => {
+  otoJunbi();          // iPhoneの決まり：音はボタンを押した手の中でしか目を覚まさない
+  koeJunbi();
+  $("genkan").hidden = true;
+  $("asobiArea").hidden = false;
+  hajimeru();
+});
+$("btnHidari").addEventListener("click", () => teMuki(false));
+$("btnMigi").addEventListener("click", () => teMuki(true));
+$("btnSusumu").addEventListener("click", teSusumu);
+$("btnWaru").addEventListener("click", teWaru);
+$("btnOshiete").addEventListener("click", teOshiete);
+$("btnMou").addEventListener("click", hajimeru);
+$("btnKoeMode").addEventListener("click", koeModeKirikae);
+$("btnKotae").addEventListener("click", kotaeKirikae);
+
+/* キーボード。矢印とスペースだけの、覚えなくていい割り当て。
+   ボタンに焦点があるときのスペースは二重発火するので、こちらで引き受けて止める */
+document.addEventListener("keydown", (e) => {
+  if (e.repeat) return;
+  if ($("asobiArea").hidden) return;
+  switch (e.key) {
+    case "ArrowLeft":  e.preventDefault(); teMuki(false); break;
+    case "ArrowRight": e.preventDefault(); teMuki(true);  break;
+    case "ArrowUp":    e.preventDefault(); teSusumu();    break;
+    case " ":          e.preventDefault(); if (G.asonderu) teWaru(); break;
+  }
+});
+
+/* 玄関のスイカを出しておく */
+egaku(SUIKA_MARU);
+</script>
+</body>
+</html>

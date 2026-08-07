@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<!--
+    ┌────────────────────────────────────────────────┐
+    │                                                │
+    │                 棟   札                        │
+    │                                                │
+    │      上棟   二〇二六年 八月 八日               │
+    │                                                │
+    │      施主   岡 澤 博 喜                        │
+    │      大工   Claude （蔵人）                    │
+    │                                                │
+    │      この部屋を建てた理由                      │
+    │        目の見えない方・見えにくい方のための    │
+    │        「わかりやすい入り口」を、と施主。      │
+    │        縁側屋の母屋は目で見る作りが多いので、  │
+    │        耳と大きな字で全部すませられる玄関を    │
+    │        別に一枚建てた。                        │
+    │        ただし別の店ではない。おなじ縁側屋。    │
+    │                                                │
+    └────────────────────────────────────────────────┘
+
+    ── この部屋の掟 ──────────────────────────────
+
+    一． 外から何も読み込まない。母屋と同じ。
+         この一枚だけで完結する。開いた瞬間に出る。
+
+    二． 絵文字を使わない。飾りより先に、読み上げソフトが
+         すらすら読めることと、大きくて濃い字。
+
+    三． 読み上げソフトが最初のお客さん。
+         見出しの順番・リンクの文言・ボタンの名前は、
+         耳で聞いて意味が通ることを最優先で書く。
+         「こちら」というリンクは作らない（どこへ行くのか
+         聞いただけで分かるように、行き先の名前で書く）。
+
+    四． 急かさない。時間制限・自動で動くもの・点滅は置かない。
+         （当事者調査で「入力の時間制限でタイムアウトする」が
+         困りごとの定番だったことへの、まっすぐな答え）
+
+    五． 色と字の大きさは、読む人が選べる。
+         黒地に白い字（まぶしさがつらい方へ・既定）と
+         白地に黒い字を、ボタンひとつで替えられる。
+         字の大きさも二段階。選んだ結果はこの機械の中にだけ
+         覚えておく（外へは送らない）。
+
+    ── ご要望の受け口について ──
+
+    仕組みは投書箱（koe/）と同じ。サーバーを持たず、
+    メールアプリを開いて info@engawaya.com へ届く。
+    受け取るのは施主一人。機械に言葉を判定させない。
+
+    声で書く口は、ブラウザに入っている音声認識
+    （SpeechRecognition）を使う。外から部品は読み込まないが、
+    声の読み取り自体はブラウザの仕組み（機械によっては
+    作っている会社のサーバー）を通る。それはページの表にも
+    正直に書いた。使えない機械ではボタンごと引っ込めて、
+    スマホのキーボードのマイクを案内する。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>音の縁側 — 縁側屋</title>
+<meta name="description" content="縁側屋の、目をつかわなくてもつかえる入り口。耳と大きな字で遊べるゲームと、ご要望を声でもキーボードでも送れる受付があります。無料・登録不要。">
+
+<style>
+/* ============================================================
+   音の縁側
+
+   文字がこのページの主役。だから：
+     ・字は大きく（既定20px・「もっと大きく」で26px）
+     ・色の差は強く（黒地に白・白地に黒。薄い字は一字も置かない）
+     ・押す場所は大きく（72px。手が震えても外さない）
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 字の大きさは html の font-size 一箇所で決め、あとは rem で連動させる。
+   「字をもっと大きく」はここを差し替えるだけで全身に効く */
+html { font-size: 20px; }
+html.ookii { font-size: 26px; }
+
+/* 色。既定は黒地に白（まぶしさがつらい方が多いので）。
+   .shiroi で白地に黒へ replace。どちらも差は最大級にとる */
+:root {
+  --kami: #10151f;      /* 地の色 */
+  --ink:  #f5f7fb;      /* 字の色 */
+  --ink-yawaraka: #c9d0de; /* 補足。それでも十分濃く */
+  --sen:  #4a5670;      /* 罫線 */
+  --akari:#ffd166;      /* 灯り（見出しの下線・焦点の枠） */
+  --botan:#2a3855;      /* ボタンの地 */
+  --botan-sen:#8296c2;  /* ボタンの枠 */
+}
+html.shiroi {
+  --kami: #ffffff;
+  --ink:  #1a1a1a;
+  --ink-yawaraka: #444444;
+  --sen:  #999999;
+  --akari:#8a5a00;
+  --botan:#f0f0f0;
+  --botan-sen:#555555;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--kami);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 2;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.4rem 1rem 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  letter-spacing: 0.14em;
+  margin: 0.4em 0 0.1em;
+}
+.fukudai {
+  color: var(--ink-yawaraka);
+  font-size: 0.85rem;
+  margin: 0 0 1.2em;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 1.6em 0 0.4em;
+  padding-bottom: 0.15em;
+  border-bottom: 3px solid var(--akari);
+}
+
+p { margin: 0.6em 0; }
+.yawaraka { color: var(--ink-yawaraka); font-size: 0.85rem; }
+
+/* ---- 押すもの全般 ---- */
+button, .oshiro {
+  display: block;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--botan);
+  border: 2px solid var(--botan-sen);
+  border-radius: 14px;
+  min-height: 72px;
+  padding: 0.6em 1em;
+  margin: 0.6em 0;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.6;
+  touch-action: manipulation;
+}
+.oshiro {  /* リンクをボタンの見た目で。読み上げには「リンク」と伝わる */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button:focus-visible, .oshiro:focus-visible, textarea:focus-visible {
+  outline: 4px solid var(--akari);
+  outline-offset: 2px;
+}
+.oshiro small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--ink-yawaraka);
+}
+.oshiro span { display: block; }
+
+/* 設定の小さめボタンは二つ横に並べる（それでも高さは保つ） */
+.settei-narabi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6em;
+}
+.settei-narabi button { font-weight: 400; font-size: 0.9rem; margin: 0; }
+
+/* ---- 書く枠 ---- */
+textarea {
+  width: 100%;
+  min-height: 8em;
+  font-family: inherit;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--ink);
+  background: var(--kami);
+  border: 2px solid var(--botan-sen);
+  border-radius: 12px;
+  padding: 0.7em;
+  resize: vertical;
+}
+.jisuu {
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--ink-yawaraka);
+}
+
+/* 声の状態を知らせる行。aria-live で読み上げにも届く */
+#koeJoutai {
+  min-height: 2em;
+  font-size: 0.9rem;
+  color: var(--akari);
+  font-weight: 700;
+}
+
+footer {
+  border-top: 1px solid var(--sen);
+  margin-top: 2rem;
+  padding: 1rem 1rem 2rem;
+  font-size: 0.75rem;
+  color: var(--ink-yawaraka);
+  text-align: center;
+  line-height: 2;
+}
+footer a { color: var(--ink-yawaraka); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <h1>音の縁側</h1>
+  <p class="fukudai">縁側屋（えんがわや）の、目をつかわなくても つかえる入り口</p>
+
+  <p>ようこそ。ここは、無料の道具と遊びを置いてある「縁側屋」の玄関のひとつです。
+     このページは、<strong>読み上げソフトと、大きな字</strong>だけで全部つかえるように作ってあります。</p>
+  <p>登録もお金も要りません。急かす仕掛け（時間制限・勝手に動くもの）は置いていません。
+     ゆっくりしていってください。</p>
+
+  <!-- ====== 見え方をえらぶ ====== -->
+  <h2>見え方をえらぶ</h2>
+  <p class="yawaraka">選んだ結果は、この機械の中にだけ覚えておきます。外へは送りません。</p>
+  <div class="settei-narabi">
+    <button id="btnIro" type="button">白い紙に 黒い字にする</button>
+    <button id="btnJi" type="button">字を もっと大きくする</button>
+  </div>
+
+  <!-- ====== あそぶ ====== -->
+  <h2>あそぶ</h2>
+  <p>音をたよりにスイカをさがして、わる遊びです。
+     まわりのみんなが「もうちょっと みぎ！」と声をかけてくれます。
+     スイカわりは もともと目かくしの遊びなので、見える人も見えない人も、おなじルールです。</p>
+  <a class="oshiro" href="../asobiba/suikawari/">
+    <span>ゲーム「スイカわり」であそぶ<small>音と声が出ます。音量をたしかめてから どうぞ</small></span>
+  </a>
+
+  <!-- ====== ご要望の受付 ====== -->
+  <h2>ほしい道具・お困りごとを おしえてください</h2>
+  <p>「こんな道具があったら助かる」「ここが不便だった」を、下の枠に書いて送ってください。
+     <strong>声でも、キーボードでも書けます。</strong>
+     読むのは作っている本人ひとりです。作れるものから、ひとつずつ作ります。</p>
+  <p class="yawaraka">必ずお返事ができるとは限りません（作っているのは一人なので）。
+     それでも、いただいた言葉はぜんぶ読みます。</p>
+
+  <label for="honbun" style="font-weight:700;">ご要望を書く枠</label>
+  <textarea id="honbun" placeholder="ここに書いてください。一行でもかまいません。"></textarea>
+  <div class="jisuu"><span id="count">0 字</span></div>
+
+  <button id="btnKoe" type="button">声で書く（マイクをつかいます）</button>
+  <div id="koeJoutai" role="status" aria-live="polite"></div>
+  <p class="yawaraka" id="koeSetsumei">声の読み取りは、お使いのブラウザに入っている仕組みを使います。
+     機械によっては、声がブラウザを作った会社の読み取りサービスを通ることがあります。</p>
+
+  <button id="btnOkuru" type="button">書いたものを送る（メールアプリが開きます）</button>
+  <p class="yawaraka" id="okuruNote">押すと、お使いのメールアプリが開きます。そこでもう一度読んでから送れます。
+     送信元のメールアドレスは、受け取る本人に見えます。</p>
+  <button id="btnCopy" type="button">送れないときは、これを押して文をコピーする</button>
+  <p class="yawaraka">コピーした文は、ご自分のメールで
+     <span class="renraku">info アットマーク engawaya.com</span> へ送ってください。</p>
+
+  <!-- ====== 母屋へ ====== -->
+  <h2>縁側屋の ほかの部屋</h2>
+  <p>縁側屋には、ほかにも無料の道具があります。図面をかく道具、タクシーの計算の道具など。
+     目で見る作りのページが多いですが、同じ家です。</p>
+  <a class="oshiro" href="../">
+    <span>縁側屋の玄関（母屋）へ行く</span>
+  </a>
+
+</div>
+
+<footer>
+  ここは開発中の場所です。おかしいところがあれば、上の受付から教えてください。ひとつずつ直します。<br>
+  © 2026 縁側屋 岡澤 博喜
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   音の縁側の中身。
+   ①見え方の記憶 ②声で書く ③メールで送る の三つだけ。
+   ============================================================ */
+var $ = function (id) { return document.getElementById(id); };
+
+/* ---------- ① 見え方（色・字の大きさ） ----------
+   選んだ結果は localStorage にだけ残す。外へは送らない。 */
+(function () {
+  var KEY = "engawaya-oto-mikata";
+  var oboe = {};
+  try { oboe = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { oboe = {}; }
+
+  function utsusu() {
+    document.documentElement.classList.toggle("shiroi", !!oboe.shiroi);
+    document.documentElement.classList.toggle("ookii", !!oboe.ookii);
+    /* ボタンの文言は「押すとどうなるか」を書く。いまの状態ではなく。
+       読み上げで聞いたとき、次の一手が分かる方が親切だから */
+    $("btnIro").textContent = oboe.shiroi ? "黒い紙に 白い字にもどす" : "白い紙に 黒い字にする";
+    $("btnJi").textContent  = oboe.ookii  ? "字を もとの大きさにもどす" : "字を もっと大きくする";
+  }
+  function nokosu() {
+    try { localStorage.setItem(KEY, JSON.stringify(oboe)); } catch (e) { /* 覚えられない機械でも使える */ }
+  }
+  $("btnIro").addEventListener("click", function () { oboe.shiroi = !oboe.shiroi; nokosu(); utsusu(); });
+  $("btnJi").addEventListener("click",  function () { oboe.ookii  = !oboe.ookii;  nokosu(); utsusu(); });
+  utsusu();
+})();
+
+/* ---------- ② 声で書く ----------
+   ブラウザ内蔵の SpeechRecognition を使う。外から部品は読み込まない。
+   使えない機械ではボタンを引っ込めて、代わりの道を文字で案内する
+   （締め出さない。道具が無いことを本人のせいにしない）。 */
+(function () {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var btn = $("btnKoe");
+  var joutai = $("koeJoutai");
+  var honbun = $("honbun");
+
+  if (!SR) {
+    btn.hidden = true;
+    $("koeSetsumei").textContent =
+      "この機械のブラウザには、声の読み取りが入っていないようです。" +
+      "スマホなら、キーボードのマイクのボタンでも声で書けます。";
+    return;
+  }
+
+  var rec = null;
+  var kiiteru = false;
+
+  function tsukuru() {
+    rec = new SR();
+    rec.lang = "ja-JP";
+    rec.continuous = true;       /* 一息ごとに切れると話しにくいので、止めるまで聞く */
+    rec.interimResults = false;  /* 確定した言葉だけを枠へ入れる（途中経過で枠が暴れないように） */
+
+    rec.onresult = function (e) {
+      var tashita = "";
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) tashita += e.results[i][0].transcript;
+      }
+      if (tashita) {
+        /* 前に書いた文を消さない。声は「続きを書く」道具 */
+        honbun.value = (honbun.value ? honbun.value + " " : "") + tashita.trim();
+        honbun.dispatchEvent(new Event("input"));
+      }
+    };
+    rec.onerror = function (e) {
+      kiiteru = false;
+      naosu();
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+        joutai.textContent = "マイクの許可がありませんでした。ブラウザの設定でマイクを許可すると使えます。";
+      } else if (e.error === "no-speech") {
+        joutai.textContent = "声が聞こえませんでした。もう一度ボタンを押して、話してみてください。";
+      } else {
+        joutai.textContent = "声の読み取りが止まりました。もう一度ボタンを押してください。";
+      }
+    };
+    rec.onend = function () {
+      /* 機械の都合で勝手に終わることがある。聞いている最中なら聞き直す */
+      if (kiiteru) { try { rec.start(); } catch (e) { kiiteru = false; naosu(); } }
+    };
+  }
+
+  function naosu() {
+    btn.textContent = kiiteru ? "聞いています…（押すと止まります）" : "声で書く（マイクをつかいます）";
+  }
+
+  btn.addEventListener("click", function () {
+    if (!rec) tsukuru();
+    if (kiiteru) {
+      kiiteru = false;
+      rec.stop();
+      joutai.textContent = "聞くのを止めました。書いた文は下の枠にあります。";
+    } else {
+      kiiteru = true;
+      try {
+        rec.start();
+        joutai.textContent = "聞いています。ゆっくり話してください。話し終わったら、もう一度このボタンを押してください。";
+      } catch (e) {
+        kiiteru = false;
+        joutai.textContent = "声の読み取りを始められませんでした。もう一度押してみてください。";
+      }
+    }
+    naosu();
+  });
+})();
+
+/* ---------- ③ 送る ----------
+   投書箱（koe/）と同じ作法。サーバーは持たず、メールアプリを開く。
+   宛先は生で書かない（迷惑メール業者のロボット対策）。 */
+(function () {
+  var na = "info", ie = "engawaya.com";
+  var atmark = na + "@" + ie;
+
+  /* 連絡先の字を、押せるリンクへ組み直す */
+  var list = document.querySelectorAll(".renraku");
+  for (var k = 0; k < list.length; k++) {
+    var a = document.createElement("a");
+    a.href = "mailto:" + atmark + "?subject=" + encodeURIComponent("音の縁側から");
+    a.textContent = atmark;
+    list[k].textContent = "";
+    list[k].appendChild(a);
+  }
+
+  var honbun = $("honbun");
+  var count = $("count");
+  var LIMIT = 1000;
+
+  honbun.addEventListener("input", function () {
+    var n = honbun.value.trim().length;
+    count.textContent = n + " 字";
+    $("okuruNote").textContent = (n > LIMIT)
+      ? "長い文はメールアプリが途中で切ることがあります。心配なときは下のコピーを使って、ご自分のメールに貼ってください。"
+      : "押すと、お使いのメールアプリが開きます。そこでもう一度読んでから送れます。送信元のメールアドレスは、受け取る本人に見えます。";
+  });
+
+  $("btnOkuru").addEventListener("click", function () {
+    if (!honbun.value.trim()) {
+      /* 空のまま押されたら、黙らずに案内して枠へ連れて行く（投書箱で学んだ作法） */
+      $("okuruNote").textContent = "さきに、上の枠へ一行だけ書いてください。それだけで送れます。";
+      honbun.focus();
+      honbun.scrollIntoView({ block: "center", behavior: "smooth" });
+      return;
+    }
+    location.href = "mailto:" + atmark
+      + "?subject=" + encodeURIComponent("【音の縁側】ご要望・お困りごと")
+      + "&body=" + encodeURIComponent(honbun.value.trim());
+  });
+
+  $("btnCopy").addEventListener("click", function () {
+    var bun = "宛先: " + atmark + "\n件名: 【音の縁側】ご要望・お困りごと\n\n" + honbun.value.trim();
+    var owari = function (deka) {
+      $("okuruNote").textContent = deka
+        ? "コピーしました。ご自分のメールに貼って送ってください。宛先も一緒に入っています。"
+        : "コピーができませんでした。お手数ですが、枠の文を長押しなどで選んでコピーしてください。";
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(bun).then(function () { owari(true); }, function () { owari(false); });
+    } else { owari(false); }
+  });
+})();
+</script>
+</body>
+</html>
