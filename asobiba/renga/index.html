@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<!--
+    ┌────────────────────────────────────────────────┐
+    │                                                │
+    │                 棟   札                        │
+    │                                                │
+    │      上棟   二〇二六年 八月 八日               │
+    │                                                │
+    │      施主   岡 澤 博 喜                        │
+    │      大工   Claude （蔵人）                    │
+    │                                                │
+    │      この部屋を建てた理由                      │
+    │        スイカわりと同じ日に、施主が言った。    │
+    │        「ハンディキャップのかたにも、          │
+    │          是非色々遊んでいただきたい」。        │
+    │                                                │
+    │        ブロック崩しは目で追う遊びだが、        │
+    │        見えにくくなった人が締め出される        │
+    │        いわれはない。玉を大きく、動きを        │
+    │        ゆっくり、色の差を強く、音を添えれば    │
+    │        同じ気持ちよさが届く。                  │
+    │                                                │
+    │        れんがの七色は、二〇二一年に施主が      │
+    │        ひとりで作った落ちもの Ochi-Gee の      │
+    │        駒の色。家の血筋の色で建てた。          │
+    │                                                │
+    └────────────────────────────────────────────────┘
+
+    ── この部屋の掟（遊び場共通） ──────────────────
+
+    一． 外から何も読み込まない。絵も音もこの一枚の中で作る。
+    二． 借り物を置かない。
+    三． 押すだけで遊べる。大きなボタン。キーボードは有っても無くても。
+    四． 音は黙って出さない。既定は消音。札を押した人にだけ鳴る。
+    五． 目が疲れる光を出さない。点滅で殴らない。
+
+    ── この部屋だけの決めごと ──
+
+    ・急かさない。玉を落としても終わりにしない（落とした回数を
+      数えるだけ）。「ひとやすみ」でいつでも止まれる。
+      速さは三段階、遊びながらいつでも替えられる。
+    ・音は飾りではなく補助。玉が板に当たる音・れんがの割れる音は
+      左右（パン）と高さ（音程）で場所を伝える。ここを最初から
+      仕込んでおくのは、いつか建てる「音だけモード」の土台になる。
+    ・全盲の方には、この一段目はまだ届かない（玉を目で追う遊びの
+      ままだから）。それは隠さずページにも書く。音だけで遊べる
+      「スイカわり」が隣にある。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>れんがくずし — 縁側屋</title>
+<meta name="description" content="縁側屋の遊び場。ゆっくり・大きい・くっきりのブロック崩し。見えにくい方も遊びやすいように、玉は大きく、速さは選べて、音でも場所が分かります。無料・インストール不要。">
+
+<style>
+/* ============================================================
+   れんがくずし
+
+   見えにくい方が最初のお客さん。だから：
+     ・玉もれんがも板も、ふつうのブロック崩しよりずっと大きい
+     ・背景は濃紺、動くものは明るい色。差を最大にとる
+     ・速さは三段階。既定は「ゆっくり」
+     ・落としても罰しない。数えるだけ
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+:root {
+  --sora-ue:   #0d1424;
+  --sora-shita:#1a2338;
+  --ink:       #f2f4fa;
+  --ink-soft:  #aab3c8;
+  --wakusen:   #435070;
+  --waku-akari:#7d90ba;
+  --akari:     #ffd166;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--sora-ue) 0%, var(--sora-shita) 70%, #24334f 100%);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 14px 14px 0;
+}
+
+.obi {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.back {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 15px;
+  border-bottom: 1px solid var(--wakusen);
+  padding-bottom: 1px;
+}
+.back:hover { color: var(--ink); border-color: var(--waku-akari); }
+h1 { margin: 0; font-size: 26px; letter-spacing: 0.12em; font-weight: 700; }
+.obi .fuda { font-size: 13px; color: var(--ink-soft); }
+
+.kami {
+  background: rgba(255,255,255,0.045);
+  border: 1px solid var(--wakusen);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 12px 0;
+  font-size: 17px;
+}
+.kami p { margin: 0.5em 0; }
+.kami strong { color: var(--akari); font-weight: 700; }
+
+/* ---- 帳面（のこり・おとした）---- */
+.choumen {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  font-size: 18px;
+  color: var(--ink-soft);
+  margin: 8px 0 4px;
+}
+.choumen b { color: var(--ink); font-size: 22px; }
+
+/* ---- 盤（canvas）---- */
+.ban {
+  display: flex;
+  justify-content: center;
+  margin: 6px 0;
+}
+canvas#ban {
+  width: 100%;
+  max-width: 480px;
+  border: 2px solid var(--wakusen);
+  border-radius: 10px;
+  background: #0a101d;
+  touch-action: none;   /* 指でなぞって板を動かすので、画面スクロールに取られない */
+  display: block;
+}
+
+/* ---- 大きな言葉（クリアなどの知らせ）---- */
+#shirase {
+  min-height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--akari);
+  line-height: 1.5;
+  margin: 4px 0;
+}
+
+/* ---- 操作ボタン ---- */
+button {
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  background: #2a3855;
+  border: 2px solid var(--waku-akari);
+  border-radius: 14px;
+  min-height: 72px;
+  padding: 8px 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  line-height: 1.4;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button:active { background: #384970; }
+button:disabled { opacity: 0.35; cursor: default; }
+button:focus-visible { outline: 3px solid var(--akari); outline-offset: 2px; }
+
+.sousa {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 10px 0;
+}
+#btnHidari, #btnMigi { font-size: 28px; }   /* 矢じるしは特に見やすく */
+
+#btnStart {
+  width: 100%;
+  min-height: 84px;
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  background: #2e5c3a;
+  border-color: #6fbc85;
+}
+#btnStart:active { background: #3a7049; }
+
+.hojo {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.hojo button { min-height: 58px; font-size: 16px; font-weight: 400; }
+.hojo button[aria-pressed="true"] {
+  background: #51431c;
+  border-color: var(--akari);
+  color: var(--akari);
+  font-weight: 700;
+}
+
+.settei {
+  border-top: 1px solid var(--wakusen);
+  margin-top: 6px;
+  padding-top: 10px;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.settei .gyo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+.settei button { min-height: 48px; font-size: 15px; font-weight: 400; padding: 6px 16px; }
+
+.asobikata {
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin: 18px 0;
+}
+.asobikata h2 { font-size: 17px; color: var(--ink); margin: 0 0 6px; }
+.asobikata ul { margin: 6px 0; padding-left: 1.4em; }
+.asobikata li { margin: 4px 0; }
+
+footer {
+  border-top: 1px solid var(--wakusen);
+  margin-top: 8px;
+  padding: 16px 14px 26px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.9;
+}
+footer a { color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="obi">
+    <a class="back" href="../">← あそびば</a>
+    <a class="back" href="../../oto/">← 音の縁側</a>
+    <h1>れんがくずし</h1>
+    <span class="fuda">ゆっくり・大きい・くっきり</span>
+  </div>
+
+  <!-- ====== 玄関 ====== -->
+  <div class="kami" id="genkan">
+    <p><strong>玉をはねかえして、れんがをぜんぶ くずす遊び</strong>です。</p>
+    <p>ふつうのブロック崩しより、<strong>玉は大きく、動きはゆっくり、色ははっきり</strong>作ってあります。
+       見えにくい方にも遊んでいただきたいからです。速さはいつでも替えられます。</p>
+    <p>玉を落としても終わりにはなりません。数をかぞえるだけです。いそがなくて大丈夫。</p>
+    <p>れんがの色は、この家の落ちものパズル Ochi-Gee の駒の色です。</p>
+    <p class="yawaraka" style="font-size:14px; color:var(--ink-soft);">
+       目がまったく見えない方には、この遊びはまだ玉を目で追う作りのままです。
+       音だけで遊べる「スイカわり」がとなりの部屋にあります。
+       この部屋にも、いつか音だけの遊び方を足すつもりで、音の仕掛けを先に仕込んであります。</p>
+    <button id="btnStart" type="button">あそぶ</button>
+  </div>
+
+  <!-- ====== 遊びの画面 ====== -->
+  <div id="asobiArea" hidden>
+
+    <div class="choumen">
+      <span>のこり <b id="nokori">24</b> まい</span>
+      <span>おとした <b id="ochita">0</b> かい</span>
+    </div>
+
+    <div class="ban"><canvas id="ban" width="480" height="560"></canvas></div>
+
+    <div id="shirase" role="status"></div>
+
+    <div class="sousa">
+      <button id="btnHidari" type="button" aria-label="板を左へ動かす（押している間うごく）">←</button>
+      <button id="btnUtsu" type="button">たまを<br>うつ</button>
+      <button id="btnMigi" type="button" aria-label="板を右へ動かす（押している間うごく）">→</button>
+    </div>
+
+    <div class="hojo" role="group" aria-label="玉の速さをえらぶ">
+      <button id="spd0" type="button" aria-pressed="true">ゆっくり</button>
+      <button id="spd1" type="button" aria-pressed="false">ふつう</button>
+      <button id="spd2" type="button" aria-pressed="false">はやい</button>
+    </div>
+
+    <div class="settei">
+      <div class="gyo">
+        <span>音（玉やれんがの場所を、音の左右と高さでも伝えます）</span>
+        <button id="btnOto" type="button">おとを つける（おすすめ）</button>
+      </div>
+      <div class="gyo">
+        <span>手を止めたいとき</span>
+        <button id="btnYasumi" type="button">ひとやすみ</button>
+      </div>
+      <div class="gyo">
+        <span>はじめから やりなおす</span>
+        <button id="btnYarinaoshi" type="button">やりなおす</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== あそびかた ====== -->
+  <div class="asobikata">
+    <h2>あそびかた</h2>
+    <ul>
+      <li>下の「←」「→」を押している間、板がうごきます。盤を指でなぞっても動かせます。</li>
+      <li>「たまを うつ」で玉がとび出します。板ではねかえして、れんがに当ててください。</li>
+      <li>玉が下に落ちても大丈夫。何度でもうてます。落とした回数が増えるだけです。</li>
+      <li>キーボードなら、ひだり・みぎの矢印キーで板、スペースキーで玉をうてます。</li>
+      <li>速さは「ゆっくり・ふつう・はやい」からいつでも選べます。</li>
+      <li>音をつけると、玉が板に当たった場所やれんがの割れた場所が、音の左右と高さでも分かります（イヤホンだとよく分かります）。</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  れんがくずしは開発中の遊びです。おかしいところがあれば
+  <a href="../../oto/">音の縁側の受付</a>か<a href="../../#renraku">縁側屋の連絡先</a>まで教えてください。ひとつずつ直します。<br>
+  © 2026 縁側屋 岡澤 博喜
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   れんがくずし 本体
+
+   作りの芯：
+     ・盤は480×560の canvas。CSSで縮んでも当たり判定は盤の座標で行う。
+     ・時間は dt（前の描画からの秒数）で進める。速い機械でも遅い
+       機械でも、玉の速さが同じになるように。
+     ・「落としたら数えるだけ」。終わりがあるのはクリアだけ。
+   ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const cv = $("ban");
+const ctx = cv.getContext("2d");
+const W = cv.width, H = cv.height;
+
+/* ---- Ochi-Gee の駒の七色（2021年に施主が決めた色の実測値）。
+   暗い盤の上でよく光る四色をれんがに使う。 ---- */
+const MINO = ["#f0b000", "#06b6d4", "#f97316", "#2faf4e"];
+
+/* ---- 速さ三段階。既定は「ゆっくり」 ---- */
+const HAYASA = [170, 260, 360];   // 1秒に進むピクセル数
+
+/* ---- 盤の上のもの ---- */
+const S = {
+  ita:  { x: W / 2, w: 130, h: 16, y: H - 40 },   // 板。ふつうより幅広
+  tama: { x: 0, y: 0, vx: 0, vy: 0, r: 13, tondeiru: false },  // 玉。ふつうより大きい
+  renga: [],           // れんがの名簿
+  hayasa: 0,           // 速さの段（0〜2）
+  nokori: 0,
+  ochita: 0,
+  asonderu: false,     // ループが回っているか
+  yasumi: false,       // ひとやすみ中か
+  owatta: false,       // クリアしたか
+};
+
+/* ---- れんがを並べる。6列×4段＝24枚。1枚がとても大きい ---- */
+function rengaNarabe() {
+  S.renga = [];
+  const retsu = 6, dan = 4;
+  const gapX = 6, gapY = 8;
+  const w = (W - 16 - gapX * (retsu - 1)) / retsu;   // 両端8pxずつ空ける
+  const h = 34;
+  for (let d = 0; d < dan; d++) {
+    for (let r = 0; r < retsu; r++) {
+      S.renga.push({
+        x: 8 + r * (w + gapX),
+        y: 64 + d * (h + gapY),
+        w: w, h: h,
+        iro: MINO[d % MINO.length],   // 段ごとに色を変える＝どの段が減ったか色で分かる
+        ikiteru: true,
+        dan: d,
+      });
+    }
+  }
+  S.nokori = S.renga.length;
+}
+
+/* ---- 玉を板の上に置く（うつ前の姿勢） ---- */
+function tamaModosu() {
+  S.tama.tondeiru = false;
+  S.tama.x = S.ita.x;
+  S.tama.y = S.ita.y - S.ita.h / 2 - S.tama.r - 1;
+  S.tama.vx = 0; S.tama.vy = 0;
+}
+
+/* ---- 玉をうつ ---- */
+function tamaUtsu() {
+  if (S.tama.tondeiru || S.owatta) return;
+  const v = HAYASA[S.hayasa];
+  // 真上ではなく少しだけ斜めに。真上だと同じ道を往復して詰まるから
+  const kata = (Math.random() < 0.5 ? -1 : 1) * (0.25 + Math.random() * 0.2);
+  S.tama.vx = v * kata;
+  S.tama.vy = -Math.sqrt(v * v - S.tama.vx * S.tama.vx);
+  S.tama.tondeiru = true;
+  oto.pon(S.tama.x / W);
+  shirase("");
+}
+
+/* ---- 速さ替え。飛んでいる最中でも向きを保って速さだけ替える ---- */
+function hayasaKae(dan) {
+  S.hayasa = dan;
+  for (let i = 0; i < 3; i++) $("spd" + i).setAttribute("aria-pressed", String(i === dan));
+  if (S.tama.tondeiru) {
+    const ima = Math.hypot(S.tama.vx, S.tama.vy);
+    if (ima > 0) {
+      const bai = HAYASA[dan] / ima;
+      S.tama.vx *= bai; S.tama.vy *= bai;
+    }
+  }
+}
+
+/* ============================================================
+   音。既定は消音（遊び場の掟の四）。札を押した人にだけ鳴る。
+   飾りではなく補助：左右（パン）＝場所、音程＝段の高さ。
+   ここが、いつか建てる「音だけモード」の土台になる。
+   ============================================================ */
+const oto = {
+  ac: null,
+  naru: false,
+
+  tsukeru() {
+    if (!this.ac) this.ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ac.state === "suspended") this.ac.resume();
+    this.naru = true;
+  },
+  kesu() { this.naru = false; },
+
+  /* x01 = 盤の左端0〜右端1。イヤホンなら左右で場所が分かる */
+  _beep(freq, dur, x01, vol) {
+    if (!this.naru || !this.ac) return;
+    const t = this.ac.currentTime;
+    const osc = this.ac.createOscillator();
+    const g = this.ac.createGain();
+    osc.type = "triangle";
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(g);
+    if (this.ac.createStereoPanner) {
+      const p = this.ac.createStereoPanner();
+      p.pan.value = (x01 * 2 - 1);
+      g.connect(p); p.connect(this.ac.destination);
+    } else { g.connect(this.ac.destination); }
+    osc.start(t); osc.stop(t + dur + 0.05);
+  },
+
+  pon(x01)   { this._beep(320, 0.12, x01, 0.4); },              // 板ではねた
+  kabe(x01)  { this._beep(220, 0.08, x01, 0.25); },             // 壁ではねた
+  pakin(x01, dan) { this._beep(660 + (3 - dan) * 160, 0.16, x01, 0.45); }, // れんがが割れた。上の段ほど高い音
+  ochi()     { this._beep(130, 0.35, 0.5, 0.4); },              // 玉が落ちた（責めない、低いだけの音）
+  kansei() {                                                    // クリアのファンファーレ
+    const uta = [523, 659, 784, 1047, 784, 1047];
+    uta.forEach((f, i) => setTimeout(() => this._beep(f, 0.3, 0.5, 0.4), i * 140));
+  },
+};
+
+/* ============================================================
+   進める（1コマぶん）
+   ============================================================ */
+function susumu(dt) {
+  const ta = S.tama, ita = S.ita;
+
+  /* --- 板：押しっぱなしのボタン・キーで動く --- */
+  const itaV = 420;
+  if (osareteru.hidari) ita.x -= itaV * dt;
+  if (osareteru.migi)   ita.x += itaV * dt;
+  ita.x = Math.max(ita.w / 2, Math.min(W - ita.w / 2, ita.x));
+
+  if (!ta.tondeiru) {
+    /* うつ前は玉が板に乗ってついてくる */
+    ta.x = ita.x;
+    ta.y = ita.y - ita.h / 2 - ta.r - 1;
+    return;
+  }
+
+  /* --- 玉が飛ぶ --- */
+  ta.x += ta.vx * dt;
+  ta.y += ta.vy * dt;
+
+  /* 壁ではねる */
+  if (ta.x < ta.r)      { ta.x = ta.r;      ta.vx =  Math.abs(ta.vx); oto.kabe(0); }
+  if (ta.x > W - ta.r)  { ta.x = W - ta.r;  ta.vx = -Math.abs(ta.vx); oto.kabe(1); }
+  if (ta.y < ta.r)      { ta.y = ta.r;      ta.vy =  Math.abs(ta.vy); oto.kabe(ta.x / W); }
+
+  /* 板ではねる。当たった場所で角度が変わる（板の端ほど横へ飛ぶ）。
+     ここがブロック崩しの「操作している感じ」の芯なので残してある */
+  if (ta.vy > 0 &&
+      ta.y + ta.r >= ita.y - ita.h / 2 && ta.y - ta.r <= ita.y + ita.h / 2 &&
+      ta.x >= ita.x - ita.w / 2 - ta.r && ta.x <= ita.x + ita.w / 2 + ta.r) {
+    const v = Math.hypot(ta.vx, ta.vy);
+    let katayori = (ta.x - ita.x) / (ita.w / 2);        // -1〜1
+    katayori = Math.max(-0.9, Math.min(0.9, katayori)); // 真横に飛んで詰むのを防ぐ
+    ta.vx = v * katayori * 0.85;
+    ta.vy = -Math.sqrt(Math.max(v * v - ta.vx * ta.vx, (v * 0.35) ** 2));
+    ta.y = ita.y - ita.h / 2 - ta.r - 0.5;
+    oto.pon(ta.x / W);
+  }
+
+  /* 下へ落ちた。終わりにはしない。数えて、そっと板に戻す */
+  if (ta.y - ta.r > H) {
+    S.ochita++;
+    $("ochita").textContent = S.ochita;
+    oto.ochi();
+    tamaModosu();
+    shirase("おちても だいじょうぶ。「たまを うつ」で つづき。");
+    return;
+  }
+
+  /* れんがに当たる。1コマに1枚だけ割る（二枚同時貫通の理不尽を防ぐ） */
+  for (const r of S.renga) {
+    if (!r.ikiteru) continue;
+    const cx = Math.max(r.x, Math.min(ta.x, r.x + r.w));
+    const cy = Math.max(r.y, Math.min(ta.y, r.y + r.h));
+    if ((ta.x - cx) ** 2 + (ta.y - cy) ** 2 > ta.r * ta.r) continue;
+
+    r.ikiteru = false;
+    S.nokori--;
+    $("nokori").textContent = S.nokori;
+    oto.pakin((r.x + r.w / 2) / W, r.dan);
+
+    /* はねかえる向き：玉がどちらから食い込んだかの浅い方で返す */
+    const sokoX = Math.min(ta.x + ta.r - r.x, r.x + r.w - (ta.x - ta.r));
+    const sokoY = Math.min(ta.y + ta.r - r.y, r.y + r.h - (ta.y - ta.r));
+    if (sokoX < sokoY) ta.vx = -ta.vx; else ta.vy = -ta.vy;
+
+    if (S.nokori === 0) kansei();
+    break;
+  }
+}
+
+/* ---- クリア ---- */
+function kansei() {
+  S.owatta = true;
+  S.tama.tondeiru = false;
+  oto.kansei();
+  shirase("ぜんぶ くずした！ おみごと！（おとした回数 " + S.ochita + " かい）");
+  $("btnUtsu").disabled = true;
+}
+
+/* ---- 知らせの行 ---- */
+function shirase(t) { $("shirase").textContent = t; }
+
+/* ============================================================
+   描く
+   ============================================================ */
+function egaku() {
+  ctx.clearRect(0, 0, W, H);
+
+  /* れんが。輪郭を濃く入れて、隣との境目をはっきりさせる */
+  for (const r of S.renga) {
+    if (!r.ikiteru) continue;
+    ctx.fillStyle = r.iro;
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = "rgba(0,0,0,0.55)";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(r.x + 1.5, r.y + 1.5, r.w - 3, r.h - 3);
+  }
+
+  /* 板。白＝暗い盤でいちばん強い色をいちばん大事なものに */
+  ctx.fillStyle = "#f2f4fa";
+  const ita = S.ita;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(ita.x - ita.w / 2, ita.y - ita.h / 2, ita.w, ita.h, 8);
+  else ctx.rect(ita.x - ita.w / 2, ita.y - ita.h / 2, ita.w, ita.h);
+  ctx.fill();
+
+  /* 玉。灯りの色＋白いふち＝背景ともれんがとも見分けがつく */
+  ctx.fillStyle = "#ffd166";
+  ctx.beginPath();
+  ctx.arc(S.tama.x, S.tama.y, S.tama.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+/* ============================================================
+   まわす（ゲームループ）
+   ============================================================ */
+let maeNoToki = 0;
+function mawaru(toki) {
+  if (!S.asonderu) return;
+  const dt = Math.min((toki - maeNoToki) / 1000, 0.05);  // 画面が長く止まった後の大ジャンプを抑える
+  maeNoToki = toki;
+  if (!S.yasumi && !S.owatta) susumu(dt);
+  egaku();
+  requestAnimationFrame(mawaru);
+}
+
+/* ============================================================
+   一局のはじまり
+   ============================================================ */
+function hajimeru() {
+  rengaNarabe();
+  S.ochita = 0; S.owatta = false; S.yasumi = false;
+  $("nokori").textContent = S.nokori;
+  $("ochita").textContent = S.ochita;
+  $("btnUtsu").disabled = false;
+  $("btnYasumi").textContent = "ひとやすみ";
+  S.ita.x = W / 2;
+  tamaModosu();
+  shirase("「たまを うつ」で はじまるよ。");
+  if (!S.asonderu) {
+    S.asonderu = true;
+    maeNoToki = performance.now();
+    requestAnimationFrame(mawaru);
+  }
+}
+
+/* ============================================================
+   配線：ボタン・指・キーボード
+   ============================================================ */
+const osareteru = { hidari: false, migi: false };
+
+/* 押している間だけ動く、を指でもマウスでも。
+   pointerleave/cancel でも放す＝指が滑って外れたまま走り続けない */
+function nagaoshi(el, key) {
+  el.addEventListener("pointerdown", (e) => { e.preventDefault(); osareteru[key] = true; });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(ev =>
+    el.addEventListener(ev, () => { osareteru[key] = false; }));
+}
+nagaoshi($("btnHidari"), "hidari");
+nagaoshi($("btnMigi"), "migi");
+
+/* 盤を指でなぞる／マウスで動かす。押している間だけ追いかける */
+let nazotteru = false;
+cv.addEventListener("pointerdown", (e) => {
+  nazotteru = true;
+  banNazori(e);
+  if (!S.tama.tondeiru && !S.owatta) tamaUtsu();   // 盤を押す＝うつ、でも良い（時短の口）
+});
+cv.addEventListener("pointermove", (e) => { if (nazotteru) banNazori(e); });
+["pointerup", "pointerleave", "pointercancel"].forEach(ev =>
+  cv.addEventListener(ev, () => { nazotteru = false; }));
+function banNazori(e) {
+  const rect = cv.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width * W;   // CSSで縮んだ分を盤の座標へ直す
+  S.ita.x = Math.max(S.ita.w / 2, Math.min(W - S.ita.w / 2, x));
+}
+
+$("btnStart").addEventListener("click", () => {
+  $("genkan").hidden = true;
+  $("asobiArea").hidden = false;
+  hajimeru();
+});
+$("btnUtsu").addEventListener("click", tamaUtsu);
+$("btnYarinaoshi").addEventListener("click", hajimeru);
+$("btnYasumi").addEventListener("click", () => {
+  if (S.owatta) return;
+  S.yasumi = !S.yasumi;
+  $("btnYasumi").textContent = S.yasumi ? "つづける" : "ひとやすみ";
+  shirase(S.yasumi ? "ひとやすみ中。「つづける」で もどるよ。" : "");
+});
+$("btnOto").addEventListener("click", () => {
+  if (oto.naru) { oto.kesu(); $("btnOto").textContent = "おとを つける（おすすめ）"; }
+  else { oto.tsukeru(); $("btnOto").textContent = "おとを けす"; oto.pon(0.5); }
+});
+for (let i = 0; i < 3; i++) {
+  $("spd" + i).addEventListener("click", () => hayasaKae(i));
+}
+
+/* キーボード。押しっぱなし対応のため keydown/keyup の対で持つ */
+document.addEventListener("keydown", (e) => {
+  if ($("asobiArea").hidden) return;
+  switch (e.key) {
+    case "ArrowLeft":  e.preventDefault(); osareteru.hidari = true; break;
+    case "ArrowRight": e.preventDefault(); osareteru.migi = true; break;
+    case " ":          e.preventDefault(); if (!e.repeat) tamaUtsu(); break;
+  }
+});
+document.addEventListener("keyup", (e) => {
+  if (e.key === "ArrowLeft")  osareteru.hidari = false;
+  if (e.key === "ArrowRight") osareteru.migi = false;
+});
+</script>
+</body>
+</html>
