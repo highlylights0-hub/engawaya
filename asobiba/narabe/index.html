@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<!--
+    ┌────────────────────────────────────────────────┐
+    │                                                │
+    │                 棟   札                        │
+    │                                                │
+    │      上棟   二〇二六年 八月 九日               │
+    │                                                │
+    │      施主   岡 澤 博 喜                        │
+    │      大工   Claude （蔵人）                    │
+    │                                                │
+    │      この部屋を建てた理由                      │
+    │        施主の思いつき。「縁側屋バリアフリーで、 │
+    │        15パズルなどどうでしょうか？」          │
+    │                                                │
+    │        遊び場に既にある三つ（星つなぎ・        │
+    │        れんがくずし・スイカわり）は、どれも    │
+    │        こちらの都合を待ってくれない。          │
+    │        落ちてくる・玉が飛ぶ・音が鳴る。        │
+    │        掟に「急かさない」と書いてあるのに、    │
+    │        遊びの中身はどうしても急かす側にいた。  │
+    │                                                │
+    │        並べかえパズルは、盤がずっと待っている。│
+    │        手が震えても、一手に三分かかっても、    │
+    │        誰も何も言わない。この家に空いていた    │
+    │        のは、その席だった。                    │
+    │                                                │
+    └────────────────────────────────────────────────┘
+
+    ── 大きさを最初から全部ひらいてある理由（施主の言葉） ──
+
+      「身体は、不自由（弱視、難聴、手の震え）でも頭は元気！
+        こんな方にも」
+      「スタートメニューで、どちらも選べる」
+
+    最初の設計は「3×3を既定にして、揃ったら4×4を解放する」だった。
+    施主に外された。正しい。それは **身体の都合から頭の力を推し量る
+    仕組み** になってしまう。見えにくい人が最初から5×5をやりたいなら、
+    鍵をかける理由はどこにも無い。
+
+    だから大きさは三つとも最初から選べる。揃ったときに出る
+    「もっと むずかしいよ」は、解放ではなく **ただの誘い**。
+    誘いは、断れるから誘いである（母屋の招待状と同じ考え方）。
+
+    ── 三つの不自由への、それぞれの手当て ──
+
+    弱視　　… 数字が主役。字は大きく、色の差は最大。
+              音の縁側とまったく同じ二つのボタン（白黒を替える・
+              字をもっと大きく）を、同じ文言で置く。
+              そろっている駒は色が変わる＝進み具合が色でも分かる。
+
+    難聴　　… 音がまったく要らない遊び。既定は消音のまま。
+              音は添え物で、押した人にだけ鳴る（遊び場の掟の四）。
+
+    手の震え… 押す場所を大きく。十字ボタンは **位置が動かない**
+              （動かせない向きも、消さずに薄くして場所を保つ。
+              押す場所が毎回動く盤は、震える手には迷路になる）。
+              そして「一手 もどす」。隣を押してしまっても
+              取り返せる。何手でも戻せる。ここは競技場ではない。
+
+    ── この部屋の掟（遊び場共通） ──────────────────
+
+    一． 外から何も読み込まない。絵も音もこの一枚の中で作る。
+    二． 借り物を置かない。
+    三． 押すだけで遊べる。大きなボタン。キーボードは有っても無くても。
+    四． 音は黙って出さない。既定は消音。札を押した人にだけ鳴る。
+    五． 目が疲れる光を出さない。点滅で殴らない。
+
+    ── この部屋だけの決めごと ──
+
+    ・盤は canvas で描かない。ひとマスずつ本物のボタンで作る。
+      れんがくずしは canvas だが、あれは動きを描く遊びだった。
+      こちらは **読み上げソフトが盤を読めること** の方が大事。
+      canvas の中身は読み上げに一文字も届かない。
+
+    ・入り口を三つ用意する。どれか一つでも通れば遊べる。
+        ① 盤のマスを直接おす（目で見て遊ぶ人の、いちばん速い道）
+        ② 十字ボタンをおす（位置が固定。震える手・見えにくい目に）
+        ③ 矢印キー（キーボードの人に）
+      そのうえで「ばんめんを よみあげる」で、盤ぜんたいを
+      言葉にして受け取れる。目を使わずに一局を終えられる。
+
+    ・混ぜ方は「そろった盤から、あきマスをでたらめに動かす」。
+      数字をでたらめに並べると、二回に一回は **絶対に解けない盤**
+      ができる（並べかえパズルの偶奇の性質）。解けない盤を渡すのは、
+      急かさないより先の、もっと基本的な裏切りなので。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>すうじならべ — 縁側屋</title>
+<meta name="description" content="縁側屋の遊び場。数字をすべらせて順にならべる、急かされないパズル。3×3・4×4・5×5から選べます。大きな字、音なしでも、読み上げソフトでも遊べます。無料・インストール不要。">
+
+<style>
+/* ============================================================
+   すうじならべ
+
+   このページの主役は「数字」。だから：
+     ・字は大きく（既定20px・「もっと大きく」で26px）
+     ・盤のマスの数字は、盤の幅に合わせてさらに大きく
+     ・色の差は強く。薄い字は一字も置かない
+     ・押す場所は大きく（72px。手が震えても外さない）
+   色は縁側屋の家の色（夜空 #0d1424 / 灯り #ffd166）。
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 字の大きさは html の font-size 一箇所で決め、あとは rem で連動させる。
+   音の縁側・縁側屋バリアフリーとまったく同じ作り
+   （直すときに片方だけ直らない事故を防ぐため、わざと揃えてある） */
+html { font-size: 20px; }
+html.ookii { font-size: 26px; }
+
+:root {
+  --kami:      #0d1424;   /* 地の色＝縁側屋の夜空 */
+  --ink:       #f2f4fa;   /* 字の色 */
+  --ink-soft:  #c3cbdc;   /* 補足の字。それでも十分濃く */
+  --sen:       #435070;   /* 罫線 */
+  --akari:     #ffd166;   /* 灯り（見出しの下線・焦点の枠・そろった駒） */
+  --botan:     #223050;   /* 押すものの地 */
+  --botan-sen: #8296c2;   /* 押すものの枠 */
+  --koma:      #2a3855;   /* 駒の地 */
+  --koma-sen:  #8296c2;   /* 駒の枠 */
+  --soroi:     #ffd166;   /* そろった駒の地 */
+  --soroi-ji:  #1a1200;   /* そろった駒の字（灯りの上なので黒） */
+  --ita:       #8a6743;   /* 縁側の板 */
+}
+html.shiroi {
+  --kami:      #ffffff;
+  --ink:       #1a1a1a;
+  --ink-soft:  #444444;
+  --sen:       #999999;
+  --akari:     #8a5a00;
+  --botan:     #f0f0f0;
+  --botan-sen: #555555;
+  --koma:      #ffffff;
+  --koma-sen:  #333333;
+  --soroi:     #2e6b3a;   /* 白い紙では、そろった駒を濃い緑に（白地で光る色は使えない） */
+  --soroi-ji:  #ffffff;
+  --ita:       #8a6743;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--kami);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0.7rem 0.7rem 0;
+}
+
+/* ---- 帯（もどる道と題） ---- */
+.obi {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7em;
+  flex-wrap: wrap;
+  margin-bottom: 0.3em;
+}
+.back {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--sen);
+  padding-bottom: 1px;
+}
+.back:hover { color: var(--ink); border-color: var(--botan-sen); }
+h1 { margin: 0; font-size: 1.3rem; letter-spacing: 0.12em; font-weight: 700; }
+.obi .fuda { font-size: 0.68rem; color: var(--ink-soft); }
+
+h2 {
+  font-size: 1.05rem;
+  margin: 1.2em 0 0.3em;
+  padding-bottom: 0.15em;
+  border-bottom: 3px solid var(--akari);
+}
+
+p { margin: 0.5em 0; }
+.yawaraka { color: var(--ink-soft); font-size: 0.8rem; }
+
+.kami {
+  background: rgba(255,255,255,0.045);
+  border: 1px solid var(--sen);
+  border-radius: 12px;
+  padding: 0.8em 0.9em;
+  margin: 0.7em 0;
+  font-size: 0.9rem;
+}
+html.shiroi .kami { background: #f7f7f7; }
+.kami p { margin: 0.45em 0; }
+.kami strong { color: var(--akari); font-weight: 700; }
+
+/* ---- 押すもの全般 ---- */
+button {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--botan);
+  border: 2px solid var(--botan-sen);
+  border-radius: 14px;
+  min-height: 72px;
+  padding: 0.5em 0.7em;
+  cursor: pointer;
+  touch-action: manipulation;
+  line-height: 1.4;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button:active { background: #384970; }
+html.shiroi button:active { background: #dcdcdc; }
+button:focus-visible { outline: 4px solid var(--akari); outline-offset: 2px; }
+
+/* 見え方のボタンは音の縁側と同じ並び（二つ横に、それでも高さは保つ） */
+.settei-narabi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em;
+}
+.settei-narabi button { font-weight: 400; font-size: 0.85rem; min-height: 60px; }
+
+/* ============================================================
+   大きさをえらぶ札（スタートメニュー）
+
+   三つとも最初から押せる。鍵はかけない。
+   ============================================================ */
+.erabu { display: grid; gap: 0.6em; margin: 0.6em 0; }
+.ookisa {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  width: 100%;
+  min-height: 96px;
+  text-align: left;
+  padding: 0.6em 0.8em;
+}
+.ookisa .mihon {          /* 盤の小さな見本。何マスかが絵でも分かる */
+  flex: 0 0 auto;
+  display: grid;
+  gap: 2px;
+  width: 54px; height: 54px;
+}
+.ookisa .mihon i {
+  background: var(--koma-sen);
+  border-radius: 2px;
+}
+.ookisa .mihon i.aki { background: transparent; box-shadow: inset 0 0 0 1px var(--koma-sen); }
+.ookisa .kotoba { display: flex; flex-direction: column; }
+.ookisa .na { font-size: 1.05rem; font-weight: 700; }
+.ookisa .setsumei { font-size: 0.75rem; font-weight: 400; color: var(--ink-soft); line-height: 1.6; }
+
+/* ============================================================
+   盤
+
+   canvas ではなく、ひとマスずつ本物のボタン。
+   読み上げソフトが盤を読めること／字の拡大が効くことの方が、
+   なめらかな animation よりずっと大事なので。
+   ============================================================ */
+.banWaku {
+  width: 100%;
+  max-width: 460px;
+  margin: 0.4em auto;
+}
+#ban {
+  display: grid;
+  gap: 6px;
+  /* 列は minmax(0, 1fr) で作る（script 側）。ただの 1fr だと
+     「中身より狭くならない」性質があるので、数字が大きいと
+     マスが盤を押し広げて画面からはみ出す。5×5で実際にはみ出した */
+  aspect-ratio: 1 / 1;
+  padding: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid var(--sen);
+  border-radius: 14px;
+}
+html.shiroi #ban { background: #f2f2f2; }
+
+/* 駒。数字は盤の幅に合わせて大きく（rem ではなく cqw で盤に連動させる） */
+#ban .koma {
+  min-height: 0;                 /* grid の中では 72px の下限を外す（マスの大きさは盤が決める） */
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+  background: var(--koma);
+  border: 2px solid var(--koma-sen);
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s linear, color 0.12s linear;
+}
+#ban .koma.sorotta {           /* 正しい場所に入っている駒。色で進み具合が分かる */
+  background: var(--soroi);
+  border-color: var(--soroi);
+  color: var(--soroi-ji);
+}
+#ban .koma.ugokeru {           /* いま動かせる駒。ふちを灯り色に */
+  border-color: var(--akari);
+  border-width: 3px;
+}
+#ban .aki {                    /* あきマス。押せないので button にしない */
+  border-radius: 10px;
+  border: 2px dashed var(--sen);
+  background: transparent;
+}
+
+/* ---- 帳面（手数） ---- */
+.choumen {
+  display: flex;
+  justify-content: center;
+  gap: 1.4em;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin: 0.3em 0 0;
+}
+.choumen b { color: var(--ink); font-size: 1.1rem; }
+
+/* ---- 知らせの行 ---- */
+#shirase {
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--akari);
+  line-height: 1.5;
+  margin: 0.3em 0;
+}
+
+/* ============================================================
+   十字ボタン
+
+   位置が動かないことが、この部品のいちばん大事な性質。
+   動かせない向きも消さずに薄くして場所を保つ。
+   押す場所が毎回動く盤は、震える手には迷路になるので。
+   ============================================================ */
+.juuji {
+  display: grid;
+  /* 盤と同じ理由で minmax(0, 1fr)。「24 を ひだりへ」のような
+     長い札が入ると、ただの 1fr では列が広がって画面をはみ出す */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    ".      ue     ."
+    "hidari naka   migi"
+    ".      shita  .";
+  gap: 0.5em;
+  max-height: none;
+  margin: 0.5em auto;
+  max-width: 460px;
+}
+.juuji button { font-size: 0.85rem; min-height: 76px; }
+.juuji .ya { display: block; font-size: 1.4rem; line-height: 1.05; }
+/* 数字と向きは行を分ける。ひとつながりだと「17 を ひ／だりへ」のように
+   おかしな場所で折れる。数字は大きく＝どのこまが動くか一目で分かる */
+.juuji .jiKazu { display: block; font-size: 1.15rem; line-height: 1.2; }
+.juuji .jiKazu:empty { display: none; }
+.juuji .jiMuki { display: block; font-size: 0.8rem; font-weight: 400; line-height: 1.3; }
+#kUe    { grid-area: ue; }
+#kShita { grid-area: shita; }
+#kHidari{ grid-area: hidari; }
+#kMigi  { grid-area: migi; }
+/* いま使えない向き。薄くするだけだと、白い紙のときに消えて見えなくなり、
+   「場所を保つ」という約束が果たせない。だから枠は残して破線にする
+   （破線＝いまは無い、はあきマスと同じ言い方。家の中で言い方を揃える） */
+.juuji button:disabled {
+  opacity: 1;
+  cursor: default;
+  color: var(--ink-soft);
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--sen);
+}
+.juuji .naka {
+  grid-area: naka;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  line-height: 1.3;
+  text-align: center;
+}
+.juuji .naka b { font-size: 1.2rem; color: var(--ink); }
+
+/* ---- 手当ての列（もどす・よみあげる） ---- */
+.tedate {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em;
+  max-width: 460px;
+  margin: 0 auto 0.5em;
+}
+.tedate button { font-size: 0.85rem; }
+.tedate button:disabled { opacity: 0.35; cursor: default; }
+
+/* ---- 読み上げた盤面を、字としても出す枠 ---- */
+#yomiage {
+  max-width: 460px;
+  margin: 0 auto 0.6em;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--ink);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--sen);
+  border-radius: 12px;
+  padding: 0.6em 0.8em;
+}
+html.shiroi #yomiage { background: #f7f7f7; }
+#yomiage:empty { display: none; }
+#yomiage .dan { display: block; }
+
+/* ---- 下の設定（音・やりなおす・大きさを替える） ---- */
+.settei {
+  border-top: 1px solid var(--sen);
+  margin-top: 0.6em;
+  padding-top: 0.6em;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.settei .gyo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7em;
+  flex-wrap: wrap;
+  margin: 0.5em 0;
+}
+.settei button { min-height: 56px; font-size: 0.8rem; font-weight: 400; padding: 0.4em 1em; }
+
+/* ---- そろったときの札 ---- */
+.iwai {
+  border: 3px solid var(--akari);
+  border-radius: 14px;
+  padding: 0.8em 0.9em;
+  margin: 0.6em auto;
+  max-width: 460px;
+  background: rgba(255,209,102,0.08);
+}
+html.shiroi .iwai { background: #fffaf0; }
+.iwai p { margin: 0.4em 0; font-size: 0.95rem; }
+.iwai .tsugi { margin-top: 0.6em; }
+
+.asobikata { font-size: 0.8rem; color: var(--ink-soft); margin: 1.2em 0; }
+.asobikata h2 { font-size: 1rem; color: var(--ink); }
+.asobikata ul { margin: 0.4em 0; padding-left: 1.3em; }
+.asobikata li { margin: 0.3em 0; }
+
+footer {
+  border-top: 1px solid var(--sen);
+  margin-top: 0.6em;
+  padding: 1em 0.9em 1.6em;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.9;
+}
+footer a { color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="obi">
+    <a class="back" href="../">← あそびば</a>
+    <a class="back" href="../../indexplayland.html">← バリアフリー</a>
+    <a class="back" href="../../oto/">← 音の縁側</a>
+  </div>
+  <div class="obi">
+    <h1>すうじならべ</h1>
+    <span class="fuda">急かされない・音がなくても・大きな字で</span>
+  </div>
+
+  <!-- ====== 見え方をえらぶ（音の縁側とまったく同じ操作・同じ文言） ====== -->
+  <div class="settei-narabi">
+    <button id="btnIro" type="button">白い紙に 黒い字にする</button>
+    <button id="btnJi" type="button">字を もっと大きくする</button>
+  </div>
+
+  <!-- ====== 玄関（スタートメニュー） ====== -->
+  <div id="genkan">
+
+    <!-- とちゅうの盤があるときだけ出る札。
+         いちばん上に置く。中断から戻ってきた人が探しているのは
+         遊びの説明ではなく「さっきの続き」なので。 -->
+    <div class="iwai" id="tsuzuki" hidden>
+      <p id="tsuzukiKotoba"></p>
+      <div class="tsugi" id="tsuzukiBotan"></div>
+    </div>
+
+    <div class="kami">
+      <p><strong>数字を すべらせて、じゅんばんに ならべる遊び</strong>です。</p>
+      <p>あいている マスの となりの 数字は、そこへ すべります。
+         1から じゅんに ならんだら できあがり。</p>
+      <p>じかんの せいげんは ありません。<strong>いくら 考えても いい</strong>し、
+         とちゅうで やめても かまいません。
+         おし間違えても <strong>「一手 もどす」</strong>で 取り返せます。</p>
+      <p>音は 出ません（つけたい人だけ つけられます）。目で見ても、
+         読み上げソフトで 耳で聞いても、さいごまで あそべます。</p>
+    </div>
+
+    <h2>大きさを えらぶ</h2>
+    <p class="yawaraka">どれでも すきなものを どうぞ。ちいさい ほうが かんたんですが、
+       じゅんばんに やる きまりは ありません。</p>
+
+    <div class="erabu" id="erabu">
+      <!-- 中身は script で組み立てる（見本の絵もマス数に合わせて作るため） -->
+    </div>
+  </div>
+
+  <!-- ====== 遊びの画面 ====== -->
+  <div id="asobiArea" hidden>
+
+    <div class="banWaku">
+      <!-- role="group" ＝ ここが一つのまとまり（盤）だと読み上げに伝える -->
+      <div id="ban" role="group" aria-label="ならべる盤"></div>
+    </div>
+
+    <div class="choumen"><span>うごかした かず <b id="tesuu">0</b></span></div>
+
+    <!-- 知らせの行。role="status" ＝ 変わったら読み上げが穏やかに伝える -->
+    <div id="shirase" role="status" aria-live="polite"></div>
+
+    <!-- そろったときだけ出る札 -->
+    <div class="iwai" id="iwai" hidden>
+      <p id="iwaiKotoba"></p>
+      <div class="tsugi" id="iwaiTsugi"></div>
+    </div>
+
+    <div class="juuji" role="group" aria-label="こまを うごかす（十字のボタン）">
+      <button id="kUe" type="button"><span class="ya" aria-hidden="true">↑</span><span class="jiKazu"></span><span class="jiMuki">うえへ</span></button>
+      <button id="kHidari" type="button"><span class="ya" aria-hidden="true">←</span><span class="jiKazu"></span><span class="jiMuki">ひだりへ</span></button>
+      <div class="naka" aria-hidden="true">うごかせる<br><b id="nakaKazu">0</b><br>まい</div>
+      <button id="kMigi" type="button"><span class="ya" aria-hidden="true">→</span><span class="jiKazu"></span><span class="jiMuki">みぎへ</span></button>
+      <button id="kShita" type="button"><span class="ya" aria-hidden="true">↓</span><span class="jiKazu"></span><span class="jiMuki">したへ</span></button>
+    </div>
+
+    <div class="tedate">
+      <button id="btnModosu" type="button">一手 もどす</button>
+      <button id="btnYomu" type="button">ばんめんを よみあげる</button>
+    </div>
+
+    <!-- 読み上げた盤面を字としても置く枠。
+         耳で聞く人にも、目で確かめたい人にも、同じ言葉が届くように -->
+    <div id="yomiage" role="status" aria-live="polite"></div>
+
+    <div class="settei">
+      <div class="gyo">
+        <span>音（こまの場所を、音の左右と高さでも つたえます）</span>
+        <button id="btnOto" type="button">おとを つける</button>
+      </div>
+      <div class="gyo">
+        <span>おなじ大きさで もう一回</span>
+        <button id="btnYarinaoshi" type="button">まぜなおす</button>
+      </div>
+      <div class="gyo">
+        <span>ちがう大きさに する</span>
+        <button id="btnModoru" type="button">大きさを えらびなおす</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== あそびかた ====== -->
+  <div class="asobikata">
+    <h2>あそびかた</h2>
+    <ul>
+      <li>あいている マスの となりの こまだけ、うごかせます。うごかせる こまは、ふちが 黄色く なります。</li>
+      <li>うごかしかたは <strong>三つ</strong> あります。すきなものを どうぞ。
+        <ul>
+          <li>盤の こまを じかに おす</li>
+          <li>下の <strong>十字のボタン</strong>を おす（場所が いつも おなじなので、手が ふるえても 外しません）</li>
+          <li>キーボードの やじるしキー</li>
+        </ul>
+      </li>
+      <li>「ばんめんを よみあげる」を おすと、いまの ならびを ことばで 教えます。読み上げソフトでも、目で読んでも かまいません。</li>
+      <li>「一手 もどす」は 何回でも つかえます。ここは きそう ばしょでは ないので。</li>
+      <li>ただしい ばしょに 入った こまは 色が かわります。どこまで そろったかが 色でも 分かります。</li>
+      <li>音は はじめ 出ません。つけると、こまの ばしょが 音の 左右と 高さでも 分かります（イヤホンだと よく わかります）。</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  すうじならべは 開発中の 遊びです。おかしいところが あれば
+  <a href="../../oto/">音の縁側の受付</a>か<a href="../../indexplayland.html">縁側屋バリアフリー</a>まで
+  教えてください。ひとつずつ 直します。<br>
+  © 2026 縁側屋 岡澤 博喜
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   すうじならべ 本体
+
+   作りの芯：
+     ・盤は配列ひとつ。0 が「あきマス」。
+     ・画面のボタンは最初に作ったら二度と作り直さない。中身だけ書き換える。
+       （作り直すと、いま当たっているフォーカスが飛ぶ。
+         キーボードや読み上げで遊んでいる人には、そこで迷子になる）
+     ・混ぜ方は「そろった盤から、あきマスをでたらめに動かす」。
+       でたらめに数字を並べると、二回に一回は絶対に解けない盤ができるので。
+   ============================================================ */
+
+var $ = function (id) { return document.getElementById(id); };
+
+/* ---------- 見え方（色・字の大きさ）----------
+   音の縁側と同じ作法。選んだ結果はこの機械の中にだけ残す。
+   覚え場所は音の縁側と別にする（遊びの最中だけ大きくしたい人がいるので）。 */
+(function () {
+  var KEY = "engawaya-narabe-mikata";
+  var oboe = {};
+  try { oboe = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { oboe = {}; }
+
+  function utsusu() {
+    document.documentElement.classList.toggle("shiroi", !!oboe.shiroi);
+    document.documentElement.classList.toggle("ookii", !!oboe.ookii);
+    /* ボタンの文言は「押すとどうなるか」を書く。いまの状態ではなく。
+       耳で聞いたとき、次の一手が分かる方が親切だから */
+    $("btnIro").textContent = oboe.shiroi ? "黒い紙に 白い字にもどす" : "白い紙に 黒い字にする";
+    $("btnJi").textContent  = oboe.ookii  ? "字を もとの大きさにもどす" : "字を もっと大きくする";
+    /* 字を大きくすると余白も広がって盤の幅が変わる。マスの数字を測り直す */
+    if (typeof mojiAwase === "function") mojiAwase();
+  }
+  function nokosu() {
+    try { localStorage.setItem(KEY, JSON.stringify(oboe)); } catch (e) { /* 覚えられない機械でも使える */ }
+  }
+  $("btnIro").addEventListener("click", function () { oboe.shiroi = !oboe.shiroi; nokosu(); utsusu(); });
+  $("btnJi").addEventListener("click",  function () { oboe.ookii  = !oboe.ookii;  nokosu(); utsusu(); });
+  utsusu();
+})();
+
+/* ============================================================
+   大きさの名簿
+
+   三つとも最初から押せる。鍵はかけない（施主の裁定）。
+   mazeru＝混ぜる手数。マスが増えるほど、よく混ぜないと
+   ほどけた状態のまま渡ってしまう。
+   ============================================================ */
+var OOKISA = [
+  { n: 3, na: "3 × 3（8まい）",  setsumei: "はじめての方に。慣れると 数分で そろいます。", mazeru: 80 },
+  { n: 4, na: "4 × 4（15まい）", setsumei: "ふつうの「15パズル」。じっくり 考える 大きさです。", mazeru: 300 },
+  { n: 5, na: "5 × 5（24まい）", setsumei: "かなり むずかしいです。腕におぼえの ある方へ。", mazeru: 600 }
+];
+
+/* ---------- 盤の帳面 ---------- */
+var S = {
+  n: 3,
+  ban: [],        /* 長さ n*n。1〜n*n-1 が こま、0 が あきマス */
+  aki: 0,         /* あきマスの居場所（ban の中の番号） */
+  tesuu: 0,
+  rireki: [],     /* 動かしたこまの居場所を積んでいく。「もどす」の元手 */
+  owatta: false,
+  komaBtn: []     /* 画面のマス（ボタン or あきマスの箱）。作り直さない */
+};
+
+/* ---------- 盤の中の場所の言い方 ----------
+   「1だんめ の 2ばんめ」で通す。
+   3×3なら「うえ・まんなか・した」の方が易しいが、4×4・5×5で
+   破綻する言い方を大きさごとに変えると、覚え直しが要る。
+   同じ家の中では、同じ言い方をひとつだけ使う。 */
+function basho(i) {
+  var dan = Math.floor(i / S.n) + 1;
+  var ban = (i % S.n) + 1;
+  return dan + "だんめ の " + ban + "ばんめ";
+}
+
+/* ---------- そろっているか ----------
+   ban[i] === i+1 が最後の一マス手前まで続き、最後があきマス。 */
+function sorottaKa() {
+  for (var i = 0; i < S.ban.length - 1; i++) {
+    if (S.ban[i] !== i + 1) return false;
+  }
+  return S.ban[S.ban.length - 1] === 0;
+}
+
+/* ---------- そのこまは動かせるか ----------
+   あきマスと縦か横で隣り合っていれば動かせる。
+   ※ 番号の差だけで見ると、盤の端で「行をまたいだ隣」を
+     隣だと勘違いする。だから段と番目で見る。 */
+function tonariKa(i) {
+  var d1 = Math.floor(i / S.n),     b1 = i % S.n;
+  var d2 = Math.floor(S.aki / S.n), b2 = S.aki % S.n;
+  return (d1 === d2 && Math.abs(b1 - b2) === 1) ||
+         (b1 === b2 && Math.abs(d1 - d2) === 1);
+}
+
+/* ---------- 向きから、動かせるこまを探す ----------
+   「うえへ」＝あきマスの ひとつ下にいるこまが、上へすべる。
+   十字ボタンの向きは「こまが動く向き」で書いてある。
+   あきマスがどちらに在るか、ではなく。押す人が考えるのは
+   こまの動きの方なので。 */
+function komaOfMuki(muki) {
+  var d = Math.floor(S.aki / S.n), b = S.aki % S.n;
+  if (muki === "ue")     { return (d + 1 < S.n) ? S.aki + S.n : -1; }  /* 下のこまが上へ */
+  if (muki === "shita")  { return (d - 1 >= 0)  ? S.aki - S.n : -1; }  /* 上のこまが下へ */
+  if (muki === "hidari") { return (b + 1 < S.n) ? S.aki + 1   : -1; }  /* 右のこまが左へ */
+  if (muki === "migi")   { return (b - 1 >= 0)  ? S.aki - 1   : -1; }  /* 左のこまが右へ */
+  return -1;
+}
+
+/* ---------- こまを動かす（本体） ----------
+   modoshi = true のときは「もどす」からの呼び出し。
+   手数を増やさず、履歴にも積まない。 */
+function ugokasu(i, modoshi) {
+  if (S.owatta && !modoshi) return false;
+  if (i < 0 || i >= S.ban.length) return false;
+  if (S.ban[i] === 0 || !tonariKa(i)) return false;
+
+  var kazu = S.ban[i];
+  S.ban[S.aki] = kazu;
+  S.ban[i] = 0;
+  var motoAki = S.aki;
+  S.aki = i;
+
+  if (modoshi) {
+    S.tesuu = Math.max(0, S.tesuu - 1);
+  } else {
+    S.rireki.push(motoAki);   /* こまが移った先＝もどすときに押す場所 */
+    S.tesuu++;
+  }
+
+  oto.koto(kazu, motoAki);
+  utsusu();
+
+  if (!S.owatta && sorottaKa()) sorotta();
+  shimau();
+  return true;
+}
+
+/* ============================================================
+   とちゅうの盤を しまう／出す
+
+   施主の言葉：「病院のベッドで、プレイするかも知れない。
+                 病院生活は、とっても暇なんです」
+
+   病院のベッドで遊ぶなら、途中で必ず呼ばれる。検査、食事、回診。
+   戻ってきたら 5×5 を二百手すすめた盤が消えていた、では
+   暇つぶしどころか損害になる。だから一手ごとに、この機械の中へ
+   そっと控えを取る。外へは送らない（送る先を持っていない）。
+   ============================================================ */
+var HOZON = "engawaya-narabe-tochuu";
+
+function shimau() {
+  try {
+    if (S.owatta) { localStorage.removeItem(HOZON); return; }
+    localStorage.setItem(HOZON, JSON.stringify({
+      n: S.n,
+      ban: S.ban,
+      aki: S.aki,
+      tesuu: S.tesuu,
+      /* もどす道も一緒に控える。ただし際限なく伸ばさない
+         （長い一局の履歴で、この機械の物置を埋めないため） */
+      rireki: S.rireki.slice(-800)
+    }));
+  } catch (e) { /* 覚えられない機械でも、遊ぶこと自体はできる */ }
+}
+
+function dasu() {
+  try {
+    var d = JSON.parse(localStorage.getItem(HOZON) || "null");
+    if (!d || !d.ban || !d.n) return null;
+    /* 中身が壊れていたら無かったことにする（古い版の控えを掴んで転ばないように） */
+    if (d.ban.length !== d.n * d.n) return null;
+    if (d.ban[d.aki] !== 0) return null;
+    return d;
+  } catch (e) { return null; }
+}
+
+function tsuzukeru(d) {
+  S.n = d.n;
+  S.ban = d.ban;
+  S.aki = d.aki;
+  S.tesuu = d.tesuu || 0;
+  S.rireki = d.rireki || [];
+  S.owatta = false;
+  banKumu();
+  shirase("つづきから どうぞ。" + S.tesuu + "手 めまで もどしました。");
+}
+
+/* ---------- 一手もどす ----------
+   何回でも戻せる。押し間違いの取り返しが利かない盤は、
+   手が震える人にとっては遊びでなく試験になるので。 */
+function modosu() {
+  if (!S.rireki.length) return;
+  var saki = S.rireki.pop();       /* さっき こまが移っていった先 */
+  S.owatta = false;                /* そろった後に戻したら、続きに戻る */
+  $("iwai").hidden = true;
+  ugokasu(saki, true);
+  shirase("一手 もどしました。");
+}
+
+/* ============================================================
+   混ぜる
+
+   そろった盤から、あきマスをでたらめに動かす。
+   直前の戻りだけは選ばない（同じ二マスを往復して混ざらないため）。
+   この作り方なら、できあがった盤は必ずほどける。
+   ============================================================ */
+function mazeru(kaisuu) {
+  /* 混ぜる回数が無いのに呼ばれたら、そのまま帰る。
+     この関数は最後に「まだ揃っていたら混ぜ直す」をするので、
+     回数ゼロだと自分を呼び続けて止まらなくなる */
+  if (!(kaisuu > 0)) return;
+  var mae = -1;
+  for (var k = 0; k < kaisuu; k++) {
+    var te = [];
+    var d = Math.floor(S.aki / S.n), b = S.aki % S.n;
+    if (d > 0)        te.push(S.aki - S.n);
+    if (d < S.n - 1)  te.push(S.aki + S.n);
+    if (b > 0)        te.push(S.aki - 1);
+    if (b < S.n - 1)  te.push(S.aki + 1);
+    /* 直前に居た場所へ戻る手は外す（ただし他に手が無いときは戻る） */
+    var erabi = te.filter(function (x) { return x !== mae; });
+    if (!erabi.length) erabi = te;
+    var tsugi = erabi[Math.floor(Math.random() * erabi.length)];
+    mae = S.aki;
+    S.ban[S.aki] = S.ban[tsugi];
+    S.ban[tsugi] = 0;
+    S.aki = tsugi;
+  }
+  /* まれに、混ぜ終わってそろったままになることがある。そのときは混ぜ直す */
+  if (sorottaKa()) mazeru(kaisuu);
+}
+
+/* ============================================================
+   画面を作る（一局のはじまり）
+
+   マスのボタンはここで一度だけ作る。以後は中身だけ書き換える。
+   ============================================================ */
+function hajimeru(n, mazeruKaisuu) {
+  S.n = n;
+  S.ban = [];
+  for (var i = 1; i < n * n; i++) S.ban.push(i);
+  S.ban.push(0);
+  S.aki = n * n - 1;
+  S.tesuu = 0;
+  S.rireki = [];
+  S.owatta = false;
+
+  mazeru(mazeruKaisuu);
+  banKumu();
+  /* 知らせの行は一行に収める。ここが二行になると、その分だけ
+     十字ボタンが画面の下へ押し出される（寝たまま片手で遊ぶ人に効く） */
+  shirase("じゅんばんに ならべてください。");
+  shimau();
+}
+
+/* ---------- 盤の器を組み直す ----------
+   マスの数が変わるときだけ作り直す（大きさを替えた・続きから始めた）。
+   一手ごとには作り直さない。作り直すと、いま当たっているフォーカスが
+   飛んで、キーボードや読み上げで遊んでいる人が迷子になるので。 */
+function banKumu() {
+  var n = S.n;
+  var ban = $("ban");
+  ban.textContent = "";
+  ban.style.gridTemplateColumns = "repeat(" + n + ", minmax(0, 1fr))";
+  S.komaBtn = [];
+  for (var k = 0; k < n * n; k++) {
+    var el;
+    if (S.ban[k] === 0) {
+      el = document.createElement("div");
+      el.className = "aki";
+    } else {
+      el = document.createElement("button");
+      el.type = "button";
+      el.className = "koma";
+    }
+    el.dataset.i = k;
+    ban.appendChild(el);
+    S.komaBtn.push(el);
+  }
+  mojiAwase();
+
+  $("iwai").hidden = true;
+  $("yomiage").textContent = "";
+  utsusu();
+}
+
+/* ============================================================
+   数字の大きさを、盤の実寸から決める
+
+   マスの大きさは画面の幅で変わる（横に寝かせた、字を大きくした、
+   画面の小さな機械で開いた）。だから数字の大きさは決め打ちにせず、
+   そのつど盤を測って割り出す。決め打ちにしていたら、5×5で
+   数字がマスを押し広げて盤が画面からはみ出した。
+
+   ・二けたの数字は一けたの倍の幅を食うので、けた数で割る
+   ・高さでも頭を打つので、小さい方を採る
+   ============================================================ */
+function mojiAwase() {
+  var ban = $("ban");
+  if (!ban.clientWidth || !S.n) return;
+  var masu = (ban.clientWidth - 12 - 6 * (S.n - 1)) / S.n;   /* 内側の余白12・すきま6 */
+  var keta = String(S.n * S.n - 1).length;
+  var moji = Math.min(masu * 0.62, masu * 1.15 / keta);
+  moji = Math.max(15, Math.floor(moji));
+  for (var i = 0; i < S.komaBtn.length; i++) S.komaBtn[i].style.fontSize = moji + "px";
+}
+/* 画面の向きを変えた・窓の大きさを変えた・字の大きさを替えたときに測り直す */
+window.addEventListener("resize", mojiAwase);
+
+/* ============================================================
+   画面に写す
+
+   マスの中身・読み上げの言葉・十字ボタンの生き死にを、
+   いつもここ一箇所で決める。書き換える場所が散らばると、
+   片方だけ古いことを言う画面ができるので。
+   ============================================================ */
+function utsusu() {
+  var n = S.n;
+
+  for (var i = 0; i < S.ban.length; i++) {
+    var kazu = S.ban[i];
+    var el = S.komaBtn[i];
+    var hitsuyou = (kazu === 0) ? "aki" : "koma";
+
+    /* あきマスとこまが入れ替わったら、箱の種類ごと作り直す
+       （div ⇄ button。押せないものをボタンのままにしない） */
+    if ((el.tagName === "BUTTON") !== (hitsuyou === "koma")) {
+      var atarashii;
+      if (hitsuyou === "koma") {
+        atarashii = document.createElement("button");
+        atarashii.type = "button";
+      } else {
+        atarashii = document.createElement("div");
+      }
+      atarashii.style.fontSize = el.style.fontSize;
+      atarashii.dataset.i = i;
+      el.replaceWith(atarashii);
+      S.komaBtn[i] = atarashii;
+      el = atarashii;
+    }
+
+    if (kazu === 0) {
+      el.className = "aki";
+      el.textContent = "";
+      el.setAttribute("aria-label", basho(i) + "、あき");
+    } else {
+      var ugokeru = tonariKa(i);
+      el.className = "koma"
+        + (S.ban[i] === i + 1 ? " sorotta" : "")
+        + (ugokeru ? " ugokeru" : "");
+      el.textContent = String(kazu);
+      /* 読み上げの言葉。数字だけでなく、場所と、動かせるかどうかまで言う。
+         Tab で盤を辿ること自体が「盤を触る」ことになるように */
+      el.setAttribute("aria-label",
+        basho(i) + "、" + kazu + "。" + (ugokeru ? "うごかせます" : "うごきません"));
+    }
+  }
+
+  /* 十字ボタン。動かせない向きは薄くするが、消さない（場所を保つ） */
+  var kazuUgokeru = 0;
+  [["ue", "kUe", "うえへ"], ["shita", "kShita", "したへ"],
+   ["hidari", "kHidari", "ひだりへ"], ["migi", "kMigi", "みぎへ"]].forEach(function (m) {
+    var i = komaOfMuki(m[0]);
+    var btn = $(m[1]);
+    var dekiru = (i >= 0 && !S.owatta);
+    btn.disabled = !dekiru;
+    if (dekiru) {
+      kazuUgokeru++;
+      btn.querySelector(".jiKazu").textContent = S.ban[i];
+      btn.querySelector(".jiMuki").textContent = m[2];
+      btn.setAttribute("aria-label", S.ban[i] + " を " + m[2] + " うごかす");
+    } else {
+      btn.querySelector(".jiKazu").textContent = "";
+      btn.querySelector(".jiMuki").textContent = m[2];
+      btn.setAttribute("aria-label", m[2] + " うごかせる こまは ありません");
+    }
+  });
+  $("nakaKazu").textContent = kazuUgokeru;
+
+  $("tesuu").textContent = S.tesuu;
+  $("btnModosu").disabled = !S.rireki.length;
+}
+
+/* ---------- 知らせの行 ---------- */
+function shirase(t) { $("shirase").textContent = t; }
+
+/* ============================================================
+   ばんめんを よみあげる
+
+   一段ずつ、区切って言葉にする。
+   読み上げソフトは句点で息を継ぐので、段ごとに文を切る。
+   画面にも同じ言葉を出す（耳の人と目の人に、同じものを渡す）。
+   ============================================================ */
+function yomiage() {
+  var waku = $("yomiage");
+  waku.textContent = "";
+  for (var d = 0; d < S.n; d++) {
+    var kotoba = [];
+    for (var b = 0; b < S.n; b++) {
+      var kazu = S.ban[d * S.n + b];
+      kotoba.push(kazu === 0 ? "あき" : String(kazu));
+    }
+    var gyo = document.createElement("span");
+    gyo.className = "dan";
+    gyo.textContent = (d + 1) + "だんめ、" + kotoba.join("　") + "。";
+    waku.appendChild(gyo);
+  }
+  var shime = document.createElement("span");
+  shime.className = "dan";
+  shime.textContent = "うごかした かず " + S.tesuu + "。あきマスは " + basho(S.aki) + "。";
+  waku.appendChild(shime);
+}
+
+/* ============================================================
+   そろった
+
+   次の大きさへの誘いを出す。ただし「解放」ではない。
+   三つとも最初から開いているので、これはただの声かけ。
+   ============================================================ */
+function sorotta() {
+  S.owatta = true;
+  utsusu();
+  oto.iwai();
+  shirase("そろいました！");
+
+  var ima = OOKISA.findIndex(function (o) { return o.n === S.n; });
+  var tsugi = OOKISA[ima + 1];
+
+  $("iwaiKotoba").textContent =
+    "そろった！ おみごと。" + S.n + " × " + S.n + " を " + S.tesuu + " 手で ならべました。";
+
+  var waku = $("iwaiTsugi");
+  waku.textContent = "";
+
+  if (tsugi) {
+    var sasoi = document.createElement("p");
+    sasoi.style.margin = "0 0 0.5em";
+    sasoi.textContent = "もっと むずかしいよ。" + tsugi.na + " も できます。";
+    waku.appendChild(sasoi);
+
+    var b = document.createElement("button");
+    b.type = "button";
+    b.style.width = "100%";
+    b.textContent = tsugi.na + " を やってみる";
+    b.addEventListener("click", function () {
+      hajimeru(tsugi.n, tsugi.mazeru);
+      yoseru($("ban"));
+    });
+    waku.appendChild(b);
+  } else {
+    var p = document.createElement("p");
+    p.style.margin = "0 0 0.5em";
+    p.textContent = "ここまで そろえる人は、そうそう いません。おみごとです。";
+    waku.appendChild(p);
+  }
+
+  var mou = document.createElement("button");
+  mou.type = "button";
+  mou.style.width = "100%";
+  mou.style.marginTop = "0.5em";
+  mou.textContent = "おなじ大きさで もう一回";
+  mou.addEventListener("click", function () {
+    var o = OOKISA[ima];
+    hajimeru(o.n, o.mazeru);
+    yoseru($("ban"));
+  });
+  waku.appendChild(mou);
+
+  $("iwai").hidden = false;
+}
+
+/* ============================================================
+   音。既定は消音（遊び場の掟の四）。札を押した人にだけ鳴る。
+
+   飾りではなく補助：左右（パン）＝何ばんめか、音程＝何だんめか。
+   耳が聞こえにくい方には要らない遊びなので、はじめから鳴らさない。
+   ============================================================ */
+var oto = {
+  ac: null,
+  naru: false,
+
+  tsukeru: function () {
+    if (!this.ac) this.ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ac.state === "suspended") this.ac.resume();
+    this.naru = true;
+  },
+  kesu: function () { this.naru = false; },
+
+  _beep: function (freq, dur, x01, vol) {
+    if (!this.naru || !this.ac) return;
+    var t = this.ac.currentTime;
+    var osc = this.ac.createOscillator();
+    var g = this.ac.createGain();
+    osc.type = "triangle";
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(g);
+    if (this.ac.createStereoPanner) {
+      var p = this.ac.createStereoPanner();
+      p.pan.value = (x01 * 2 - 1);
+      g.connect(p); p.connect(this.ac.destination);
+    } else { g.connect(this.ac.destination); }
+    osc.start(t); osc.stop(t + dur + 0.05);
+  },
+
+  /* こまが すべった音。行き先の段で高さ、番目で左右が決まる */
+  koto: function (kazu, saki) {
+    var d = Math.floor(saki / S.n), b = saki % S.n;
+    var x01 = (S.n === 1) ? 0.5 : b / (S.n - 1);
+    this._beep(520 - d * 55, 0.09, x01, 0.3);
+  },
+  iwai: function () {
+    var uta = [523, 659, 784, 1047];
+    var jibun = this;
+    uta.forEach(function (f, i) { setTimeout(function () { jibun._beep(f, 0.3, 0.5, 0.35); }, i * 150); });
+  }
+};
+
+/* ---------- 盤へ目を寄せる ----------
+   なめらかに動かすのは、動きが苦手な設定の人には目まいのもと。
+   その設定のときは、すっと飛ぶ（掟の五と同じ考え方）。 */
+function yoseru(el) {
+  var kirai = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* 盤の上ではなく「盤の頭」を画面の上に付ける。
+     こうすると盤の下に十字ボタンまで入って、
+     ねたまま片手で遊ぶときに画面を上下させずに済む */
+  el.scrollIntoView({ block: "start", behavior: kirai ? "auto" : "smooth" });
+}
+
+/* ---------- 遊びの画面へ入る ---------- */
+function asobiHe() {
+  $("genkan").hidden = true;
+  $("asobiArea").hidden = false;
+}
+
+/* ============================================================
+   スタートメニューを組み立てる
+   ============================================================ */
+(function () {
+  var waku = $("erabu");
+  OOKISA.forEach(function (o) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ookisa";
+
+    /* 見本の絵。マスの数だけ四角を並べる（右下の一つはあきマス） */
+    var mihon = document.createElement("span");
+    mihon.className = "mihon";
+    mihon.setAttribute("aria-hidden", "true");
+    mihon.style.gridTemplateColumns = "repeat(" + o.n + ", 1fr)";
+    for (var k = 0; k < o.n * o.n; k++) {
+      var m = document.createElement("i");
+      if (k === o.n * o.n - 1) m.className = "aki";
+      mihon.appendChild(m);
+    }
+    b.appendChild(mihon);
+
+    var kotoba = document.createElement("span");
+    kotoba.className = "kotoba";
+    var na = document.createElement("span");
+    na.className = "na";
+    na.textContent = o.na;
+    var setsu = document.createElement("span");
+    setsu.className = "setsumei";
+    setsu.textContent = o.setsumei;
+    kotoba.appendChild(na);
+    kotoba.appendChild(setsu);
+    b.appendChild(kotoba);
+
+    b.setAttribute("aria-label", o.na + " で あそぶ。" + o.setsumei);
+    b.addEventListener("click", function () {
+      asobiHe();
+      hajimeru(o.n, o.mazeru);
+      /* 遊びの画面へ来たことを、目でも耳でも分かるように盤へ寄せる */
+      yoseru($("ban"));
+    });
+    waku.appendChild(b);
+  });
+})();
+
+/* ============================================================
+   とちゅうの盤があれば、いちばん上で知らせる
+   ============================================================ */
+(function () {
+  var d = dasu();
+  if (!d) return;
+
+  $("tsuzukiKotoba").textContent =
+    "まえの つづきが のこっています。" + d.n + " × " + d.n + " の " + d.tesuu + "手 めです。";
+
+  var b = document.createElement("button");
+  b.type = "button";
+  b.style.width = "100%";
+  b.textContent = "つづきから あそぶ";
+  b.addEventListener("click", function () {
+    asobiHe();
+    tsuzukeru(d);
+    yoseru($("ban"));
+  });
+  $("tsuzukiBotan").appendChild(b);
+
+  var p = document.createElement("p");
+  p.className = "yawaraka";
+  p.style.margin = "0.6em 0 0";
+  p.textContent = "下から 大きさを えらぶと、あたらしく はじめます（つづきは 消えます）。";
+  $("tsuzukiBotan").appendChild(p);
+
+  $("tsuzuki").hidden = false;
+})();
+
+/* ============================================================
+   配線
+   ============================================================ */
+
+/* 盤のマスを じかに おす（目で見て遊ぶ人の、いちばん速い道）。
+   マスは作り直されることがあるので、盤ぜんたいで受ける */
+$("ban").addEventListener("click", function (e) {
+  var el = e.target.closest("[data-i]");
+  if (!el || el.tagName !== "BUTTON") return;
+  var i = Number(el.dataset.i);
+  if (!ugokasu(i, false)) {
+    /* 動かせないこまを押したときは、黙らずに理由を言う。
+       押しても何も起きない画面は、見えない人には壊れて見えるので */
+    if (!S.owatta) shirase("その こまは いま うごきません。ふちが 黄色い こまだけ うごきます。");
+  }
+});
+
+/* 十字ボタン */
+[["kUe", "ue"], ["kShita", "shita"], ["kHidari", "hidari"], ["kMigi", "migi"]].forEach(function (m) {
+  $(m[0]).addEventListener("click", function () {
+    var i = komaOfMuki(m[1]);
+    if (i >= 0) ugokasu(i, false);
+  });
+});
+
+$("btnModosu").addEventListener("click", modosu);
+$("btnYomu").addEventListener("click", yomiage);
+
+$("btnOto").addEventListener("click", function () {
+  if (oto.naru) {
+    oto.kesu();
+    $("btnOto").textContent = "おとを つける";
+  } else {
+    oto.tsukeru();
+    $("btnOto").textContent = "おとを けす";
+    oto._beep(520, 0.12, 0.5, 0.3);
+  }
+});
+
+$("btnYarinaoshi").addEventListener("click", function () {
+  var o = OOKISA.find(function (x) { return x.n === S.n; });
+  hajimeru(o.n, o.mazeru);
+});
+
+$("btnModoru").addEventListener("click", function () {
+  $("asobiArea").hidden = true;
+  $("genkan").hidden = false;
+  var kirai = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: kirai ? "auto" : "smooth" });
+});
+
+/* キーボード。やじるしキー＝その向きへ こまを うごかす。
+   盤のボタンにフォーカスが当たっているときも同じに効く
+   （矢印でボタン間を移動する作法は、この盤には無いので奪わない） */
+document.addEventListener("keydown", function (e) {
+  if ($("asobiArea").hidden) return;
+  var muki = null;
+  if (e.key === "ArrowUp")    muki = "ue";
+  if (e.key === "ArrowDown")  muki = "shita";
+  if (e.key === "ArrowLeft")  muki = "hidari";
+  if (e.key === "ArrowRight") muki = "migi";
+  if (!muki) return;
+  e.preventDefault();
+  var i = komaOfMuki(muki);
+  if (i >= 0) ugokasu(i, false);
+});
+</script>
+</body>
+</html>

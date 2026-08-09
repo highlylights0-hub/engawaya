@@ -444,7 +444,56 @@ footer a { color: var(--ink-soft); }
        札には必ず「目でみる／耳でさがす」を書く。
        入ってから遊べないと分かるのが、いちばん つらいから。 -->
   <h2>あそぶ</h2>
-  <p>みっつ あります。どれも 無料で、すぐ はじめられます。</p>
+  <p>よっつ あります。どれも 無料で、すぐ はじめられます。</p>
+
+  <!-- すうじならべ。施主「こんな立派なゲーム、WEBで先頭に置くべきですね」で先頭に置いた。
+       この家に無かったのは「こちらを待ってくれる遊び」の席。ほかの三つは
+       落ちてくる・玉が飛ぶ・音が鳴る＝どれも急かす側にいる。 -->
+  <a class="fuda" href="asobiba/narabe/">
+    <svg class="e" viewBox="0 0 320 120" width="320" height="120"
+         role="img" aria-label="すうじならべの絵。3かける3のマスに 1から8の数字が ならび、右下の 1マスが あいている">
+      <rect x="0" y="0" width="320" height="120" fill="#0d1424"/>
+      <g font-family="Hiragino Sans, Meiryo, sans-serif" font-size="19" font-weight="700"
+         text-anchor="middle">
+        <!-- 1だんめ。そろっている こまは 灯り色（色が かわることを 絵でも 見せる） -->
+        <rect x="111" y="8"  width="30" height="30" rx="5" fill="#ffd166"/>
+        <text x="126" y="30" fill="#1a1200">1</text>
+        <rect x="144" y="8"  width="30" height="30" rx="5" fill="#ffd166"/>
+        <text x="159" y="30" fill="#1a1200">2</text>
+        <rect x="177" y="8"  width="30" height="30" rx="5" fill="#ffd166"/>
+        <text x="192" y="30" fill="#1a1200">3</text>
+        <!-- 2だんめ -->
+        <rect x="111" y="41" width="30" height="30" rx="5" fill="#2a3855" stroke="#8296c2" stroke-width="2"/>
+        <text x="126" y="63" fill="#f2f4fa">6</text>
+        <rect x="144" y="41" width="30" height="30" rx="5" fill="#2a3855" stroke="#8296c2" stroke-width="2"/>
+        <text x="159" y="63" fill="#f2f4fa">4</text>
+        <rect x="177" y="41" width="30" height="30" rx="5" fill="#2a3855" stroke="#8296c2" stroke-width="2"/>
+        <text x="192" y="63" fill="#f2f4fa">5</text>
+        <!-- 3だんめ。右下が あきマス。8が そこへ すべる -->
+        <rect x="111" y="74" width="30" height="30" rx="5" fill="#2a3855" stroke="#8296c2" stroke-width="2"/>
+        <text x="126" y="96" fill="#f2f4fa">7</text>
+        <rect x="144" y="74" width="30" height="30" rx="5" fill="#2a3855" stroke="#ffd166" stroke-width="3"/>
+        <text x="159" y="96" fill="#f2f4fa">8</text>
+        <rect x="177" y="74" width="30" height="30" rx="5" fill="none"
+              stroke="#6f83ad" stroke-width="2" stroke-dasharray="5 4"/>
+      </g>
+      <!-- すべる むきの やじるし -->
+      <path d="M166 89 L196 89" fill="none" stroke="#ffd166" stroke-width="3" stroke-linecap="round"/>
+      <path d="M190 84 L196 89 L190 94" fill="none" stroke="#ffd166" stroke-width="3"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- 下の板＝縁側 -->
+      <rect x="0" y="106" width="320" height="14" fill="#8a6743"/>
+    </svg>
+    <span class="kotoba">
+      <span class="na">すうじならべ</span>
+      <span class="iru">目でも 耳でも あそべます（音は いりません）</span>
+      <span class="setsumei">数字を すべらせて、じゅんばんに ならべます。
+        大きさは <strong>3×3・4×4・5×5</strong> から えらべます。ぜんぶ さいしょから ひらいています。
+        じかんの せいげんは ありません。おし間違えても「一手 もどす」で 取り返せます。
+        とちゅうで やめても、つぎに 開いたとき つづきから あそべます。
+        読み上げソフトだけでも さいごまで あそべます。</span>
+    </span>
+  </a>
 
   <!-- 星つなぎ -->
   <a class="fuda" href="asobiba/">
