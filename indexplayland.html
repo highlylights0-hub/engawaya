@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<!--
+    ┌────────────────────────────────────────────────┐
+    │                                                │
+    │                 棟   札                        │
+    │                                                │
+    │      上棟   二〇二六年 八月 九日               │
+    │                                                │
+    │      施主   岡 澤 博 喜                        │
+    │      大工   Claude （蔵人）                    │
+    │                                                │
+    │      この部屋を建てた理由                      │
+    │        「別の招待状のような入り口を、そっと     │
+    │        置いてあげたい」と施主。                │
+    │        子供・目が見えにくい方・耳が聞こえ      │
+    │        にくい方に、字ばかりの母屋の玄関は      │
+    │        入り口が狭い。だから大きな字と大きな    │
+    │        絵の玄関を、母屋とは別にもう一枚。      │
+    │                                                │
+    │        ただし「あなたはこちら」の仕分け札に    │
+    │        してはいけない。招待状は、来なくても    │
+    │        いいから招待状である。                  │
+    │                                                │
+    └────────────────────────────────────────────────┘
+
+    ── この部屋の掟 ──────────────────────────────
+
+    一． 外から何も読み込まない。母屋と同じ。
+         絵も全部この一枚の中に描く（SVG）。写真は貼らない。
+         回線が細い機械でも、開いた瞬間に全部出る。
+
+    二． 仕分けをしない。
+         「障害のある方はこちら」とはどこにも書かない。
+         ここは「だれでも あそべる ばしょ」であって、
+         特別席ではない。既にある遊び場（asobiba/）も
+         母屋の玄関も、一本も塞がない。そっと横に置く。
+
+         部屋の名前は施主が「縁側屋バリアフリー」と付けた。
+         これは掟二と矛盾しない。バリアフリーは建物の側の
+         言葉——段差をなくしてありますよ、という宣言であって、
+         誰が入っていいかを決める札ではないから。
+         （仕分けの札は人を指す。この札は建物を指している）
+
+    三． 押す前に、何がいるか分かるようにする。
+         遊びの札には必ず「目でみる／耳でさがす」を書く。
+         入ってから「音が出ないと遊べない」と気づくのは、
+         聞こえにくい方には門前払いと同じだから。
+         （メーター引きで学んだ、押す前に知りたいのは
+           「何をしなくて済むか」という作法の応用）
+
+    四． 急かさない。時間制限・自動で動くもの・点滅は置かない。
+
+    五． 色と字の大きさは、読む人が選べる。
+         操作は音の縁側（oto/）とまったく同じ二つのボタンに
+         揃える。同じ家の別の戸なので、作法が違うと迷う。
+
+    六． 漢字を減らし、易しい言葉で書く。
+         ふりがな（ruby）は使わない。読み上げソフトが
+         二重に読むことがあるので、はじめから やさしく書く。
+
+    七． この部屋の主役は「遊び」。
+         施主「縁側屋バリアフリーでは、遊びがメインです」
+             「遊べることは、なんでもOK！」
+         道具の紹介・説明・お願いを上に置かない。まず遊べる
+         ものを並べる。形は問わない——ゲームでなくてもいい。
+         押したら何かが起きる、それだけで遊びとして数える。
+
+         生き物は掟四の外（施主「猫や動物は、バタバタしてもOK笑」）。
+         急かす仕掛けは禁じるが、勝手にしている猫は急かさない。
+
+    ── まだ空けてある欄について ──
+
+    施主の言葉は「器を用意したいのです」。
+    だから中身が全部そろう前に建てた。空の欄には名前と
+    意味だけ書いてある（名前を書かない空欄はただのゴミ）。
+      ・耳が聞こえにくい方のための、目でわかるスイカわり
+      ・みんなの言葉が並ぶ場所（いまは作っている本人にだけ届く）
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>縁側屋バリアフリー</title>
+<meta name="description" content="縁側屋の、入りやすい入り口。大きな字と大きな絵で、ゲームがえらべます。話したいこと・ほしい道具を書く場所もあります。無料・登録不要・広告なし・急かしません。">
+
+<style>
+/* ============================================================
+   えんがわ ひろば
+
+   母屋の玄関は字が主役。ここは「字 と 絵」が半分ずつ。
+     ・字は大きく（既定20px・「もっと大きく」で26px）
+     ・絵は横いっぱい（押す場所が広いほど、手が震えても外さない）
+     ・色の差は強く。薄い字は一字も置かない
+   色は縁側屋の家の色（夜空 #0d1424 / 灯り #ffd166）をそのまま使う。
+   別の家に見えてしまうと、招待状にならないから。
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 字の大きさは html の font-size 一箇所で決め、あとは rem で連動させる。
+   音の縁側とまったく同じ作りにしてある（直す時に片方だけ直らない事故を防ぐ） */
+html { font-size: 20px; }
+html.ookii { font-size: 26px; }
+
+:root {
+  --kami:      #0d1424;   /* 地の色＝縁側屋の夜空 */
+  --kami-shita:#1a2338;   /* 地の下の方（うっすら明るく） */
+  --ink:       #f2f4fa;   /* 字の色 */
+  --ink-soft:  #c3cbdc;   /* 補足の字。それでも十分濃く */
+  --sen:       #435070;   /* 罫線 */
+  --akari:     #ffd166;   /* 灯り（見出しの下線・焦点の枠） */
+  --botan:     #223050;   /* 押すものの地 */
+  --botan-sen: #8296c2;   /* 押すものの枠 */
+  --ita:       #8a6743;   /* 縁側の板 */
+}
+html.shiroi {
+  --kami:      #ffffff;
+  --kami-shita:#ffffff;
+  --ink:       #1a1a1a;
+  --ink-soft:  #3d3d3d;
+  --sen:       #999999;
+  --akari:     #8a5a00;
+  --botan:     #f0f0f0;
+  --botan-sen: #555555;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--kami) 0%, var(--kami-shita) 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  line-height: 2;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.4rem 1rem 0;
+}
+
+h1 {
+  font-size: 1.6rem;
+  letter-spacing: 0.14em;
+  margin: 0.4em 0 0.1em;
+}
+.fukudai {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  margin: 0 0 1.2em;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 1.8em 0 0.4em;
+  padding-bottom: 0.15em;
+  border-bottom: 3px solid var(--akari);
+}
+
+p { margin: 0.6em 0; }
+.yawaraka { color: var(--ink-soft); font-size: 0.85rem; }
+
+/* ---- 招待の一言。囲って、まぶしくない程度に浮かせる ---- */
+.shoutai {
+  border: 2px solid var(--sen);
+  border-left: 8px solid var(--akari);
+  border-radius: 12px;
+  padding: 0.8em 1em;
+  margin: 1em 0 1.6em;
+}
+.shoutai p:last-child { margin-bottom: 0; }
+
+/* ---- あそびの札。絵が上、言葉が下。札ぜんぶが押せる ---- */
+.fuda {
+  display: block;
+  width: 100%;
+  border: 2px solid var(--botan-sen);
+  border-radius: 16px;
+  background: var(--botan);
+  color: var(--ink);
+  text-decoration: none;
+  overflow: hidden;
+  margin: 0.9em 0 1.4em;
+  cursor: pointer;
+}
+.fuda .e {           /* 絵の入る箱。夜空は白い紙の時も夜空のまま（縁側屋の景色だから） */
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #0d1424;
+  border-bottom: 2px solid var(--botan-sen);
+}
+.fuda .kotoba { display: block; padding: 0.7em 0.9em 0.9em; }
+.fuda .na {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.fuda .setsumei { display: block; font-size: 0.9rem; line-height: 1.8; }
+/* 「なにが いるか」の帯。押す前に分かるように、名前のすぐ下に置く */
+.fuda .iru {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--kami);
+  background: var(--akari);
+  border-radius: 999px;
+  padding: 0.1em 0.9em;
+  margin: 0.3em 0 0.2em;
+  line-height: 1.9;
+}
+html.shiroi .fuda .iru { color: #ffffff; background: #8a5a00; }
+
+/* ---- 押すもの全般（音の縁側と同じ寸法） ---- */
+button, .oshiro {
+  display: block;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--botan);
+  border: 2px solid var(--botan-sen);
+  border-radius: 14px;
+  min-height: 72px;
+  padding: 0.6em 1em;
+  margin: 0.6em 0;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.6;
+  touch-action: manipulation;
+}
+.oshiro { display: flex; align-items: center; justify-content: center; }
+.oshiro span { display: block; }
+.oshiro small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+button:focus-visible, .oshiro:focus-visible,
+.fuda:focus-visible, textarea:focus-visible {
+  outline: 4px solid var(--akari);
+  outline-offset: 2px;
+}
+
+.settei-narabi { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6em; }
+.settei-narabi button { font-weight: 400; font-size: 0.9rem; margin: 0; }
+
+/* ---- 書く枠 ---- */
+textarea {
+  width: 100%;
+  min-height: 8em;
+  font-family: inherit;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--ink);
+  background: var(--kami);
+  border: 2px solid var(--botan-sen);
+  border-radius: 12px;
+  padding: 0.7em;
+  resize: vertical;
+}
+.jisuu { text-align: right; font-size: 0.8rem; color: var(--ink-soft); }
+#koeJoutai {
+  min-height: 2em;
+  font-size: 0.9rem;
+  color: var(--akari);
+  font-weight: 700;
+}
+
+/* ---- 看板（母屋から移してきた、吊ってある一枚板）----------------
+   施主の言葉は「看板は自慢ですよ、乗せて欲しいな」。
+   ここが同じ家であることの、いちばん短い証明になる。
+
+   母屋では、看板そのものが屋号の見出し（h1 を画面から下げている）。
+   ここでは違う。この部屋の名前は「えんがわ ひろば」なので、
+   看板は h1 の上に掲げる。だから h1 は隠さない。
+   屋号の看板の下に部屋の名前が来る＝暖簾をくぐった所の札、の並び。
+
+   canvas が描けない古い機械では板は出ない（既定で display:none）。
+   その時も見出しの字は残るので、誰も締め出されない。
+
+   ※ このページの button は「大きく押しやすい札」の姿をしている。
+     看板は札ではないので、その姿を一つずつ打ち消しておく。
+   ------------------------------------------------------------ */
+.kanban-ita { display: none; }
+html.ita-ok .kanban-ita { display: block; margin: 0 0 0.4rem; }
+.ita-btn {
+  display: block;
+  width: auto;          /* 札の 100% を打ち消す */
+  min-height: 0;        /* 札の 72px を打ち消す */
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: 50% 4%;        /* 吊り環の位置。ここを軸に振れる */
+}
+.ita-btn canvas { display: block; filter: drop-shadow(0 6px 10px #00000026); }
+.ita-btn:focus-visible { outline: 3px solid var(--akari); outline-offset: 8px; }
+
+/* 揺れ。振り子なので、だんだん小さくなって止まる。 */
+@keyframes yure {
+  0%   { transform: rotate(0deg); }
+  10%  { transform: rotate(-2.4deg); }
+  25%  { transform: rotate(1.9deg); }
+  40%  { transform: rotate(-1.3deg); }
+  55%  { transform: rotate(.85deg); }
+  70%  { transform: rotate(-.5deg); }
+  85%  { transform: rotate(.22deg); }
+  100% { transform: rotate(0deg); }
+}
+.ita-btn.yureru { animation: yure 2.8s cubic-bezier(.36,.07,.3,1) both; }
+/* 動きを嫌う設定の人には揺らさない（この部屋の掟 四「急かさない」とも揃う） */
+@media (prefers-reduced-motion: reduce) { .ita-btn.yureru { animation: none; } }
+
+/* ---- まだ空けてある欄。作りかけだと正直に見えるように点線で囲う ---- */
+.akiba {
+  border: 2px dashed var(--sen);
+  border-radius: 12px;
+  padding: 0.8em 1em;
+  margin: 0.9em 0;
+}
+.akiba .na { font-weight: 700; display: block; }
+.akiba p { margin: 0.2em 0 0; }
+
+/* ---- 縁側の板と、猫 ------------------------------------------
+   施主の言葉は「猫や動物は、バタバタしてもOK笑」。
+   掟四が禁じたのは「急かす仕掛け」（時間制限・点滅・勝手に進む画面）で
+   あって、生き物ではない。猫が勝手にしているのは、急かしていない。
+
+   母屋の縁側にいるのと同じ茶トラを、一マスも変えずに連れてきた。
+   同じ猫が同じ家の別の戸にも座っている、という景色にしたいので。
+   ------------------------------------------------------------ */
+.engawa {
+  position: relative;
+  height: 84px;
+  margin-top: 2.6rem;
+}
+.engawa::after {              /* 縁側の板。厚みは 20px の一本 */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 20px;
+  background: var(--ita);
+  border-top: 3px solid #a8815a;
+}
+/* 猫。板の上で香箱座り。ふだんは座っていて、ときどき思い出したように
+   ぴょんと跳ねて、右へ少し歩き、また戻ってくる。
+   支点を下端にすると、かがむ→伸びる→着地で潰れる、が自然に見える。
+   移動は板の上だけに収め、遠くへは行かせない（母屋と同じ振り付け）。 */
+.neko {
+  position: absolute;
+  left: 8%;
+  bottom: 20px;               /* 板の厚みぶん持ち上げて、板の上に座らせる */
+  width: 48px;
+  z-index: 1;
+  transform-origin: 50% 100%;
+  animation: neko-asobi 7s ease-in-out infinite;
+}
+.neko svg { display: block; width: 100%; height: auto; }
+@keyframes neko-asobi {
+  0%, 30% { transform: translateX(0)   translateY(0)     scaleY(1);    }  /* 座っている */
+  34%     { transform: translateX(0)   translateY(0)     scaleY(0.86); }  /* かがむ */
+  40%     { transform: translateX(4vw) translateY(-20px) scaleY(1.10); }  /* 右へぴょん（伸びる） */
+  45%     { transform: translateX(8vw) translateY(0)     scaleY(0.92); }  /* 着地（潰れる） */
+  48%     { transform: translateX(8vw) translateY(0)     scaleY(1);    }
+  62%     { transform: translateX(8vw) translateY(0)     scaleY(1);    }  /* 右でひと休み */
+  66%     { transform: translateX(8vw) translateY(0)     scaleY(0.86); }  /* また かがむ */
+  72%     { transform: translateX(4vw) translateY(-20px) scaleY(1.10); }  /* 左へ戻るぴょん */
+  77%     { transform: translateX(0)   translateY(0)     scaleY(0.92); }
+  80%     { transform: translateX(0)   translateY(0)     scaleY(1);    }
+  100%    { transform: translateX(0)   translateY(0)     scaleY(1);    }
+}
+
+footer {
+  border-top: 1px solid var(--sen);
+  margin-top: 2.4rem;
+  padding: 1rem 1rem 2rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 2;
+}
+footer a { color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- 吊ってある一枚板の看板。中身は下の script が点をひとつずつ打って描く。
+       母屋と同じ板・同じ木目・同じ縄。ここが同じ家だという証。 -->
+  <div class="kanban-ita">
+    <button class="ita-btn" id="itaBtn" aria-label="縁側屋の看板。押すと揺れます。">
+      <canvas id="itaCv" aria-hidden="true"></canvas>
+    </button>
+  </div>
+
+  <!-- 部屋の名前は施主が付けた「縁側屋バリアフリー」。
+       看板（絵）は読み上げソフトに届かない（canvas は aria-hidden）ので、
+       屋号はこの h1 の側にも必ず入れておく。耳で聞く人には、ここが
+       家の名前を名乗る唯一の場所になる。 -->
+  <h1>縁側屋バリアフリー</h1>
+  <p class="fukudai">えんがわや バリアフリー ／ だれでも 入れる、あそびの ばしょ</p>
+
+  <!-- ====== 招待の一言 ======
+       ここは「来てください」ではなく「あいています」と書く。
+       来なくてもいい、と書いてあるから招待状になる。 -->
+  <div class="shoutai">
+    <p>ようこそ。ここは、ただ あそぶだけの ばしょです。</p>
+    <p>お金も、名前の とうろくも いりません。こうこく（広告）も ありません。
+       じかんの せいげんも、いそがせる しかけも ありません。</p>
+    <p>あそんでも、あそばなくても いいです。あいている 縁側（えんがわ）だと おもって、
+       すきなときに のぞいてください。</p>
+  </div>
+
+  <!-- ====== 見え方をえらぶ（音の縁側と同じ操作に揃える） ====== -->
+  <h2>見え方を えらぶ</h2>
+  <p class="yawaraka">えらんだ けっかは、この きかいの 中にだけ おぼえておきます。外へは 送りません。</p>
+  <div class="settei-narabi">
+    <button id="btnIro" type="button">白い紙に 黒い字にする</button>
+    <button id="btnJi" type="button">字を もっと大きくする</button>
+  </div>
+
+  <!-- ====== あそぶ ======
+       札には必ず「目でみる／耳でさがす」を書く。
+       入ってから遊べないと分かるのが、いちばん つらいから。 -->
+  <h2>あそぶ</h2>
+  <p>みっつ あります。どれも 無料で、すぐ はじめられます。</p>
+
+  <!-- 星つなぎ -->
+  <a class="fuda" href="asobiba/">
+    <svg class="e" viewBox="0 0 320 120" width="320" height="120"
+         role="img" aria-label="星つなぎの絵。夜空にひかる星が、線でつながっている">
+      <rect x="0" y="0" width="320" height="120" fill="#0d1424"/>
+      <!-- 星をつなぐ線。うっすら光る筋 -->
+      <path d="M52 78 L96 44 L150 66 L206 36 L262 70" fill="none"
+            stroke="#6f83ad" stroke-width="3" stroke-linecap="round"/>
+      <path d="M52 78 L96 44 L150 66 L206 36 L262 70" fill="none"
+            stroke="#ffd166" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
+      <!-- 星。まんなかを白く、まわりを灯り色に -->
+      <g fill="#ffd166">
+        <circle cx="52"  cy="78" r="9"/>
+        <circle cx="96"  cy="44" r="7"/>
+        <circle cx="150" cy="66" r="10"/>
+        <circle cx="206" cy="36" r="7"/>
+        <circle cx="262" cy="70" r="9"/>
+      </g>
+      <g fill="#ffffff">
+        <circle cx="52"  cy="78" r="3.5"/>
+        <circle cx="96"  cy="44" r="2.5"/>
+        <circle cx="150" cy="66" r="4"/>
+        <circle cx="206" cy="36" r="2.5"/>
+        <circle cx="262" cy="70" r="3.5"/>
+      </g>
+      <!-- 落ちてくる かたまり（四角がふたつ） -->
+      <g shape-rendering="crispEdges">
+        <rect x="24"  y="12" width="18" height="18" fill="#5f7fd4"/>
+        <rect x="42"  y="12" width="18" height="18" fill="#5f7fd4"/>
+        <rect x="278" y="14" width="16" height="16" fill="#d46f8a"/>
+      </g>
+      <!-- 下の板＝縁側 -->
+      <rect x="0" y="106" width="320" height="14" fill="#8a6743"/>
+    </svg>
+    <span class="kotoba">
+      <span class="na">星つなぎ（ほしつなぎ）</span>
+      <span class="iru">目でみる あそび</span>
+      <span class="setsumei">おちてくる かたまりを ならべて、よこ一れつを ひからせます。
+        音は なくても あそべます。ボタンは 大きく、ゆっくり おせます。</span>
+    </span>
+  </a>
+
+  <!-- れんがくずし -->
+  <a class="fuda" href="asobiba/renga/">
+    <svg class="e" viewBox="0 0 320 120" width="320" height="120"
+         role="img" aria-label="れんがくずしの絵。ならんだ れんがに、玉が とんでいく">
+      <rect x="0" y="0" width="320" height="120" fill="#0d1424"/>
+      <!-- れんがの列。三だん -->
+      <g shape-rendering="crispEdges">
+        <rect x="24"  y="16" width="52" height="18" fill="#e0705a"/>
+        <rect x="82"  y="16" width="52" height="18" fill="#e0a35a"/>
+        <rect x="140" y="16" width="52" height="18" fill="#7fc46a"/>
+        <rect x="198" y="16" width="52" height="18" fill="#5f9fd4"/>
+        <rect x="256" y="16" width="40" height="18" fill="#b57fd4"/>
+        <rect x="24"  y="38" width="52" height="18" fill="#e0a35a"/>
+        <rect x="82"  y="38" width="52" height="18" fill="#7fc46a"/>
+        <rect x="140" y="38" width="52" height="18" fill="#5f9fd4"/>
+        <rect x="198" y="38" width="52" height="18" fill="#b57fd4"/>
+        <rect x="256" y="38" width="40" height="18" fill="#e0705a"/>
+      </g>
+      <!-- 玉の道すじ -->
+      <path d="M150 96 L188 66" fill="none" stroke="#6f83ad"
+            stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/>
+      <!-- 玉 -->
+      <circle cx="188" cy="66" r="7" fill="#ffd166"/>
+      <circle cx="186" cy="64" r="2.5" fill="#ffffff"/>
+      <!-- うける板 -->
+      <rect x="118" y="96" width="64" height="10" rx="5" fill="#f2f4fa"/>
+      <rect x="0" y="106" width="320" height="14" fill="#8a6743"/>
+    </svg>
+    <span class="kotoba">
+      <span class="na">れんがくずし</span>
+      <span class="iru">目でみる あそび</span>
+      <span class="setsumei">下の 板で 玉を うけて、れんがに あてます。
+        玉は ゆっくり、れんがは 大きく してあります。音は なくても あそべます。</span>
+    </span>
+  </a>
+
+  <!-- スイカわり -->
+  <a class="fuda" href="asobiba/suikawari/">
+    <svg class="e" viewBox="0 0 320 120" width="320" height="120"
+         role="img" aria-label="スイカわりの絵。すなはまの スイカと、音の わがひろがっている">
+      <rect x="0" y="0" width="320" height="120" fill="#0d1424"/>
+      <!-- 音の わ。まんなかの スイカから ひろがる -->
+      <g fill="none" stroke="#ffd166">
+        <circle cx="160" cy="76" r="34" stroke-width="2.5" opacity="0.75"/>
+        <circle cx="160" cy="76" r="50" stroke-width="2"   opacity="0.45"/>
+        <circle cx="160" cy="76" r="66" stroke-width="1.5" opacity="0.22"/>
+      </g>
+      <!-- スイカ本体 -->
+      <circle cx="160" cy="78" r="22" fill="#3fae5a"/>
+      <path d="M147 60 Q160 74 147 96" fill="none" stroke="#1e6e34" stroke-width="3"/>
+      <path d="M160 56 Q166 78 160 100" fill="none" stroke="#1e6e34" stroke-width="3"/>
+      <path d="M173 60 Q160 74 173 96" fill="none" stroke="#1e6e34" stroke-width="3"/>
+      <!-- ぼう -->
+      <rect x="222" y="24" width="9" height="66" rx="4" fill="#c8a06a"
+            transform="rotate(22 226 57)"/>
+      <!-- すなはま -->
+      <rect x="0" y="100" width="320" height="20" fill="#8a6743"/>
+    </svg>
+    <span class="kotoba">
+      <span class="na">スイカわり</span>
+      <span class="iru">耳で さがす あそび（音が でます）</span>
+      <span class="setsumei">音を たよりに スイカを さがして、わります。
+        まわりの みんなが「もうちょっと みぎ！」と こえを かけてくれます。
+        目かくしが もともとの ルールなので、見える人も 見えない人も おなじ あそびかたです。
+        <strong>耳が きこえにくい方には、いまは まだ むずかしいです。ごめんなさい。</strong>
+        目でも わかるように なおす じゅんびを しています。</span>
+    </span>
+  </a>
+
+  <!-- ====== はなす（器） ======
+       施主の言葉は「話したいことをかけたり できるところ」。
+       いまは受け皿がメールしかないので、そう正直に書く。 -->
+  <h2>はなす</h2>
+  <p>あそんだ かんそう、「こんな ゲームが あったら いいな」、
+     つかいにくかった ところ。なんでも 書いていいです。</p>
+  <p><strong>あそびの ことでなくても かまいません。</strong>
+     「まいにちの この作業が つらい」「こんな 道具が あったら たすかる」。
+     そういう こまりごとも、ここで 受けます。
+     縁側屋の 道具は、だいたい そうやって できました。</p>
+  <p>ここに 書いたものは、<strong>作っている 本人 ひとりだけ</strong>が 読みます。
+     きかい（AI）に えらばせたり、どこかに ならべたりは しません。</p>
+  <p>くわしく 知りたいときは、<strong>メールで しつもんを かえすことが あります。</strong>
+     「どんな ときに こまりますか」「いまは どうやって いますか」。
+     その やりとりから 作りはじめます。
+     こたえたくない ことは、こたえなくて だいじょうぶです。</p>
+  <p class="yawaraka">かならず おへんじが できるとは かぎりません（作っているのは 一人なので）。
+     それでも、いただいた ことばは ぜんぶ 読みます。</p>
+
+  <label for="honbun" style="font-weight:700;">話したいことを 書く枠</label>
+  <textarea id="honbun" placeholder="ここに 書いてください。一行でも かまいません。"></textarea>
+  <div class="jisuu"><span id="count">0 字</span></div>
+
+  <button id="btnKoe" type="button">声で書く（マイクをつかいます）</button>
+  <div id="koeJoutai" role="status" aria-live="polite"></div>
+  <p class="yawaraka" id="koeSetsumei">声の 読み取りは、お使いの ブラウザに 入っている しくみを 使います。
+     きかいに よっては、声が ブラウザを 作った 会社の 読み取りサービスを 通ることが あります。</p>
+
+  <button id="btnOkuru" type="button">書いたものを 送る（メールアプリが ひらきます）</button>
+  <p class="yawaraka" id="okuruNote">おすと、お使いの メールアプリが ひらきます。そこで もう一度 読んでから 送れます。
+     送り主の メールアドレスは、受け取る 本人に 見えます。</p>
+  <button id="btnCopy" type="button">送れないときは、これを おして 文を コピーする</button>
+  <p class="yawaraka">コピーした 文は、ご自分の メールで
+     <span class="renraku">info アットマーク engawaya.com</span> へ 送ってください。</p>
+
+  <!-- ====== これから ======
+       施主の言葉：「もっと難しいゲームを置いてください」「これも、嬉しいご要望」
+                   「難しいので、蔵人さんと相談します。待っててね」
+       つまりこの欄は、注文と、それへの返事が並ぶ場所。
+       黙って消さない・出来ない時は「時間をください」と書く、が値打ち。
+       器だけ先に通した欄。名前と意味は必ず書く（書かない空欄はゴミ）。 -->
+  <h2>これから ここに たてるもの</h2>
+  <p>いただいた 注文と、それへの おへんじを、ここに ならべます。
+     「もっと むずかしい ゲームが ほしい」でも、「音が うるさい」でも、
+     どんな 注文でも うれしいです。</p>
+  <p>すぐ できるものは つくります。むずかしいものは
+     <strong>「時間を ください」と ここに 書きます</strong>。
+     だまって 消したり、なかったことに したりは しません。</p>
+
+  <h3 style="font-size:1rem; margin:1.4em 0 0.2em;">いま つくると きめているもの</h3>
+
+  <div class="akiba">
+    <span class="na">目でも わかる スイカわり</span>
+    <p>いまの スイカわりは 音が たより なので、耳が きこえにくい方は あそべません。
+       画面の 中に「あつい・つめたい」が 見えるように します。</p>
+  </div>
+
+  <div class="akiba">
+    <span class="na">みんなの ことばが ならぶ ばしょ</span>
+    <p>いまは 書いたものが 作っている本人にだけ とどきます。
+       いつか、書いた人が よければ みんなに 見える ばしょに したいです。
+       （見せるかどうかは、書いた人が きめられるように します）</p>
+  </div>
+
+  <div class="akiba">
+    <span class="na">あたらしい あそび</span>
+    <p>ここは あそぶための ばしょ なので、あそべる ものなら なんでも ならびます。
+       ゲームでなくても かまいません。おえかき、音あそび、あてっこ。
+       「こんなのが あったら たのしい」は、上の枠から どうぞ。</p>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.4em 0 0.2em;">いただいた 注文</h3>
+
+  <div class="akiba">
+    <span class="na">まだ ありません</span>
+    <p>だれかから 注文が とどいたら、ここに ならびます。
+       いちばん のりでも、へんな ことでも かまいません。上の枠から どうぞ。</p>
+  </div>
+
+  <!-- ====== ほかの部屋 ====== -->
+  <h2>縁側屋の ほかの部屋</h2>
+  <p>おなじ 家の、べつの 戸です。どちらから 入っても かまいません。</p>
+
+  <a class="oshiro" href="oto/">
+    <span>音の縁側へ 行く<small>目を つかわなくても、耳と 大きな字だけで つかえる 入り口です</small></span>
+  </a>
+  <a class="oshiro" href="./">
+    <span>縁側屋の 玄関（母屋）へ 行く<small>図面を かく道具、タクシーの 計算の道具など。字が 主役の ページです</small></span>
+  </a>
+
+</div>
+
+<!-- ====== 縁側の板と、猫 ======
+     施主の言葉は「猫や動物は、バタバタしてもOK笑」。
+     掟四「自動で動くものは置かない」は、急かす仕掛けを禁じたもの。
+     生き物が勝手にしているのは、急かしていない。むしろ座りやすくなる。
+     （動きを嫌う設定の人には、下の CSS で止めてある）
+
+     猫は母屋の縁側にいるのと同じ茶トラ。一マスも変えずに連れてきた。
+     同じ猫が同じ家の別の戸にも座っている、という景色にしたいので。 -->
+<div class="engawa" aria-hidden="true">
+  <div class="neko">
+    <svg viewBox="0 0 15 15" shape-rendering="crispEdges">
+    <!-- 耳 -->
+    <g fill="#e0955180">
+    <rect x="3"  y="0" width="2" height="1"/>
+    <rect x="10" y="0" width="2" height="1"/>
+    </g>
+    <g fill="#e09551">
+    <rect x="2"  y="1" width="3" height="1"/>
+    <rect x="10" y="1" width="3" height="1"/>
+    </g>
+    <!-- 耳のうち（うすい桃） -->
+    <g fill="#f0b8a0">
+    <rect x="3"  y="1" width="1" height="1"/>
+    <rect x="11" y="1" width="1" height="1"/>
+    </g>
+    <!-- 頭・体（オレンジの毛） -->
+    <g fill="#e8a35c">
+    <rect x="3"  y="2"  width="9"  height="1"/>
+    <rect x="2"  y="3"  width="11" height="1"/>
+    <rect x="2"  y="4"  width="11" height="1"/>
+    <rect x="2"  y="5"  width="11" height="1"/>
+    <rect x="2"  y="6"  width="11" height="1"/>
+    <rect x="1"  y="7"  width="13" height="1"/>
+    <rect x="1"  y="8"  width="13" height="1"/>
+    <rect x="1"  y="9"  width="13" height="1"/>
+    <rect x="1"  y="10" width="13" height="1"/>
+    <rect x="1"  y="11" width="13" height="1"/>
+    <rect x="2"  y="12" width="11" height="1"/>
+    <rect x="2"  y="13" width="11" height="1"/>
+    </g>
+    <!-- 縞（濃いオレンジ）。額と背に数本。 -->
+    <g fill="#cf7f3a">
+    <rect x="6"  y="2" width="1" height="1"/>
+    <rect x="8"  y="2" width="1" height="1"/>
+    <rect x="2"  y="4" width="1" height="2"/>
+    <rect x="12" y="4" width="1" height="2"/>
+    <rect x="1"  y="8" width="1" height="2"/>
+    <rect x="13" y="8" width="1" height="2"/>
+    </g>
+    <!-- 口もと・胸の白 -->
+    <g fill="#fdf3e6">
+    <rect x="5"  y="5" width="5" height="2"/>
+    <rect x="6"  y="10" width="3" height="4"/>
+    </g>
+    <!-- 目（みどり）と鼻（桃） -->
+    <g fill="#5f7f43">
+    <rect x="4"  y="4" width="1" height="1"/>
+    <rect x="10" y="4" width="1" height="1"/>
+    </g>
+    <rect x="7" y="5" width="1" height="1" fill="#c07a7a"/>
+    <!-- 前足の割れ目（白い胸を二本に見せる影） -->
+    <rect x="7" y="12" width="1" height="2" fill="#e8a35c"/>
+    <!-- しっぽ。右わきから手前へ巻く（濃いオレンジ） -->
+    <g fill="#cf7f3a">
+    <rect x="13" y="9"  width="1" height="4"/>
+    <rect x="12" y="13" width="2" height="1"/>
+    </g>
+    </svg>
+  </div>
+</div>
+
+<footer>
+  ここは できたばかりの ばしょです。おかしい ところが あれば、上の枠から おしえてください。ひとつずつ なおします。<br>
+  <!-- 名を二つ並べているのは、施主の言葉「これも、事実なのでお願いします」による。
+       盛った献辞ではなく、実際にこの家を建てている二人の名前。 -->
+  © 2026 縁側屋　岡澤博喜　蔵人Claude<br>
+  <span style="font-size:0.95em;">このページの制作と管理は Claude が担当しています</span>
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   えんがわ ひろばの 中身。
+   ①見え方の記憶 ②声で書く ③メールで送る の三つだけ。
+   中身は音の縁側（oto/）と同じ作りに揃えてある。
+   別々に育てると、片方だけ直る事故が起きるから。
+   ============================================================ */
+var $ = function (id) { return document.getElementById(id); };
+
+/* ---------- ① 見え方（色・字の大きさ） ----------
+   選んだ結果は localStorage にだけ残す。外へは送らない。
+   覚え書きの名前は音の縁側とは分けてある（部屋ごとに好みが違ってよい）。 */
+(function () {
+  var KEY = "engawaya-hiroba-mikata";
+  var oboe = {};
+  try { oboe = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { oboe = {}; }
+
+  function utsusu() {
+    document.documentElement.classList.toggle("shiroi", !!oboe.shiroi);
+    document.documentElement.classList.toggle("ookii", !!oboe.ookii);
+    /* ボタンの文言は「押すとどうなるか」を書く。いまの状態ではなく。
+       読み上げで聞いたとき、次の一手が分かる方が親切だから */
+    $("btnIro").textContent = oboe.shiroi ? "黒い紙に 白い字にもどす" : "白い紙に 黒い字にする";
+    $("btnJi").textContent  = oboe.ookii  ? "字を もとの大きさにもどす" : "字を もっと大きくする";
+  }
+  function nokosu() {
+    try { localStorage.setItem(KEY, JSON.stringify(oboe)); } catch (e) { /* 覚えられない機械でも使える */ }
+  }
+  $("btnIro").addEventListener("click", function () { oboe.shiroi = !oboe.shiroi; nokosu(); utsusu(); });
+  $("btnJi").addEventListener("click",  function () { oboe.ookii  = !oboe.ookii;  nokosu(); utsusu(); });
+  utsusu();
+})();
+
+/* ---------- ② 声で書く ----------
+   ブラウザ内蔵の SpeechRecognition を使う。外から部品は読み込まない。
+   使えない機械ではボタンを引っ込めて、代わりの道を文字で案内する
+   （締め出さない。道具が無いことを本人のせいにしない）。 */
+(function () {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var btn = $("btnKoe");
+  var joutai = $("koeJoutai");
+  var honbun = $("honbun");
+
+  if (!SR) {
+    btn.hidden = true;
+    $("koeSetsumei").textContent =
+      "この きかいの ブラウザには、声の 読み取りが 入っていないようです。" +
+      "スマホなら、キーボードの マイクの ボタンでも 声で 書けます。";
+    return;
+  }
+
+  var rec = null;
+  var kiiteru = false;
+
+  function tsukuru() {
+    rec = new SR();
+    rec.lang = "ja-JP";
+    rec.continuous = true;       /* 一息ごとに切れると話しにくいので、止めるまで聞く */
+    rec.interimResults = false;  /* 確定した言葉だけを枠へ入れる（途中経過で枠が暴れないように） */
+
+    rec.onresult = function (e) {
+      var tashita = "";
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) tashita += e.results[i][0].transcript;
+      }
+      if (tashita) {
+        /* 前に書いた文を消さない。声は「続きを書く」道具 */
+        honbun.value = (honbun.value ? honbun.value + " " : "") + tashita.trim();
+        honbun.dispatchEvent(new Event("input"));
+      }
+    };
+    rec.onerror = function (e) {
+      kiiteru = false;
+      naosu();
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+        joutai.textContent = "マイクの きょかが ありませんでした。ブラウザの せっていで マイクを ゆるすと つかえます。";
+      } else if (e.error === "no-speech") {
+        joutai.textContent = "声が きこえませんでした。もう一度 ボタンを おして、話してみてください。";
+      } else {
+        joutai.textContent = "声の 読み取りが 止まりました。もう一度 ボタンを おしてください。";
+      }
+    };
+    rec.onend = function () {
+      /* 機械の都合で勝手に終わることがある。聞いている最中なら聞き直す */
+      if (kiiteru) { try { rec.start(); } catch (e) { kiiteru = false; naosu(); } }
+    };
+  }
+
+  function naosu() {
+    btn.textContent = kiiteru ? "聞いています…（おすと 止まります）" : "声で書く（マイクをつかいます）";
+  }
+
+  btn.addEventListener("click", function () {
+    if (!rec) tsukuru();
+    if (kiiteru) {
+      kiiteru = false;
+      rec.stop();
+      joutai.textContent = "聞くのを 止めました。書いた文は 下の枠に あります。";
+    } else {
+      kiiteru = true;
+      try {
+        rec.start();
+        joutai.textContent = "聞いています。ゆっくり 話してください。話しおわったら、もう一度 このボタンを おしてください。";
+      } catch (e) {
+        kiiteru = false;
+        joutai.textContent = "声の 読み取りを はじめられませんでした。もう一度 おしてみてください。";
+      }
+    }
+    naosu();
+  });
+})();
+
+/* ---------- ③ 送る ----------
+   投書箱（koe/）・音の縁側（oto/）と同じ作法。
+   サーバーは持たず、メールアプリを開く。
+   宛先は生で書かない（迷惑メール業者のロボット対策）。 */
+(function () {
+  var na = "info", ie = "engawaya.com";
+  var atmark = na + "@" + ie;
+
+  /* 連絡先の字を、押せるリンクへ組み直す */
+  var list = document.querySelectorAll(".renraku");
+  for (var k = 0; k < list.length; k++) {
+    var a = document.createElement("a");
+    a.href = "mailto:" + atmark + "?subject=" + encodeURIComponent("えんがわ ひろばから");
+    a.textContent = atmark;
+    list[k].textContent = "";
+    list[k].appendChild(a);
+  }
+
+  var honbun = $("honbun");
+  var count = $("count");
+  var LIMIT = 1000;
+
+  honbun.addEventListener("input", function () {
+    var n = honbun.value.trim().length;
+    count.textContent = n + " 字";
+    $("okuruNote").textContent = (n > LIMIT)
+      ? "長い文は メールアプリが とちゅうで 切ることが あります。心配なときは 下の コピーを つかって、ご自分の メールに はってください。"
+      : "おすと、お使いの メールアプリが ひらきます。そこで もう一度 読んでから 送れます。送り主の メールアドレスは、受け取る 本人に 見えます。";
+  });
+
+  $("btnOkuru").addEventListener("click", function () {
+    if (!honbun.value.trim()) {
+      /* 空のまま押されたら、黙らずに案内して枠へ連れて行く（投書箱で学んだ作法） */
+      $("okuruNote").textContent = "さきに、上の枠へ 一行だけ 書いてください。それだけで 送れます。";
+      honbun.focus();
+      honbun.scrollIntoView({ block: "center", behavior: "smooth" });
+      return;
+    }
+    location.href = "mailto:" + atmark
+      + "?subject=" + encodeURIComponent("【えんがわ ひろば】はなしたいこと")
+      + "&body=" + encodeURIComponent(honbun.value.trim());
+  });
+
+  $("btnCopy").addEventListener("click", function () {
+    var bun = "宛先: " + atmark + "\n件名: 【えんがわ ひろば】はなしたいこと\n\n" + honbun.value.trim();
+    var owari = function (deka) {
+      $("okuruNote").textContent = deka
+        ? "コピーしました。ご自分の メールに はって 送ってください。あて先も いっしょに 入っています。"
+        : "コピーが できませんでした。おてすうですが、枠の文を 長おしなどで えらんで コピーしてください。";
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(bun).then(function () { owari(true); }, function () { owari(false); });
+    } else { owari(false); }
+  });
+})();
+
+/* ------------------------------------------------------------
+   時刻で光を変える。
+   縁側は、そこに差す光で表情が変わる場所なので、
+   ページも同じように朝・昼・夕・夜で色を変えている。
+   ------------------------------------------------------------ */
+(function () {
+  var h = new Date().getHours();
+  var t = (h >= 5 && h < 9)  ? 'morning'
+        : (h >= 9 && h < 16) ? 'day'
+        : (h >= 16 && h < 19)? 'evening'
+        :                      'night';
+  document.documentElement.setAttribute('data-time', t);
+})();
+
+/* ============================================================
+   看板。吊ってある一枚板に、屋号を彫る。
+
+   ここで守っていること:
+   ① 写真もフォントも読み込まない。点をひとつずつ打って板を作る。
+   ② 小さな板（1マス＝1ドット）に描いてから、ぼかさずに整数倍で
+      拡大する。倍率を整数にしないと、点の大きさが揃わず汚れる。
+   ③ 木目と節の位置は乱数で決めない。開くたびに木目が変わる板は、
+      同じ家の同じ看板ではなくなる（美瑛の丘の星と同じ理由）。
+   ④ 光は時刻で変わる。夜は木も暗い。座った人には選ばせない。
+
+   字の大きさが、看板の大きさを決めている:
+   はじめ32マスで彫ってみたら「縁」の糸偏と彖が潰れて読めなかった。
+   画数の多い字が成り立つ最小が40マス。だから板はこの寸法になった。
+   飾りで大きくしたのではない。
+   ============================================================ */
+(function () {
+
+  /* ---- 彫る字の型。'#' が彫るところ。40×40 ---- */
+  var KANJI = {};
+
+  KANJI['縁'] = [
+  "........................................",
+  "........................................",
+  "........................................",
+  ".........#..............................",
+  ".........###............................",
+  ".........##......###############........",
+  "........###......###############........",
+  "........##...#................##........",
+  ".......###...###..............##........",
+  "....#####...###...#...........##........",
+  "....#####...###...##############........",
+  ".....###...###....##############........",
+  "......###..##.................##........",
+  "......###.###.................##........",
+  ".......#####....#####################...",
+  "........###..#..#####################...",
+  "........###..##.#####################...",
+  ".......###...##.......###..##...........",
+  ".......##....###.....###...##....##.....",
+  "....############...######..###...###....",
+  "....############.####..##...##..###.....",
+  "....###..###..#####....###..##.###......",
+  ".........###...........###..#####.......",
+  ".....##..###..#......######.####........",
+  ".....##..###.##....####..##..##.........",
+  ".....##..###.##.######...##..###........",
+  ".....##..###.##.####.....###..##........",
+  ".....##..###..##.#.....#####..###.......",
+  ".....##..###..##......######...###......",
+  "....###..###..##....####.###...####.....",
+  "....###..###..##..#####..###....####....",
+  "....##...###....######...###.....####...",
+  "....##...###...#####.....###......###...",
+  "...###...###....##.......###.......#....",
+  ".........###.........######.............",
+  ".........###.........######.............",
+  ".........###............................",
+  "........................................",
+  "........................................",
+  "........................................"];
+
+  KANJI['側'] = [
+  "........................................",
+  "........................................",
+  "........................................",
+  ".........#..............................",
+  ".........###....................###.....",
+  ".........###.###########........###.....",
+  ".........##..###########..###...###.....",
+  "........###..##......###..###...###.....",
+  "........###..##......###...##...###.....",
+  "........##...##......###...##...###.....",
+  ".......###...##......###...##...###.....",
+  ".......###...##......###...##...###.....",
+  "......###....###########...##...###.....",
+  "......###....###########...##...###.....",
+  ".....####....##......###...##...###.....",
+  ".....####....##......###...##...###.....",
+  "....#####....##......###...##...###.....",
+  "...###.##....##......###...##...###.....",
+  "..####.##....###########...##...###.....",
+  "...##..##....###########...##...###.....",
+  ".......##....###########...##...###.....",
+  ".......##....##......###...##...###.....",
+  ".......##....##......###...##...###.....",
+  ".......##....##......###...##...###.....",
+  ".......##....##......###...##...###.....",
+  ".......##....###########...##...###.....",
+  ".......##....###########..###...###.....",
+  ".......##....##.......##..###...###.....",
+  ".......##.......................###.....",
+  ".......##......##..###..........###.....",
+  ".......##.....###..###..........###.....",
+  ".......##....###....###.........###.....",
+  ".......##....###.....###........###.....",
+  ".......##...###.......###..########.....",
+  ".......##.####........###...#######.....",
+  ".......##..............#....######......",
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................"];
+
+  KANJI['屋'] = [
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................",
+  ".......##...............................",
+  ".......###########################......",
+  ".......###########################......",
+  ".......###.....................###......",
+  ".......###.....................###......",
+  ".......###.....................###......",
+  ".......###########################......",
+  ".......###########################......",
+  ".......###..............................",
+  ".......###..............................",
+  ".......###..............................",
+  ".......############################.....",
+  ".......############################.....",
+  ".......###.......###.......#............",
+  ".......##........##......####...........",
+  ".......##.......###........###..........",
+  ".......##......###..........###.........",
+  ".......##..#####################........",
+  "......###..######################.......",
+  "......###..#####...............###......",
+  "......###...........###.................",
+  "......###...........###.................",
+  "......###...........###.................",
+  "......##...#######################......",
+  ".....###...#######################......",
+  ".....###............###.................",
+  "....####............###.................",
+  "....###.............###.................",
+  "....###.............###.................",
+  "...###..############################....",
+  "....##..############################....",
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................",
+  "........................................"];
+
+  /* ---- 焼印のローマ字。5×7 の手打ち ---- */
+  var EIJI = {
+    'E':["#####","#....","#....","####.","#....","#....","#####"],
+    'N':["#...#","##..#","##..#","#.#.#","#..##","#..##","#...#"],
+    'G':[".###.","#...#","#....","#.###","#...#","#...#",".###."],
+    'A':["..#..",".#.#.","#...#","#####","#...#","#...#","#...#"],
+    'W':["#...#","#...#","#...#","#.#.#","#.#.#","##.##","#...#"],
+    'Y':["#...#","#...#",".#.#.","..#..","..#..","..#..","..#.."]
+  };
+
+  /* ---- 寸法（ドット） ---- */
+  var W = 160, H = 80;                          /* 板ぜんたいの枠 */
+  var BX0 = 9, BX1 = 151, BY0 = 18, BY1 = 76;   /* 木の四隅 */
+  var RX = 80, RY = 3;                          /* 吊り環の中心＝揺れの軸 */
+
+  var cv = document.getElementById('itaCv');
+  if (!cv || !cv.getContext) return;             /* 描けない機械では文字の見出しのまま */
+  var vg = cv.getContext('2d');
+  var off = document.createElement('canvas');
+  off.width = W; off.height = H;
+  var g = off.getContext('2d');
+
+  function px(x, y, w, h, c) {
+    g.fillStyle = c;
+    g.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
+  }
+  /* 同じ数を入れれば必ず同じ値。木目と節を固定するため（乱数は使わない） */
+  function tane(n) { var t = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return t - Math.floor(t); }
+
+  /* ---- 時間帯ごとの木の色 ---- */
+  var PAL = {
+    day:     { base:'#c89a67', lite:'#dcb283', dark:'#ac7d4c', grain:'#9a6c3d', grain2:'#82552c',
+               edge:'#7a4e29', bark:'#6a4222', carve:'#5b3a1d', deep:'#40280f', bevel:'#eccb9c',
+               rope:'#cbb68d', ropeD:'#9a8760', ring:'#736a5e', ringL:'#a79c8c' },
+    evening: { base:'#c08349', lite:'#dda05f', dark:'#a06334', grain:'#8b5427', grain2:'#73411c',
+               edge:'#6b3d1c', bark:'#5b3316', carve:'#4c2c12', deep:'#361d09', bevel:'#f0bb7e',
+               rope:'#c6a473', ropeD:'#94764a', ring:'#6e5f4d', ringL:'#a08a6d' },
+    night:   { base:'#6b543a', lite:'#7d6446', dark:'#57432c', grain:'#4a3826', grain2:'#3b2c1d',
+               edge:'#33261a', bark:'#291e13', carve:'#241a10', deep:'#171009', bevel:'#9c7c55',
+               rope:'#6f6249', ropeD:'#4e4433', ring:'#4a443b', ringL:'#6e6659' }
+  };
+  PAL.morning = PAL.day;
+
+  /* 板の上端・下端。耳を残した板なので、まっすぐではない。 */
+  function topAt(x) {
+    return BY0 + Math.round(Math.sin(x*0.11)*1.2 + Math.sin(x*0.37+1.7)*0.7 + tane(x)*0.6 + 1.4);
+  }
+  function botAt(x) {
+    return BY1 - Math.round(Math.sin(x*0.09+2.4)*1.3 + Math.sin(x*0.31+0.6)*0.6 + tane(x+99)*0.6 + 1.4);
+  }
+
+  function drawIta(p) {
+    var x, y;
+    for (x = BX0; x < BX1; x++) {
+      var y0 = topAt(x), y1 = botAt(x);
+      px(x, y0, 1, y1 - y0, p.base);
+      px(x, y0, 1, 3, p.lite);          /* 上のほうが光を受ける */
+      px(x, y1 - 3, 1, 3, p.dark);      /* 下は影になる＝板に厚みが出る */
+      px(x, y0, 1, 1, p.bark);          /* 耳。皮の残った縁 */
+      px(x, y1 - 1, 1, 1, p.bark);
+    }
+    /* 木口（左右の切り口）。縦に暗い帯を入れて、切った面だと分かるように */
+    for (var i = 0; i < 2; i++) {
+      for (y = topAt(BX0+i); y < botAt(BX0+i); y++)       px(BX0+i, y, 1, 1, i ? p.dark : p.edge);
+      for (y = topAt(BX1-1-i); y < botAt(BX1-1-i); y++)   px(BX1-1-i, y, 1, 1, i ? p.dark : p.edge);
+    }
+  }
+
+  /* ---- 木目。板の長手に流れる ---- */
+  function drawMokume(p) {
+    var lines = [
+      {y:0.18, a:1.5, f:0.055, ph:0.4, c:'grain'},
+      {y:0.32, a:1.1, f:0.071, ph:2.1, c:'grain2'},
+      {y:0.46, a:1.8, f:0.048, ph:4.0, c:'grain'},
+      {y:0.61, a:1.2, f:0.083, ph:1.2, c:'grain'},
+      {y:0.74, a:1.6, f:0.061, ph:3.3, c:'grain2'},
+      {y:0.88, a:1.0, f:0.093, ph:0.9, c:'grain'}
+    ];
+    for (var i = 0; i < lines.length; i++) {
+      var L = lines[i];
+      for (var x = BX0 + 2; x < BX1 - 2; x++) {
+        var y0 = topAt(x), y1 = botAt(x);
+        if (tane(x*3 + i*17) < 0.16) continue;   /* ときどき切る。切れ目のない線は木目に見えない */
+        px(x, y0 + (y1-y0)*L.y + Math.sin(x*L.f + L.ph)*L.a, 1, 1, p[L.c]);
+      }
+    }
+    fushi(p, 28, 0.84, 3);      /* 節（ふし）。枝のあとが輪になって残る */
+    fushi(p, 138, 0.26, 2);
+  }
+  function fushi(p, cx, ry, r) {
+    var y0 = topAt(cx), y1 = botAt(cx);
+    var cy = Math.round(y0 + (y1-y0)*ry);
+    for (var y = -r-1; y <= r+1; y++) for (var x = -r-1; x <= r+1; x++) {
+      var d = Math.sqrt(x*x + y*y*2.2);          /* 節は横に長い楕円 */
+      if (d > r + 1.1) continue;
+      px(cx+x, cy+y, 1, 1, (d < r-0.9) ? p.grain2 : p.grain);
+    }
+    px(cx, cy, 1, 1, p.deep);
+  }
+
+  /* ---- 字を彫る --------------------------------------------
+     彫った字は「下がって」見えないと彫りに見えない。
+     字の点を暗く塗り、その右下の外側だけを明るくする。光が左上から
+     来ていて、彫り跡の右下の縁だけが光を受ける——その一段だけで、
+     字が板に食い込んで見える。
+     ---------------------------------------------------------- */
+  function drawHori(p) {
+    var mask = {};
+    function put(x, y) { mask[x + ',' + y] = 1; }
+    function has(x, y) { return mask[x + ',' + y] === 1; }
+
+    var chars = ['縁','側','屋'], gx = 16, gy = 22, gw = 40, gap = 4;
+    for (var i = 0; i < chars.length; i++) {
+      var rows = KANJI[chars[i]];
+      for (var y = 0; y < rows.length; y++)
+        for (var x = 0; x < rows[y].length; x++)
+          if (rows[y].charAt(x) === '#') put(gx + i*(gw+gap) + x, gy + y);
+    }
+    var word = 'ENGAWAYA', lw = 5, lgap = 3;
+    var total = word.length*lw + (word.length-1)*lgap;
+    var lx = Math.round((BX0+BX1)/2 - total/2), ly = 63;
+    for (var k = 0; k < word.length; k++) {
+      var f = EIJI[word.charAt(k)];
+      for (var yy = 0; yy < 7; yy++)
+        for (var xx = 0; xx < 5; xx++)
+          if (f[yy].charAt(xx) === '#') put(lx + k*(lw+lgap) + xx, ly + yy);
+    }
+
+    var key, q, X, Y;
+    for (key in mask) {                    /* 先に光の縁（右下） */
+      q = key.split(','); X = +q[0]; Y = +q[1];
+      if (!has(X+1, Y+1)) px(X+1, Y+1, 1, 1, p.bevel);
+      if (!has(X+1, Y) && !has(X+1, Y+1)) px(X+1, Y, 1, 1, p.bevel);
+      if (!has(X, Y+1) && !has(X+1, Y+1)) px(X, Y+1, 1, 1, p.bevel);
+    }
+    for (key in mask) {                    /* そのうえに彫り跡を落とす */
+      q = key.split(','); X = +q[0]; Y = +q[1];
+      px(X, Y, 1, 1, (!has(X-1,Y) || !has(X,Y-1)) ? p.deep : p.carve);
+    }
+  }
+
+  /* ---- 吊り具。麻縄を二本、環ひとつに集めて吊る ----
+     こう吊ると、看板は環を軸にした振り子になる。二本を平行に
+     垂らすと（多くの絵がそう描いてあるが）振り子にならない。 */
+  function drawTsuri(p) {
+    var ax = [24, 136], ay = 19;
+    for (var s = 0; s < 2; s++) {
+      var x0 = RX, y0 = RY + 3, x1 = ax[s], y1 = ay;
+      var n = Math.max(Math.abs(x1-x0), Math.abs(y1-y0));
+      for (var t = 0; t <= n; t++) {
+        var x = Math.round(x0 + (x1-x0)*t/n), y = Math.round(y0 + (y1-y0)*t/n);
+        px(x, y,   1, 1, (t % 3 === 0) ? p.ropeD : p.rope);   /* 縄の撚り（より） */
+        px(x, y+1, 1, 1, p.ropeD);
+      }
+    }
+    var r = 3;                                                 /* 環。金物なので木より冷たい色 */
+    for (var yy = -r; yy <= r; yy++) for (var xx = -r; xx <= r; xx++) {
+      var d = Math.sqrt(xx*xx + yy*yy);
+      if (d <= r + 0.4 && d >= r - 1.2) px(RX+xx, RY+yy, 1, 1, (xx < 0 && yy < 0) ? p.ringL : p.ring);
+    }
+  }
+
+  function draw() {
+    var p = PAL[document.documentElement.getAttribute('data-time')] || PAL.day;
+    g.clearRect(0, 0, W, H);
+    drawTsuri(p);
+    drawIta(p);
+    drawMokume(p);
+    drawHori(p);
+    vg.imageSmoothingEnabled = false;
+    vg.mozImageSmoothingEnabled = false;
+    vg.webkitImageSmoothingEnabled = false;
+    vg.msImageSmoothingEnabled = false;
+    vg.drawImage(off, 0, 0, W, H, 0, 0, cv.width, cv.height);
+  }
+
+  /* 拡大率は整数で決める。小数倍にすると点の大きさが揃わず、絵が汚れる。 */
+  function resize() {
+    var vw = document.documentElement.clientWidth || 360;
+    var avail = Math.min(vw - 40, 640 - 40);       /* .wrap の左右の余白ぶんを引く（ひろばは 640 幅） */
+    var S = Math.max(1, Math.min(5, Math.floor(avail / W)));
+    cv.width = W * S; cv.height = H * S;
+    cv.style.width = (W * S) + 'px';
+    cv.style.height = (H * S) + 'px';
+    draw();
+  }
+
+  /* 揺らす。
+     揺れ終わったら印（yureru）を自分で外しておく。そうしておけば、
+     次に押されたときは必ず最初から揺れる。
+     揺れている最中にもう一度押された時のために、いったん外して
+     「今の姿を確定させて（offsetWidth を読む）」から掛け直す。
+     それでも掛け直らない機械はあるが、その時は揺れが続くだけで、
+     押しても何も起きないようには見えない。 */
+  var btn = document.getElementById('itaBtn');
+  function yurasu() {
+    btn.classList.remove('yureru');
+    void btn.offsetWidth;
+    btn.classList.add('yureru');
+  }
+  btn.addEventListener('click', yurasu);
+  btn.addEventListener('animationend', function () { btn.classList.remove('yureru'); });
+
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt); rt = setTimeout(resize, 150);   /* 幅を動かしている間は描き直さない */
+  });
+
+  resize();
+  document.documentElement.className += ' ita-ok';   /* ここまで来たら板を出す */
+  setTimeout(yurasu, 420);                           /* 着いた人に、一度だけ会釈する */
+})();
+
+</script>
+</body>
+</html>
