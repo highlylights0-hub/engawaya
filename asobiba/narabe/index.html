@@ -305,6 +305,18 @@ html.shiroi #ban { background: #f2f2f2; }
   justify-content: center;
   transition: background-color 0.12s linear, color 0.12s linear;
 }
+/* こまが すべる動き。
+   夜店の景品だったプラスチックの盤は、チップが親指の下を すーっと動いた。
+   あの手触りが、この遊びの気持ちよさの半分を持っている。
+   ぱっと入れ替わるだけだと、押した手ごたえが どこにも残らない。
+
+   掟四（急かさない）には触れない。急かす仕掛けではなく、
+   起きたことを見せているだけなので（縁側の猫と同じ理屈）。
+   動きが苦手な設定の人には、そもそも出さない（script 側で止める）。 */
+#ban .koma.suberu {
+  transition: transform 0.12s ease-out,
+              background-color 0.12s linear, color 0.12s linear;
+}
 #ban .koma.sorotta {           /* 正しい場所に入っている駒。色で進み具合が分かる */
   background: var(--soroi);
   border-color: var(--soroi);
@@ -745,10 +757,37 @@ function ugokasu(i, modoshi) {
 
   oto.koto(kazu, motoAki);
   utsusu();
+  suberaseru(i, motoAki);
 
   if (!S.owatta && sorottaKa()) sorotta();
   shimau();
   return true;
+}
+
+/* ---------- こまを すべらせて見せる ----------
+   kara = さっきまで こまが居た場所、ima = いま こまが居る場所。
+
+   絵を先に「さっきの場所」へ戻してから、ゼロへ向かって動かす。
+   盤そのものは もう入れ替わり済みなので、これは後追いの見せかけ。
+   読み上げにも手数にも一切さわらない（見えない人には何も起きない）。 */
+function suberaseru(kara, ima) {
+  var kirai = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (kirai) return;
+  var el = S.komaBtn[ima];
+  if (!el || el.tagName !== "BUTTON") return;
+
+  var ban = $("ban");
+  var haba = (ban.clientWidth - 12 - 6 * (S.n - 1)) / S.n + 6;   /* マスひとつ＋すきま */
+  var dx = ((kara % S.n) - (ima % S.n)) * haba;
+  var dy = (Math.floor(kara / S.n) - Math.floor(ima / S.n)) * haba;
+
+  el.classList.remove("suberu");
+  el.style.transform = "translate(" + dx + "px, " + dy + "px)";
+  /* ここで一度だけ、いまの姿を描かせる。挟まないと、下の指定と
+     ひとまとめにされて「動かずに終わった」ことになる */
+  void el.offsetWidth;
+  el.classList.add("suberu");
+  el.style.transform = "translate(0, 0)";
 }
 
 /* ============================================================
