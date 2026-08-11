@@ -401,7 +401,11 @@ html.ita-ok .yomi {
   outline: none;
 }
 .noren:focus-visible { border-color: var(--accent); }
-.noren .mise { font-size: 16px; font-weight: 600; }   /* 店の名 */
+.noren .mise { font-size: 16px; font-weight: 600; }   /* 店の名（文字看板の店用に残す） */
+/* ロゴ看板。原寸380×60を半分で表示＝Retinaで滲まない。
+   下地の色ごといただいた画像（透過なし）なので、角だけこちらで丸めて
+   座布団の上に看板の板が載っているように見せる。 */
+.noren .mise-logo { display: block; height: 30px; width: auto; border-radius: 6px; }
 .noren .koto { margin-top: 4px; font-size: 13.5px; color: var(--ink-soft); }
 /* なぜここに在るのか。一段小さく、しかし読める大きさで。
    CAD素材.com の規約に「ご利用いただいた旨を記載の上、リンクを」とある。
@@ -926,14 +930,16 @@ html[data-time="night"] .ice {
   <div class="nokisaki" id="nokisaki">
     <div class="fuda">お世話になっているところ</div>
     <div class="nokisaki-list">
-      <!-- ロゴ（看板）はまだ置いていない。田村さまの規約に
-           「当サイトのデータ、情報、画像等を許可なく……2次利用することは
-           非営利であっても固く禁じます」とあり、ロゴは画像に当たる。
-           お伺いして承諾をいただけたら、画像をこの家に置いて差し替える。
-           ⚠️ その時も相手のサーバから直接読み込まないこと。来た人の
-           アクセスが向こうに残る＝軒先の掟二「追いかけない」に触れる。 -->
+      <!-- ロゴ（看板）。2026-08-11、田村さまから
+           「ご利用いただいて問題ございません」と承諾をいただいて掛けた。
+           規約でロゴは2次利用禁止の「画像」に当たるため、掛ける前に
+           お伺いを立てた（グレーなら聞く）。
+           画像は nokisaki/ に置いた自前の控え。相手のサーバから直接
+           読み込むと、来た人のアクセスが向こうに残る＝軒先の掟二
+           「追いかけない」に触れるので、必ずこの家の中から読むこと。
+           alt に店名を書いてあるので、画像が読めない環境でも名前は立つ。 -->
       <a class="noren" href="https://cad-freed-rawingsamples.com/" rel="noopener">
-        <div class="mise">CAD素材.com</div>
+        <img class="mise-logo" src="nokisaki/cadsozai-logo.png" alt="CAD素材.com" width="380" height="60" loading="lazy">
         <div class="koto">建築の図面に使えるCADデータを、無料で配っておられます。人物・樹木・鉄骨・建具・サッシ・記号ほか217種。</div>
         <div class="wake">K'Ad蔵人の文字まわりの不具合は、ここの笠木データが教えてくれました。</div>
       </a>
