@@ -5,21 +5,27 @@
     naze/（なぜ、こう作ったか）と同じ作りにしてある。表の顔は道具を
     並べるだけの場所で、中身の話はこちらの部屋に置く、という分け方。
 
-    このページで書くのは三つ。
+    このページで書くのは四つ。
       ① 名前の意味（K＝描く / Ad＝助ける）
       ② 蔵人＝Claude であること。なぜ道具の名にAIの名が入っているか
-      ③ 23日という時間の記録と、その速さの正体
+      ③ 日数の記録と、その速さの正体
+      ④ 預かった図面を壊さずに返すこと（2026-08-20 に追記）
 
-    ③がいちばん大事。速いのはAIだからではない、という話を、
-    実測した数字だけで書く。盛らない（憲法「飾りの数字を書かない」）。
-    数字は 2026-08-02 時点の git と wc の実測値。
+    ③④がいちばん大事。速いのはAIだからではない、という話と、
+    速さより先に信用が要る、という話を、実測した数字だけで書く。
+    盛らない（憲法「飾りの数字を書かない」）。
+
+    数字は git と wc の実測値。左の列＝2026-08-02、右の列＝2026-08-20。
+    ⚠️上部の「開発の札」の窯番号は、**本番の gcad.engawaya.com で実際に
+    動いている版**を書くこと。手元で焼いただけの版や作りかけの番号を書くと、
+    K'Ad を開いた人の画面の札と食い違って、この札そのものが嘘になる。
 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K'Ad蔵人とは — 縁側屋</title>
-<meta name="description" content="無料の2D CAD「K'Ad蔵人」の名前の由来と、23日でここまで来た記録。K＝描く、Ad＝助ける。蔵人はClaude（くろうど）と読みます。">
+<meta name="description" content="無料の2D CAD「K'Ad蔵人」の名前の由来と、41日でここまで来た記録。他所から預かった図面を壊さずに返すこと。K＝描く、Ad＝助ける。蔵人はClaude（くろうど）と読みます。">
 
 <style>
 *, *::before, *::after { box-sizing: border-box; }
@@ -83,6 +89,44 @@ h1 {
   font-size: clamp(15px, 3.8vw, 16.5px);
 }
 
+/* 開発の札（2026-08-20 施主のご依頼「窯番号、日付が出ていると、更新中だと
+   ユーザーに分かる」）。上のほう＝読み始めてすぐ目に入る場所に置く。
+   ⚠️手で書く数字は必ず古くなるので、**いつ時点か**を必ず添える。
+   日付が添えてあれば、古くなっても嘘にはならない（黙って古いのがいちばん悪い）。 */
+.kama {
+  margin: 26px 0 0;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  background: rgba(255,255,255,.28);
+}
+html[data-time="night"] .kama { background: rgba(255,255,255,.05); }
+.kama-row {
+  display: grid;
+  grid-template-columns: 8.5em 1fr;
+  gap: 2px 14px;
+  align-items: baseline;
+  line-height: 1.7;
+}
+.kama-row + .kama-row { margin-top: 10px; }
+.kama-label { font-size: 13px; color: var(--ink-soft); letter-spacing: .04em; }
+.kama-val   { font-size: clamp(15px, 4vw, 17px); font-weight: 600; letter-spacing: .03em; }
+.kama-date  { grid-column: 2; font-size: 13px; color: var(--ink-soft); }
+.kama-wip   { color: var(--accent); }
+.kama-chu {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+}
+@media (max-width: 420px) {
+  .kama-row { grid-template-columns: 1fr; }
+  .kama-date { grid-column: 1; }
+}
+
 section {
   margin-top: 46px;
   padding-top: 30px;
@@ -131,6 +175,14 @@ b { font-weight: 600; }
 }
 .kazu th { font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
 .kazu td { font-weight: 600; }
+/* 二列にした日（十五期・2026-08-20）。左＝23日目の記録、右＝今日。
+   伸びた分が目で見えるように、今日の列だけ色を変える。 */
+.kazu td.mukashi { font-weight: 400; color: var(--ink-soft); }
+.kazu td.ima { color: var(--accent); }
+.kazu tr.midashi th, .kazu tr.midashi td {
+  font-weight: 400; font-size: 12.5px; color: var(--ink-soft); padding-bottom: 4px;
+  white-space: nowrap;   /* 日付が「2026年8月2／日」と割れるのを防ぐ（スマホ幅で実測） */
+}
 .kazu tr:last-child th, .kazu tr:last-child td { border-bottom: none; }
 .chu { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
 
@@ -174,6 +226,30 @@ footer {
     ここには、この道具が何なのかと、名前の意味を書いておきます。
   </p>
 
+  <!-- 開発の札（2026-08-20 施主のご依頼）。
+       ⚠️ここに書く番号は「いま世に出ている版」＝ gcad.engawaya.com で
+       実際に動いている窯。手元で焼き上がったばかりの版や、作りかけの版の
+       番号を書いてはいけない——K'Adを開いた人の画面の札と食い違って、
+       この札そのものが嘘になる。 -->
+  <div class="kama">
+    <div class="kama-row">
+      <span class="kama-label">いま配っている版</span>
+      <span class="kama-val">十五期　百二十二号窯</span>
+      <span class="kama-date">2026年8月19日</span>
+    </div>
+    <div class="kama-row">
+      <span class="kama-label">つくっているところ</span>
+      <span class="kama-val kama-wip">ストレッチ（囲んだ分だけ、伸ばす）</span>
+      <span class="kama-date">次の版でお届けします</span>
+    </div>
+    <p class="kama-chu">
+      <b>窯</b>（かま）は、この道具の版の数え方です。K'Ad蔵人を開くと、画面のいちばん下に
+      同じ番号が出ます。見くらべると、<b>お使いの版が最新かどうか</b>が分かります。<br>
+      ブラウザで使う版が古いままのときは、<b>Ctrl＋Shift＋R</b>（Macは⌘＋Shift＋R）で
+      読み込み直してください。
+    </p>
+  </div>
+
   <section>
     <h2>名前のこと</h2>
 
@@ -215,23 +291,24 @@ footer {
   </section>
 
   <section>
-    <h2>23日</h2>
+    <h2>23日、そして41日</h2>
     <p>
       この道具は、2026年7月11日の夜に、まっさらな土台から始まりました。
-      下の数字は、2026年8月2日に数えたものです。
+      左の列は23日目に数えたもの、右の列は<b>今日</b>数えたものです。
     </p>
 
     <table class="kazu">
-      <tr><th>起工</th><td>2026年7月11日　19時22分</td></tr>
-      <tr><th>この記録の日</th><td>2026年8月2日（23日目）</td></tr>
-      <tr><th>作った回数</th><td>161回</td></tr>
-      <tr><th>ソースの行数</th><td>29,359行</td></tr>
-      <tr><th>コマンド</th><td>57</td></tr>
-      <tr><th>読み書きできる形式</th><td>DXF・JWW・DWG・PDF・STL</td></tr>
+      <tr class="midashi"><th></th><td>2026年8月2日</td><td>2026年8月20日</td></tr>
+      <tr><th>起工からの日数</th><td class="mukashi">23日目</td><td class="ima">41日目</td></tr>
+      <tr><th>作った回数</th><td class="mukashi">161回</td><td class="ima">342回</td></tr>
+      <tr><th>ソースの行数</th><td class="mukashi">29,359行</td><td class="ima">51,826行</td></tr>
+      <tr><th>コマンド</th><td class="mukashi">57</td><td class="ima">85</td></tr>
+      <tr><th>読み書きできる形式</th><td class="mukashi" colspan="2">DXF・JWW・DWG・PDF・STL</td></tr>
     </table>
 
     <p class="chu">
-      起工から14分後の記録に「線・スナップ・直交・拡大縮小・コマンド入力・元に戻す」とあります。
+      起工は2026年7月11日 19時22分。その14分後の記録に、すでに
+      「線・スナップ・直交・拡大縮小・コマンド入力・元に戻す」とあります。
     </p>
 
     <p>
@@ -239,6 +316,60 @@ footer {
       <b>その全部に並んだ、とは言いません。</b>並んでいません。
       ただ、図面を描いて、寸法を入れて、紙に刷って、他のCADへ渡す——
       毎日いちばん使うところには、23日で手が届きました。
+    </p>
+    <p>
+      では、そのあとの18日で何をしていたのか。
+      新しい道具を足すよりも、<b>受け取った図面を傷つけない</b>ことに時間を使いました。
+      次の節が、その話です。
+    </p>
+  </section>
+
+  <section>
+    <h2>預かった図面を、壊さずに返す</h2>
+    <p>
+      実務では、図面はたいてい<b>よそから来ます</b>。
+      元請けから、設計事務所から、メーカーのカタログから。
+      それを開いて、線を足して、保存して、送り返す——これが一日の仕事です。
+    </p>
+    <p>
+      ここに、無料のCADがいちばん静かに人を裏切る場所があります。
+      <b>開いて保存し直しただけで、図面が欠ける</b>。
+      しかも<b>絵はまったく同じに見える</b>ので、送った本人は気づきません。
+      気づくのは、受け取った側が触った瞬間です。
+    </p>
+    <p>
+      K'Ad蔵人 も、していました。実際に数えた結果がこれです。
+    </p>
+
+    <table class="kazu">
+      <tr class="midashi"><th>図面が言っていたこと</th><td>以前、返していた姿</td></tr>
+      <tr><th>一本の外形線</th><td class="mukashi">線の束にほどけて返る</td></tr>
+      <tr><th>一かたまりの注記</th><td class="mukashi">行ごとにバラバラ</td></tr>
+      <tr><th>部品の配置　918個</th><td class="mukashi">14個（あとは中身が散らばる）</td></tr>
+      <tr><th>寸法に書き添えた「150以下」</th><td class="mukashi">131.5</td></tr>
+    </table>
+
+    <p class="chu">
+      最後の行がいちばん重いものです。<b>「150以下」は、書いた人の指示</b>です。
+      それを実測値に置き換えるのは、図面が言っていないことを、道具が代わりに言い出すことです。
+      線は一本も狂っていないので、絵を見ても分かりません。
+    </p>
+
+    <p>
+      作者の言葉です。
+      「<b>バトンで受け取ったものを、壊さずに返す。これは信用であり、
+      なによりも人様の期待を裏切らない真摯な行為です</b>」。
+      これは、この道具の決まりごとの一つになりました。
+    </p>
+    <p>
+      いま K'Ad蔵人 は、<b>自分が意味を知らない持ち物も、知らないまま預かって返します。</b>
+      飾りの書式、定義点、標高、折り返しの幅——読めなくても、勝手に捨てない。
+      うちが加えるのは、頼まれた加工だけです。
+    </p>
+    <p>
+      見張り方も決めてあります。<b>絵では合否が出ない</b>ので、目で見て確かめることはしません。
+      別のソフトで開き直して数を突き合わせ、
+      <b>二度保存しても一文字も変わらない</b>ことを、機械に測らせています。
     </p>
   </section>
 
