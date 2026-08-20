@@ -62,6 +62,11 @@
 /* ---- 土台のリセット（最小限だけ） ---- */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* 横には、けっして動かない。
+   ⚠️2026-08-20、看板の背後の空を画面いっぱい（100vw）にしたとき、縦スクロールバーの
+   幅ぶん（実測7.5px）だけ横へはみ出した。横に動く作りは、それだけで「壊れている」と
+   読まれるし、指で操作する人には図面のように扱いにくい。ここで一度に塞ぐ。 */
+html, body { overflow-x: hidden; }
 
 /* ---- 時間帯ごとの色 --------------------------------------
    JS が <html data-time="morning|day|evening|night"> を付ける。
@@ -162,6 +167,43 @@ h1 {
    ------------------------------------------------------------ */
 .kanban-ita { display: none; }
 html.ita-ok .kanban-ita { display: block; }
+
+/* ---- 看板の背後の空（2026-08-20 施主のご依頼）------------------
+   ページの下（縁側の外）に美瑛の丘がある。その空を、上にも掛けた。
+   ⚠️色は自分で持たない。丘と同じ棚（ENGAWAYA_SORA）から借りている。
+     同じ空の色を二箇所に書くと、季節の色を直した日に「上と下で違う空」になる。
+   ⚠️空は揺れない。看板は押すと揺れる（.ita-btn に transform が掛かる）ので、
+     空を看板の中に描くと、空ごと揺れてしまう。だから別の一枚にして後ろへ敷く。
+   canvas が描けない機械では、空は出ないまま看板だけが立つ（今までどおり）。
+   ------------------------------------------------------------ */
+/* 空は画面いっぱいに広げる（2026-08-20 施主「大きく全体でもOK」）。
+   ⚠️.wrap（最大680px）の中に居るので、左右へはみ出させて画面幅にする。
+     はみ出したぶんは overflow:hidden で切る＝横スクロールを出さない
+     （狭い画面で横に動く作りは、それだけで「壊れている」と読まれる）。
+   ⚠️空の粒（ドットの大きさ）は、下の美瑛の丘と同じ式で決めている。
+     上と下で粒が違うと、同じ空に見えない。 */
+.kanban-ba {
+  position: relative;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow: hidden;
+}
+#soraCv {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+html.sora-ok #soraCv { display: block; }
+.kanban-ba .kanban-ita { position: relative; z-index: 1; }
+/* 空が出たら、ページのてっぺんから空にする（施主「上部を空で」2026-08-20）。
+   ⚠️余白を詰めても看板は詰まらない——空の中に、板を吊るぶんの高さ（UE）が
+     すでに入っているため。空が出ない機械では、今までどおりの余白のまま。
+   ⚠️クラスを二つ重ねて書いてある（.sora-ok.ita-ok）。一つだけだと、上に書いてある
+     「html.ita-ok .wrap { padding-top: clamp(...) }」と同じ強さになり、
+     **後に書いてあるほう（あちら）が勝って**余白が残る。実際に一度そうなった。 */
+html.sora-ok.ita-ok .wrap { padding-top: 0; }
 /* 板の上には、縄を通すぶんの空きが絵の中にもうある。
    文字の見出しのときと同じ余白を上に取ると、そのぶん道具（座布団）が
    下へ押し出される。玄関で先に見えるべきは道具なので、ここは詰める。 */
@@ -302,6 +344,20 @@ html.ita-ok .yomi {
   margin: 10px 0 0;
   font-size: 12.5px;
   color: var(--ink-soft);
+}
+
+/* 版の表から、その中身を読める場所への一行（2026-08-20）。
+   ⚠️なぜ表のすぐ足元に置くか：表を見て「新しくなっている」と気づいた人が、
+   次に知りたいのは「では、何が変わったのか」。ところが開発日記の戸は
+   このページの2,000px下にあって、気づいた気持ちのまま辿り着けなかった。
+   問いと答えは隣にあるべきなので、ここに一行だけ置く。
+   ⚠️戸を二つにしたのではありません。下の奥の部屋の並びにある戸が本体で、
+   これは表を読んだ人のための近道です。 */
+.ban-nikki { margin: 6px 0 0; font-size: 12.5px; }
+.ban-nikki a {
+  display: inline-block;
+  padding: 9px 12px 9px 0;      /* 指で押せる高さを持たせる。左は表の字と頭を揃えるので取らない */
+  color: var(--accent);
 }
 
 /* ---- 座布団（道具のカード） --------------------------------
@@ -818,11 +874,19 @@ html[data-time="night"] .ice {
   <h1>縁側屋</h1>
   <p class="yomi">ENGAWAYA</p>
 
-  <!-- 吊ってある一枚板の看板。中身は下の script で描く。 -->
-  <div class="kanban-ita">
-    <button class="ita-btn" id="itaBtn" aria-label="縁側屋の看板。押すと揺れます。">
-      <canvas id="itaCv" aria-hidden="true"></canvas>
-    </button>
+  <!-- 吊ってある一枚板の看板と、その背後の空。中身は下の script で描く。
+       空は 2026-08-20 に施主のご依頼で足した：
+         「縁側屋の看板の背景に、蔵人さん特製の美瑛町の空をのせることができますか？
+           この絵下部の絵大好きなんです。上部に鳥羽ばたかせたら素敵です」
+       ＝ページの下（縁側の外）に美瑛の丘があるので、上にその空を掛けた。
+       一枚の絵で言えば、上が空、下が丘。あいだに家がある形。 -->
+  <div class="kanban-ba">
+    <canvas id="soraCv" aria-hidden="true"></canvas>
+    <div class="kanban-ita">
+      <button class="ita-btn" id="itaBtn" aria-label="縁側屋の看板。押すと揺れます。">
+        <canvas id="itaCv" aria-hidden="true"></canvas>
+      </button>
+    </div>
   </div>
 
   <!-- 版と更新日の札。作り方の理由は上の style の「版と更新日の札」の欄に。
@@ -864,6 +928,7 @@ html[data-time="night"] .ice {
       </tbody>
     </table>
     <p class="ban-ashi">このページの最終更新　2026年8月20日</p>
+    <p class="ban-nikki"><a href="nikki/">何が変わったかは、開発日記に書いています →</a></p>
   </div>
 
   <p class="lead">
@@ -2405,6 +2470,261 @@ html[data-time="night"] .ice {
     clearTimeout(rt);
     rt = setTimeout(resize, 150);        /* 幅を動かしている間は描き直さない */
   });
+
+  resize();
+  if (moving) requestAnimationFrame(frame);
+
+  /* 空の色を、家の中で共有するための棚（2026-08-20）。
+     ⚠️なぜ棚を出すか：看板の背後にも空を敷くことになったが、そこで同じ色を
+     もう一組書くと、季節の色を直した日に**上の空と下の空が違う色**になる。
+     この家が何度も踏んだ「同じものが二箇所にある」病そのもの。
+     だから色は一箇所（この PAL / TINT）に置いたまま、貸し出す。
+     渡すのは読むだけの道具（色と、季節を答える係）で、描き方は渡さない。 */
+  window.ENGAWAYA_SORA = {
+    PAL: PAL, TINT: TINT, seasonNow: seasonNow,
+    hex: hex, mix: mix, tane: tane
+  };
+})();
+
+/* ============================================================
+   看板の背後の空（2026-08-20 施主のご依頼）
+
+   施主の言葉：
+     「縁側屋の看板の背景に、蔵人さん特製の美瑛町の空を、のせることが
+       できますか？ この絵下部の絵大好きなんです。
+       上部に鳥羽ばたかせたら素敵です」
+
+   ページの下（縁側の外）に美瑛の丘がある。その同じ空を、上にも掛けた。
+   一枚の絵で言えば、上が空、下が丘、あいだに家がある形になる。
+
+   ① 色は自分で持たない
+      すぐ上の景色が出している棚（ENGAWAYA_SORA）から借りる。
+      ⚠️同じ空の色をここにもう一組書くと、季節の色を直した日に
+      「上の空と下の空が違う色」になる。この家が何度も踏んだ、
+      同じものが二箇所にある病。だから借りるだけにする。
+
+   ② 粒は看板と揃える
+      拡大率（S）は看板canvasの実寸から割り出す。自分で決めると、
+      看板のドットと空のドットの大きさが違って、二枚の絵に見える。
+
+   ③ 乱数を使わない
+      雲も星も鳥も、位置は tane（同じ数から同じ値が返る計算）で散らす。
+      開くたびに変わると「同じ家の同じ空」でなくなる。
+
+   ④ 動きは、雲がゆっくり流れるのと、鳥が横切るだけ
+      光らせない・音は出さない。動きを嫌う設定の人には止めて出す
+      （風鈴・雲と同じ作法）。止めても鳥は空に居る＝居なくならない。
+   ============================================================ */
+(function () {
+  var SORA = window.ENGAWAYA_SORA;
+  var cv   = document.getElementById('soraCv');
+  var ita  = document.getElementById('itaCv');
+  var ba   = document.querySelector('.kanban-ita');
+  if (!SORA || !cv || !cv.getContext || !ita || !ba) return;   /* 空が無くても看板は立つ */
+
+  var vg  = cv.getContext('2d');
+  var off = document.createElement('canvas');
+  var g   = off.getContext('2d');
+
+  var W = 160;            /* 空の横幅（ドット）。画面幅から毎回決め直す */
+  var UE = 18;            /* 板の上に空くぶん（ドット）。ここを鳥が飛ぶ */
+  var H = 98;             /* 空の高さ（ドット）。看板の実寸から決め直す */
+  var S = 2;              /* 拡大率。下の美瑛の丘と同じ式で決める＝粒が揃う */
+
+  function px(x, y, w, h, c) {
+    g.fillStyle = c;
+    g.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
+  }
+
+  /* ---- 空。12段に量子化して、段を見せる（丘の空と同じ作り）---- */
+  function drawSky(p) {
+    var c1 = SORA.hex(p.skyTop), c2 = SORA.hex(p.skyBot);
+    for (var y = 0; y < H; y++) {
+      var t = Math.round((y / H) * 12) / 12;
+      px(0, y, W, 1, SORA.mix(c1, c2, t));
+    }
+  }
+
+  /* ---- 雲。板に隠れない上のほうを、ゆっくり流れる ----
+     ⚠️三段に重ねる。最初は二段で書いたが、空の横幅は画面幅から決まる＝雲も横に長く、
+       二段だと**横棒**にしか見えなかった（実機で見て分かった）。
+       下の丘の雲と同じ三段（中・下・上）にすると、同じ塊の形になる。
+     ⚠️流れる速さは雲ごとに変える。揃えると、空ぜんたいが横に滑って見える。 */
+  function drawClouds(p, t) {
+    var seeds = [[0.12, 6, 0.13, 3], [0.58, 3, 0.09, 2], [0.86, 9, 0.11, 3]];
+    for (var i = 0; i < seeds.length; i++) {
+      var sd = seeds[i];
+      var w = W * sd[2], h = sd[3];
+      var x = (W * sd[0] + t * (3 + i)) % (W + w * 1.6) - w * 0.8;
+      px(x + w * 0.18, sd[1],           w * 0.64, h,       p.cloud);
+      px(x,            sd[1] + h,       w,        h * 0.8, p.cloud);
+      px(x + w * 0.30, sd[1] - h * 0.5, w * 0.4,  h * 0.5, p.cloud);
+    }
+  }
+
+  /* ---- 鳥。5×3ドットの二コマで羽ばたく ----
+     ⚠️絵文字は使わない（憲法②）。点をひとつずつ置く。
+     遠くの鳥なので、形は「羽を上げた姿」と「下げた姿」の二つで足りる。 */
+  /* ⚠️最初は 5×3 で書いたが、実機で見たら空が広いぶん**小さすぎて見えなかった**
+       （昼は特に。空の青に沈む）。翼を広げた 7×3 にして、胴を一マス置いた。
+       これ以上大きくすると「近くの鳥」になって、空の広さが消える。
+     二コマの意味：上＝翼を上げた瞬間、下＝翼を下ろした瞬間。
+     この二つを行き来させると、遠くの鳥の羽ばたきに見える。 */
+  var TORI = [
+    ['#.....#',
+     '.#...#.',
+     '..###..'],
+    ['.......',
+     '#.....#',
+     '.#####.']
+  ];
+  function bird(x, y, koma, c) {
+    var art = TORI[koma];
+    for (var r = 0; r < art.length; r++) {
+      for (var i = 0; i < art[r].length; i++) {
+        if (art[r].charAt(i) === '#') px(x + i, y + r, 1, 1, c);
+      }
+    }
+  }
+  /* 三羽。高さも速さも少しずつ違えて、隊列にしない（そのほうが本当の鳥に近い）。
+     ⚠️位置は乱数ではなく tane。開くたびに変わらない＝同じ家の同じ空。 */
+  function drawBirds(t, iro) {
+    for (var i = 0; i < 3; i++) {
+      var hayasa = 4.5 + SORA.tane(i * 7) * 3.5;          /* ドット毎秒 */
+      var takasa = 2 + Math.round(SORA.tane(i * 13) * (UE - 6));
+      var x = (SORA.tane(i * 3) * W + t * hayasa) % (W + 14) - 7;
+      /* 上下にゆっくり波打つ。まっすぐ飛ぶと紙飛行機に見える */
+      var yure = Math.sin(t * 0.7 + i * 2.1) * 1.4;
+      var koma = (Math.floor(t / 0.26 + i) % 2);
+      bird(x, takasa + yure, koma, iro);
+    }
+  }
+
+  /* ---- 時刻の色かけ。夜は星も（丘と同じ作法・同じ色）---- */
+  function drawTint(time) {
+    var t = SORA.TINT[time] || SORA.TINT.day;
+    if (!t[0]) return;
+    g.globalCompositeOperation = 'multiply';
+    g.globalAlpha = t[1];
+    px(0, 0, W, H, t[0]);
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+
+    /* 夜の星。施主のご依頼は「夜は星空で」。
+       ⚠️空の**上のほう**に置く。下は背景へ溶けていく場所なので、そこに星を打つと
+         溶けた先（本文の地）に星が残って、字の後ろに点が散る。
+       ⚠️位置は tane で決める（乱数を使わない）＝開くたびに変わらない、同じ家の同じ夜空。
+       ⚠️瞬かせない。縁側の作法として、光らせないため。 */
+    if (time === 'night') {
+      var hoshi = Math.round(H * 0.55);            /* 星を置いてよい高さ */
+      for (var i = 0; i < 60; i++) {
+        var x = SORA.tane(i) * W;
+        var y = SORA.tane(i + 100) * hoshi;
+        px(x, y, 1, 1, (i % 5 === 0) ? '#ffffff' : '#c8d4e8');
+      }
+    }
+  }
+
+  /* ---- 下端を、ページの背景へ溶かす（2026-08-20 施主のご依頼）----
+     施主の言葉：「上部を空で、グラデーションで、背景と溶け込ませる」
+                 「夜は、ダークモードで星空で、グラデーションで暗くなり、本文に」
+
+     ⚠️溶かす先の色を、ここに書かない。ページの背景そのもの（--sky-top）を
+       その場で読む。こうすると、**昼は生成り・夕は橙・夜は濃紺**へ、
+       何も足さずに自動で合う——施主の仰った二つ（背景と溶ける／夜は本文へ）が
+       同じ一つの仕掛けで済む。色を書き写すと、母屋の色を変えた日に
+       ここだけ古い色のまま残って、空と本文のあいだに段ができる。
+     ⚠️溶かし方も段（12段）で刻む。なめらかに溶かすと、そこだけ写真のように
+       見えて、ドット絵の空から浮く（憲法②の肌ざわり）。 */
+  function tokeru() {
+    var css = getComputedStyle(document.documentElement);
+    var haikei = (css.getPropertyValue('--sky-top') || '').trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(haikei)) return;      /* 読めなければ、溶かさない */
+    var fade = Math.max(8, Math.round(H * 0.45));       /* 下から45%かけて溶ける */
+    for (var y = H - fade; y < H; y++) {
+      var t = (y - (H - fade)) / fade;                  /* 0（空）→ 1（背景） */
+      var q = Math.round(t * t * 12) / 12;              /* 段で刻む。下ほど急に濃く */
+      if (q <= 0) continue;
+      g.globalAlpha = q;
+      px(0, y, W, 1, haikei);
+      g.globalAlpha = 1;
+    }
+  }
+
+  var moving = !(window.matchMedia &&
+                 window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+
+  function draw(t) {
+    var p    = SORA.PAL[SORA.seasonNow()];
+    var time = document.documentElement.getAttribute('data-time') || 'day';
+    g.clearRect(0, 0, W, H);
+    drawSky(p);
+    drawClouds(p, t);
+    /* 鳥の色。昼は遠くの鳥らしい濃い灰、夜は空に沈まないよう少し明るく。
+       ⚠️色かけ（TINT）より前に描く＝鳥も一緒に暮れる。空だけ暮れて鳥が
+       昼のままだと、貼り付けた絵に見える。 */
+    drawBirds(t, (time === 'night') ? '#98a7c8' : '#3a4453');
+    drawTint(time);
+    tokeru();          /* いちばん最後。時刻の色かけが済んだ空を、背景へ溶かす */
+
+    vg.imageSmoothingEnabled = false;
+    vg.mozImageSmoothingEnabled = false;
+    vg.webkitImageSmoothingEnabled = false;
+    vg.msImageSmoothingEnabled = false;
+    vg.drawImage(off, 0, 0, W, H, 0, 0, cv.width, cv.height);
+  }
+
+  function frame(now) {
+    draw(moving ? (now - t0) / 1000 : 0);
+    if (moving) requestAnimationFrame(frame);
+  }
+
+  /* 大きさを決め直す。
+     ・粒（S）は**下の美瑛の丘とまったく同じ式**。上と下で粒が違うと、
+       同じ空に見えない（丘：画面が広ければ3倍、狭ければ2倍）。
+     ・横は画面いっぱい。だから W は「画面幅 ÷ 粒」で毎回決まる
+       ＝広い画面の人には広い空が見える（丘と同じ考え方）。
+     ・縦は看板の実寸から。板の上に UE ドットぶんの空を残して吊る。
+     ⚠️看板がまだ描かれていない瞬間に測ると、粒も高さも嘘になる。
+       その時は何もせずに帰り、次の呼び出しを待つ。 */
+  function resize() {
+    var vw = document.documentElement.clientWidth || 360;
+    var itaH = ita.height ? (ita.height / (ita.width / 160)) : 0;   /* 看板の高さ（ドット） */
+    if (!ita.width || !itaH) return;              /* 看板がまだ描かれていない */
+
+    S = (vw >= 900) ? 3 : 2;                      /* ← 美瑛の丘と同じ式 */
+    W = Math.ceil(vw / S);
+    /* 空の高さ＝看板の高さ（px）＋上の空。看板の拡大率は空と違うことがあるので、
+       ドットではなく px で足してから、空の粒に直す。 */
+    var takasa = ita.height + UE * S;
+    H = Math.ceil(takasa / S);
+
+    off.width = W; off.height = H;
+    cv.width = W * S; cv.height = H * S;
+    cv.style.width  = (W * S) + 'px';
+    cv.style.height = (H * S) + 'px';
+    /* 板を、空の上端から UE ドットぶん下げて吊る＝上に空が空く */
+    ba.style.marginTop = (UE * S) + 'px';
+    draw(moving ? ((((window.performance && performance.now) ? performance.now() : Date.now()) - t0) / 1000) : 0);
+    if (document.documentElement.className.indexOf('sora-ok') < 0) {
+      document.documentElement.className += ' sora-ok';
+    }
+  }
+
+  /* 追いかけ方は二本立て（同じ結果に至る道を二本持つ・十四期四十九号の作法）。
+     ⚠️window の resize だけに頼らない——看板は 150ms 待ってから描き直すので、
+       こちらが先に測ると古い寸法を掴む。
+     ⚠️ResizeObserver だけにも頼らない——最初の一回が、看板がまだ小さいうちに
+       走ることがある（実際、そうなって空の粒が看板と食い違った）。
+     だから両方仕掛けて、さらに少し遅れてもう一度測る。何度測っても
+     答えは同じなので、多く測って困ることはない。 */
+  if (window.ResizeObserver) { new ResizeObserver(resize).observe(ita); }
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt); rt = setTimeout(resize, 260);   /* 看板（150ms）より後に */
+  });
+  setTimeout(resize, 300);                            /* 看板が落ち着いたころに、もう一度 */
 
   resize();
   if (moving) requestAnimationFrame(frame);
