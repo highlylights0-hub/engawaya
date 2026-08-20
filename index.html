@@ -213,6 +213,97 @@ html.ita-ok .yomi {
    遡れば、そのまま残っています。
    ------------------------------------------------------------ */
 
+/* ---- 版と更新日の札（2026-08-20 に足しました）----------------
+   施主のご依頼:
+     「K'Adのバージョン。ジオメモリーのバージョン、落ちゲーのバージョン。
+       最終更新日を載せたいです。このサイトうごいているか、どうか、
+       ユーザーが知るためです」
+
+   なぜ看板のすぐ下なのか:
+     無料の道具は「置きっぱなしで、もう誰も直していない」ものが
+     本当に多い。初めて来た人が道具を選ぶ前にいちばん知りたいのは
+     機能ではなく **この家に人が居るかどうか**。だから道具（座布団）より
+     前に置く。
+
+   なぜ道具ごとに日付まで出すのか:
+     サイトが生きている証拠は、ページを直した日ではなく
+     **道具そのものが動いていること**。三つとも止まっていれば、
+     ページだけ新しくても意味がない。逆に道具が動いていれば、
+     ページの更新が少し古くても、この家は生きている。
+
+   ⚠️**ここの数字は手で書いてあります。**
+     外から取ってくれば自動になりますが、それはこの家の決まりごとの①
+     「外から何も読み込まない」を破ります（回線の細い人の画面が、
+     版を取りに行くあいだ止まる）。だから手で書く道を選びました。
+     → **道具を更新した日は、ここも一緒に直すこと。**
+       直し忘れた札は「もう動いていません」と名乗るのと同じで、
+       置かないより悪い。直す場所は本文の <table class="ban-hyo"> の
+       中だけ、三行です。
+   ------------------------------------------------------------ */
+.ban {
+  margin: 20px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--card-line);
+}
+.ban-hyo {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  line-height: 1.75;
+  text-align: left;
+}
+/* 見出しの行。小さくても、色を薄くしすぎない
+   （何の列か読めないと、版の数字がただの記号になる）。 */
+.ban-hyo th {
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 0 14px 4px 0;
+  white-space: nowrap;
+}
+.ban-hyo thead th {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--card-line);
+  padding-bottom: 6px;
+}
+.ban-hyo td {
+  padding: 4px 14px 0 0;
+  color: var(--ink-soft);
+}
+.ban-hyo tbody th { padding-top: 4px; }
+/* いちばん右の列（日付）は、右に余白を残さない */
+.ban-hyo th:last-child, .ban-hyo td:last-child { padding-right: 0; }
+
+/* 日付だけは、途中で折らない。
+   「2026年8月」／「20日」と割れると、日付ではなく別の何かに見える。
+   逆に真ん中の版（十五期百二十三号）は折れてよい＝折れても意味は変わらない。
+   ⚠️ここを両方 nowrap にすると、320px幅の機械で
+   **ページ全体が横にずれます**（2026-08-20 に実測して直した穴）。
+   小さい画面の古い機械こそ、この家がいちばん助けたい相手です。 */
+.ban-hyo td:last-child { white-space: nowrap; }
+
+/* 狭い画面では字と間を詰めて、折り返さずに三列を収める。
+   380px は iPhone SE などの縦幅（320〜375px）を丸ごと含む線。 */
+@media (max-width: 380px) {
+  .ban-hyo { font-size: 12px; }
+  .ban-hyo thead th { font-size: 11px; }
+  .ban-hyo th, .ban-hyo td { padding-right: 8px; }
+  .ban-hyo th:last-child, .ban-hyo td:last-child { padding-right: 0; }
+}
+
+/* 版の字の塊。中では折れないので、折れるとしても塊と塊の境目になる。
+   ⚠️字を小さくして一行に押し込む道は採りませんでした。
+   狭い画面の人ほど、字が読めないと困るからです。 */
+.ban-ku { display: inline-block; }
+
+/* このページ自身の更新日。道具の表とは主語が違うので、行を分ける。 */
+.ban-ashi {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
 /* ---- 座布団（道具のカード） --------------------------------
    ホバーではなく「押せる面積が大きいこと」を優先。
    指でも、震える手でも、狙いを外さない大きさにしてある。
@@ -732,6 +823,47 @@ html[data-time="night"] .ice {
     <button class="ita-btn" id="itaBtn" aria-label="縁側屋の看板。押すと揺れます。">
       <canvas id="itaCv" aria-hidden="true"></canvas>
     </button>
+  </div>
+
+  <!-- 版と更新日の札。作り方の理由は上の style の「版と更新日の札」の欄に。
+       ⚠️数字を直すのはこの表の三行と、すぐ下の「このページの最終更新」だけです。 -->
+  <div class="ban">
+    <table class="ban-hyo">
+      <thead>
+        <tr>
+          <th scope="col">道具</th>
+          <th scope="col">版</th>
+          <th scope="col">更新した日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- K'Ad蔵人だけ版が数字ではありません。この道具は一号ずつ焼いて
+             配っているので、家の中の呼び名（十五期百二十三号）がそのまま版です。
+             初めて来た人には隣の日付が読めれば足りるので、両方を並べています。 -->
+        <tr>
+          <th scope="row">K'Ad蔵人</th>
+          <!-- 二つに分けてあるのは飾りではありません。狭い画面ではこの字が
+               どうしても一行に収まらず、放っておくと「十五期百二十／三号」と
+               語の途中で割れます。塊にしておくと、折れる場所が必ず
+               「十五期／百二十三号」＝意味の継ぎ目になります。 -->
+          <td><span class="ban-ku">十五期</span><span class="ban-ku">百二十三号</span></td>
+          <td>2026年8月20日</td>
+        </tr>
+        <tr>
+          <th scope="row">GeoMemory</th>
+          <td>1.0.2</td>
+          <td>2026年7月13日</td>
+        </tr>
+        <!-- 座布団の札は「Ochi-Gee 星のおちもの」ですが、ここは短いほうだけ。
+             表の一列目が長くなると、右の日付が画面の外へ押し出されます。 -->
+        <tr>
+          <th scope="row">Ochi-Gee</th>
+          <td>1.1</td>
+          <td>2026年7月30日</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="ban-ashi">このページの最終更新　2026年8月20日</p>
   </div>
 
   <p class="lead">
