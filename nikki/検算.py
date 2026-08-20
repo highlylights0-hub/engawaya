@@ -14,7 +14,7 @@
 ⚠️見張りは「鳴ること」を確かめて初めて見張りになります。この見張りも、作った日に
   わざと壊して[FAIL]が出ることを確かめてあります。項目を足す日も同じようにしてください。
 """
-import re, sys, datetime, pathlib
+import re, sys, datetime, pathlib, subprocess
 
 HERE = pathlib.Path(__file__).resolve().parent
 HTML = HERE / "index.html"
@@ -95,6 +95,33 @@ nai = [h for h in saki if not (HERE.parent / h.lstrip("/") / "index.html").exist
                        and not (HERE.parent / h.lstrip("/")).exists()
                        and h != "/"]
 miru("リンクの行き先が実在する", not nai, f"見つからない行き先: {nai}")
+
+# ⑨ 日記の号数が、本当に配られている版と合っているか
+#    📌これが、この見張りでいちばん効く一項です。2026-08-20（建てた日）に、家の札が
+#      二枚とも古くなっていた——母屋の表が百二十五号、kad の札が百二十四号、
+#      ところが実物は**百二十六号窯**でした。札は黙って古くなる。人は気づけない。
+#    ⚠️見るのは origin/main（＝GitHubが配っている実物）。手元のファイルは、焼いた直後で
+#      まだ押されていないことがあります。コミットの題も当てになりません
+#      （配る.sh が母屋の題を借りるので、同じ題が二回並ぶ）。だからバイトを数えます。
+kiban = pathlib.Path.home() / "Desktop" / "gcad-web"
+kama = set()
+if (kiban / "index.wasm").exists():
+    r = subprocess.run(["git", "-C", str(kiban), "show", "origin/main:index.wasm"],
+                       capture_output=True)
+    b = r.stdout
+    for off in range(4):                      # 4バイトの境目が分からないので四通り試す
+        t = b[off:len(b) - ((len(b) - off) % 4)].decode("utf-32-le", "ignore")
+        kama |= set(re.findall(r"十五期[一二三四五六七八九十百千]+号窯", t))
+
+if kama:
+    ue = next((hiku(a, "hi-ban") for a in kiji
+               if hiku(a, "hi-dougu") == "K'Ad蔵人" and "jotai-todoke" in a), "")
+    miru("日記のいちばん上の版＝いま配られている版",
+         ue.replace(" ", "").replace("\u3000", "") in kama,
+         f"配られているのは {' '.join(kama)} ／ 日記のいちばん上は「{ue}」"
+         "  ← 焼いた日に日記を書き足し忘れていませんか")
+else:
+    print("  [--]   配られている版との照合（手元に gcad-web が無いので見送りました）")
 
 print(f"\n  {ok} 件 [OK] / {fail} 件 [FAIL]\n")
 sys.exit(1 if fail else 0)
