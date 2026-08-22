@@ -113,13 +113,47 @@ if (kiban / "index.wasm").exists():
         t = b[off:len(b) - ((len(b) - off) % 4)].decode("utf-32-le", "ignore")
         kama |= set(re.findall(r"十五期[一二三四五六七八九十百千]+号窯", t))
 
+# 手元の gcad-web に、まだ押していない焼き上がりがあるか。
+# ⚠️これが有るときの [FAIL] は「札の直し忘れ」ではなく「**まだ押していないだけ**」
+#   ——押せば揃う。区別できないと、次の蔵人が直っているものを直そうとする。
+machi = False
+if (kiban / "index.wasm").exists():
+    r2 = subprocess.run(["git", "-C", str(kiban), "log", "origin/main..main", "--oneline"],
+                        capture_output=True, text=True)
+    machi = bool(r2.stdout.strip())
+MACHI = "（gcad-web に未Pushの焼き上がりがあります＝**先にそちらを押せば揃います**）" if machi else ""
+
 if kama:
     ue = next((hiku(a, "hi-ban") for a in kiji
                if hiku(a, "hi-dougu") == "K'Ad蔵人" and "jotai-todoke" in a), "")
     miru("日記のいちばん上の版＝いま配られている版",
          ue.replace(" ", "").replace("\u3000", "") in kama,
          f"配られているのは {' '.join(kama)} ／ 日記のいちばん上は「{ue}」"
-         "  ← 焼いた日に日記を書き足し忘れていませんか")
+         "  ← 焼いた日に日記を書き足し忘れていませんか" + MACHI)
+    # ⑩⑪ 家の札は、日記だけではない。**トップの表**と**K'Adのページ**にも同じ版が出ている。
+    #    2026-08-20 に建てたこの見張りは日記しか見ておらず、案の定その二枚は
+    #    **8月20日から止まったまま**だった（2026-08-22 に博喜さんが画面を見て気づかれた）。
+    #    ＝周知では止まらない。**同じ実物のバイトに、三枚とも照らす。**
+    #    ⚠️札の在り処（class名）が変わったら、ここも [FAIL] で鳴る＝それでよい。
+    #      黙って照合をやめるくらいなら、鳴って直させるほうがいい。
+    for namae, michi, patan in [
+        ("縁側屋トップの表の版", HERE.parent / "index.html",
+         r'class="ban-ku">十五期</span>\s*<span class="ban-ku">([^<]+)</span>'),
+        ("K'Adのページ「いま配っている版」", HERE.parent / "kad" / "index.html",
+         r'class="kama-val">十五期[\s\u3000]*([^<]+)</span>'),
+    ]:
+        if not michi.exists():
+            print(f"  [--]   {namae}（{michi.name} が見つかりません）")
+            continue
+        t = re.sub(r"<!--.*?-->", "", michi.read_text(encoding="utf-8"), flags=re.S)
+        m = re.search(patan, t)
+        mieta = (("十五期" + m.group(1)) if m else "")
+        mieta = mieta.replace(" ", "").replace("\u3000", "")
+        miru(f"{namae}＝いま配られている版",
+             bool(m) and any(mieta.rstrip("窯") == k.rstrip("窯") for k in kama),
+             (f"配られているのは {' '.join(kama)} ／ この札は「{mieta}」"
+              "  ← 焼いた日に、この札も直しましたか" + MACHI
+              if m else "札が見つかりません（class名を変えたなら、この見張りも直してください）"))
 else:
     print("  [--]   配られている版との照合（手元に gcad-web が無いので見送りました）")
 
