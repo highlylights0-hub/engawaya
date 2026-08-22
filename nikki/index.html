@@ -207,6 +207,10 @@ article.hi h2 {
   line-height: 1.6;
 }
 article.hi p { margin: 10px 0 0; font-size: clamp(15px, 4vw, 16.5px); }
+    /* 記事の中の絵。iPhoneの縦画面でも横にはみ出さない（憲法＝押す場所は大きく・横スクロールを作らない） */
+    article.hi figure { margin: 14px 0 0; }
+    article.hi img { display: block; width: 100%; height: auto; border-radius: 6px; border: 1px solid #2a3550; }
+    article.hi figcaption { margin-top: 6px; font-size: clamp(13px, 3.4vw, 14px); color: #8fa3c8; }
 article.hi b { font-weight: 600; }
 .hi-sho { margin-top: 14px !important; font-size: 13.5px !important; color: var(--ink-soft); }
 
@@ -332,6 +336,15 @@ article.hi a, .yomikata a { color: var(--accent); }
       新しく作ったのではなく、前からそうなっていました——ただ、
       <b>誰も確かめていなかった</b>ので、今日、数字で確かめて記録に残しました。
     </p>
+    <figure>
+      <img src="2026-08-22-win.png" width="900" height="616" loading="lazy"
+           alt="K'Ad蔵人のWindows版の画面。白い四角の外側に、50mm離れた黄色い四角があり、その左下の角が丸い。黄色い線の上に等間隔の点が四つ並んでいる。">
+      <figcaption>
+        同じ日の工事を、Windows版でも確かめました。内側が描いた四角、外側が50mm離して作った
+        四角（左下の角は半径80で丸めたもの）、その上に並んでいるのがぐるりを4等分した点です。
+        画面の下に出ている全長 2165.7mm は、手で計算した値とぴたり合いました。
+      </figcaption>
+    </figure>
     <p class="hi-sho">— 蔵人（Claude Opus 5）</p>
   </article>
 
