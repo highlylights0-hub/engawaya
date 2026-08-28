@@ -880,26 +880,84 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
    動かさない置物。湯気は立てない——動かすと、そこだけ目を引くから。 */
 .chabon { left: 63%; top: -21px; width: 54px; }
 
-/* 赤とんぼ。とんぼは鳥と飛び方がまるで違う。
-   すいっと真横に滑って、ぴたりと止まって、また滑る。
-   スズメの放物線と重ならないよう、こちらは水平に近い高さを行く。 */
+/* 赤とんぼ。
+   ■ 大きさ（2026-08-28 施主のご指摘「トンボは、スズメよりも小さいです」）
+   62px → 22px。62px は人（.hito）とまったく同じ幅で、丘の上を飛ぶ虫が
+   縁側に座った人と同じ大きさだった。⚠️22px には二つ目の意味がある——
+   絵は 22×17 マスなので、22px は「1マス＝1ドット」の等倍。
+   看板と同じ掟（整数倍でないと点の大きさが揃わず濁る）が、ここでも効く。
+   ちなみに家の住人は 人62・干し柿54・茶盆54・猫48・スズメ30・雀の子24。
+
+   ■ 飛び方＝リサージュ曲線（2026-08-28 施主のご発案
+      「リサージュ曲線で、飛ばすと面白そう」「ゆっくり滑空するみたいな」）
+   x = A・sin(t)、y = B・sin(2t)。周期が 1:2 の正弦波を掛け合わせると
+   横に長い「∞」を描く。トンボが空でゆっくり旋回する軌跡そのもの。
+   ⚠️等速（linear）で回す。sin は端で遅く中央で速いので、
+   何もしなくても「すーっと滑って、ふわりと折り返す」滑空になる。
+   ease を足すと、その自然な緩急の上に別の緩急が乗って濁る。
+
+   ⚠️下ろした前の飛び方（理由ごと残す）：
+   「すいっと真横に滑って、ぴたりと止まる」ホバリング型だった。
+   あれも本物のトンボの姿だが、施主のご希望は滑空のほう。絵ではなく
+   動きの好みの話なので、外した式ごと消さずにここへ書いておく——
+   旧：11s ease-in-out で translateX を -9vw / -15vw / -7vw と飛び石に置き、
+       各点で 8% ぶん止める（0%,8% のように二つ書くと、その間が静止になる）。
+
+   ⚠️向きについて。リサージュは必ず往復するので、右へ滑る区間では
+   絵（左向きに描いてある）が後ろ向きになる。そこで x の速さが 0 になる
+   両端（25%・75%）でだけ scaleX を裏返す。⚠️必ず同じ座標を二段書くこと——
+   一段だけだと CSS が scaleX を 1→-1 へ補間して、トンボが横に潰れる。
+   端は実際のトンボも向きを変える場所なので、動きとしても嘘がない。 */
 .tombo {
-  right: 33%;
+  /* ⚠️軌道の中心。33% だと「∞」が右の木を真っ二つに横切り、22px の
+     トンボが暗い葉に埋もれて消える（前の走者が羽を水色にして丘に
+     埋もれさせた、あの病気と同じ形）。45% で木の左を回る。
+     ⚠️動かす日は、±13vw ぶん左右に振れることを勘定に入れること。 */
+  right: 45%;
   top: -132px;
-  width: 62px;
-  animation: tombo-tobi 11s ease-in-out infinite;
+  width: 22px;
+  animation: tombo-tobi 26s linear infinite;
 }
 @keyframes tombo-tobi {
-  0%,  8%  { transform: translateX(0)     translateY(0);     }
-  14%      { transform: translateX(-9vw)  translateY(-7px);  }  /* すいっと滑る */
-  22%, 30% { transform: translateX(-9vw)  translateY(-7px);  }  /* ぴたりと止まる */
-  36%      { transform: translateX(-15vw) translateY(4px);   }
-  44%, 52% { transform: translateX(-15vw) translateY(4px);   }
-  58%      { transform: translateX(-7vw)  translateY(-10px); }
-  66%, 74% { transform: translateX(-7vw)  translateY(-10px); }
-  82%      { transform: translateX(2vw)   translateY(-3px);  }
-  88%, 94% { transform: translateX(2vw)   translateY(-3px);  }
-  100%     { transform: translateX(0)     translateY(0);     }
+  0.0% { transform: translate(0.00vw, 0.0px) scaleX(-1); }
+  2.8% { transform: translate(2.26vw, 5.5px) scaleX(-1); }
+  5.6% { transform: translate(4.45vw, 10.3px) scaleX(-1); }
+  8.3% { transform: translate(6.50vw, 13.9px) scaleX(-1); }
+  11.1% { transform: translate(8.36vw, 15.8px) scaleX(-1); }
+  13.9% { transform: translate(9.96vw, 15.8px) scaleX(-1); }
+  16.7% { transform: translate(11.26vw, 13.9px) scaleX(-1); }
+  19.4% { transform: translate(12.22vw, 10.3px) scaleX(-1); }
+  22.2% { transform: translate(12.80vw, 5.5px) scaleX(-1); }
+  24.9% { transform: translate(13.00vw, 0.0px) scaleX(-1); }
+  25.0% { transform: translate(13.00vw, 0.0px); }
+  27.8% { transform: translate(12.80vw, -5.5px); }
+  30.6% { transform: translate(12.22vw, -10.3px); }
+  33.3% { transform: translate(11.26vw, -13.9px); }
+  36.1% { transform: translate(9.96vw, -15.8px); }
+  38.9% { transform: translate(8.36vw, -15.8px); }
+  41.7% { transform: translate(6.50vw, -13.9px); }
+  44.4% { transform: translate(4.45vw, -10.3px); }
+  47.2% { transform: translate(2.26vw, -5.5px); }
+  50.0% { transform: translate(0.00vw, -0.0px); }
+  52.8% { transform: translate(-2.26vw, 5.5px); }
+  55.6% { transform: translate(-4.45vw, 10.3px); }
+  58.3% { transform: translate(-6.50vw, 13.9px); }
+  61.1% { transform: translate(-8.36vw, 15.8px); }
+  63.9% { transform: translate(-9.96vw, 15.8px); }
+  66.7% { transform: translate(-11.26vw, 13.9px); }
+  69.4% { transform: translate(-12.22vw, 10.3px); }
+  72.2% { transform: translate(-12.80vw, 5.5px); }
+  74.9% { transform: translate(-13.00vw, 0.0px); }
+  75.0% { transform: translate(-13.00vw, 0.0px) scaleX(-1); }
+  77.8% { transform: translate(-12.80vw, -5.5px) scaleX(-1); }
+  80.6% { transform: translate(-12.22vw, -10.3px) scaleX(-1); }
+  83.3% { transform: translate(-11.26vw, -13.9px) scaleX(-1); }
+  86.1% { transform: translate(-9.96vw, -15.8px) scaleX(-1); }
+  88.9% { transform: translate(-8.36vw, -15.8px) scaleX(-1); }
+  91.7% { transform: translate(-6.50vw, -13.9px) scaleX(-1); }
+  94.4% { transform: translate(-4.45vw, -10.3px) scaleX(-1); }
+  97.2% { transform: translate(-2.26vw, -5.5px) scaleX(-1); }
+  100.0% { transform: translate(-0.00vw, -0.0px) scaleX(-1); }
 }
 
 /* 画面が狭いときは詰まりすぎるので、脇役から先に引っこめる。
@@ -2058,11 +2116,27 @@ html[data-time="night"] .ice {
    URL に裏口は付けない——付けたら、それは「選べる」ことになる。
    ------------------------------------------------------------ */
 (function () {
-  var m = new Date().getMonth() + 1;          /* 1〜12 */
-  var k = (m >= 3  && m <= 5)  ? 'spring'
-        : (m >= 6  && m <= 8)  ? 'summer'
-        : (m >= 9  && m <= 11) ? 'autumn'
-        :                        'winter';
+  /* ⚠️境目は「月」ではなく「月日」で見る。
+     2026-08-28、施主のご裁定「東京は、秋の風、秋にしちゃいましょう」。
+     暦の上の9月1日を待つと、風がもう秋なのに縁側にスイカが残る。
+     季節は暦ではなく、その土地の体感のほうが正しい。
+
+     ⚠️次にここを触る蔵人へ：施主のもう一言
+     「来年もっと暑ければ考えましょう〜」——この四つの数字は、
+     毎年見直してよい持ち物です。動かしてはいけない定数ではありません。
+     直すのはこの表だけ。景物も丘も、この札を読んでいるだけなので
+     ほかは一行も触らなくていい。 */
+  var AKI   = 820;    /* 8月20日から 秋 */
+  var FUYU  = 1201;   /* 12月 1日から 冬 */
+  var HARU  =  301;   /*  3月 1日から 春 */
+  var NATSU =  601;   /*  6月 1日から 夏 */
+
+  var d  = new Date();
+  var md = (d.getMonth() + 1) * 100 + d.getDate();   /* 8月28日 → 828 */
+  var k = (md >= FUYU || md <  HARU)  ? 'winter'
+        : (md <  NATSU)               ? 'spring'
+        : (md <  AKI)                 ? 'summer'
+        :                               'autumn';
   document.documentElement.setAttribute('data-season', k);
 })();
 
