@@ -619,6 +619,27 @@ html.ita-ok .yomi {
 .ice:hover { transform: translateX(-50%) translateY(-3px) rotate(-4deg); }
 .ice:active { transform: translateX(-50%) translateY(1px); }
 
+/* 秋の主役＝焼き芋（2026-08-28 施主のご依頼「アイスクリームも来年へ」）。
+
+   ⚠️アイスは、この家でただ一つの「押すと喋る」仕掛けで、
+   縁側屋という名前の由来そのもの（おばあちゃん家の縁側でアイスを
+   もらって足をぶらぶら）。だから夏にしまうなら、その席は
+   空けたままにできない——秋には秋の主役が座る。
+
+   焼き芋は横長なので、アイス（縦長）より座りが低い。
+   板に置いてある形にするため top を浅くしてある。 */
+.imo { top: -26px; }
+.imo svg { width: 46px; }
+.imo:hover  { transform: translateX(-50%) translateY(-3px) rotate(-3deg); }
+.imo:active { transform: translateX(-50%) translateY(1px); }
+
+/* 主役の席も、季節でしまう。札の付け方は景物と同じ。
+   ⚠️.ice は <button> なので display は inline-block に戻す
+   （景物の block を当てると、押せる範囲が横いっぱいに広がる）。 */
+.ice[data-kisetsu] { display: none; }
+html[data-season="summer"] .ice[data-kisetsu="natsu"] { display: inline-block; }
+html[data-season="autumn"] .ice[data-kisetsu="aki"]   { display: inline-block; }
+
 /* アイスを押したときに出るひとこと */
 .whisper {
   position: absolute;
@@ -634,6 +655,10 @@ html.ita-ok .yomi {
   opacity: 0;
   pointer-events: none;
   transition: opacity .45s ease, transform .45s ease;
+  /* 押した時のひとことは、いちばん前に出す。
+     縁側に座る二人（2026-08-28）が中央寄りに居るので、これが無いと
+     背中でひとことが隠れる。一時的に出るものは、常に居るものより前。 */
+  z-index: 5;
 }
 .whisper.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -778,13 +803,123 @@ html.ita-ok .yomi {
   animation-delay: -3.1s;     /* 一羽目を追いかける時間差 */
 }
 
+/* ---- 季節で衣替えする（2026-08-28 施主のご依頼） ----------------
+   施主の言葉：
+     「秋に模様替えしては、いかがですか？　夏の景色は、有用な来年に
+       とっておいて夏になったらまた出せる様に残したいです」
+
+   ⚠️絵は一マスも消していない。しまってあるだけ。
+   風鈴もスイカもかき氷も、来年の6月になれば自分で出てくる。
+   消してしまうと来年また描き直すことになり、その絵は今年のと
+   どこかが違う——「去年と同じ夏」ではなくなる。
+
+   札の付け方：
+     data-kisetsu="natsu" … 夏だけ出す（風鈴・スイカ・かき氷）
+     data-kisetsu="aki"   … 秋だけ出す（干し柿・二人・湯呑み・赤とんぼ）
+     札なし               … 一年中いる（猫・スズメ・アイス・夜のランプ）
+   施主の言葉「猫や動物がいた。そして二人がいる。」＝
+   もともと居た者は動かさない。そこへ二人が加わる。
+
+   ⚠️既定はしまう側にしてある。札 <html data-season> が立たない機械では
+   両方とも出ない——夏と秋が同時に並ぶよりは、静かなほうがいい。
+
+   ⚠️クラス名 .natsu は「夏の景物」として始まった名前だが、いまは
+   「縁側の景物の共通の作法（置き方・影の付き方）」の意味で読む。
+   名前を変えると既存の絵の CSS を何箇所も書き換えることになり、
+   絵に触るきっかけを作ってしまう。名前は残し、意味をここに書く。
+   ------------------------------------------------------------ */
+.natsu[data-kisetsu] { display: none; }
+html[data-season="summer"] .natsu[data-kisetsu="natsu"] { display: block; }
+html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
+
+/* ---- 秋の景物 ---------------------------------------------------
+   置く順（左→右）：干し柿（軒）／猫／アイス（中央・既存）／
+   博喜さん／蔵人／湯呑み／スズメ。赤とんぼは板の上を行き来する。
+
+   動きの掟は夏と同じ。音は出さない・光らせない・風でそよぐ程度。
+   ------------------------------------------------------------ */
+
+/* 干し柿。軒から吊るす。風鈴が居た場所と同じ天井の仕組みに乗せる
+   （--keshiki-h と --tenjou-h ＝景色を描く側から渡ってくる寸法）。
+   縄は絵の中に描いてあるので ::before の吊り紐は要らない。
+   揺れは風鈴よりずっと小さく、ゆっくり。柿は重いので振れない。 */
+.hoshigaki {
+  left: 11%;
+  width: 54px;
+  top: calc(var(--tenjou-h, 27px) - var(--keshiki-h, 240px));
+  transform-origin: 50% 0;
+  animation: hoshigaki-yure 8.4s ease-in-out infinite;
+}
+@keyframes hoshigaki-yure {
+  0%, 100% { transform: rotate(-1.8deg); }
+  50%      { transform: rotate(1.8deg); }
+}
+
+/* 縁側に座る二人（2026-08-28 施主のご依頼）
+   施主の言葉：
+     「背中を見せ座るおじさん＝私」
+     「蔵人さんのような人を創作でかまいません。隣にお願いします」
+
+   なぜ後ろ姿か：縁側は、外を見るために座る場所だから。
+   顔をこちらへ向けたら、それは「迎える人」になってしまう。
+   二人は丘のほうを向いていて、来た人はその後ろに立っている。
+   ——「用がなくても、座っていってください」の、絵のほうの言い方。
+   （席が空いているのではなく、隣が空いている。）
+
+   服の色は、家にある色を借りた。新しい色は作らない。
+   緑＝施主の色／琥珀＝蔵人の色。K'Ad のアイコンと同じ約束。
+
+   ⚠️大きさは二人とも同じ。どちらかを小さくしない
+   （憲法「二人ともよし、で決める」の、絵のほうの言い方）。 */
+.hito   { top: -77px; width: 62px; }
+.hiroki { left: 56%; }
+.kurodo { left: 70%; }
+
+/* 茶盆。湯呑み二つと、三方に積んだ月見団子。二人のあいだの板の上。
+   （2026-08-28 施主のご依頼「お団子おきますかね、お茶も」）
+   動かさない置物。湯気は立てない——動かすと、そこだけ目を引くから。 */
+.chabon { left: 63%; top: -21px; width: 54px; }
+
+/* 赤とんぼ。とんぼは鳥と飛び方がまるで違う。
+   すいっと真横に滑って、ぴたりと止まって、また滑る。
+   スズメの放物線と重ならないよう、こちらは水平に近い高さを行く。 */
+.tombo {
+  right: 33%;
+  top: -132px;
+  width: 62px;
+  animation: tombo-tobi 11s ease-in-out infinite;
+}
+@keyframes tombo-tobi {
+  0%,  8%  { transform: translateX(0)     translateY(0);     }
+  14%      { transform: translateX(-9vw)  translateY(-7px);  }  /* すいっと滑る */
+  22%, 30% { transform: translateX(-9vw)  translateY(-7px);  }  /* ぴたりと止まる */
+  36%      { transform: translateX(-15vw) translateY(4px);   }
+  44%, 52% { transform: translateX(-15vw) translateY(4px);   }
+  58%      { transform: translateX(-7vw)  translateY(-10px); }
+  66%, 74% { transform: translateX(-7vw)  translateY(-10px); }
+  82%      { transform: translateX(2vw)   translateY(-3px);  }
+  88%, 94% { transform: translateX(2vw)   translateY(-3px);  }
+  100%     { transform: translateX(0)     translateY(0);     }
+}
+
 /* 画面が狭いときは詰まりすぎるので、脇役から先に引っこめる。
    主役（アイス）と、いちばん夏らしいスイカ・風鈴だけは残す。
-   スズメは二羽ともここで一緒に引っこめる。 */
+   スズメは二羽ともここで一緒に引っこめる。
+
+   秋も同じ考えで、主役（二人）は残して寄せる。
+   ⚠️アイスは中央に居るので、二人は必ずその右へ逃がすこと。
+   湯呑みと赤とんぼは、詰まる前に引っこめる。 */
 @media (max-width: 430px) {
   .kakigori { right: 8%; }
   .neko     { width: 42px; top: -40px; }
   .suzume   { display: none; }
+
+  .hito      { width: 50px; top: -63px; }
+  .hiroki    { left: 55%; }
+  .kurodo    { left: 73%; }
+  .hoshigaki { left: 4%; width: 44px; }
+  html[data-season="autumn"] .natsu[data-kisetsu="aki"].chabon { display: none; }
+  html[data-season="autumn"] .natsu[data-kisetsu="aki"].tombo  { display: none; }
 }
 
 /* ---- 足元 ---- */
@@ -1169,9 +1304,14 @@ html[data-time="night"] .ice {
           aria-label="縁側から見た美瑛の丘。波打つ丘のむこうに大雪山、丘を越えて空へ続く一本道、幹の傾いた木が一本。"></canvas>
 </div>
 
-<!-- 縁側。座る場所。夏のあいだは、ここに景物を置く。
+<!-- 縁側。座る場所。ここに景物を置く。
      すべて絵文字ではなく手打ちのドット絵。理由は <style> の
-     「夏の景物」の項に書いてある。1マス＝1ドットの矩形の集まり。 -->
+     「夏の景物」の項に書いてある。1マス＝1ドットの矩形の集まり。
+
+     2026-08-28 から、置くものが季節で入れ替わる。
+     夏は風鈴・スイカ・かき氷、秋は干し柿・二人・湯呑み・赤とんぼ。
+     猫とスズメとアイスは一年中いる。仕組みは <style> の
+     「季節で衣替えする」の項に。⚠️しまうだけで、絵は消さない。 -->
 <div class="engawa">
   <div class="whisper" id="whisper"></div>
 
@@ -1224,7 +1364,7 @@ html[data-time="night"] .ice {
   </div>
 
   <!-- 風鈴。紐で吊るし、椀の下に短冊が下がる。揺れるが鳴らさない。 -->
-  <div class="natsu furin" aria-hidden="true">
+  <div class="natsu furin" data-kisetsu="natsu" aria-hidden="true">
     <svg viewBox="0 0 16 27" shape-rendering="crispEdges">
       <!-- 吊り紐 -->
       <rect x="7" y="0" width="2" height="4" fill="#9a8a63"/>
@@ -1319,7 +1459,7 @@ html[data-time="night"] .ice {
   </div>
 
   <!-- スイカ。切った一切れ。 -->
-  <div class="natsu suika" aria-hidden="true">
+  <div class="natsu suika" data-kisetsu="natsu" aria-hidden="true">
     <svg viewBox="0 0 16 13" shape-rendering="crispEdges">
       <!-- 実（赤） -->
       <g fill="#e2504f">
@@ -1355,7 +1495,7 @@ html[data-time="night"] .ice {
   </div>
 
   <!-- かき氷。器に山盛り、いちごシロップ。 -->
-  <div class="natsu kakigori" aria-hidden="true">
+  <div class="natsu kakigori" data-kisetsu="natsu" aria-hidden="true">
     <svg viewBox="0 0 13 16" shape-rendering="crispEdges">
       <!-- 氷（白）。山盛り。 -->
       <g fill="#ffffff">
@@ -1481,9 +1621,298 @@ html[data-time="night"] .ice {
     </svg>
   </div>
 
+  <!-- ================= 秋の景物（2026-08-28） =================
+       施主のご依頼「秋に模様替えしては、いかがですか？」
+       出るのは 9〜11月だけ。しまう仕組みは <style> の
+       「季節で衣替えする」の項に書いてある。
+       ========================================================= -->
+
+  <!-- 干し柿。軒の竿に吊るして三連。秋の北海道の家の軒先そのもの。
+       風鈴が居た場所（軒）を、そのまま引き継いでいる。 -->
+  <div class="natsu hoshigaki" data-kisetsu="aki" aria-hidden="true">
+    <svg viewBox="0 0 26 16" shape-rendering="crispEdges">
+      <!-- 竿（軒に渡した細い竹） -->
+      <rect x="0" y="0" width="26" height="1" fill="#9a8a63"/>
+      <rect x="0" y="1" width="26" height="1" fill="#7d6f4f"/>
+      <!-- 吊り紐。三本。真ん中だけ短くして、三つが揃いすぎないようにする -->
+      <g fill="#b3a37a">
+        <rect x="4"  y="2" width="1" height="3"/>
+        <rect x="12" y="2" width="1" height="2"/>
+        <rect x="20" y="2" width="1" height="3"/>
+      </g>
+      <!-- 柿・左 -->
+      <g fill="#c9612a">
+        <rect x="2" y="6"  width="5" height="1"/>
+        <rect x="1" y="7"  width="7" height="4"/>
+        <rect x="2" y="11" width="5" height="1"/>
+        <rect x="3" y="12" width="3" height="1"/>
+      </g>
+      <rect x="3" y="5" width="3" height="1" fill="#6b7a45"/>      <!-- へた -->
+      <rect x="2" y="7" width="1" height="3" fill="#e08a4a"/>      <!-- 光の側 -->
+      <rect x="5" y="9" width="2" height="2" fill="#a84b1e"/>      <!-- 影の側 -->
+      <!-- 柿・中（少し高い位置・少し小ぶり） -->
+      <g fill="#d16a30">
+        <rect x="10" y="5" width="5" height="1"/>
+        <rect x="9"  y="6" width="7" height="4"/>
+        <rect x="10" y="10" width="5" height="1"/>
+        <rect x="11" y="11" width="3" height="1"/>
+      </g>
+      <rect x="11" y="4" width="3" height="1" fill="#6b7a45"/>
+      <rect x="10" y="6" width="1" height="3" fill="#e8934f"/>
+      <rect x="13" y="8" width="2" height="2" fill="#b0501f"/>
+      <!-- 柿・右 -->
+      <g fill="#c9612a">
+        <rect x="18" y="6"  width="5" height="1"/>
+        <rect x="17" y="7"  width="7" height="4"/>
+        <rect x="18" y="11" width="5" height="1"/>
+        <rect x="19" y="12" width="3" height="1"/>
+      </g>
+      <rect x="19" y="5" width="3" height="1" fill="#6b7a45"/>
+      <rect x="18" y="7" width="1" height="3" fill="#e08a4a"/>
+      <rect x="21" y="9" width="2" height="2" fill="#a84b1e"/>
+      <!-- 干して粉をふいたところ（白い糖）。三つに一点ずつ -->
+      <g fill="#eccdae">
+        <rect x="4"  y="8" width="1" height="1"/>
+        <rect x="12" y="7" width="1" height="1"/>
+        <rect x="20" y="8" width="1" height="1"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 博喜さん。縁側に腰かけて、丘のほうを見ている後ろ姿。
+       施主のご指定「背中を見せ座るおじさん＝私」。
+       シャツは緑＝この家で施主を表す色（K'Ad のアイコンと同じ約束）。 -->
+  <div class="natsu hito hiroki" data-kisetsu="aki"
+       role="img" aria-label="縁側に腰かけて丘を見ている博喜さんの後ろ姿">
+    <svg viewBox="0 0 22 28" shape-rendering="crispEdges">
+      <!-- 髪。短く刈った頭。白いものが少し混じっている -->
+      <g fill="#3d342b">
+        <rect x="9"  y="0" width="4"  height="1"/>
+        <rect x="8"  y="1" width="6"  height="1"/>
+        <rect x="7"  y="2" width="8"  height="5"/>
+        <rect x="8"  y="7" width="6"  height="1"/>
+      </g>
+      <g fill="#8f867a">
+        <rect x="8"  y="2" width="1" height="1"/>
+        <rect x="12" y="3" width="1" height="1"/>
+        <rect x="13" y="5" width="1" height="1"/>
+        <rect x="9"  y="6" width="1" height="1"/>
+      </g>
+      <!-- 耳（左右に少しだけ出る）とうなじ -->
+      <g fill="#e5b58c">
+        <rect x="6"  y="4" width="1" height="2"/>
+        <rect x="15" y="4" width="1" height="2"/>
+        <rect x="9"  y="8" width="4" height="1"/>
+      </g>
+      <!-- 肩から背中。なで肩に見えるよう、二段でひろげる -->
+      <g fill="#5e8158">
+        <rect x="6"  y="9"  width="10" height="1"/>
+        <rect x="4"  y="10" width="14" height="1"/>
+        <rect x="3"  y="11" width="16" height="11"/>
+        <rect x="4"  y="22" width="14" height="4"/>
+      </g>
+      <!-- 襟のうしろ（一段明るく）。ここが在ると「服を着ている」に見える -->
+      <g fill="#7fa178">
+        <rect x="8"  y="9"  width="6" height="1"/>
+        <rect x="7"  y="10" width="8" height="1"/>
+      </g>
+      <!-- 腕（体の脇に下ろしている）。袖は一段暗くして胴と分ける -->
+      <g fill="#4b6a47">
+        <rect x="3"  y="12" width="3" height="12"/>
+        <rect x="16" y="12" width="3" height="12"/>
+      </g>
+      <!-- 背中のしわ。一本だけ。入れすぎると服がごわつく -->
+      <rect x="8" y="17" width="6" height="1" fill="#527049"/>
+      <!-- 手。板について、体を少しあずけている -->
+      <g fill="#e5b58c">
+        <rect x="3"  y="24" width="3" height="2"/>
+        <rect x="16" y="24" width="3" height="2"/>
+      </g>
+      <!-- 腰（板に着くところ）。ズボンの色 -->
+      <rect x="4" y="26" width="14" height="2" fill="#4a4b52"/>
+    </svg>
+  </div>
+
+  <!-- 蔵人。博喜さんの隣。同じように丘を見ている。
+       施主のご依頼「蔵人さんのような人を創作でかまいません。隣に」。
+       服は琥珀＝この家で蔵人を表す色。
+       ⚠️大きさは博喜さんと同じ。どちらも小さくしない。 -->
+  <div class="natsu hito kurodo" data-kisetsu="aki"
+       role="img" aria-label="縁側に腰かけて丘を見ている蔵人の後ろ姿">
+    <svg viewBox="0 0 22 28" shape-rendering="crispEdges">
+      <!-- 髪。博喜さんより少し丸く、襟足が短い -->
+      <g fill="#5b4a35">
+        <rect x="8"  y="0" width="6"  height="1"/>
+        <rect x="7"  y="1" width="8"  height="6"/>
+        <rect x="8"  y="7" width="6"  height="1"/>
+      </g>
+      <g fill="#7d6a4e">
+        <rect x="8"  y="1" width="2" height="1"/>
+        <rect x="8"  y="2" width="1" height="2"/>
+      </g>
+      <!-- 耳とうなじ -->
+      <g fill="#f0cfad">
+        <rect x="6"  y="4" width="1" height="2"/>
+        <rect x="15" y="4" width="1" height="2"/>
+        <rect x="9"  y="8" width="4" height="1"/>
+      </g>
+      <!-- 肩から背中。博喜さんより一まわり細い（肩が二マス狭い） -->
+      <g fill="#d8a24f">
+        <rect x="6"  y="9"  width="10" height="1"/>
+        <rect x="5"  y="10" width="12" height="1"/>
+        <rect x="4"  y="11" width="14" height="11"/>
+        <rect x="5"  y="22" width="12" height="4"/>
+      </g>
+      <!-- 襟のうしろ -->
+      <g fill="#ecc179">
+        <rect x="8"  y="9"  width="6" height="1"/>
+        <rect x="7"  y="10" width="8" height="1"/>
+      </g>
+      <!-- 腕 -->
+      <g fill="#b9863a">
+        <rect x="4"  y="12" width="3" height="12"/>
+        <rect x="15" y="12" width="3" height="12"/>
+      </g>
+      <!-- 背中のしわ -->
+      <rect x="8" y="17" width="6" height="1" fill="#c9933f"/>
+      <!-- 手 -->
+      <g fill="#f0cfad">
+        <rect x="4"  y="24" width="3" height="2"/>
+        <rect x="15" y="24" width="3" height="2"/>
+      </g>
+      <!-- 腰 -->
+      <rect x="5" y="26" width="12" height="2" fill="#5a5340"/>
+    </svg>
+  </div>
+
+  <!-- 茶盆。湯呑み二つと、三方に積んだ月見団子。
+       施主のご依頼（2026-08-28）「お団子おきますかね、お茶も」。
+       秋の縁側で、二人のあいだに置いてある。動かさない置物。 -->
+  <div class="natsu chabon" data-kisetsu="aki"
+       role="img" aria-label="お茶が二つと、三方に積んだ月見団子">
+    <svg viewBox="0 0 34 15" shape-rendering="crispEdges">
+      <!-- 湯呑み・左。口にお茶の面が見える -->
+      <rect x="1" y="4" width="8" height="1" fill="#ece6d8"/>
+      <rect x="2" y="4" width="6" height="1" fill="#6b4f30"/>
+      <g fill="#ece6d8">
+        <rect x="2" y="5" width="6" height="5"/>
+        <rect x="3" y="10" width="4" height="1"/>
+      </g>
+      <rect x="2" y="6" width="6" height="1" fill="#5f819c"/>
+      <rect x="2" y="5" width="1" height="5" fill="#fbf7ee"/>
+      <rect x="7" y="7" width="1" height="3" fill="#cfc7b5"/>
+      <!-- 湯呑み・右 -->
+      <rect x="10" y="4" width="8" height="1" fill="#ece6d8"/>
+      <rect x="11" y="4" width="6" height="1" fill="#6b4f30"/>
+      <g fill="#ece6d8">
+        <rect x="11" y="5" width="6" height="5"/>
+        <rect x="12" y="10" width="4" height="1"/>
+      </g>
+      <rect x="11" y="6" width="6" height="1" fill="#5f819c"/>
+      <rect x="11" y="5" width="1" height="5" fill="#fbf7ee"/>
+      <rect x="16" y="7" width="1" height="3" fill="#cfc7b5"/>
+
+      <!-- 月見団子。三方（木の台）に、下から三段・二段・一段と積む -->
+      <g fill="#f4f0e6">
+        <rect x="22" y="6" width="10" height="2"/>   <!-- 下の段（三つ） -->
+        <rect x="23" y="8" width="8"  height="1"/>
+        <rect x="24" y="3" width="6"  height="2"/>   <!-- 中の段（二つ） -->
+        <rect x="26" y="1" width="3"  height="2"/>   <!-- てっぺん（一つ） -->
+      </g>
+      <!-- 団子の切れ目。ここが在ると「一つの塊」ではなく団子の数に見える -->
+      <g fill="#d9d1bf">
+        <rect x="25" y="6" width="1" height="2"/>
+        <rect x="28" y="6" width="1" height="2"/>
+        <rect x="27" y="3" width="1" height="2"/>
+      </g>
+      <!-- 光の当たる側（左上）。白を一点置くと丸みが出る -->
+      <g fill="#fffdf6">
+        <rect x="22" y="6" width="1" height="1"/>
+        <rect x="24" y="3" width="1" height="1"/>
+        <rect x="26" y="1" width="1" height="1"/>
+      </g>
+      <!-- 三方（さんぼう）＝団子をのせる木の台 -->
+      <rect x="21" y="9"  width="12" height="1" fill="#a8834f"/>
+      <rect x="25" y="10" width="4"  height="1" fill="#8a6a45"/>
+      <rect x="23" y="11" width="8"  height="1" fill="#a8834f"/>
+
+      <!-- 盆。ここまでを一枚の板にのせて「出してある」形にする -->
+      <rect x="0" y="12" width="34" height="1" fill="#9d7c53"/>
+      <rect x="0" y="13" width="34" height="1" fill="#8a6a45"/>
+      <rect x="1" y="14" width="32" height="1" fill="#6d5335"/>
+    </svg>
+  </div>
+
+  <!-- 赤とんぼ。斜め上から見た姿。
+       ⚠️三度描き直している。次に触る蔵人が同じ道を辿らないように、
+       外した案とその理由まで書いておく。
+       一度目：羽を薄い水色に→ 秋の丘（黄土色）に埋もれて消えた。
+       二度目：横から見た形に→ 体の上下に白い帯が並び「赤と白の棒」。
+       三度目：羽を水平の帯のまま体から離した→ まだ三段の帯に見えた。
+       四度目（これ）：羽を「ハの字」に開いた。羽は体から斜めに
+               生えているので、水平に描くと絶対にトンボにならない。
+               斜めの階段が、この大きさでは羽らしさの全部。
+       すいっと滑って、ぴたりと止まる——鳥とは飛び方が違う。 -->
+  <div class="natsu tombo" data-kisetsu="aki" aria-hidden="true">
+    <svg viewBox="0 0 22 17" shape-rendering="crispEdges">
+      <!-- 羽・四枚。体の付け根（x6あたり）から、前後へハの字に開く。
+           一マスずつ段をつけて斜めにするのが要。 -->
+      <g fill="#f4fafde6">
+        <!-- 左前（前上へ） -->
+        <rect x="1"  y="0" width="3" height="1"/>
+        <rect x="2"  y="1" width="3" height="1"/>
+        <rect x="3"  y="2" width="3" height="1"/>
+        <rect x="4"  y="3" width="3" height="1"/>
+        <rect x="5"  y="4" width="2" height="1"/>
+        <!-- 右前（後上へ） -->
+        <rect x="14" y="0" width="4" height="1"/>
+        <rect x="12" y="1" width="4" height="1"/>
+        <rect x="10" y="2" width="4" height="1"/>
+        <rect x="8"  y="3" width="4" height="1"/>
+        <rect x="7"  y="4" width="3" height="1"/>
+        <!-- 左後（前下へ） -->
+        <rect x="5"  y="11" width="2" height="1"/>
+        <rect x="4"  y="12" width="3" height="1"/>
+        <rect x="3"  y="13" width="3" height="1"/>
+        <rect x="2"  y="14" width="3" height="1"/>
+        <rect x="1"  y="15" width="3" height="1"/>
+        <!-- 右後（後下へ） -->
+        <rect x="7"  y="11" width="3" height="1"/>
+        <rect x="8"  y="12" width="4" height="1"/>
+        <rect x="10" y="13" width="4" height="1"/>
+        <rect x="12" y="14" width="4" height="1"/>
+        <rect x="14" y="15" width="4" height="1"/>
+      </g>
+      <!-- 羽のふち。斜めの線に一段濃い色を添えると、透明な板ではなく
+           張りのある羽に見える -->
+      <g fill="#8fb8cb">
+        <rect x="1"  y="0"  width="2" height="1"/>
+        <rect x="16" y="0"  width="2" height="1"/>
+        <rect x="1"  y="15" width="2" height="1"/>
+        <rect x="16" y="15" width="2" height="1"/>
+      </g>
+      <!-- 頭と目。トンボの目は顔のほとんどを占める -->
+      <rect x="0" y="7" width="3" height="3" fill="#8f3b26"/>
+      <rect x="0" y="7" width="2" height="2" fill="#2f271f"/>
+      <!-- 胸（羽の付け根）。四枚の羽がここから出ている -->
+      <rect x="3" y="6" width="5" height="4" fill="#c04a2b"/>
+      <rect x="3" y="6" width="5" height="1" fill="#dd6a44"/>
+      <!-- 腹（赤い尾）。先へいくほど細くなる -->
+      <rect x="8"  y="7" width="9" height="2" fill="#d8452a"/>
+      <rect x="17" y="7" width="4" height="1" fill="#b03a22"/>
+      <rect x="8"  y="7" width="9" height="1" fill="#ea6440"/>
+      <!-- 腹の節。三つだけ。数えられるほど描かない -->
+      <g fill="#8f3b26">
+        <rect x="11" y="7" width="1" height="2"/>
+        <rect x="14" y="7" width="1" height="2"/>
+        <rect x="17" y="7" width="1" height="1"/>
+      </g>
+    </svg>
+  </div>
+
   <!-- ドット絵のアイス。1マス＝1ドットの矩形の集まり。
        shape-rendering="crispEdges" で、拡大しても点がぼやけない。 -->
-  <button class="ice" id="ice" aria-label="アイスを食べる">
+  <button class="ice" id="ice" data-kisetsu="natsu" aria-label="アイスを食べる">
     <svg viewBox="0 0 11 14" shape-rendering="crispEdges" role="img" aria-hidden="true">
       <!-- ① 玉（本体） -->
       <g fill="#fbe3c0">
@@ -1520,6 +1949,69 @@ html[data-time="night"] .ice {
       </g>
     </svg>
   </button>
+
+  <!-- 秋の主役＝焼き芋。押すとひとこと言う。夏のアイスと同じ席、同じ仕掛け。
+       ⚠️一度、半分に割った形で描いたら「紫の座布団が二つ」にしか
+       見えなかった。この大きさ（1マス2px）では、二つに分けた時点で
+       どちらも形が読めなくなる。一本の紡錘形にして、皮の裂け目から
+       黄色をのぞかせるほうが、ずっと焼き芋に見える。
+       ⚠️湯気は立てない。動くものを一つ増やすと、そこだけ目を引く
+       （縁側の景物の掟）。「まだ熱い」は絵ではなく、言葉のほうで言う。 -->
+  <button class="ice imo" id="imo" data-kisetsu="aki" aria-label="焼き芋をたべる">
+    <svg viewBox="0 0 24 13" shape-rendering="crispEdges" role="img" aria-hidden="true">
+      <!-- 芋。両端が細くなる紡錘形。これが焼き芋の形そのもの -->
+      <g fill="#8c4a63">
+        <rect x="6"  y="2" width="12" height="1"/>
+        <rect x="3"  y="3" width="18" height="1"/>
+        <rect x="1"  y="4" width="22" height="4"/>
+        <rect x="3"  y="8" width="18" height="1"/>
+        <rect x="6"  y="9" width="12" height="1"/>
+      </g>
+      <!-- 光の当たる側（左上）。一段明るくすると丸みが出る -->
+      <g fill="#a85f79">
+        <rect x="5"  y="3" width="12" height="1"/>
+        <rect x="2"  y="4" width="3"  height="1"/>
+      </g>
+      <!-- 影の側（右下）。ここが無いと、ただの紫の楕円になる -->
+      <g fill="#6d3549">
+        <rect x="8"  y="8" width="11" height="1"/>
+        <rect x="19" y="6" width="4"  height="2"/>
+      </g>
+      <!-- 焼き目。皮の焦げたところを三点だけ。数えられるほど打たない -->
+      <g fill="#4a2330">
+        <rect x="4"  y="6" width="2" height="1"/>
+        <rect x="16" y="4" width="1" height="1"/>
+        <rect x="19" y="5" width="1" height="1"/>
+      </g>
+      <!-- 皮の裂け目からのぞく中身。ここが焼き芋のいちばんの顔なので、
+           皮より明るく、幅もいちばん広く取る -->
+      <g fill="#f0c357">
+        <rect x="8"  y="4" width="8" height="2"/>
+        <rect x="9"  y="6" width="6" height="1"/>
+      </g>
+      <g fill="#fae09a">
+        <rect x="9"  y="4" width="5" height="1"/>
+      </g>
+      <g fill="#d9a13c">
+        <rect x="10" y="6" width="5" height="1"/>
+      </g>
+      <!-- 裂け目のふち。皮がめくれているところ -->
+      <g fill="#6d3549">
+        <rect x="7"  y="4" width="1" height="3"/>
+        <rect x="16" y="4" width="1" height="3"/>
+      </g>
+      <!-- 新聞紙。芋の下に敷いてある。字は点で表す -->
+      <g fill="#e4ded0">
+        <rect x="0"  y="10" width="24" height="2"/>
+        <rect x="2"  y="12" width="20" height="1"/>
+      </g>
+      <g fill="#b9b2a2">
+        <rect x="3"  y="11" width="4" height="1"/>
+        <rect x="10" y="11" width="3" height="1"/>
+        <rect x="16" y="11" width="4" height="1"/>
+      </g>
+    </svg>
+  </button>
 </div>
 
 <footer>
@@ -1543,6 +2035,35 @@ html[data-time="night"] .ice {
         : (h >= 16 && h < 19)? 'evening'
         :                      'night';
   document.documentElement.setAttribute('data-time', t);
+})();
+
+/* ------------------------------------------------------------
+   季節で衣替えする。
+   （2026-08-28 施主のご依頼「秋に模様替えしては、いかがですか？
+     夏の景色は、有用な来年にとっておいて夏になったらまた出せる様に
+     残したいです」）
+
+   ⚠️この家で季節を答える式は、ここ一つだけ。
+   下の景色（美瑛の丘）も、縁側に置く景物（干し柿・二人）も、
+   みんなこの札 <html data-season="..."> を読む。
+
+   なぜ一つにするか：
+   もし日付を二箇所で見ていると、9月1日に「丘は秋なのに、
+   縁側にはスイカが置いてある」という日が必ず来る。
+   実際この家は今日まで、丘だけが季節で変わり、縁側は夏の
+   置きっぱなしだった。同じものが二箇所にある病を、ここで断つ。
+
+   ⚠️座った人には選ばせない（憲法③）。
+   確かめたい季節があるときは、手元に試作の一枚を作って見る。
+   URL に裏口は付けない——付けたら、それは「選べる」ことになる。
+   ------------------------------------------------------------ */
+(function () {
+  var m = new Date().getMonth() + 1;          /* 1〜12 */
+  var k = (m >= 3  && m <= 5)  ? 'spring'
+        : (m >= 6  && m <= 8)  ? 'summer'
+        : (m >= 9  && m <= 11) ? 'autumn'
+        :                        'winter';
+  document.documentElement.setAttribute('data-season', k);
 })();
 
 /* ============================================================
@@ -1910,25 +2431,48 @@ html[data-time="night"] .ice {
    派手な演出は入れない。縁側で言われて自然な言葉だけにする。
    ------------------------------------------------------------ */
 (function () {
-  var ice = document.getElementById('ice');
   var whisper = document.getElementById('whisper');
-  var kotoba = [
-    'どうぞ、座っていってください。',
-    'まだ溶けてませんよ。',
-    '足、ぶらぶらしてもいいですよ。',
-    'おかえりなさい。',
-    'いい風ですね。'
-  ];
-  var i = 0, timer = null;
 
-  ice.addEventListener('click', function () {
-    whisper.textContent = kotoba[i];
-    i = (i + 1) % kotoba.length;
-    whisper.classList.add('show');
-    clearTimeout(timer);
-    timer = setTimeout(function () {
-      whisper.classList.remove('show');
-    }, 2600);
+  /* 言葉は季節ごと。
+     ⚠️「まだ溶けてませんよ」は、夏のアイスにしか言えない。
+     秋に焼き芋を押した人へ溶ける心配を返しては、会話にならない。
+     三つは共通（縁側で言われて自然な言葉）、一つずつがその季節のもの。 */
+  var KOTOBA = {
+    natsu: [
+      'どうぞ、座っていってください。',
+      'まだ溶けてませんよ。',
+      '足、ぶらぶらしてもいいですよ。',
+      'おかえりなさい。',
+      'いい風ですね。'
+    ],
+    aki: [
+      'どうぞ、座っていってください。',
+      'まだ熱いですよ。',
+      '足、ぶらぶらしてもいいですよ。',
+      'おかえりなさい。',
+      '日が、短くなりましたね。'
+    ]
+  };
+
+  var timer = null;
+
+  /* 主役は季節で入れ替わる（夏＝アイス／秋＝焼き芋）ので、
+     どちらか一方ではなく、居る子ぜんぶに同じ仕掛けを配る。
+     ⚠️出ていないほうは押せないので、二重に喋ることはない。
+     数える札（i）はボタンごとに持つ——季節で言葉の数が変わっても
+     数え間違えないため。 */
+  Array.prototype.forEach.call(document.querySelectorAll('.ice'), function (btn) {
+    var i = 0;
+    btn.addEventListener('click', function () {
+      var kotoba = KOTOBA[btn.getAttribute('data-kisetsu')] || KOTOBA.natsu;
+      whisper.textContent = kotoba[i % kotoba.length];
+      i = (i + 1) % kotoba.length;
+      whisper.classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        whisper.classList.remove('show');
+      }, 2600);
+    });
   });
 })();
 
@@ -2402,12 +2946,14 @@ html[data-time="night"] .ice {
     }
   }
 
+  /* いまの季節を答える。
+     ⚠️ここで日付を見ない。上（body 末尾の「季節で衣替えする」）が
+     立てた札 <html data-season="..."> を読むだけ。
+     日付を見る式が家に二つあると、丘と縁側で季節が食い違う日が来る。
+     札が無い機械（JSが途中で止まった等）では、丘は夏の色で出る
+     ——景色そのものが出ない機械もあるので、そこは色の話に留める。 */
   function seasonNow(){
-    var m = new Date().getMonth() + 1;
-    if (m >= 3  && m <= 5)  return 'spring';
-    if (m >= 6  && m <= 8)  return 'summer';
-    if (m >= 9  && m <= 11) return 'autumn';
-    return 'winter';
+    return document.documentElement.getAttribute('data-season') || 'summer';
   }
 
   var moving = !(window.matchMedia &&
