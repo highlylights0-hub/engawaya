@@ -111,7 +111,7 @@ if (kiban / "index.wasm").exists():
     b = r.stdout
     for off in range(4):                      # 4バイトの境目が分からないので四通り試す
         t = b[off:len(b) - ((len(b) - off) % 4)].decode("utf-32-le", "ignore")
-        kama |= set(re.findall(r"十五期[一二三四五六七八九十百千]+号窯", t))
+        kama |= set(re.findall(r"[一二三四五六七八九十]+期[一二三四五六七八九十百千]+号窯", t))   # 期も読む（十六期一号・2026-09-03 に「十五期」の焼き込みが嘘になった）
 
 # 手元の gcad-web に、まだ押していない焼き上がりがあるか。
 # ⚠️これが有るときの [FAIL] は「札の直し忘れ」ではなく「**まだ押していないだけ**」
@@ -138,16 +138,17 @@ if kama:
     #      黙って照合をやめるくらいなら、鳴って直させるほうがいい。
     for namae, michi, patan in [
         ("縁側屋トップの表の版", HERE.parent / "index.html",
-         r'class="ban-ku">十五期</span>\s*<span class="ban-ku">([^<]+)</span>'),
+         r'class="ban-ku">([^<]+)</span>\s*<span class="ban-ku">([^<]+)</span>'),
         ("K'Adのページ「いま配っている版」", HERE.parent / "kad" / "index.html",
-         r'class="kama-val">十五期[\s\u3000]*([^<]+)</span>'),
+         r'class="kama-val">([^<]+)</span>'),
     ]:
         if not michi.exists():
             print(f"  [--]   {namae}（{michi.name} が見つかりません）")
             continue
         t = re.sub(r"<!--.*?-->", "", michi.read_text(encoding="utf-8"), flags=re.S)
         m = re.search(patan, t)
-        mieta = (("十五期" + m.group(1)) if m else "")
+        # 期の名前も札から読む（「十五期」を焼き込むと、期が替わった日に見張りが嘘をつく）
+        mieta = ("".join(m.groups()) if m else "")
         mieta = mieta.replace(" ", "").replace("\u3000", "")
         miru(f"{namae}＝いま配られている版",
              bool(m) and any(mieta.rstrip("窯") == k.rstrip("窯") for k in kama),
