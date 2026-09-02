@@ -653,8 +653,16 @@ html.ita-ok .yomi {
    空けたままにできない——秋には秋の主役が座る。
 
    焼き芋は横長なので、アイス（縦長）より座りが低い。
-   板に置いてある形にするため top を浅くしてある。 */
-.imo { top: -26px; }
+   板に置いてある形にするため top を浅くしてある。
+
+   ■ 席（2026-09-03 施主のご依頼「焼き芋を間に置いてみてください。二人で食べましょう」）
+   夏のアイスは板の真ん中に一人で座るが、秋の焼き芋は**二人のあいだ**に座る。
+   left は二人の肩の中点＝博喜さんの left + 人の幅 + すき間の半分（.chabon と同じ式）。
+   肩のあいだ 52px に 46px の芋がちょうど入る。押せる余白（padding 6px）は
+   人の絵に少し重なるが、絵は pointer-events:none なので押し負けない。
+   ⚠️二人の位置（.hiroki/.kurodo）を動かす日は、ここと .chabon と .whisper の
+   三箇所が同じ式であることを確かめること。 */
+.imo { top: -26px; left: calc(56% + 88px); }
 .imo svg { width: 46px; }
 .imo:hover  { transform: translateX(-50%) translateY(-3px) rotate(-3deg); }
 .imo:active { transform: translateX(-50%) translateY(1px); }
@@ -686,6 +694,8 @@ html[data-season="autumn"] .ice[data-kisetsu="aki"]   { display: inline-block; }
      背中でひとことが隠れる。一時的に出るものは、常に居るものより前。 */
   z-index: 5;
 }
+/* 秋は焼き芋が二人のあいだに座るので、ひとことも芋の真上へ（式は .imo と同じ） */
+html[data-season="autumn"] .whisper { left: calc(56% + 88px); }
 .whisper.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ---- 夏の景物（縁側に置く点描） --------------------------------
@@ -1055,8 +1065,9 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
    スズメは二羽ともここで一緒に引っこめる。
 
    秋も同じ考えで、主役（二人）は残して寄せる。
-   ⚠️アイスは中央に居るので、二人は必ずその右へ逃がすこと。
-   湯呑みと赤とんぼは、詰まる前に引っこめる。 */
+   ⚠️夏のアイスは中央に居るので、二人は必ずその右へ逃がすこと
+   （秋の焼き芋は二人のあいだに座るので、二人と一緒に動く）。
+   赤とんぼは、詰まる前に引っこめる。 */
 @media (max-width: 430px) {
   .kakigori { right: 8%; }
   .neko     { width: 42px; top: -40px; }
@@ -1076,6 +1087,12 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
      大きさだけ人（50px）に合わせて一回り小さく。左右の中心は
      二人の肩の中点＝54% + 50px + 35px。 */
   .chabon    { left: calc(54% + 85px); width: 70px; }
+  .imo       { left: calc(54% + 85px); }   /* 肩のあいだ 70px に 46px の芋 */
+  /* ひとことは芋の真上に置くと右端から 26px はみ出す（幅 241px・中心 296px）。
+     狭い画面では右端に寄せて置く（transform は .show の側も上書きする——
+     片方だけ変えると、出る瞬間に横へ滑る）。 */
+  html[data-season="autumn"] .whisper      { left: auto; right: 8px; transform: translateY(6px); }
+  html[data-season="autumn"] .whisper.show { transform: translateY(0); }
   html[data-season="autumn"] .natsu[data-kisetsu="aki"].tombo  { display: none; }
   /* 吹き出しは、二人とも画面の右寄りに居るので、頭の中心から左右に
      広げると右端からはみ出す（横スクロールが生まれる）。狭い画面では
@@ -2801,6 +2818,8 @@ html[data-time="night"] .ice {
     ['いい月が出そうですね。',       'ええ。団子の数、多くないですか。'],
     ['ススキ、丘で取ってきました。', '秋ですねえ。'],
     ['ひとつ、どうぞ。',             'では、遠慮なく。'],
+    ['焼き芋、半分こしましょう。',   '熱いうちに、いただきます。'],
+    ['この芋、北海道のです。',       '道理で、甘い。'],
     ['日が、短くなりましたね。',     'でも、まだ暖かい。'],
     ['お茶、もう一杯いれますか。',   'いただきます。'],
     ['後ろの人、どうしましょう。',   'ここ、空いてますよ。']
