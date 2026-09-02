@@ -896,15 +896,70 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
    緑＝施主の色／琥珀＝蔵人の色。K'Ad のアイコンと同じ約束。
 
    ⚠️大きさは二人とも同じ。どちらかを小さくしない
-   （憲法「二人ともよし、で決める」の、絵のほうの言い方）。 */
+   （憲法「二人ともよし、で決める」の、絵のほうの言い方）。
+
+   ■ 二人の距離（2026-09-03 施主のご指摘
+      「二人の距離が、少し遠い、喧嘩してるのかな？じゃなくて普通の距離感で会話を」）
+   蔵人 70% → 63%。前は二人のあいだに茶盆（54px）を挟んでいたので、
+   肩と肩のあいだが 116px＝人ひとり分より広く空いていた。それが
+   「喧嘩してるのかな」に見えた。いまは肩のあいだ 27px＝肩幅の半分弱、
+   縁側で隣に座って話している距離。茶盆は二人の「あいだ」ではなく
+   「前」（板の上・手前）へ下ろした（下の .chabon を見よ）。 */
 .hito   { top: -77px; width: 62px; }
 .hiroki { left: 56%; }
-.kurodo { left: 70%; }
+.kurodo { left: 63%; }
 
-/* 茶盆。湯呑み二つと、三方に積んだ月見団子。二人のあいだの板の上。
-   （2026-08-28 施主のご依頼「お団子おきますかね、お茶も」）
-   動かさない置物。湯気は立てない——動かすと、そこだけ目を引くから。 */
-.chabon { left: 63%; top: -21px; width: 54px; }
+/* 二人の吹き出し（2026-09-03 施主のご依頼「botスタイルでいいです。会話を吹き出しで」）
+   人の絵（.hito）の中に置く。だから季節のしまい方・狭い画面での寄せ方は
+   人と一緒に動き、別に面倒を見なくてよい。
+   見た目は焼き芋の「ひとこと」（.whisper）と同じ紙・同じ墨——家に二種類の
+   吹き出しがあると、どちらが喋っているのか分からなくなるから。
+   ⚠️role="img" の中の文字は読み上げソフトには渡らない＝これは狙いどおり。
+   数秒ごとに変わる雑談を読み上げられたら、上で道具を探している人の邪魔になる。
+   口を開けるのはいつも片方だけ（喋る側に .iu が付く）。
+   しっぽ（▼）は ::after で、四角を一つ下にずらして描く（憲法②＝絵文字ではない）。 */
+.fuki {
+  position: absolute;
+  left: 50%; bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  white-space: nowrap;
+  line-height: 1.35;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.fuki::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: -5px;
+  width: 8px; height: 8px;
+  margin-left: -4px;
+  background: var(--card);
+  border-right: 1px solid var(--card-line);
+  border-bottom: 1px solid var(--card-line);
+  transform: rotate(45deg);
+}
+.fuki.iu { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* 茶盆。湯呑み二つと、三方に積んだ月見団子と、ススキを挿した花瓶。
+   （2026-08-28 施主のご依頼「お団子おきますかね、お茶も」
+    2026-09-03 施主のご依頼「お団子をデカく、ススキの飾りで秋を強調したい」）
+   動かさない置物。湯気は立てない——動かすと、そこだけ目を引くから。
+
+   ■ 置き場＝二人の「前」。二人を寄せたら盆の入る隙間が無くなったので、
+   板の上・手前（top を正＝板に食い込む側）に下ろした。この絵は
+   板を斜め上から見ている（板の上端にみんな腰かけている）ので、
+   画面で下＝こちら側＝二人の前、と読める。左右の中心は二人の肩の中点
+   （56%+31px と 63%+31px の真ん中≒62%）。
+   ■ 大きさ＝42×30マスを 84px（1マス2px の等倍。トンボの項の掟）。
+   団子は一つ 6×5 マスで前の倍。三段（三・二・一）で高さ13マス＝26px。
+   ススキは団子より頭ひとつ高く立てる——本物の月見台でも、いちばん高いのはススキ。 */
+.chabon { left: 62%; top: 2px; width: 84px; transform: translateX(-50%); }
 
 /* 赤とんぼ。
    ■ 大きさ（2026-08-28 施主のご指摘「トンボは、スズメよりも小さいです」）
@@ -1000,10 +1055,20 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
 
   .hito      { width: 50px; top: -63px; }
   .hiroki    { left: 55%; }
-  .kurodo    { left: 73%; }
+  .kurodo    { left: 70%; }
   .hoshigaki { left: 4%; width: 44px; }
-  html[data-season="autumn"] .natsu[data-kisetsu="aki"].chabon { display: none; }
+  /* 茶盆は二人の前に下ろしたので（2026-09-03）、狭くても隠さない。
+     団子とススキは秋の主役のひとつ＝iPhone で見えないのでは困る。
+     大きさだけ人（50px）に合わせて一回り小さく。左右の中心は
+     55%+25px と 70%+25px の中点≒69%。 */
+  .chabon    { left: 69%; width: 70px; }
   html[data-season="autumn"] .natsu[data-kisetsu="aki"].tombo  { display: none; }
+  /* 吹き出しは、二人とも画面の右寄りに居るので、頭の中心から左右に
+     広げると右端からはみ出す（横スクロールが生まれる）。狭い画面では
+     頭の右端を起点に左へ伸ばす。しっぽは頭の真上に残す。 */
+  .fuki { left: auto; right: 0; transform: translateY(4px); }
+  .fuki.iu { transform: translateY(0); }
+  .fuki::after { left: auto; right: 18px; margin-left: 0; }
 }
 
 /* ---- 足元 ---- */
@@ -1892,6 +1957,8 @@ html[data-time="night"] .ice {
       <!-- 腰（板に着くところ）。ズボンの色 -->
       <rect x="4" y="26" width="14" height="2" fill="#4a4b52"/>
     </svg>
+    <!-- 吹き出し。言葉は下の script（縁側の二人の会話）が入れ替える -->
+    <span class="fuki" id="fuki-hiroki"></span>
   </div>
 
   <!-- 蔵人。博喜さんの隣。同じように丘を見ている。
@@ -1944,63 +2011,106 @@ html[data-time="night"] .ice {
       <!-- 腰 -->
       <rect x="5" y="26" width="12" height="2" fill="#5a5340"/>
     </svg>
+    <span class="fuki" id="fuki-kurodo"></span>
   </div>
 
-  <!-- 茶盆。湯呑み二つと、三方に積んだ月見団子。
+  <!-- 茶盆。湯呑み二つと、三方に積んだ月見団子と、ススキの花瓶。
        施主のご依頼（2026-08-28）「お団子おきますかね、お茶も」。
-       秋の縁側で、二人のあいだに置いてある。動かさない置物。 -->
+       施主のご依頼（2026-09-03）「お団子をデカく、ススキの飾りで秋を強調したい」。
+       秋の縁側で、二人の前に置いてある。動かさない置物。
+       ⚠️団子・ススキ・月＝お月見の三点セット。月は上の空に出ている。 -->
   <div class="natsu chabon" data-kisetsu="aki"
-       role="img" aria-label="お茶が二つと、三方に積んだ月見団子">
-    <svg viewBox="0 0 34 15" shape-rendering="crispEdges">
+       role="img" aria-label="お茶が二つと、三方に高く積んだ月見団子と、花瓶に挿したススキ">
+    <svg viewBox="0 0 42 30" shape-rendering="crispEdges">
       <!-- 湯呑み・左。口にお茶の面が見える -->
-      <rect x="1" y="4" width="8" height="1" fill="#ece6d8"/>
-      <rect x="2" y="4" width="6" height="1" fill="#6b4f30"/>
-      <g fill="#ece6d8">
-        <rect x="2" y="5" width="6" height="5"/>
-        <rect x="3" y="10" width="4" height="1"/>
-      </g>
-      <rect x="2" y="6" width="6" height="1" fill="#5f819c"/>
-      <rect x="2" y="5" width="1" height="5" fill="#fbf7ee"/>
-      <rect x="7" y="7" width="1" height="3" fill="#cfc7b5"/>
+      <rect x="1" y="18" width="6" height="1" fill="#ece6d8"/>
+      <rect x="2" y="18" width="4" height="1" fill="#6b4f30"/>
+      <rect x="1" y="19" width="6" height="7" fill="#ece6d8"/>
+      <rect x="1" y="20" width="6" height="1" fill="#5f819c"/>
+      <rect x="1" y="19" width="1" height="7" fill="#fbf7ee"/>
+      <rect x="6" y="21" width="1" height="5" fill="#cfc7b5"/>
+      <rect x="2" y="26" width="4" height="1" fill="#cfc7b5"/>
       <!-- 湯呑み・右 -->
-      <rect x="10" y="4" width="8" height="1" fill="#ece6d8"/>
-      <rect x="11" y="4" width="6" height="1" fill="#6b4f30"/>
-      <g fill="#ece6d8">
-        <rect x="11" y="5" width="6" height="5"/>
-        <rect x="12" y="10" width="4" height="1"/>
-      </g>
-      <rect x="11" y="6" width="6" height="1" fill="#5f819c"/>
-      <rect x="11" y="5" width="1" height="5" fill="#fbf7ee"/>
-      <rect x="16" y="7" width="1" height="3" fill="#cfc7b5"/>
+      <rect x="8" y="18" width="6" height="1" fill="#ece6d8"/>
+      <rect x="9" y="18" width="4" height="1" fill="#6b4f30"/>
+      <rect x="8" y="19" width="6" height="7" fill="#ece6d8"/>
+      <rect x="8" y="20" width="6" height="1" fill="#5f819c"/>
+      <rect x="8" y="19" width="1" height="7" fill="#fbf7ee"/>
+      <rect x="13" y="21" width="1" height="5" fill="#cfc7b5"/>
+      <rect x="9" y="26" width="4" height="1" fill="#cfc7b5"/>
 
-      <!-- 月見団子。三方（木の台）に、下から三段・二段・一段と積む -->
+      <!-- 三方（さんぼう）＝団子をのせる木の台。
+           上の板・胴（真ん中の暗い穴＝三方の眼象〈げんしょう〉）・足元 -->
+      <rect x="13" y="23" width="22" height="1" fill="#a8834f"/>
+      <rect x="15" y="24" width="18" height="2" fill="#8a6a45"/>
+      <rect x="23" y="24" width="2"  height="2" fill="#6d5335"/>
+      <rect x="14" y="26" width="20" height="1" fill="#a8834f"/>
+
+      <!-- 月見団子。一つ 6×5 マス（角を落として丸く）。下から三つ・二つ・一つ。
+           上の段は下の段に一マス食い込ませて「のっている」形にする。
+           ⚠️描く順は下の段から。上の段が下の段の上に重なる。 -->
       <g fill="#f4f0e6">
-        <rect x="22" y="6" width="10" height="2"/>   <!-- 下の段（三つ） -->
-        <rect x="23" y="8" width="8"  height="1"/>
-        <rect x="24" y="3" width="6"  height="2"/>   <!-- 中の段（二つ） -->
-        <rect x="26" y="1" width="3"  height="2"/>   <!-- てっぺん（一つ） -->
+        <!-- 下の段（三つ）y=18..22 -->
+        <rect x="15" y="18" width="4" height="1"/> <rect x="14" y="19" width="6" height="3"/> <rect x="15" y="22" width="4" height="1"/>
+        <rect x="22" y="18" width="4" height="1"/> <rect x="21" y="19" width="6" height="3"/> <rect x="22" y="22" width="4" height="1"/>
+        <rect x="29" y="18" width="4" height="1"/> <rect x="28" y="19" width="6" height="3"/> <rect x="29" y="22" width="4" height="1"/>
+        <!-- 中の段（二つ）y=14..18 -->
+        <rect x="18" y="14" width="4" height="1"/> <rect x="17" y="15" width="6" height="3"/> <rect x="18" y="18" width="4" height="1"/>
+        <rect x="25" y="14" width="4" height="1"/> <rect x="24" y="15" width="6" height="3"/> <rect x="25" y="18" width="4" height="1"/>
+        <!-- てっぺん（一つ）y=10..14 -->
+        <rect x="22" y="10" width="4" height="1"/> <rect x="21" y="11" width="6" height="3"/> <rect x="22" y="14" width="4" height="1"/>
       </g>
-      <!-- 団子の切れ目。ここが在ると「一つの塊」ではなく団子の数に見える -->
-      <g fill="#d9d1bf">
-        <rect x="25" y="6" width="1" height="2"/>
-        <rect x="28" y="6" width="1" height="2"/>
-        <rect x="27" y="3" width="1" height="2"/>
+      <!-- 団子の切れ目と、それぞれの足元の影。
+           ⚠️夜はランプの光が回って白が一つの山に溶けるので、
+           昼に見て「少し濃いかな」くらいの影でちょうどよい（2026-09-03 夜の画面で確認）。 -->
+      <g fill="#cbc2ab">
+        <rect x="20" y="19" width="1" height="3"/>
+        <rect x="27" y="19" width="1" height="3"/>
+        <rect x="23" y="15" width="1" height="3"/>
+        <rect x="15" y="22" width="4" height="1"/>
+        <rect x="22" y="22" width="4" height="1"/>
+        <rect x="29" y="22" width="4" height="1"/>
+        <rect x="18" y="18" width="4" height="1"/>
+        <rect x="25" y="18" width="4" height="1"/>
+        <rect x="22" y="14" width="4" height="1"/>
       </g>
-      <!-- 光の当たる側（左上）。白を一点置くと丸みが出る -->
+      <!-- 光の当たる側（左上）。白を二点置くと丸みが出る -->
       <g fill="#fffdf6">
-        <rect x="22" y="6" width="1" height="1"/>
-        <rect x="24" y="3" width="1" height="1"/>
-        <rect x="26" y="1" width="1" height="1"/>
+        <rect x="15" y="19" width="2" height="1"/> <rect x="15" y="20" width="1" height="1"/>
+        <rect x="22" y="19" width="2" height="1"/> <rect x="22" y="20" width="1" height="1"/>
+        <rect x="29" y="19" width="2" height="1"/> <rect x="29" y="20" width="1" height="1"/>
+        <rect x="18" y="15" width="2" height="1"/> <rect x="18" y="16" width="1" height="1"/>
+        <rect x="25" y="15" width="2" height="1"/> <rect x="25" y="16" width="1" height="1"/>
+        <rect x="22" y="11" width="2" height="1"/> <rect x="22" y="12" width="1" height="1"/>
       </g>
-      <!-- 三方（さんぼう）＝団子をのせる木の台 -->
-      <rect x="21" y="9"  width="12" height="1" fill="#a8834f"/>
-      <rect x="25" y="10" width="4"  height="1" fill="#8a6a45"/>
-      <rect x="23" y="11" width="8"  height="1" fill="#a8834f"/>
+
+      <!-- 花瓶。焼き締めの細い一輪挿し -->
+      <rect x="38" y="20" width="2" height="2" fill="#5f6b7a"/>
+      <rect x="37" y="22" width="4" height="5" fill="#5f6b7a"/>
+      <rect x="37" y="22" width="1" height="5" fill="#8593a3"/>
+      <!-- ススキの茎。三本。真ん中はまっすぐ、左右は外へ開く。
+           団子より頭ひとつ高く——本物の月見台でも、いちばん高いのはススキ -->
+      <g fill="#a8975e">
+        <rect x="38" y="5"  width="1" height="15"/>
+        <rect x="37" y="14" width="1" height="6"/> <rect x="36" y="9" width="1" height="5"/> <rect x="35" y="6" width="1" height="3"/> <rect x="34" y="5" width="1" height="1"/>
+        <rect x="39" y="13" width="1" height="7"/> <rect x="40" y="8" width="1" height="5"/> <rect x="41" y="6" width="1" height="2"/>
+      </g>
+      <!-- ススキの穂。ふわっとした薄い金色。真ん中を太く、先を細く -->
+      <g fill="#e6dcc4">
+        <rect x="38" y="0" width="2" height="1"/> <rect x="37" y="1" width="3" height="3"/> <rect x="38" y="4" width="2" height="1"/>
+        <rect x="34" y="0" width="1" height="1"/> <rect x="33" y="1" width="3" height="3"/> <rect x="34" y="4" width="1" height="1"/>
+        <rect x="41" y="0" width="1" height="1"/> <rect x="40" y="1" width="2" height="4"/> <rect x="41" y="5" width="1" height="1"/>
+      </g>
+      <g fill="#cdbf9c">
+        <rect x="39" y="3" width="1" height="1"/> <rect x="38" y="4" width="1" height="1"/>
+        <rect x="35" y="3" width="1" height="1"/>
+        <rect x="41" y="4" width="1" height="1"/>
+      </g>
 
       <!-- 盆。ここまでを一枚の板にのせて「出してある」形にする -->
-      <rect x="0" y="12" width="34" height="1" fill="#9d7c53"/>
-      <rect x="0" y="13" width="34" height="1" fill="#8a6a45"/>
-      <rect x="1" y="14" width="32" height="1" fill="#6d5335"/>
+      <rect x="0" y="27" width="42" height="1" fill="#9d7c53"/>
+      <rect x="0" y="28" width="42" height="1" fill="#8a6a45"/>
+      <rect x="1" y="29" width="40" height="1" fill="#6d5335"/>
     </svg>
   </div>
 
@@ -2651,6 +2761,72 @@ html[data-time="night"] .ice {
       }, 2600);
     });
   });
+})();
+
+/* ------------------------------------------------------------
+   縁側の二人の会話（2026-09-03 施主のご依頼
+   「botスタイルでいいです。会話を吹き出しで」）
+
+   博喜さんと蔵人が、吹き出しで交互にひとこと言う。
+   押さなくても勝手に進む＝チャット（bot）の画面のように、
+   片方が言って、少し間があって、もう片方が返す。
+   ⚠️同時に口を開けるのはいつも片方だけ。二つ同時に出すと
+   どちらが先か読めない。
+   ⚠️言葉は縁側で言われて自然なものだけ。技術の話・宣伝はしない。
+   最後の一組だけは、後ろに立っている「あなた」へ向けた言葉
+   （「用がなくても、座っていってください」の、会話のほうの言い方）。
+   ⚠️文言は施主の持ち物。直すときはこの表だけ。
+   ------------------------------------------------------------ */
+(function () {
+  var H = document.getElementById('fuki-hiroki');
+  var K = document.getElementById('fuki-kurodo');
+  if (!H || !K) return;
+
+  /* [博喜さん, 蔵人] の順。一組ずつ順に、最後まで行ったら最初へ */
+  var KAIWA = [
+    ['いい月が出そうですね。',       'ええ。団子の数、多くないですか。'],
+    ['ススキ、丘で取ってきました。', '秋ですねえ。'],
+    ['ひとつ、どうぞ。',             'では、遠慮なく。'],
+    ['日が、短くなりましたね。',     'でも、まだ暖かい。'],
+    ['お茶、もう一杯いれますか。',   'いただきます。'],
+    ['後ろの人、どうしましょう。',   'ここ、空いてますよ。']
+  ];
+
+  /* 一言を出しておく長さ・間。読める長さより少し長め（急かさない） */
+  var IU  = 3800;   /* 口を開けている時間 */
+  var MA  = 900;    /* 相手が返すまでの間 */
+  var IKI = 2600;   /* 一組が終わって、次の話題までの息つぎ */
+
+  /* 動きを嫌う設定の人には、入れ替えずに一組だけ置いておく。
+     文字が数秒ごとに変わるのも「動き」なので。 */
+  var shizuka = window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (shizuka) {
+    H.textContent = KAIWA[0][0]; H.classList.add('iu');
+    return;
+  }
+
+  var n = 0;
+  function hitokoto(el, aite, kotoba, tsugi) {
+    aite.classList.remove('iu');
+    el.textContent = kotoba;
+    el.classList.add('iu');
+    setTimeout(tsugi, IU);
+  }
+  function susumu() {
+    var kumi = KAIWA[n % KAIWA.length];
+    n += 1;
+    hitokoto(H, K, kumi[0], function () {
+      setTimeout(function () {
+        hitokoto(K, H, kumi[1], function () {
+          K.classList.remove('iu');
+          setTimeout(susumu, IKI);
+        });
+      }, MA);
+    });
+  }
+  /* 開いてすぐ喋り出さない。景色が描けて、目が落ち着いてから */
+  setTimeout(susumu, 2400);
 })();
 
 /* ============================================================
