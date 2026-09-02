@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>9. 寸法の手順 — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="08.html">← 作図の手順</a><a href="10.html">修正の手順 →</a></nav><h1>9. 寸法の手順</h1><div class="toc"><a href="#寸法の列">D / DIM（寸法の列）</a><a href="#平行寸法">DAL（平行寸法）</a><a href="#直径">DDI（直径）／DRA（半径）</a><a href="#弧長">DAR（弧長）</a><a href="#計測">DI / DIST（計測）＝図面に残さずに測る</a><a href="#面積">AREA（面積）＝囲いの内側を、一回クリック</a><a href="#測った答えを、メモや図面へ">測った答えを、メモや図面へ</a><a href="#寸法の身なり">寸法の身なり（スタイル）</a><a href="#字高">字高（文字の大きさを直す）</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="寸法の列"><h2>D / DIM（寸法の列）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に D →Enter（DIM・DLI でも同じ）。
+</div></li>
+<li><span class="mark">②</span><div>測りたい点を、スナップで順に拾っていきます。
+</div></li>
+<li><span class="mark">③</span><div>空白をクリック＝拾った点が一列の寸法になります（引き出した方向で、水平か垂直かが決まります）。
+</div></li>
+</ol>
+<p>右クリック＝拾いかけを捨てる。</p>
+</section>
+<section id="平行寸法"><h2>DAL（平行寸法）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に DAL →Enter。
+</div></li>
+<li><span class="mark">②</span><div>1点目・2点目をスナップで（2点の向きに平行な寸法＝斜めの本当の距離を測ります）。
+</div></li>
+<li><span class="mark">③</span><div>置き場所へ引き出してクリック。
+</div></li>
+</ol>
+</section>
+<section id="直径"><h2>DDI（直径）／DRA（半径）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に DDI（直径）か DRA（半径）→Enter。
+</div></li>
+<li><span class="mark">②</span><div>円か円弧をクリック。
+</div></li>
+<li><span class="mark">③</span><div>向きを決めて、置き場所でクリック。
+</div></li>
+</ol>
+</section>
+<section id="弧長"><h2>DAR（弧長）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に DAR →Enter（道具棚の「弧長」でも同じ）。
+</div></li>
+<li><span class="mark">②</span><div>円弧をクリック。
+</div></li>
+<li><span class="mark">③</span><div>置き場所でクリック（弧の外でも内でも）。
+</div></li>
+</ol>
+<p>値には ⌒ が付きます＝曲げ加工の「伸ばした長さ」が計算いらずで出ます（半径×角度×π÷180は蔵人の仕事）。</p>
+</section>
+<section id="計測"><h2>DI / DIST（計測）＝図面に残さずに測る</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「計測」か、小窓に DI →Enter。
+</div></li>
+<li><span class="mark">②</span><div>1点目をクリック（スナップが効きます）。
+</div></li>
+<li><span class="mark">③</span><div>2点目へカーソルを動かすと、**クリックする前から**距離・角度・横・縦がその場に出続けます。
+</div></li>
+<li><span class="mark">④</span><div>クリックで確定＝小窓の履歴に一行残ります。そのまま続けて次の二点を測れます（Escでやめる）。
+</div></li>
+</ol>
+<ul>
+<li>図面には線も寸法も**一本も残りません**。「ちょっと測りたいだけ」のために寸法を打つと、読んで、消す、の二手が余分に要り、消し忘れれば相手に渡す図面に下調べの跡が乗ります。</li>
+<li>直交（F8）は、この道具では効きません＝斜めの本当の距離が測れるように（拘束は「決める」道具のもの）。</li>
+</ul>
+</section>
+<section id="面積"><h2>AREA（面積）＝囲いの内側を、一回クリック</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>計測に入ると、下に帯が出ます。［面積を測る］を押す（小窓に AREA →Enter でも、Tab でも切り替わります）。
+</div></li>
+<li><span class="mark">②</span><div>測りたい部屋の**内側**を、一回クリック。囲いがピンクで光り、面積と周長がその場に出ます。
+</div></li>
+</ol>
+<ul>
+<li>**島（穴）は引きます**。中に浮かんでいる形があれば、その分を引いて「島n か所を引きました」と名乗ります。</li>
+<li>閉じた図形（四角・円・ポリゴン…）を**先に選んでから**計測に入っても測れます（複数選んでも構いません）。⚠️円をひとつ選んだ時だけは、πr² で厳密に出します。</li>
+<li>弧を含む囲い（円・角丸）は、弧を細かい折れ線に開いて測るので、答えはほんの少しだけ小さく出ます（半径1000で 0.007%、半径100で 0.07% ほど）。**小さい形ほど、この差は大きくなります**。</li>
+<li>囲まれていない所を押すと、その理由を言います（線に隙間があるか、閉じていません）。</li>
+</ul>
+</section>
+<section id="測った答えを、メモや図面へ"><h2>測った答えを、メモや図面へ</h2>
+<p>帯の右に二つ並んでいます（測る前は薄く「測ると押せます」）。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>［図面に書き込む］…押して、置く場所をクリック。いまの字高・現在画層で文字が一つ置かれます。⚠️**この一打だけが図面を変えます**（U ひと押しで消せます）。
+</div></li>
+<li><span class="mark">②</span><div>［コピー］…パソコンのクリップボードへ。メモ帳や表計算にそのまま貼れます。
+</div></li>
+</ol>
+<ul>
+<li>押さなければ何も起きません＝**「書かない」が既定**です。距離でも面積でも、直前に測った答えが渡ります。</li>
+</ul>
+</section>
+<section id="寸法の身なり"><h2>寸法の身なり（スタイル）</h2>
+<ul>
+<li>寸法スタイル＝台帳の一覧と切替。寸法スタイル 新規 詳細図＝いまの設定を写して一枚増やす。</li>
+<li>文字高 3.5＝寸法の文字の高さ。矢の大きさ 2.5＝矢の寸法。</li>
+<li>丸め 1＝寸法値の丸め（1066.8→1067）。桁 0＝小数の桁数（0＝整数だけ＝日本の図面の常識）。</li>
+<li>矢じり＝端末記号の切替。塗り矢・開き矢・斜線・黒丸・白丸・なし。斜線は建築図面の定番です。</li>
+</ul>
+</section>
+<section id="字高"><h2>字高（文字の大きさを直す）</h2>
+<p>文字を選んで、小窓に 字高 5 →Enter＝その大きさに。</p>
+<p>右クリックメニューの「字高…」からも打てます。</p>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

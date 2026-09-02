@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2. カーソルの手引き — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="01.html">← はじめに（画面の間取り）</a><a href="03.html">画面を動かす →</a></nav><h1>2. カーソルの手引き</h1><div class="toc"><a href="#ひとつを選ぶ">ひとつを選ぶ</a><a href="#つながっている線を、まとめて選ぶ">つながっている線を、まとめて選ぶ</a><a href="#窓で選ぶ">窓で選ぶ（窓選択）</a><a href="#重なっている図形">重なっている図形</a><a href="#つまみ">つまみ（グリップ）</a><a href="#ポリライン">ポリライン（四角・多角形）のつまみ</a><a href="#右クリック">右クリック＝思い出す場所</a><a href="#コピーと貼り付け">コピーと貼り付け</a><a href="#ホバー">ホバー（触れるだけ）</a><a href="#十字の色を変える">十字の色を変える</a><a href="#十字の大きさ・太さを変える">十字の大きさ・太さを変える</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="ひとつを選ぶ"><h2>ひとつを選ぶ</h2>
+<p>何のコマンドも動いていないとき、カーソルは選択の道具です。</p>
+<p>図形をクリック＝選ぶ。続けてクリック＝選択に加わっていきます。</p>
+<p>何もない空白をクリック＝全部の選択が外れます。</p>
+</section>
+<section id="つながっている線を、まとめて選ぶ"><h2>つながっている線を、まとめて選ぶ</h2>
+<p>線や円弧を2度押し（ダブルクリック）すると、そこから端点で</p>
+<p>つながっている線を、まとめて選びます。</p>
+<ul>
+<li>四角は線4本でできているので、これで4本とも一度に選べます。</li>
+<li>通り芯や壁のように長く連なっているものも、ひと掴みです。</li>
+<li>分かれ道があれば、その先もついてきます。何本選んだかは左下の履歴が必ず言うので、多すぎたら Esc で選び直せます。</li>
+<li>これも「選択に加える」なので、前の選択は消えません。</li>
+</ul>
+</section>
+<section id="窓で選ぶ"><h2>窓で選ぶ（窓選択）</h2>
+<p>空白から左ボタンでドラッグして、枠を張ります。</p>
+<ul>
+<li>左から右へ＝実線の青い枠。枠に完全に入った図形だけ選ぶ。</li>
+<li>右から左へ＝点線の緑の枠。枠に触れた図形も選ぶ。</li>
+</ul>
+<p>多くのCADと同じ作法です。窓選択は「選択に加える」なので、</p>
+<p>何度かに分けて集められます。</p>
+</section>
+<section id="重なっている図形"><h2>重なっている図形</h2>
+<p>図形が重なっている場所では、Tab を押すと候補が切り替わります。</p>
+</section>
+<section id="つまみ"><h2>つまみ（グリップ）</h2>
+<p>図形を選ぶと、線の端と中点に小さな四角（つまみ）が出ます。</p>
+<ul>
+<li>端の□を掴む＝その端を伸ばす／縮める。伸ばす先をクリック。または、伸ばしたい方へカーソルを向けて数字＋Enter＝その距離。直交（F8）を効かせると90度で伸ばせます。</li>
+<li>中点の□を掴む＝線ごと動かす。</li>
+<li>Esc＝やめる（線は一ミリも動きません）。</li>
+</ul>
+<p>コマンドを一度も打たずに線が伸びる、本家ゆずりの手です。</p>
+</section>
+<section id="ポリライン"><h2>ポリライン（四角・多角形）のつまみ</h2>
+<p>**形で見分けます**。つまみを見れば、何ができるか分かります。</p>
+<ul>
+<li>**□（正方形）＝頂点**。掴むとその一点だけが動きます。</li>
+<li>**▭（長方形）＝辺の中点**。掴むとその辺ごと平行に動きます（両端の頂点が一緒に動く＝辺の向きは変わりません）。</li>
+</ul>
+<p>線分の□と形を分けてあるのは、**できることが違うから**です。</p>
+<ul>
+<li>伸ばす先をクリック／数字＋Enter＝どちらも線分と同じ手です。</li>
+<li>角丸の辺（弧）には中点のつまみを出しません。弧の真ん中は弦の真ん中とは別の場所で、そこに印を置くと嘘になるためです。</li>
+<li>頂点がとても多いポリラインには、つまみを出しません（画面が四角で埋まって、かえって掴めなくなるため）。そのときは触ると「つまみは出していません」と札が言います。</li>
+</ul>
+</section>
+<section id="右クリック"><h2>右クリック＝思い出す場所</h2>
+<p>「あの機能、なんだっけ？」と思ったら、右クリックです。</p>
+<p>鍵を覚えていなくても、ここから辿り着けます。</p>
+<ul>
+<li>**図形を選んで**右クリック＝その図形にする用事が並びます。切り取り・コピー・貼り付け／移動・複製・回転・鏡像・削除／現在画層へ・この画層を現在に・画層に従わせる／字高…・文字を編集・仮想交点／部品化・プロパティ。</li>
+<li>**何も選ばずに**右クリック＝図面ぜんぶへの用事が並びます。貼り付け・元の場所へ貼り付け／全選択・取り消し／エイリアスボード（鍵の一覧をひらく）。</li>
+<li>各行の右端の字は、**その一行を呼ぶ手の早道**です。鍵のあるものは鍵（⌘C など）、無いものは小窓の言葉（M・CO）。⚠️鍵をエイリアスボードで替えると、ここの字も一緒に変わります。</li>
+<li>作図や配置の最中の右クリック＝「中止・終了」です。（複製の連続貼りを終える・ハッチの点を一つ戻す、など）</li>
+</ul>
+</section>
+<section id="コピーと貼り付け"><h2>コピーと貼り付け</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>図形を選んで ⌘C（コピー）か ⌘X（切り取り）。
+</div></li>
+<li><span class="mark">②</span><div>⌘V（貼り付け）を押すと、束がカーソルについてきます。
+</div></li>
+<li><span class="mark">③</span><div>置きたい所をクリック＝そこへ置かれます。続けて何度でも置けます。終わるのは右クリックか Enter。
+</div></li>
+</ol>
+<ul>
+<li>⌘⇧V＝控えた時と**同じ座標**へ、そのまま置きます。⚠️**同じ図面の中では使えません**（元の絵にぴったり重なるだけになるため）。献立でも薄くなります。＝**別のタブへ、同じ座標で持っていく**ときの道具です。同じ場所へ重ねたい日は、⌘V で同じ点をクリックしてください。</li>
+<li>**別のタブへも貼れます**。行き先に無い画層は、色と線種ごと連れて行きます（部品の原本も一緒に旅をします）。</li>
+<li>小窓の言葉でも呼べます＝COPYCLIP・CUTCLIP・PASTECLIP・PASTEORIG・SELALL（本家と同じ名前です）。</li>
+</ul>
+</section>
+<section id="ホバー"><h2>ホバー（触れるだけ）</h2>
+<p>図形にカーソルを寄せると、正体の札が出ます。</p>
+<p>押す前に「これは何か」を知ることができます。</p>
+</section>
+<section id="十字の色を変える"><h2>十字の色を変える</h2>
+<p>十字は、この画面でいちばん長く見つめる線です。</p>
+<p>どの色が見やすいかは、人によって違います。変えられます。</p>
+<p>道具棚の「設定」→ 見た目 → 十字の色。</p>
+<p>押すたびに次の色へ変わります（青緑・白・黄・黄緑・橙・桃・空）。</p>
+<p>板は浮いていて図面を隠しません＝十字を見ながら比べて決められます。</p>
+<p>※七色に無い色がよければ、設定の蔵（下記）に「十字の色 #FF00AA」のように書けば、その色になります。設定の蔵＝設定の板で選んだことを覚えておく、文字だけのファイル。メモ帳で開けて、手で直せて、そのまま人に渡せます。</p>
+</section>
+<section id="十字の大きさ・太さを変える"><h2>十字の大きさ・太さを変える</h2>
+<p>同じ「設定」→ 見た目 の中に、二つ並んでいます。</p>
+<ul>
+<li>十字の大きさ＝％。100 で画面いっぱい（初めからこの姿です）。小さくすると、腕の短い十字になります。線の込んだ図面で「どれが自分の十字か分からない」時は、小さいほうが楽です。（CURSORSIZE と同じ物差し。同じ数字が使えます）</li>
+<li>十字の太さ＝px。1 が初めの細さ。2 にすると、はっきりします。見やすくしたい時は、長さより太さのほうがよく効きます。</li>
+</ul>
+<p>どちらも押すと、その場の欄が受付になります。数字を打って</p>
+<p>Enter＝決定、Esc＝中止です（設定の板の数値はみんな同じ）。</p>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

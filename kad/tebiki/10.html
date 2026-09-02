@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>10. 修正の手順 — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="09.html">← 寸法の手順</a><a href="11.html">画層と線種 →</a></nav><h1>10. 修正の手順</h1><div class="toc"><a href="#トリム">TR / TRIM（トリム）</a><a href="#Tab】囲いの中を、一手で消す">TR → Tab】囲いの中を、一手で消す</a><a href="#いちばん確実な手順">いちばん確実な手順</a><a href="#もう一本の道">もう一本の道＝内側をクリック</a><a href="#分割点">DIV / DIVIDE（分割点）</a><a href="#延長">EX / EXTEND（延長）</a><a href="#複線">O / OFFSET（複線）</a><a href="#フィレット">F / FILLET（フィレット）／CHA（面取り）</a><a href="#複製">CO / COPY（複製）／M / MOVE（移動）</a><a href="#ストレッチ">S / STRETCH（ストレッチ）</a><a href="#いちばん多いつまずき">いちばん多いつまずき＝線が「折れる」</a><a href="#回転">RO / ROTATE（回転）</a><a href="#拡大縮小">SC / SCALE（拡大縮小）</a><a href="#鏡像">MI / MIRROR（鏡像）</a><a href="#配列">AR（配列）／PAR（円形配列）</a><a href="#拾い">拾い（ひろい／HIROI／BOM）</a><a href="#拾い表">拾い 表 ／ 拾い CSV</a><a href="#表">表（ひょう／TABLE）</a><a href="#よけ">よけ（ヨケ／YOKE）</a><a href="#アイソメ">ISO / アイソメ</a><a href="#仮想交点">APPINT / 仮想交点</a><a href="#結合">J / JOIN（結合）</a><a href="#名札">LIST / 名札</a><a href="#プロパティ">PR / プロパティ（数値の打ち替え）</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="トリム"><h2>TR / TRIM（トリム）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に TR →Enter。
+</div></li>
+<li><span class="mark">②</span><div>基準線（ここまで刈る、の境界）をクリック。何も選ばずに Enter＝全図形が基準線になります。
+</div></li>
+<li><span class="mark">③</span><div>刈りたい線にカーソルを寄せると、赤い下見が出ます。クリック＝その部分を刈る。Enter＝終了。
+</div></li>
+</ol>
+<ul>
+<li>先に図形を選んでから TR＝「一括トリム」。選んだ線からはみ出した部分を、Enter一発でまとめて刈ります。（これを「城攻め」と呼んでいます＝外へはみ出した分を追い出す）</li>
+<li>基準線にできるもの＝線・円・円弧・ポリライン・楕円・スプライン。曲線までピタリと刈れます（寸法や文字は基準線になりません）。</li>
+<li>刈られる側＝線・円・円弧・楕円・ポリライン・スプライン。楕円を刈ると楕円弧に、閉じたポリラインを刈ると開いた一本になります。</li>
+<li>スプラインも切れます。切っても**形は一ミリも変わりません**（曲線の骨を、同じ道を通るように作り直しています）。ただし、切った一片は「通過点」の記録を手放します＝切ったあとは、その一片の通過点には吸い付きません（両端は今までどおり掴めます）。閉じたスプラインは、まだ切れません（そのときは理由が出ます）。</li>
+</ul>
+</section>
+<section id="Tab】囲いの中を、一手で消す"><h2>TR → Tab】囲いの中を、一手で消す</h2>
+<p>一括トリムの、ちょうど裏返しです。</p>
+<p>一括トリムが「囲いの外のはみ出し」を追い出すのに対して、</p>
+<p>こちらは「囲いの中に入っている分」を消します。</p>
+<p>同じ用事の裏表なので、道具もトリムの中に同居しています。</p>
+</section>
+<section id="いちばん確実な手順"><h2>いちばん確実な手順</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>囲いの線（円や四角）をクリックして選びます。四角のように何本かでできた囲いは、線を2度押しするとつながっている分をまとめて選べます。
+</div></li>
+<li><span class="mark">②</span><div>リボンの「トリム」（小窓に TR →Enter でも同じ）。
+</div></li>
+<li><span class="mark">③</span><div>Tab を押すと「中を消す」へ切り替わります。もう一度 Tab で、刈るほうへ戻れます。
+</div></li>
+<li><span class="mark">④</span><div>消える分が赤くなり、囲いが琥珀色で縁取られます。Enter＝実行。Esc＝やめる。
+</div></li>
+</ol>
+<p>※Tab は、閉じた囲いを選んで入った時だけ出ます。出ない時は、囲いがどこかで切れています。</p>
+</section>
+<section id="もう一本の道"><h2>もう一本の道＝内側をクリック</h2>
+<p>小窓に「中を消す」→Enter（フリックの棚にもあります）。</p>
+<p>何も選ばずに呼ぶと、内側を一回クリックして囲いを探します。</p>
+<p>⚠️ただし、線が囲いを横切っていると、その区切りごとの小さな部屋になります（横切った線が仕切りになるため）。中の線をまとめて消したい時は、上の【いちばん確実な手順】へ。</p>
+<ul>
+<li>囲いをまたいでいる線は、囲いのところで切ってから、中の分だけ消えます（先にトリムしておく必要はありません）。</li>
+<li>丸・四角・角の丸い形・組み合わせた形、どれでも囲いになります。</li>
+<li>閉じたスプラインや楕円も囲いになります（曲線の中も一発で）。</li>
+<li>中に浮かんでいる形（島）の中身は消しません。</li>
+<li>文字や寸法は切れないので、まるごと中に入っている時だけ消えます。またいでいる分は残し、その数を履歴で知らせます。</li>
+<li>U ひと押しで、まとめて元に戻ります。</li>
+</ul>
+</section>
+<section id="分割点"><h2>DIV / DIVIDE（分割点）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に DIV →Enter。②割りたい図形をクリック。
+</div></li>
+<li><span class="mark">③</span><div>分割数を小窓へ（例 4）→Enter。等間隔に点が並びます。
+</div></li>
+</ol>
+<ul>
+<li>線・円・円弧・ポリラインを割れます。ポリラインは**全長を弧長で等分**します（辺の数ではありません）。閉じた形はちょうど count 個・開いた形は両端に置かず count-1 個。</li>
+</ul>
+</section>
+<section id="延長"><h2>EX / EXTEND（延長）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に EX →Enter。
+</div></li>
+<li><span class="mark">②</span><div>基準線をクリック（何も選ばず Enter＝全図形）。
+</div></li>
+<li><span class="mark">③</span><div>延ばしたい線の、延ばしたい側をクリック（緑の下見が出ます）。Enter＝終了。
+</div></li>
+</ol>
+</section>
+<section id="複線"><h2>O / OFFSET（複線）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に O 150 →Enter（＝150離れた平行線）。
+</div></li>
+<li><span class="mark">②</span><div>産みたい側に線が映ったらクリック。連続で産めます。数字→Enter＝間隔の変更。右クリック＝終了。
+</div></li>
+</ol>
+<p>円・弧は同心円になります。</p>
+<ul>
+<li>**ポリライン（四角も）は、丸ごと平行に太ります／細ります**。角の始末は自動です＝壁の下書きが一手でできます。角が丸い四角も、Rが育って（縮んで）ついてきます。⚠️内側へ入りきらない間隔は、理由を言って断ります。⚠️円弧が角をなしている形だけは、まだ複線できません。</li>
+</ul>
+</section>
+<section id="フィレット"><h2>F / FILLET（フィレット）／CHA（面取り）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>F 15 →Enter（半径15）／CHA 10 →Enter（10切る）。
+</div></li>
+<li><span class="mark">②</span><div>1本目の線をクリック。
+</div></li>
+<li><span class="mark">③</span><div>2本目の線を、残したい側でクリック。
+</div></li>
+</ol>
+<ul>
+<li>**ポリライン（四角も）の角**も、同じ手で丸められます。②③で、同じポリラインの**隣り合う二つの辺**をクリック。⚠️図形は一本のまま増えません（弧はポリラインの中に入ります）。半径0（角つなぎ）は線どうし専用です——ポリラインの角はもう繋がっているので、R か 面取りの寸法を先に決めてください。隣が円弧の角は、まだ作れません（画面が理由を言います）。</li>
+</ul>
+</section>
+<section id="複製"><h2>CO / COPY（複製）／M / MOVE（移動）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>図形を選ぶ→小窓に CO（複製）か M（移動）→Enter。
+</div></li>
+<li><span class="mark">②</span><div>基点をクリック（掴む場所。柱の角などスナップの効く点を）。
+</div></li>
+<li><span class="mark">③</span><div>行き先をクリック（@1000,0 のように数字でも）。
+</div></li>
+</ol>
+<p>複製は連続で貼れます。右クリック＝終了。別のタブへも</p>
+<p>貼れます。</p>
+</section>
+<section id="ストレッチ"><h2>S / STRETCH（ストレッチ）</h2>
+<p>「この壁を200奥へ」——**囲んだ側の端だけ**を伸ばす道具です。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に S →Enter（リボンの「ストレッチ」でも）。
+</div></li>
+<li><span class="mark">②</span><div>伸ばしたい端を、交差窓で囲みます。一つ目の角をクリック→対角をクリック（押したまま引いて放してもOK）。
+</div></li>
+<li><span class="mark">③</span><div>基点をクリック（柱の芯などスナップの効く点を）。
+</div></li>
+<li><span class="mark">④</span><div>伸ばす先をクリック。200 →Enter のように数字でも、@200,0 のように座標でも指定できます。直交ON＝水平・垂直にぴたり（実務ではほぼこれ）。
+</div></li>
+</ol>
+<ul>
+<li>窓に**丸ごと**入った図形は、丸ごと動きます（＝移動と同じ）。</li>
+<li>窓に**半分だけ**掛かった線は、囲まれた側の端だけが動く＝線が伸び縮みします。これがこの道具の本体です。</li>
+<li>寸法も一緒に伸びて、**数字が自分で変わります**（4550が4750に）。壁と寸法を一緒に囲むのがコツ。</li>
+<li>円・円弧・楕円・文字・部品は、形を変えずに丸ごと動きます（中心や挿入点が窓の中に入っていれば）。</li>
+<li>ハッチ（塗り）は、丸ごと囲んだ時だけ動きます。形が変わる塗りは作りません——形を直してから塗り直すほうが確実です。</li>
+<li>Esc・右クリック＝一手だけ戻ります（図面は無傷）。</li>
+</ul>
+</section>
+<section id="いちばん多いつまずき"><h2>いちばん多いつまずき＝線が「折れる」</h2>
+<p>半分だけ掛かった線は、囲まれた側の端だけが動きます。だから</p>
+<p>**斜めへ置くと、その線は斜めになります**（縦の壁が傾く）。</p>
+<p>操作を間違えたのではなく、そういう道具です——ほかのCADでも</p>
+<p>同じことが起きます。</p>
+<ul>
+<li>**F8（直交）を点ければ、水平・垂直だけに動きます**。実務の「壁を200奥へ」は、ほぼ必ずこれです。</li>
+<li>置く前に画面が教えます——伸ばす先を探している間、**角度が変わる線は琥珀色**で下見せされ、カーソル脇の札が「このまま置くと琥珀の線の角度が変わります」と言います。琥珀が出たら、F8を押すか、窓を取り直してください。</li>
+<li>角度を保ったまま1本だけ伸ばしたい時は、この道具ではなくつまみ（線を選んで端の青い四角を掴む）か、EX（延長）が向いています。</li>
+</ul>
+</section>
+<section id="回転"><h2>RO / ROTATE（回転）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>選ぶ→RO →Enter。②回転の基点をクリック。
+</div></li>
+<li><span class="mark">③</span><div>回してクリック。数字＋Enter＝角度の指定。線に触れると、その線の向きを拝借できます。
+</div></li>
+</ol>
+</section>
+<section id="拡大縮小"><h2>SC / SCALE（拡大縮小）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>図形を選ぶ→SC →Enter（リボンの「拡大縮小」でも）。
+</div></li>
+<li><span class="mark">②</span><div>基点をクリック。⚠️この点だけが動きません。どこを押さえるかで、伸びる向きが変わります（部材の左下を押さえれば、右上へ育ちます）。
+</div></li>
+<li><span class="mark">③</span><div>引いて倍率を決めてクリック／数字＋Enter（例 2 ／ 0.5）。薄い輪が「×1.00」の目印です。輪の外へ出れば拡大、内へ入れば縮小。倍率はカーソルの脇に出ています。式も打てます（3640/2 ＝ 1820倍…ではなく、1820）。
+</div></li>
+</ol>
+<p>※文字の大きさも、寸法の矢も、ハッチの模様も、ブロックの尺度も、一緒に伸び縮みします（図面の住人はみんな一緒に）。</p>
+<p>※図面ぜんぶの物差しを取り替えたい時は CAL（実寸合わせ）。あちらは寸法スタイルや破線の目盛りまで一緒に伸びます。</p>
+<p>※裏返したい（鏡写し）ときは MI。SCは正の倍率だけです。</p>
+</section>
+<section id="鏡像"><h2>MI / MIRROR（鏡像）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>図形を選ぶ→MI →Enter（リボンの「鏡像」でも）。
+</div></li>
+<li><span class="mark">②</span><div>鏡の軸の1点目をクリック（柱の芯などスナップの効く点を）。
+</div></li>
+<li><span class="mark">③</span><div>2点目をクリック＝軸の反対側に鏡像が生まれます。直交ON＝軸が水平・垂直にぴたり（左右対称の間取りはこれ）。
+</div></li>
+</ol>
+<p>元の図形は残ります。元を消したい時は、置いた直後は元が</p>
+<p>選択されたままなので、そのまま E（削除）＝「移す鏡」に。</p>
+<p>文字は鏡に映しても読める向きのまま＝図面の注記が裏文字に</p>
+<p>なりません（実務のCADの標準と同じ作法）。</p>
+</section>
+<section id="配列"><h2>AR（配列）／PAR（円形配列）</h2>
+<ul>
+<li>AR 3,4 →Enter＝3行4列。基点→「隣の一個を置きたい位置」をクリック＝そのずれが縦横の間隔になります。左や下へ配りたいときは、基点の左下を指すだけ。</li>
+<li>PAR 8 →Enter＝円周に8個。中心をクリック。PAR 8 180＝180度の扇に8個。PAR 8 360 N＝回さず配る。</li>
+</ul>
+</section>
+<section id="拾い"><h2>拾い（ひろい／HIROI／BOM）</h2>
+<p>図面に置いたブロック配置を名前で数え上げます。</p>
+<p>建枠1800×48・筋交×90——現場で言う「拾い出し」。</p>
+<p>表はログに読み上げ、名前と個数はクリップボードへ。</p>
+<p>NumbersやExcelのセルに⌘Vで二列に並びます</p>
+<p>＝そのまま発注・積込みリストの当たりに。</p>
+</section>
+<section id="拾い表"><h2>拾い 表 ／ 拾い CSV</h2>
+<p>「拾い 表」＝集計表（名前｜個数｜合計）を図面に建てます。</p>
+<p>枠がカーソルについてくるので、左上を置きたい所でクリック。</p>
+<p>実体はTEXTと線＝DXFで渡してもよそのCADでそのまま読め、</p>
+<p>仮設計画図として出す紙にそのまま載ります。Uひと押しで</p>
+<p>表ごと戻せます。字の大きさは「拾い 表 5」のように指定可</p>
+<p>（無指定は寸法の文字高に合わせます）。</p>
+<p>「拾い CSV」＝カンマ区切りのファイルに書き出します。</p>
+</section>
+<section id="表"><h2>表（ひょう／TABLE）</h2>
+<p>凡例・訂正欄・材質表・仕上表——枠を決め、文字を入れる。</p>
+<p>表 貼り付け＝NumbersやExcelでコピーした表（範囲を</p>
+<p>選んで⌘C）を、そのまま図面に建てます。数字だけの列は</p>
+<p>右に桁が揃います。直したい時はExcelで直してもう一度。</p>
+<p>表 5 3＝5行3列の枠を、その場で組みます。左上を置く</p>
+<p>場所をクリックすると、格子が出て、すぐ打てます。Tab＝次のセル／Shift+Tab＝前のセル（端は回ります）↑↓＝上下のセル／Enter＝下の行／←→＝セルの中の字確定＝枠の下の「✓ 確定」か Ctrl（⌘）+Enterやめる＝Esc（図面は一ミリも変わりません）</p>
+<p>打つほど列の幅は中身に合わせて伸びます＝いま見えて</p>
+<p>いる格子が、そのまま置かれる姿です。</p>
+<p>字の大きさは「表 貼り付け 5」「表 5 3 7」のように末尾で</p>
+<p>指定できます（無指定は寸法の文字高に合わせます）。</p>
+<p>建った表はただの文字と線＝移動も画層替えもDXF渡しも</p>
+<p>いつもの道具のまま。Uひと押しで表ごと戻せます。</p>
+</section>
+<section id="よけ"><h2>よけ（ヨケ／YOKE）</h2>
+<p>「よけ 寸法」＝窓・交差選択が寸法を拾わなくなります。</p>
+<p>足場図などから図形だけを窓で掴んで、複製や配列複写の</p>
+<p>材料にしたい時に。単クリック選択は今までどおり</p>
+<p>＝寸法だけ触りたい時の道は塞ぎません。</p>
+<p>もう一度「よけ 寸法」で解除。よけている間は</p>
+<p>カーソルの案内札がその旨を言い続けます。</p>
+</section>
+<section id="アイソメ"><h2>ISO / アイソメ</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>図形を選ぶ→ISO →Enter。②図の基点をクリック。
+</div></li>
+<li><span class="mark">③</span><div>貼る先をクリック＝等角図の角度へ傾いた写しが置かれます（原図はそのまま）。F5 で面（左・上・右）を回せます。
+</div></li>
+</ol>
+<p>※いま運べるのは線分です（円・弧・文字・寸法はこれから）。</p>
+</section>
+<section id="仮想交点"><h2>APPINT / 仮想交点</h2>
+<p>線を2本以上選んで右クリック→「仮想交点」（APPINTでも）。</p>
+<p>線を伸ばし合った交点に、点を出します。</p>
+<p>⌥クリックで基準を一本ずつ足し外し・Esc＝やめる。</p>
+</section>
+<section id="結合"><h2>J / JOIN（結合）</h2>
+<p>一直線で端が接している線を選んで J →Enter＝一本に。</p>
+</section>
+<section id="名札"><h2>LIST / 名札</h2>
+<p>図形を選んで LIST →Enter＝中身（種類・画層・色・線種・</p>
+<p>座標・長さ）を履歴に読み上げます。</p>
+<p>じっくり見る・着せ替えるなら PR（プロパティの板）を。</p>
+</section>
+<section id="プロパティ"><h2>PR / プロパティ（数値の打ち替え）</h2>
+<p>図形を選んで右クリック→「プロパティ」（PRでも）＝板が開き、</p>
+<p>1本選びなら下の段に「ジオメトリ」（座標・大きさ）が並びます。</p>
+<ul>
+<li>枠のある欄＝押すと、その場の欄が受付に。数字を打ってEnterで、図形そのものが変わります（円の半径・直径・面積、文字の字高・回転・位置、線分の始点・終点）。式も打てます（例 3640/2）。U で戻せます。</li>
+<li>灰色の欄＝読むだけ（線分の長さ・角度など。どちらの端を動かすか決められない数は、受けません）。</li>
+<li>文字の「内容」を押すと、その場の打ち直し（DDEDIT）が開きます。</li>
+</ul>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8. 作図の手順 — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="07.html">← キーの一覧</a><a href="09.html">寸法の手順 →</a></nav><h1>8. 作図の手順</h1><div class="toc"><a href="#線分">L / LINE（線分）</a><a href="#ポリライン">PL / PLINE（ポリライン）</a><a href="#円">C / CIRCLE（円）</a><a href="#3点円弧">A / ARC（3点円弧）</a><a href="#楕円">EL / ELLIPSE（楕円）</a><a href="#スプライン">SPL / SPLINE（スプライン）＝自由な曲線</a><a href="#四角">REC / 四角</a><a href="#ポリゴン">POL / ポリゴン（正多角形）</a><a href="#通り芯">GRID / 通り芯</a><a href="#文字記入">DT（文字記入）＝一行の文字を、枠で置く</a><a href="#文字の基準">文字の基準（九マス）は、いつでも変えられます</a><a href="#文字の書体">文字の書体＝標準・細・太・機械彫刻から選べます</a><a href="#段落文字">MT（段落文字）＝改行のある注記を、枠の中へ流し込む</a><a href="#段落文字と、ふつうの文字">段落文字と、ふつうの文字（DT）の使い分け</a><a href="#他所の図面から来た段落文字">他所の図面から来た段落文字</a><a href="#引出線">LE / 引出線</a><a href="#ハッチ">H / ハッチ</a><a href="#建築記号">建築記号（記号）＝梁・柱・基礎・耐圧盤・レベル・矢視・図面名</a><a href="#それぞれの姿と、打つ欄">それぞれの姿と、打つ欄</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="線分"><h2>L / LINE（線分）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「線分」か、小窓に L →Enter。
+</div></li>
+<li><span class="mark">②</span><div>1点目をクリック（または 1000,500 と絶対座標で）。
+</div></li>
+<li><span class="mark">③</span><div>2点目をクリック（@1000,0 や、向き＋数字でも）。
+</div></li>
+<li><span class="mark">④</span><div>そのまま連続で引けます。やめるときは Esc。
+</div></li>
+</ol>
+</section>
+<section id="ポリライン"><h2>PL / PLINE（ポリライン）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「ポリライン」か、小窓に PL →Enter。
+</div></li>
+<li><span class="mark">②</span><div>1点目→次の点→次の点…とクリック（数字での指定も線分と同じ）。
+</div></li>
+<li><span class="mark">③</span><div>右クリックか Enter で完成＝ここで「一本の図形」になります。U を押すと、打った頂点を一つだけ戻せます。Esc は描きかけを捨てます。
+</div></li>
+</ol>
+<ul>
+<li>線分との違いは「一本かどうか」だけです。線分は一手ごとに別々の線が生まれ、ポリラインは終えたときに一本にまとまります。</li>
+<li>外形線・敷地の境界・配管の経路など、あとで丸ごと選びたい線に。</li>
+<li>他所のCADのポリラインも一本のまま開き、保存でも一本で返します。</li>
+<li>トリムでは、ポリラインを**そのまま切れます**（一本のまま）。閉じたポリラインを切ると、開いた一本になります。ふくらみ（円弧の辺）も、途中で切れば正しく分かれます。</li>
+<li>基準線にも選べます（ここまで刈る・ここまで延ばす、の相手）。</li>
+<li>フィレット・面取りは、**ポリラインの角に効きます**（十五期百三十九号）。隣り合う二つの辺をクリックすると、その間の角が丸く（斜めに）なります。⚠️弧を別に産まないので、**一本のまま**です。他所のCADでも一体で開きます。</li>
+<li>複線（O）は、ポリラインを**丸ごと平行に**太らせます（十五期百四十号）。</li>
+<li>分割（DIV）は、**全長を弧長で等分**して点を並べます。閉じた形はちょうど count 個・開いた形は両端に置かず count-1 個。</li>
+</ul>
+</section>
+<section id="円"><h2>C / CIRCLE（円）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に C →Enter。②中心をクリック。
+</div></li>
+<li><span class="mark">③</span><div>円周が通る点をクリック。半径を数字で決めるなら、小窓に 4000・R2000・D8000（直径）のように打ちます。
+</div></li>
+</ol>
+</section>
+<section id="3点円弧"><h2>A / ARC（3点円弧）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「円弧」か、小窓に A →Enter。
+</div></li>
+<li><span class="mark">②</span><div>始点→③弧が通る点→④終点、と3回クリック。3点目からは弧がカーソルについてきます。Escは一手だけ戻る＝終点で迷ったら通過点から置き直せます。
+</div></li>
+</ol>
+<ul>
+<li>線の端点や交点にスナップが効くので、つながる弧が正確に。</li>
+<li>PDFの下絵をなぞるときは、曲線の上を3回突くだけです。</li>
+</ul>
+</section>
+<section id="楕円"><h2>EL / ELLIPSE（楕円）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「楕円」か、小窓に EL →Enter。
+</div></li>
+<li><span class="mark">②</span><div>軸の端点→③軸のもう一端→④残り半分の幅、と3回クリック。3点目からは楕円がカーソルについてきます。Escと右クリックは一手だけ戻ります。
+</div></li>
+</ol>
+<ul>
+<li>3点目を軸より長く取ると、そちらが長軸の縦長になります（長いほうが自動で長軸＝本家と同じ約束）。</li>
+<li>保存はDXFのELLIPSEそのまま＝他所のCADでも楕円のまま開けます。</li>
+</ul>
+</section>
+<section id="スプライン"><h2>SPL / SPLINE（スプライン）＝自由な曲線</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「スプライン」か、小窓に SPL →Enter。
+</div></li>
+<li><span class="mark">②</span><div>曲線に通したい点を、次々クリック（3点以上）。打つそばから、なめらかな曲線がカーソルについてきます。
+</div></li>
+<li><span class="mark">③</span><div>右クリックか Enter で完成＝一本の曲線になります。U＝打った点を一つ戻す／Esc＝描きかけを捨てる（PLと同じ）。
+</div></li>
+</ol>
+<ul>
+<li>曲線は打った点を全部、正確に通ります（雲形定規の作法）。</li>
+<li>打った点（通過点）は、あとから**吸着で掴めます**。通り芯や他の線を、その点にぴたりと合わせられます。</li>
+<li>敷地の等高線・道路の線形・意匠の曲線などに。</li>
+<li>保存はDXFのSPLINEそのまま＝他所のCADでも一本の曲線のまま開け、通過点も一緒に渡るので、あちらでそのまま編集できます。</li>
+</ul>
+</section>
+<section id="四角"><h2>REC / 四角</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に REC →Enter。②1点目→対角の点をクリック。大きさで決めるなら、2点目の代わりに 700,700（幅,高さ）。
+</div></li>
+</ol>
+<ul>
+<li>REC C 10＝面取り10の四角／REC F 15＝角丸R15。0 を打てば解除です。</li>
+<li>四角は**一体のポリライン**です（十五期百三十九号）。どの辺をクリックしても四角ぜんぶが選べます（一発選択）。四隅と四辺の中点は、今までどおり全部スナップできます。複線（O）は四角ごと平行に、分割（DIV）は周りを等分します（十五期百四十号）。一辺だけ使いたい日は X（分解）で。</li>
+</ul>
+</section>
+<section id="ポリゴン"><h2>POL / ポリゴン（正多角形）</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「ポリゴン」か、小窓に POL →Enter。POL 6＝正六角形（辺の数を先に決められます）。
+</div></li>
+<li><span class="mark">②</span><div>中心をクリック。③半径の点をクリック（数字＋Enterでも）。
+</div></li>
+</ol>
+<ul>
+<li>描いている間、画面の下に**帯**が出ます。辺の数（3 4 5 6 8 10 12）と、内接／外接をそこで選べます。← → でも辺の数を一つずつ増やしたり減らしたりできます。</li>
+<li>**内接**＝角が円に載る（半径は中心から角まで）。</li>
+<li>**外接**＝辺が円に接する（半径は中心から辺まで）。⚠️六角ボルト・ナットの「二面幅」は外接です。二面幅24のナットなら、外接で半径12。内接で12を打つと、ひと回り小さい別の部品になります。</li>
+<li>産まれるのは**一体の閉じたポリライン**（四角と同じ）。一発で選べて、ハッチも複線もそのまま効きます。</li>
+<li>向きは、半径の点をどちらに取るかで決まります（真上を指せば頂点が上、という具合）。</li>
+</ul>
+</section>
+<section id="通り芯"><h2>GRID / 通り芯</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>リボン「通り芯」か、小窓に GRID →Enter。
+</div></li>
+<li><span class="mark">②</span><div>X方向（左右に並ぶ芯）の間隔を打つ→Enter。例：1820*4, 910 ＝1820を4回、次に910（間隔*本数）。
+</div></li>
+<li><span class="mark">③</span><div>Y方向（上下に並ぶ芯）も同じ書き方で→Enter。空Enter＝その方向は芯1本。
+</div></li>
+</ol>
+<p>一発で通り芯の格子が立ちます。</p>
+</section>
+<section id="文字記入"><h2>DT（文字記入）＝一行の文字を、枠で置く</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に DT →Enter（DT 5＝はじめから字高5・DT 右下＝基準の指定）。リボン「作成」の【文字】ボタンでも同じです。
+</div></li>
+<li><span class="mark">②</span><div>文字の入る枠を、対角の2点でとります（**枠の高さが、そのまま字高**になります。角はスナップで正確にとれます）。🔑四角を先に描いて選んでから DT＝その四角がそのまま枠に（四角は残ります）。🔑表のセルや図枠の中なら、帯の【枠の中をクリック】＝一回押すだけで枠に。
+</div></li>
+<li><span class="mark">③</span><div>その場で一行を打って **Enter＝確定**（✓ボタン・枠の外クリックでも）。Esc＝中止。改行はありません（改行のある注記は MT へ）。
+</div></li>
+<li><span class="mark">④</span><div>文字は、選んだ基準のとおりに枠へ付きます（基準【右下】なら枠の右下に、【中央】なら枠のど真ん中に）。
+</div></li>
+</ol>
+</section>
+<section id="文字の基準"><h2>文字の基準（九マス）は、いつでも変えられます</h2>
+<ul>
+<li>枠の下の帯の九マスを押すと、打っている最中でも変わります。打ちかけの字が、枠の中でその場で動いて見えます（見せたものが本当）。</li>
+<li>字高も帯の欄でいつでも直せます（式も打てます。例：7*2）。</li>
+<li>置いた文字はダブルクリックで打ち直せます（回転した文字も、その角度のまま）。</li>
+</ul>
+</section>
+<section id="文字の書体"><h2>文字の書体＝標準・細・太・機械彫刻から選べます</h2>
+<ul>
+<li>リボン「作成」の右端に【書体】の欄が常にあります（画層の欄と同じ作法）。▼を押すと一覧が落ち、各書体の顔で名前が並びます。選ぶと、これから打つ文字の書体が替わります。</li>
+<li>置いた文字を選んでから一覧で選ぶと、その文字の書体が替わります（何本でも一度に・Uで戻せます）。選んだ文字の書体は、欄が水色になって名乗ります。プロパティの板の「書体」の行でも見られ、押すと次の書体へ。</li>
+<li>帯の【書体】の欄を押すと、棚を一つずつ巡ります（打っている最中でも変わります）。</li>
+<li>ページ設定の板の「文字の書体」の行でも、名前を押して選べます（各書体の顔で並びます）。</li>
+<li>小窓では 書体 機械彫刻（英字なら FONT kikai）。書体 ? で棚の中身が出ます。</li>
+<li>機械彫刻＝1970年代の機械彫刻用標準書体を再現した書体（f.k 機械彫刻・作者 Kim さん）。φ・±・⌒・∠ や一部の漢字は持っていないので、その字だけ標準の書体で出ます。</li>
+<li>他所の図面が名乗る書体（MS ゴシック・Arial など）は、この机にあればその書体で描き、無ければ標準で代替します（本家の代替フォントと同じ作法）。※Web版は同梱の四つだけです。</li>
+<li>自分の書体を使うには、設定の蔵の隣のフォルダ「書体」に TTF/OTF を置き、小窓で 書体 ファイル名（拡張子なし）と打ちます。</li>
+<li>選んだ書体は図面の文字スタイル（STYLE）として保存されます＝他所のCADでも同じ書体名で開きます。</li>
+</ul>
+</section>
+<section id="段落文字"><h2>MT（段落文字）＝改行のある注記を、枠の中へ流し込む</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に MT →Enter（MT 5＝はじめから字高5）。リボン「作成」の【段落】ボタンでも同じです。🔑**四角を先に描いてあるなら、それを選んでから MT**＝その四角が、そのまま枠になります。（`REC 590,300` と数字で描けば、枠を正確に決められます）⚠️選んだ四角は**そのまま残ります**（枠として借りただけ）。図枠や表の罫線を枠に使っても、線は一本も消えません。🔑**表のセルや図枠の中に書くなら、帯の【枠の中をクリック】へ**（Tabでも）。その部屋を一回押すだけで、囲まれた範囲がそのまま枠になります。（表の罫線は通し線なので、セルは「図形」としては選べません。だから**部屋のほうを指します**）
+</div></li>
+<li><span class="mark">②</span><div>文章の入る枠を、対角の2点でクリック。⚠️効くのは**横幅**だけです。縦は文章が増えれば下へ育ちます。この横幅が、そのまま「折り返しの幅」になります。
+</div></li>
+<li><span class="mark">③</span><div>枠の中へ文章を打ちます。・Enter＝**改行**（文字記入のEnterとは意味が違います）・いちばん下の行で↓を押しても改行になります・幅からはみ出す字は、打っている最中に自動で折り返します（置いた後の姿と、同じ折れ方で見えています）
+</div></li>
+<li><span class="mark">④</span><div>直したい所は、ワードと同じように選べます。・枠の中をクリック＝そこにカーソルが移ります・押したまま引く＝**反転**（青くなった分が「選んだ分」）・Shift＋矢印・Home・End でも、反転を伸ばせます・Ctrl+A（Macは⌘A）＝本文をぜんぶ反転・反転したまま打てば**置き換え**、BackSpace／Delete で**その分だけ消えます**⚠️引いている途中で枠の外へ出ても、反転は続きます（戻ってくれば繋がります）。
+</div></li>
+<li><span class="mark">⑤</span><div>飾り（太字・斜体・下線・上線・取り消し線）は、枠の下の帯で。・反転してから押す＝**その分**に掛かります（もう一度押すと外れます）・何も選ばずに押す＝**これから打つ字**に掛かります（ワードと同じ）・太字は Ctrl+B、斜体は Ctrl+I、下線は Ctrl+U（Macは⌘B・⌘I・⌘U）でも。灯っているのが、いまの状態です⚠️太字は、他所のCADでは太くならないことがあります（DXFは書体の名前で太字を表す決まりで、うちは**書体名を勝手に足さない**ことを選びました）。・斜体は、字を15度たおして描きます（字送りは変わりません）・取り消し線は、訂正・削除の印に使います⚠️飾りはDXFの決まりどおりに保存されるので、他所のCADでもそのまま出ます。
+</div></li>
+<li><span class="mark">⑥</span><div>字の大きさは、帯の右の【字高】の欄で、その場で変えられます。・押すと今の値が入って開きます（続きから直せます）・式も打てます（例：40/2 → 20）。Enter で決定、Esc で中止⚠️変えると折り返しも一緒に変わります（枠の横幅は変わりません）。
+</div></li>
+<li><span class="mark">⑦</span><div>文章を、枠の**どの隅に合わせるか**は、帯の右の【基準】の九マスで。・押した点に、文章のその隅が来ます（左上・中央・右下…の九通り）・中央を選べば、表のマスのど真ん中に収まります・下を選べば、文章は**上へ**育ちます（上なら下へ、中なら上下へ）⚠️既定は【左上】です。打っている最中に、いつでも変えられます。⚠️打ち直しのときは出ません（そのときの隅を、そのまま守ります）。
+</div></li>
+<li><span class="mark">⑧</span><div>終わり方は三つ。どれでも同じです。・枠の下の【✓ 確定】を押す・Ctrl+Enter（Macは⌘+Enterでも）・枠の外をクリックやめるときは Esc（右クリックでも）。
+</div></li>
+<li><span class="mark">⑨</span><div>置いたあとでも、**打ち直せます**。・段落を**ダブルクリック**＝そのまま枠が開いて、続きから直せます・選んで小窓に DDEDIT（または ED）でも同じです・右クリックの献立の【文字を編集】でも開きます・直したら、新しく打つときと同じ終わり方（✓・Ctrl+Enter・枠の外）・Esc なら、元のままで閉じます⚠️空にして確定はできません（元のまま残ります）。消すときは選んで Delete。⚠️傾いている段落は、まだ開けません（Xで分解すると行ごとの文字になります）。
+</div></li>
+</ol>
+</section>
+<section id="段落文字と、ふつうの文字"><h2>段落文字と、ふつうの文字（DT）の使い分け</h2>
+<ul>
+<li>一行だけの記号・番号・寸法の添え字 → DT</li>
+<li>何行かの注記・仕様書き・凡例 → MTMTなら、あとで幅を変えれば折り返しがついてきます。</li>
+</ul>
+</section>
+<section id="他所の図面から来た段落文字"><h2>他所の図面から来た段落文字</h2>
+<ul>
+<li>他所のCADの「改行を含む、ひとかたまりの注記」（MTEXT）は、**一かたまりのまま**開き、保存でも一かたまりのまま返します。書体や字高の指定も、うちでは使いませんが、そのままお預かりして返します。</li>
+<li>折り返しの幅も預かるので、**向こうのCADと同じ所で折り返して**見えます。</li>
+<li>触ると「段落文字 3行」のように名乗ります。どの行を触っても全体が掴めます（移動・複製・回転はそのままできます）。</li>
+<li>字の大きさは変えられます（選んで右クリック→字高）。</li>
+<li>**打ち直せます**（ダブルクリック）。書体の指定など、うちが使わない飾りもそのままお返しするので、直しても図面は痩せません。⚠️ただし、うちがまだ扱えない飾り（色・字高の倍率など）が入っている段落は、**開かずに、その場で理由を言います**——直すとその飾りが失われるからです。その場合は X（分解）で行ごとの文字に分ければ、一行ずつ打ち直せます（⚠️分解すると、書体・字高の指定は失われます）。⚠️傾いている段落と、貼り付ける隅が左上でない段落も、まだ開けません。</li>
+</ul>
+</section>
+<section id="引出線"><h2>LE / 引出線</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に LE →Enter。
+</div></li>
+<li><span class="mark">②</span><div>矢印の先端をクリック（指したい穴・角にスナップ）。
+</div></li>
+<li><span class="mark">③</span><div>折れ点をクリック（そこから水平に着地します）。
+</div></li>
+<li><span class="mark">④</span><div>枠の高さをもう1点で（左右に動かすと言葉の出る側が入れ替わります・Enter＝前回の字高）。
+</div></li>
+<li><span class="mark">⑤</span><div>言葉を打って Enter。
+</div></li>
+</ol>
+</section>
+<section id="ハッチ"><h2>H / ハッチ</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に H →Enter（リボンの「ハッチ」ボタンでも）。
+</div></li>
+<li><span class="mark">②</span><div>塗りたい所の【内側を、一回クリック】。それだけで、その場所を囲んでいる形を機械が探して塗ります。中に丸や四角が浮かんでいれば、そこは島として抜けます。
+</div></li>
+</ol>
+<ul>
+<li>角が丸い形（フィレット・面取り）も、線が交差した部屋も、角がはみ出したままの下書きも、内側を押すだけで塗れます。</li>
+<li>探すのは【画面に見えている範囲】だけです。塗りたい所が画面に入るようにしてから押してください。</li>
+</ul>
+<p>◆囲まれていない図（線に隙間がある・閉じていない）のとき「囲まれていません」と出て、押した点が1点目になります。そのまま【角を順にクリック→Enter】で囲って塗れます（スナップが効きます・右クリック＝一点戻す）。下書きの上や、線が足りない所は、こちらが確実です。</p>
+<ul>
+<li>模様は、画面のいちばん下に出る【帯】で選べます。9種の見本が並ぶので、押すだけ。← → のキーでも送れます。押した瞬間、いま囲っている範囲の下見せが、その模様の顔に変わります＝塗る前に、図面の上で見くらべられます。（帯はハッチの最中だけ出て、終わると引っ込みます）</li>
+<li>品揃えは H ? でも一覧が出ます（H ANSI37 と直に指名も可）。</li>
+<li>H ANSI31 2＝斜線を尺度2で（数字を上げると目が粗く）。</li>
+<li>模様の線が入らないときは尺度を小さく（例 H 名前 0.2）。</li>
+</ul>
+</section>
+<section id="建築記号"><h2>建築記号（記号）＝梁・柱・基礎・耐圧盤・レベル・矢視・図面名</h2>
+<p>施工図でおなじみの記号を、その場で打って置けます。</p>
+<p>入口は三つ＝リボン「作成」の【記号】／小窓に 記号／フリックの棚。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>画面のいちばん下に【帯】が出ます。左から順に、梁記号・柱記号・基礎記号・耐圧盤記号・レベル記号・矢視記号・図面名の枠。見本の絵が出ているので、押して選びます。
+</div></li>
+<li><span class="mark">②</span><div>【紙の字高】と【縮尺】を、帯の欄で決めます。⚠️縮尺は、道具に入ったときに【見当】が入ります。・レイアウトに窓があれば、その窓の縮尺に合わせます・無ければ、図面の広がりが用紙に収まる縮尺見当をつけたときは、履歴でそう名乗ります。違えば直してください。（この家の設計は【モデル空間は実寸で描く → レイアウトで用紙と縮尺を決める】です。だから「何分の一で刷るつもりか」は、紙の窓がいちばんよく知っています。）・大きさが合わなければ、置いてから【拡大縮小（SC）】でも直せます。記号は楕円・線・文字なので、ふつうの図形と同じように扱えます。記号は「紙の上で何ミリか」で決まります（JISの常用は 3.5）。図面は実寸なので、1:50 の図面なら 50倍にして置きます。帯には掛け算の答え（＝図面で 175）も出ます。⚠️ここが合っていないと、記号だけが極端に大きく／小さくなります。
+</div></li>
+<li><span class="mark">③</span><div>置く場所をクリック。スナップが効くので、通り芯の交点にもぴたりと置けます。
+</div></li>
+<li><span class="mark">④</span><div>その場で打ちます。Tab＝次の欄／Shift+Tab＝前へ／↑↓＝上下の欄。打つそばから、楕円や枠が中身に合わせて育ちます。
+</div></li>
+<li><span class="mark">⑤</span><div>✓ か Ctrl(⌘)+Enter で確定。Esc＝中止（図面は変わりません）。置いた後は【続けて置けます】＝次の場所をクリック。終わりは右クリックか Esc。
+</div></li>
+</ol>
+</section>
+<section id="それぞれの姿と、打つ欄"><h2>それぞれの姿と、打つ欄</h2>
+<ul>
+<li>梁記号　　＝楕円の中を二本の線で三段に。地中梁天端（枠の外・上）／CON天端／梁符号／梁巾*梁せい（型枠寸法）／打増寸法（枠の外・下）の五つ。</li>
+<li>基礎記号　＝左に基礎符号、右が上下二段（フーチング下端／フーチング厚）。</li>
+<li>耐圧盤記号＝四角の中を二本の線で三段（天端レベル／符号／厚さ）。</li>
+<li>柱記号　　＝四角枠に三段（柱符号／断面／配筋）。仕切りません。</li>
+<li>レベル記号＝▽と横線。▽の頂点が、そのレベルの位置そのものです。</li>
+<li>矢視記号　＝符号（A・B）＋矢＋直角に折れた切断線の端部。実物の図面から数えて建てた形です。切断線そのものは線（L）で引いてください＝長さは図面ごとに違うので、記号の側では持ちません。</li>
+<li>図面名の枠　＝四角に図面名。</li>
+</ul>
+<ul>
+<li>置いた記号は【楕円・線・文字】になります。図面に「記号」という特別なものは住みません＝移動・回転・拡大縮小・トリム・画層の入れ替えが、そのまま全部効きます。他所のCADでも、そのまま開けます。</li>
+<li>U のひと押しで、記号ひと組が丸ごと消えます。</li>
+<li>矢視記号は【見る向き】と【頭】を、下の帯から選べます。</li>
+</ul>
+<p>◇見る向き＝四つ（上・右・下・左）矢視記号を選ぶと、下の帯に矢の絵が四つ並びます。押すだけです。・矢じりが指す方＝図面を見る方向・切断線の端部は、その向きから時計回りに90度へ折れます・符号（A・B）は、どの向きでも上を向いたままです＝実物の図面がそうなっているからです。斜めに切りたい日は、置いてから回転（RO）で回してください。◇頭（矢じり）＝三つ・片羽根　　＝実物の施工図から数えた形（既定）。切断線の軸が、そのまま矢じりの片側になります。・開いた矢　＝左右対称の細い三角。・中抜き三角＝ずんぐりした三角（実物の引出線の矢と同じ頂角）。どれが正しい、はありません——製図の規格は、切断線の矢の【形】までは決めていないからです（JIS A 0150・JIS Z 8316 とも矢を置くことは定めますが、形の規定はありません）。事務所ごと・図面ごとの流儀に合わせてお選びください。</p>
+<ul>
+<li>小窓からは 記号 梁／記号 1:50／記号 3.5／記号 左 のように、種類・縮尺・紙の字高・矢視の向きを直に指定できます。</li>
+<li>通り芯の符号（X1・Y1 の丸）は、この帯ではなく通り芯（GRID）が芯と一緒に立てます。</li>
+</ul>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

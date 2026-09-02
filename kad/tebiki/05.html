@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>5. 点と分割点 — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="04.html">← 数字の打ち方（座標と距離）</a><a href="06.html">スナップと規律 →</a></nav><h1>5. 点と分割点</h1><div class="toc"><a href="#点">点（POINT / PO）</a><a href="#基点">基点（FROM / FRO）＝ここから測って置く</a><a href="#置いた点は掴めます">置いた点は掴めます</a><a href="#分割点">分割点（DIVIDE / DIV）</a><a href="#点の姿と大きさ">点の姿と大きさ</a><a href="#他のCADから来た点">他のCADから来た点</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="点"><h2>点（POINT / PO）</h2>
+<p>点は、位置そのものを図面に残す図形です。</p>
+<p>線でも円でもない「ここ」という印で、土木・測量では</p>
+<p>点そのものが成果物になります。</p>
+<p>小窓に PO（または POINT）→Enter。あとは、</p>
+<ul>
+<li>クリックで置く</li>
+<li>1000,500 と打つ＝絶対座標（原点から）</li>
+<li>@100,50 と打つ＝相対座標（直前に置いた点から）</li>
+</ul>
+<p>一つ置いても終わりません。続けて何個でも置けます。</p>
+<p>終わるとき＝Esc（右クリック・Enter でも同じ）。</p>
+</section>
+<section id="基点"><h2>基点（FROM / FRO）＝ここから測って置く</h2>
+<p>「この杭から東へ3m」——測量や土木の実務は、たいてい</p>
+<p>どこかの点を基準にして測ります。その基準を宣言する一手です。</p>
+<p>点（PO）の最中に、リボンの「基点」ボタン、または小窓に FRO。</p>
+<p>1. 参照点をクリック（端点・交点に吸い付きます） ⚠️そこには点を置きません。基準にするだけです。</p>
+<p>2. 緑の四角が立ちます＝いま基点はここ、という印</p>
+<p>3. 100,50 と打ってEnter＝基点から右100・上50に点 数字ひとつ（例 3000）＝基点からカーソルの向きへ、その距離</p>
+<p>⚠️打つ場所で書き方が違います（本家と同じ作法です）。</p>
+<ul>
+<li>カーソル脇の欄　＝ 100,50 で「基点から」（@100,50 でも同じ）</li>
+<li>下の小窓　　　　＝ 100,50 は「原点から」の絶対座標。基点から測るときは @100,50 と、@ を付けてください。</li>
+</ul>
+<p>⚠️基点はEscまで残ります＝同じ杭から続けて何点でも打てます。Escを押すと、まず基点だけを手放します（点道具は続きます）。</p>
+</section>
+<section id="置いた点は掴めます"><h2>置いた点は掴めます</h2>
+<p>点には「点スナップ」が効きます（丸に×のマーカー）。</p>
+<p>そこから線を引く・寸法を測る、が普通にできます。</p>
+<p>※点は掴むためにあります。掴めない点は、ただの飾りです。</p>
+</section>
+<section id="分割点"><h2>分割点（DIVIDE / DIV）</h2>
+<p>線・円・円弧・ポリラインを等分する位置に、点を並べます。</p>
+<p>小窓に DIV →Enter→割りたい図形をクリック→分割数を入力。</p>
+<p>選んだ図形は青く光ります＝どれを割ろうとしているかが目で分かります。</p>
+<ul>
+<li>線と円弧：4分割なら点は3個、100分割なら99個（両端は端点として掴めるので、置きません）。</li>
+<li>円：4分割なら点は4個（3時・12時・9時・6時）。円は閉じていて「両端」が無いので、分割数と同じ数だけ並びます。起点は3時（0°）＝同じ円を二度割っても点が噛み合います。</li>
+</ul>
+<p>置いた点は、Uのひと押しで丸ごと戻せます。</p>
+</section>
+<section id="点の姿と大きさ"><h2>点の姿と大きさ</h2>
+<ul>
+<li>PDMODE 3 ＝姿（0=点 / 1=描かない / 2=＋ / 3=✕ / 34=⊕）</li>
+<li>PDSIZE -3 ＝大きさ。負の数は「画面の高さの％」です。既定は -3（画面の3%）。この作りだと、どこまで縮小しても粒の大きさが変わりません＝100分割しても団子になりません。正の数にすると図面の実寸になります（例 PDSIZE 500）。</li>
+</ul>
+<p>どちらも図面ごとの設定で、DXFに保存されます。</p>
+</section>
+<section id="他のCADから来た点"><h2>他のCADから来た点</h2>
+<p>他所のDXFの点も、そのまま迎えます。</p>
+<p>点が持っている標高（Z）は、うちは使いませんが</p>
+<p>預かって、保存のときにそのままお返しします。</p>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

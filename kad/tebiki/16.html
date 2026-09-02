@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>16. 困ったとき — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="15.html">← 立体（3DとSTL）</a></nav><h1>16. 困ったとき</h1><div class="toc"><a href="#パン">パン（中ボタン）が効かない</a><a href="#文字が小さすぎて読めない">文字が小さすぎて読めない</a><a href="#破線が実線に見える">破線が実線に見える</a><a href="#選択できない・消せない">選択できない・消せない</a><a href="#画層の色を変えたのに、図形の色が変わらない">画層の色を変えたのに、図形の色が変わらない</a><a href="#まちがえた">まちがえた</a><a href="#DWGが開けない">DWGが開けない</a><a href="#PDFが開けない">PDFが開けない</a><a href="#もっと知りたい">もっと知りたい</a><a href="#奥付">奥付＝この道具のこと</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="パン"><h2>パン（中ボタン）が効かない</h2>
+<p>スペース＋左ドラッグをお使いください（同じ働きです）。</p>
+<p>マウス付属の常駐ソフトが、中ボタンの押し込みを別の仕事に</p>
+<p>化かしていることがあります。ホイールのズームは効くのに</p>
+<p>押し込みだけ効かないときは、まずそれを疑ってください。</p>
+</section>
+<section id="文字が小さすぎて読めない"><h2>文字が小さすぎて読めない</h2>
+<p>この家の文字は実寸です。字高5の文字は、図面全体を</p>
+<p>引きで見れば小さいのが正しい姿。近づけば読めます。</p>
+<p>紙の上の大きさは、印刷プレビューの倍率でも整えられます。</p>
+</section>
+<section id="破線が実線に見える"><h2>破線が実線に見える</h2>
+<p>目盛りが図面に合っていません。小窓に LTS 自動 →Enter。</p>
+</section>
+<section id="選択できない・消せない"><h2>選択できない・消せない</h2>
+<p>その図形の画層が、ロックか非表示かもしれません。</p>
+<p>LA で画層パネルを開いて、鍵と目玉を確かめてください。</p>
+</section>
+<section id="画層の色を変えたのに、図形の色が変わらない"><h2>画層の色を変えたのに、図形の色が変わらない</h2>
+<p>その図形が個別の色を持っています。選んで SETBYLAYER</p>
+<p>＝札を剥がして、画層に従わせます。</p>
+</section>
+<section id="まちがえた"><h2>まちがえた</h2>
+<p>U で何度でも戻れます。トリムも削除も配列も戻ります。</p>
+</section>
+<section id="DWGが開けない"><h2>DWGが開けない</h2>
+<p>送り主に「DXFで」と頼むのが確実です（どのCADもDXFを</p>
+<p>書き出せます）。Mac版は、ターミナルで</p>
+<p>brew install libredwg と打って翻訳係を迎えると開けます。</p>
+</section>
+<section id="PDFが開けない"><h2>PDFが開けない</h2>
+<ul>
+<li>スキャン（画像）のPDF＝線の座標が無く、取り込めません。</li>
+<li>作成者がコピーを禁じたPDF・鍵のかかったPDF＝権利と鍵を尊重して、開けない作りにしてあります。</li>
+</ul>
+</section>
+<section id="もっと知りたい"><h2>もっと知りたい</h2>
+<ul>
+<li>？（コマンド一覧）＝名簿。この教本＝読み物。</li>
+<li>免責＝小窓に 免責 で、いつでも読み返せます。</li>
+<li>設定＝リボンの歯車。分度器や案内の入切もここに。</li>
+</ul>
+</section>
+<section id="奥付"><h2>奥付＝この道具のこと</h2>
+<ul>
+<li>作者は岡澤　博喜。仕様・画面・操作の決めごとは作者が行い、実装（コーディング）はAI（Anthropic社のClaude＝蔵人）が行っています。</li>
+<li>図面の文字の書体「機械彫刻」は、Kim さん（木村さん）が制作された「f.k 機械彫刻」（<a href="https://font.kim" rel="noopener">https://font.kim</a>）です。2026年9月に作者へ連絡し、同梱のご承諾をいただいて積んでいます。木村さん、ありがとうございます。機械彫刻用標準書体（JIS）を再現した書体で、JISに適合したものではありません。</li>
+<li>標準・細・太の書体は M+ FONTS（M+ FONT LICENSE）です。</li>
+<li>同じことは、初めて開いたときの免責事項（小窓に 免責）にも書いてあります。</li>
+<li>不具合のご指摘・ご要望は info@engawaya.com へ。</li>
+</ul>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

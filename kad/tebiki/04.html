@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>4. 数字の打ち方（座標と距離） — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="03.html">← 画面を動かす</a><a href="05.html">点と分割点 →</a></nav><h1>4. 数字の打ち方（座標と距離）</h1><div class="toc"><a href="#二つの打ち場">二つの打ち場</a><a href="#絶対座標と相対座標">絶対座標と相対座標</a><a href="#距離入力">距離入力（カーソル脇）</a><a href="#1点目を絶対座標で置きたいとき">1点目を絶対座標で置きたいとき</a><a href="#カーソル脇の欄は三段">カーソル脇の欄は三段（↑↓で選びます）</a><a href="#基点そのものをずらす">基点そのものをずらす（@）</a><a href="#計算しながら打てます">計算しながら打てます（電卓）</a><a href="#小窓のもうひとつの顔">小窓のもうひとつの顔</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="二つの打ち場"><h2>二つの打ち場</h2>
+<ul>
+<li>小窓（画面下・名札は「小窓：CommandLine」）＝言葉と数字の受付。</li>
+<li>カーソル脇の欄＝距離の受付（距離DYNが入のとき）。</li>
+</ul>
+<p>どちらも Enter で確定です。</p>
+</section>
+<section id="絶対座標と相対座標"><h2>絶対座標と相対座標</h2>
+<ul>
+<li>1000,500 ＝絶対座標。原点(0,0)から右1000・上500の点。</li>
+<li>@100,50 ＝相対座標。直前の点から右100・上50。</li>
+</ul>
+<p>右が＋・上が＋（原点に立つXとYの矢印と同じ向き）。</p>
+<p>カンマは半角です。</p>
+</section>
+<section id="距離入力"><h2>距離入力（カーソル脇）</h2>
+<p>基点を打ったあと、伸ばしたい方へカーソルを向けて</p>
+<p>数字を打つ→Enter＝その向きへ、その距離だけ進みます。</p>
+<p>向きはカーソル、長さは数字。役割分担です。</p>
+<p>四角（REC）では 700,700 のように 幅,高さ でも決まります。</p>
+</section>
+<section id="1点目を絶対座標で置きたいとき"><h2>1点目を絶対座標で置きたいとき</h2>
+<p>1点目は「下の小窓」へ打ちます（例 0,0 ＝ 図面の原点）。</p>
+<p>1点目を待っているときに数字を打つと、小窓が自分で灯って</p>
+<p>その数字が入ります。そのまま続けて Enter でどうぞ。</p>
+<p>※カーソル脇の欄は、基点を打ったあとに出る欄です。</p>
+</section>
+<section id="カーソル脇の欄は三段"><h2>カーソル脇の欄は三段（↑↓で選びます）</h2>
+<p>上から 長さ／基点をずらす／絶対座標 の三段です。</p>
+<p>↑↓で欄を移り、Tabでも順に巡ります。Enter＝確定。</p>
+<p>三段目の絶対座標は、図面の原点(0,0)から測った座標を</p>
+<p>そのまま打ちます（例 0,0／1000,500）。基点は使いません。</p>
+<p>「いま原点はどこだったか」を確かめたい時にも効きます。</p>
+</section>
+<section id="基点そのものをずらす"><h2>基点そのものをずらす（@）</h2>
+<p>点を待っているとき @ を打つと、掴んだ点に緑の四角が立ち、</p>
+<p>@910,0 のように打つと基点そのものがずれます。</p>
+<p>Enter＝確定・Esc＝やめる。</p>
+<p>「柱の角から右へ910の位置から描き始めたい」ときの手です。</p>
+</section>
+<section id="計算しながら打てます"><h2>計算しながら打てます（電卓）</h2>
+<p>数字を打つところなら、どこでも式が打てます。・3640-910 ＝ 2730（壁の残り）・455*4 ＝ 1820（尺の割り付け）・(1820+910)/2 ＝ 1365（真ん中）</p>
+<p>使えるのは ＋ － × ÷ と括弧です。全角のままでも通ります。</p>
+<p>たとえば円の半径。C→中心をクリック→ 3640/2 → Enter で</p>
+<p>半径1820の円が描けます。カーソル脇の距離も同じです。</p>
+<p>電卓を出して、答えを覚えて、戻って打ち直す——</p>
+<p>その往復が要りません。</p>
+<p>式だけを小窓に打つと、答えだけを返します（電卓として）。</p>
+<p>小窓の名札の隣の「電卓」ボタンでも、使い方が出ます。</p>
+<p>※0では割れません。単位は付けず数字だけで（4000mm ではなく 4000）。</p>
+</section>
+<section id="小窓のもうひとつの顔"><h2>小窓のもうひとつの顔</h2>
+<p>円の半径は 4000・R2000・D8000（直径）のようにも打てます。</p>
+<p>移動・複製の行き先も @1000,0 のように打てます。</p>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

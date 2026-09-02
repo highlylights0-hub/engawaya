@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>13. 開く・保存・実寸 — K'Ad蔵人 手引き</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="12.html">← 部品と部品箱</a><a href="14.html">印刷（紙へ刷る） →</a></nav><h1>13. 開く・保存・実寸</h1><div class="toc"><a href="#プロジェクト">プロジェクト（PROJ）＝図面の目録</a><a href="#起動したら、まずこの板が出ます">起動したら、まずこの板が出ます</a><a href="#図面を目録へ入れる">図面を目録へ入れる（足元に四つ）</a><a href="#目録を整える">目録を整える（行の右に四つ）</a><a href="#開き方">開き方</a><a href="#大事なこと">大事なこと</a><a href="#開く">開く（⌘O）</a><a href="#保存">保存（⌘S）</a><a href="#実寸合わせ">CAL / 実寸合わせ</a><a href="#単位">単位（物差しの取り替え）</a><a href="#自動保存">自動保存</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="プロジェクト"><h2>プロジェクト（PROJ）＝図面の目録</h2>
+<p>大きな仕事では、図面が何十枚にもなります。フォルダを眺めても</p>
+<p>「これは何だっけ？」がファイル名からは分かりません。</p>
+<p>プロジェクトは、その一枚一枚が「どこに在って、何なのか」を</p>
+<p>覚えておく目録です。</p>
+<p>開き方は二つ。リボン「出力」のいちばん左の「プロジェクト」ボタンか、</p>
+<p>小窓に PROJ →Enter。</p>
+</section>
+<section id="起動したら、まずこの板が出ます"><h2>起動したら、まずこの板が出ます</h2>
+<p>どこから始めるかを三つで聞きます。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>プロジェクトを開く＝前に作った目録の続きから。
+</div></li>
+<li><span class="mark">②</span><div>新しいプロジェクトを作る＝この現場の目録を新しく。
+</div></li>
+<li><span class="mark">③</span><div>図面だけ開く＝プロジェクトは作りません。いつもの「開く」と同じ扉で、この板は閉じます。
+</div></li>
+</ol>
+<p>※前に開いた目録があれば、その続きが最初から出ます。</p>
+<p>※要らない人は帯の「次回から出さない」。設定の板の「起動時にプロジェクト」でいつでも戻せます。</p>
+</section>
+<section id="図面を目録へ入れる"><h2>図面を目録へ入れる（足元に四つ）</h2>
+<ul>
+<li>＋ フォルダごと＝現場のフォルダを選ぶと、その中の図面をサブフォルダまで探して、まとめて入れます。何十枚でも一手。仕切り（見出し）は、その図面が入っているフォルダの名前がそのまま入ります。フォルダで分けてあれば、それがツリーです。※PDFは拾いません（図面でないPDFまで入るため）。</li>
+<li>＋ 選んで加える＝要る図面だけを選びます（複数選べます）。PDFもこちらなら入ります。</li>
+<li>＋ この図面を加える＝いま開いている一枚を入れます。</li>
+<li>新しい図面を作る＝この現場に新しい図面を産んで、名前を付けて、目録に載せて、そのまま開きます。</li>
+</ul>
+</section>
+<section id="目録を整える"><h2>目録を整える（行の右に四つ）</h2>
+<ul>
+<li>上下の三角＝並べ替え。押して持ち上げ、置きたい行を押すとその手前へ入ります。見出しを押すと、その仕切りの最後へ。引きずりません（押すだけ）。やめるときはもう一度押すかEsc。</li>
+<li>フォルダの絵＝この図面の仕切りを打ち替えます。空のままEnterで、未分類へ戻ります。</li>
+<li>鉛筆の絵＝覚書。「2階 平面図 S=1:100」のように書いておくと、これが「これは何だっけ？」への答えになります。</li>
+<li>× ＝目録から外します（図面そのものは消えません）。</li>
+</ul>
+<p>※見出し【平面図】を押すと、仕切りの名前ごと打ち替えられます（その仲間ぜんぶが一緒に動きます）。</p>
+<p>※指を置いた道具の名前は、板の上の一行に出ます。</p>
+</section>
+<section id="開き方"><h2>開き方</h2>
+<p>名前をクリック＝その図面を開きます。もう開いている図面は</p>
+<p>開き直さず、そのタブへ移ります（●＝いま見ている図面／</p>
+<p>○＝別のタブで開いている図面）。</p>
+</section>
+<section id="大事なこと"><h2>大事なこと</h2>
+<ul>
+<li>目録は図面を抱え込みません。DXFはいつもの場所にそのまま在りますし、他所のCADでも今までどおり開けます。</li>
+<li>行の × は「目録から外す」だけです。図面そのものは消えません。</li>
+<li>目録（.kadproj）はただのテキストです。メモ帳で開いて手で直せます。「#」で始めて書いたメモも消えずに残ります。手で直したら、足元の「読み直す」を押すと画面に出ます。</li>
+<li>図面が見つからないときは、赤で「見つかりません」と出ます（移動したか、消されたか）。</li>
+</ul>
+</section>
+<section id="開く"><h2>開く（⌘O）</h2>
+<p>DXF・DWG・PDF・JWW・STL が開けます。</p>
+<ul>
+<li>DXF＝この家の母国語。そのまま開いて、そのまま保存。</li>
+<li>DWG＝Mac版のみ、翻訳係（LibreDWG）が居れば開けます。開けないときは、送り主に「DXFで」と頼むのが一番の早道（どのCADにもDXF書き出しは付いています）。</li>
+<li>PDF＝線の入ったPDFなら、図面として取り込めます。束のPDFは「線がいちばん多いページ」を自動で選びます。外れたら小窓に PAGE 4（＝4ページ目に入れ替え）。</li>
+<li>JWW＝Jw_cadの図面。縮尺は実寸へ翻訳して迎えます。</li>
+<li>STL＝立体の部屋で開いて、回して見られます。</li>
+</ul>
+</section>
+<section id="保存"><h2>保存（⌘S）</h2>
+<p>保存はDXFそのもの＝どのCADでも読める形です。</p>
+<p>よその形式（DWG・PDF・JWW）から来た図面は、元を守る</p>
+<p>ため必ず別名で聞きます。元のファイルは無傷です。</p>
+</section>
+<section id="実寸合わせ"><h2>CAL / 実寸合わせ</h2>
+<p>PDFなどから来た図面は、大きさが実寸とは限りません。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>小窓に CAL →Enter（「実寸」でも呼べます）。
+</div></li>
+<li><span class="mark">②</span><div>図面に書いてある寸法（例「1208」）の両端を、スナップでピタリと2点指します。
+</div></li>
+<li><span class="mark">③</span><div>その実際の長さを小窓に打つ→Enter（例 1208）。
+</div></li>
+<li><span class="mark">④</span><div>別の寸法でもう1ヶ所測ると検算＝図面の健康診断。
+</div></li>
+<li><span class="mark">⑤</span><div>空Enter＝実行。図面全体が実寸になります。
+</div></li>
+</ol>
+</section>
+<section id="単位"><h2>単位（物差しの取り替え）</h2>
+<p>他所の図面が違う物差しで描かれていたとき、図面全体に倍率を</p>
+<p>掛けて揃えます。換算の基準は MM＝1作図単位。</p>
+<p>単位 IN＝インチの図面を ×25.4。単位 MM IN＝逆に ÷25.4。</p>
+<p>単位 尺＝尺の図面を ×約303。二つ目を省くと基準の1へ直します。</p>
+<p>使える言葉＝MM・CM・M・IN・FT・YD・MIL・DM・寸・尺・間。</p>
+</section>
+<section id="自動保存"><h2>自動保存</h2>
+<p>描いている間、控えを取っています。万一正しく終われなかった</p>
+<p>ときは、次の起動で回復します（保存は別名で聞きます）。</p>
+<p>それでも、こまめな ⌘S がいちばんの守りです。</p>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十五期二百二十七号窯 ／ 2026-09-02<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>
