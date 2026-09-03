@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8. Drawing: step by step — K'Ad Manual</title><style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26}}
+.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
+a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
+h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.lang{text-align:right;font-size:.9rem;padding:.3em 0}
+.lang b{color:#a95c2a}
+@media print{.lang{display:none}}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.nav .sp{flex:1}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc a{display:inline-block;margin:.15em .9em .15em 0}
+p{margin:.5em 0}
+ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+ol.steps{list-style:none;padding:0;margin:.6em 0}
+ol.steps li{display:flex;gap:.6em;margin:.5em 0}
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
+ol.steps li>div{flex:1;min-width:0}
+figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px}
+figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
+.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+.only-note.on{display:block}
+.chap-list{list-style:none;padding:0}
+.chap-list>li{margin:1em 0}
+.chap-list b{display:block;font-size:1.05rem}
+.chap-list a{display:inline-block;margin:.15em .2em .15em 0}
+.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+@media print{
+  html{font-size:12pt}body{background:#fff;color:#000}
+  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  section{display:block!important;break-inside:avoid}
+  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  a{color:#000}
+}
+</style></head><body><div class="wrap"><div class="lang"><a href="../08.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="07.html">← Key reference</a><a href="09.html">Dimensioning: step by step →</a></nav><h1>8. Drawing: step by step</h1><div class="toc"><a href="#線分">L / LINE</a><a href="#ポリライン">PL / PLINE (polyline)</a><a href="#円">C / CIRCLE</a><a href="#3点円弧">A / ARC (three-point arc)</a><a href="#楕円">EL / ELLIPSE</a><a href="#スプライン">SPL / SPLINE — a free curve</a><a href="#四角">REC / rectangle</a><a href="#ポリゴン">POL / POLYGON (regular polygon)</a><a href="#通り芯">GRID / structural grid lines</a><a href="#文字記入">DT (single-line text): placing one line of text with a box</a><a href="#文字の基準">The justification (the nine squares) can be changed at any time</a><a href="#文字の書体">Fonts: standard, light, bold, or the engraving typeface</a><a href="#段落文字">MT (multiline text): pouring a note with line breaks into a box</a><a href="#段落文字と、ふつうの文字">Choosing between multiline text and ordinary text (DT)</a><a href="#他所の図面から来た段落文字">Multiline text that came from another drawing</a><a href="#引出線">LE / leader</a><a href="#ハッチ">H / HATCH</a><a href="#建築記号">Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</a><a href="#それぞれの姿と、打つ欄">What each one looks like, and the fields you fill</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><main><section id="線分"><h2>L / LINE</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press 線分 (Line) on the ribbon, or type L in the Command Line → Enter.
+<figure><img src="e/08-線分-1.png" alt="①" loading="lazy"><figcaption>①</figcaption></figure>
+</div></li>
+<li><span class="mark">②</span><div>Click the first point (or give an absolute coordinate, 1000,500).
+<figure><img src="e/08-線分-2.png" alt="②" loading="lazy"><figcaption>②</figcaption></figure>
+</div></li>
+<li><span class="mark">③</span><div>Click the second point (@1000,0, or a direction plus a number, work too).
+<figure><img src="e/08-線分-3.png" alt="③" loading="lazy"><figcaption>③</figcaption></figure>
+</div></li>
+<li><span class="mark">④</span><div>It carries straight on. Press Esc when you are done.
+<figure><img src="e/08-線分-4.png" alt="④" loading="lazy"><figcaption>④</figcaption></figure>
+</div></li>
+</ol>
+</section>
+<section id="ポリライン"><h2>PL / PLINE (polyline)</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press ポリライン (Polyline) on the ribbon, or type PL → Enter.
+</div></li>
+<li><span class="mark">②</span><div>Click the first point → the next → the next… (numbers work just as they do for a line).
+</div></li>
+<li><span class="mark">③</span><div>Right-click or Enter finishes it = at that moment it becomes one single object. U takes back one vertex at a time. Esc throws away what you were drawing.
+</div></li>
+</ol>
+<ul>
+<li>The only difference from a line is whether it is one object. Lines are born separately, one per stroke; a polyline gathers into one when you finish.</li>
+<li>Use it for outlines, site boundaries, pipe runs — anything you will later want to select whole.</li>
+<li>Polylines from other CAD programs open as one object and are saved back as one object.</li>
+<li>Trim cuts a polyline <b>directly</b> (and it stays one object). Cut a closed polyline and you get one open polyline. Bulges (arc segments) divide correctly too if the cut falls on one.</li>
+<li>It can also be chosen as a cutting edge (the thing you trim back to, or extend up to).</li>
+<li>Fillet and chamfer <b>work on the corners of a polyline</b>. Click two neighbouring edges and the corner between them becomes rounded (or bevelled). ⚠️ No separate arc is created, so it remains <b>one object</b>. It opens as one piece in other CAD programs too.</li>
+<li>Offset (O) fattens a polyline <b>whole, in parallel</b>.</li>
+<li>Divide (DIV) spaces points <b>by equal arc length along the whole run</b>. A closed shape gets exactly count points; an open one gets count-1, with none at the two ends.</li>
+</ul>
+</section>
+<section id="円"><h2>C / CIRCLE</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Type C → Enter. Click the centre.
+</div></li>
+<li><span class="mark">③</span><div>Click a point the circumference passes through. To set the radius by number, type 4000, R2000 or D8000 (diameter) in the Command Line.
+</div></li>
+</ol>
+</section>
+<section id="3点円弧"><h2>A / ARC (three-point arc)</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press 円弧 (Arc) on the ribbon, or type A → Enter.
+</div></li>
+<li><span class="mark">②</span><div>Click three times: start point → a point the arc passes through → end point. From the third point on, the arc follows your cursor. Esc goes back one step = if you are unsure of the end point you can place the through point again.
+</div></li>
+</ol>
+<ul>
+<li>Snapping works on endpoints and intersections, so connecting arcs land exactly.</li>
+<li>When tracing a PDF underlay, three taps along the curve are all it takes.</li>
+</ul>
+</section>
+<section id="楕円"><h2>EL / ELLIPSE</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press 楕円 (Ellipse) on the ribbon, or type EL → Enter.
+</div></li>
+<li><span class="mark">②</span><div>Click three times: the end of one axis → the other end of that axis → the half-width of the other axis. From the third point on, the ellipse follows your cursor. Esc and right-click each go back one step.
+</div></li>
+</ol>
+<ul>
+<li>Take the third point longer than the axis and that becomes the major axis, standing upright (the longer one is automatically the major axis — the same rule as the original).</li>
+<li>It is saved as a DXF ELLIPSE just as it is, so it opens as an ellipse in other CAD programs.</li>
+</ul>
+</section>
+<section id="スプライン"><h2>SPL / SPLINE — a free curve</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press スプライン (Spline) on the ribbon, or type SPL → Enter.
+</div></li>
+<li><span class="mark">②</span><div>Click, one after another, the points the curve should pass through (three or more). A smooth curve follows your cursor as you go.
+</div></li>
+<li><span class="mark">③</span><div>Right-click or Enter finishes it = one single curve. U = take back one point / Esc = throw away what you were drawing (the same as PL).
+</div></li>
+</ol>
+<ul>
+<li>The curve passes exactly through every point you clicked (the way a French curve is used).</li>
+<li>The points you clicked (the fit points) <b>can be caught with snap</b> afterwards. Grid lines or other lines can be brought exactly onto them.</li>
+<li>Use it for site contours, road alignments, decorative curves.</li>
+<li>It is saved as a DXF SPLINE just as it is, so it opens as one curve elsewhere, and the fit points travel with it, so it can be edited there as it is.</li>
+</ul>
+</section>
+<section id="四角"><h2>REC / rectangle</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Type REC → Enter. First point → click the opposite corner. To set it by size, give 700,700 (width,height) instead of the second point.
+</div></li>
+</ol>
+<ul>
+<li>REC C 10 = a rectangle chamfered 10 / REC F 15 = corners rounded R15. Type 0 to clear it.</li>
+<li>A rectangle is <b>one whole polyline</b>. Click any edge and the whole rectangle is selected (one-click selection). The four corners and the four edge midpoints all still snap, exactly as before. Offset (O) offsets the whole rectangle in parallel; Divide (DIV) divides the perimeter into equal parts. On the day you want just one edge, use X (explode).</li>
+</ul>
+</section>
+<section id="ポリゴン"><h2>POL / POLYGON (regular polygon)</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press ポリゴン (Polygon) on the ribbon, or type POL → Enter. POL 6 = a hexagon (you can settle the number of sides first).
+</div></li>
+<li><span class="mark">②</span><div>Click the centre. Click the point on the radius (a number + Enter also works).
+</div></li>
+</ol>
+<ul>
+<li>While you draw, a <b>bar</b> appears at the bottom of the screen. You can choose the number of sides there (3 4 5 6 8 10 12) and whether it is inscribed or circumscribed. ← → also step the number of sides up and down.</li>
+<li><b>Inscribed</b> = the corners sit on the circle (the radius runs from the centre to a corner).</li>
+<li><b>Circumscribed</b> = the edges touch the circle (the radius runs from the centre to an edge). ⚠️ The “across flats” size of a hexagon bolt or nut is circumscribed. For a nut of 24 across flats, that is circumscribed with radius 12. Type 12 as inscribed and you get a different, smaller part.</li>
+<li>What is born is <b>one closed polyline</b> (the same as a rectangle). It selects in one click, and hatch and offset work on it as they are.</li>
+<li>Its orientation is decided by where you take the radius point (aim straight up and a vertex points up, and so on).</li>
+</ul>
+</section>
+<section id="通り芯"><h2>GRID / structural grid lines</h2>
+<figure><img src="e/08-通り芯-0.png" alt="Overview" loading="lazy"><figcaption>Overview</figcaption></figure>
+<ol class="steps">
+<li><span class="mark">①</span><div>Press 通り芯 (Grid) on the ribbon, or type GRID → Enter.
+<figure><img src="e/08-通り芯-1.png" alt="①" loading="lazy"><figcaption>①</figcaption></figure>
+</div></li>
+<li><span class="mark">②</span><div>Type the spacings for the X direction (the grid lines running left to right) → Enter. For example: 1820*4, 910 = 1820 four times, then 910 (spacing*count).
+<figure><img src="e/08-通り芯-2.png" alt="②" loading="lazy"><figcaption>②</figcaption></figure>
+</div></li>
+<li><span class="mark">③</span><div>The Y direction (the lines running up and down) is written the same way → Enter. An empty Enter = one line only in that direction.
+<figure><img src="e/08-通り芯-3.png" alt="③" loading="lazy"><figcaption>③</figcaption></figure>
+</div></li>
+</ol>
+<p>The whole grid stands up in one go. The bubbles (X1, Y1) are 9 mm across on paper (JIS A 0150). On the drawing they are placed at that size times the scale denominator in Page Setup (1:50 gives 450 across). If the size is wrong, correct the Page Setup scale and draw them again.</p>
+</section>
+<section id="文字記入"><h2>DT (single-line text): placing one line of text with a box</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Type DT → Enter (DT 5 = start at text height 5, DT 右下 = specify the justification). The 【文字】 (Text) button in the 作成 (Create) group does the same.
+</div></li>
+<li><span class="mark">②</span><div>Take the box the text will sit in with two opposite corners (<b>the height of the box becomes the text height</b>; the corners can be taken exactly with snap). 🔑 Draw a rectangle first, select it, then press DT = that rectangle becomes the box (and the rectangle stays). 🔑 Inside a table cell or a title block, use 【枠の中をクリック】 (click inside the box) on the bar = one press and it becomes the box.
+</div></li>
+<li><span class="mark">③</span><div>Type your line on the spot and press <b>Enter to accept</b> (the ✓ button, or a click outside the box, do the same). Esc = cancel. There is no line break here (for notes with line breaks, use MT).
+</div></li>
+<li><span class="mark">④</span><div>The text attaches to the box exactly as the justification says (【右下】 bottom-right puts it at the bottom-right of the box, 【中央】 centre puts it dead centre).
+</div></li>
+</ol>
+</section>
+<section id="文字の基準"><h2>The justification (the nine squares) can be changed at any time</h2>
+<ul>
+<li>Press one of the nine squares on the bar below the box and it changes even while you are typing. The half-typed text moves inside the box before your eyes (what you are shown is what you get).</li>
+<li>The text height can also be corrected at any time in the field on the bar (expressions work too: 7*2).</li>
+<li>🔑 The height field is in <b>paper mm</b> from the start (one of the two choices on the bar; it is the default). Type 3.5 and on a 1:50 drawing it is placed as 175, and prints at 3.5 mm on paper. Multiplying by the scale is the tool's job. The bar shows the result: “＝図面では 175（1:50）” (= 175 on the drawing). This is a translation <b>at the moment you type</b>; the text you placed stays at 175 (the tool does not touch a size a person has decided). Change the scale later and the text stays 175 = if you want text that follows the paper instead, switch its 大きさ (size) to 【紙のmm】 in Properties (PR), for the selected text only. To type in drawing units as before, press 【図面の単位】 on the bar.</li>
+<li>Text you have placed can be retyped by double-clicking it (rotated text keeps its angle).</li>
+</ul>
+</section>
+<section id="文字の書体"><h2>Fonts: standard, light, bold, or the engraving typeface</h2>
+<ul>
+<li>The Linetype / Dimension / Text bar (just under the ribbon) always carries a 【書体】 (Font) field, run the same way as the layer field. Press ▼ and a list drops down, each name drawn in its own face. Choose one and the text you type from now on uses it.</li>
+<li>Select text you have already placed and then choose from the list, and that text changes font (any number at once; U undoes it). The field turns pale blue to announce the font of the selected text. It is also shown on the 書体 (Font) row of the Properties panel; press it to move to the next font.</li>
+<li>Press the 【書体】 field on the bar and it cycles through the shelf one by one (it changes even while you are typing).</li>
+<li>The 文字の書体 (Text font) row in the Page Setup panel also lets you press a name and choose (again, each drawn in its own face).</li>
+<li>In the Command Line: 書体 機械彫刻 (or FONT kikai in English letters). 書体 ? lists what is on the shelf.</li>
+<li>機械彫刻 (kikai) = a face reproducing the standard 1970s Japanese engraving-machine lettering (f.k Kikai Chokoku, by Kim). It has no φ, ±, ⌒ or ∠ and lacks some kanji, so those characters alone appear in the standard face.</li>
+<li>BIZ UDGothic and BIZ UDMincho (Morisawa, OFL) are included as well (Mac and Windows; they are not carried in the web version).</li>
+<li>The usual faces on this machine also appear under ▼ (Mac = Hiragino Kaku Gothic, Hiragino Mincho / Windows = MS Gothic, MS Mincho, Meiryo, Yu Gothic). Faces your machine does not have do not appear.</li>
+<li>Fonts named by drawings from elsewhere (ＭＳ ゴシック, Arial and so on) are drawn in that face if this machine has it, and substituted with the standard face if not (the same convention as the original's font substitution). ※ The web version has only the fonts shipped with it.</li>
+<li>To use your own font, press “＋ 書体を足す…” (Add a font…) at the foot of the ▼ list, put a TTF or OTF into the 書体 folder that opens, and restart K'Ad (it then appears under ▼; in the Command Line, 書体 filename).</li>
+<li>The font you chose is saved as the drawing's text style (STYLE) = it opens under the same font name in other CAD programs.</li>
+</ul>
+</section>
+<section id="段落文字"><h2>MT (multiline text): pouring a note with line breaks into a box</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Type MT → Enter (MT 5 = start at text height 5). The 【段落】 (Paragraph) button in the 作成 (Create) group does the same. 🔑 <b>If you have already drawn a rectangle, select it and then press MT</b> = that rectangle becomes the box. (Draw it by number — `REC 590,300` — and the box is exact.) ⚠️ The selected rectangle <b>stays where it is</b> (it was only borrowed as a box). Use the lines of a title block or a table as the box and not one line is lost. 🔑 <b>To write inside a table cell or a title block, use 【枠の中をクリック】 (click inside the box) on the bar</b> (Tab does the same). One press inside that room and the enclosed area becomes the box. (The rules of a table are continuous lines, so a cell cannot be selected as an “object”. That is why you point at <b>the room</b> instead.)
+</div></li>
+<li><span class="mark">②</span><div>Click two opposite corners for the box the text will flow into. ⚠️ Only the <b>width</b> is taken from the box (that is the wrapping width). The height grows downward as the text grows. The text height is not decided by the height of the box: you start typing at the value in the 【字高】 (height) field on the bar (3.5 to begin with). Once the box is set, the bar carries a 【幅】 (width) and a 【字高】 (height) field. Press either and retype it on the spot.
+</div></li>
+<li><span class="mark">③</span><div>Type your text into the box. · Enter = <b>a line break</b> (it means something different from Enter in single-line text) · Pressing ↓ on the very last line also breaks the line · Characters that run past the width wrap automatically as you type (you see them wrapping exactly as they will once placed)
+</div></li>
+<li><span class="mark">④</span><div>You can select what you want to correct, just as in a word processor. · Click inside the box = the caret moves there · Press and drag = <b>a selection</b> (what turns blue is what is selected) · Shift + arrow keys, Home and End extend the selection too · Ctrl+A (⌘A on Mac) = select the whole text · Type with a selection live and it is <b>replaced</b>; BackSpace or Delete <b>removes just that much</b> ⚠️ If you drag out past the box, the selection carries on (come back and it joins up again).
+</div></li>
+<li><span class="mark">⑤</span><div>Formatting (bold, italic, underline, overline, strikethrough) lives on the bar below the box. · Select first, then press = it applies <b>to that much</b> (press again to remove it) · Press with nothing selected = it applies <b>to what you type next</b> (as in a word processor) · Bold is Ctrl+B, italic Ctrl+I, underline Ctrl+U (⌘B, ⌘I, ⌘U on Mac). Whatever is lit is the current state ⚠️ Bold may not come out bold in other CAD programs (DXF expresses bold through the name of the font, and we chose <b>not to invent a font name</b> on your behalf). · Italic is drawn by leaning the characters 15° (the spacing does not change) · Strikethrough is used to mark a correction or a deletion ⚠️ Formatting is saved exactly as DXF prescribes, so it appears in other CAD programs as it should.
+</div></li>
+<li><span class="mark">⑥</span><div>The size of the text can be changed on the spot in the 【字高】 (height) field at the right of the bar. · The field is in 【紙のmm】 (paper mm) by default (as in DT; the two-way choice on the bar switches it to 【図面の単位】, drawing units). · Press it and the current value is already there (you correct from where it stands) · Expressions work (40/2 → 20). Enter accepts, Esc cancels ⚠️ Change it and the wrapping changes with it (the width of the box does not).
+</div></li>
+<li><span class="mark">⑦</span><div><b>Which corner of the box the text lines up to</b> is set by the nine squares under 【基準】 (justification) at the right of the bar. · That corner of the text comes to the point you pressed (nine of them: top-left, centre, bottom-right…) · Choose centre and it sits dead centre in a table cell · Choose a bottom one and the text grows <b>upward</b> (a top one and it grows down, a middle one and it grows both ways) ⚠️ The default is 【左上】 (top-left). You can change it at any time while typing. ⚠️ It does not appear when you are retyping (the corner it already has is kept).
+</div></li>
+<li><span class="mark">⑧</span><div>There are three ways to finish. They all do the same thing. · Press 【✓ 確定】 (accept) below the box · Ctrl+Enter (⌘+Enter on Mac) · Click outside the box To give up, press Esc (right-click does the same).
+</div></li>
+<li><span class="mark">⑨</span><div>Even after placing it, <b>you can retype it</b>. · <b>Double-click</b> the paragraph = the box opens again and you carry on from where it stands · Select it and type DDEDIT (or ED) in the Command Line for the same · The 【文字を編集】 (Edit text) item in the right-click menu opens it too · Finish it the same way as when typing new (✓, Ctrl+Enter, or outside the box) · Esc closes it unchanged ⚠️ You cannot accept an empty one (it stays as it was). To remove it, select it and press Delete. ⚠️ A rotated paragraph cannot be opened yet (explode it with X and it becomes text line by line).
+</div></li>
+</ol>
+</section>
+<section id="段落文字と、ふつうの文字"><h2>Choosing between multiline text and ordinary text (DT)</h2>
+<ul>
+<li>A single line — a symbol, a number, a note beside a dimension → DT</li>
+<li>A note of several lines, a specification, a legend → MT With MT, change the width later and the wrapping follows.</li>
+</ul>
+</section>
+<section id="他所の図面から来た段落文字"><h2>Multiline text that came from another drawing</h2>
+<ul>
+<li>A single block of note text containing line breaks (MTEXT) from another CAD program opens <b>as one block</b>, and is given back as one block when you save. The font and height it names are not used here, but we hold them for you and return them.</li>
+<li>The wrapping width is held too, so it <b>wraps in the same places as it did in the other program</b>.</li>
+<li>Touch it and it announces itself as “段落文字 3行” (multiline text, 3 lines). Touch any line and the whole is caught (move, copy and rotate all work as they are).</li>
+<li>The text size can be changed (select it, right-click → text height).</li>
+<li><b>You can retype it</b> (double-click). Formatting we do not use, such as the font it names, is handed back untouched, so correcting it does not thin the drawing. ⚠️ A paragraph carrying formatting we cannot handle yet (colour, height multipliers and so on) is <b>not opened, and the reason is given on the spot</b> — correcting it would lose that formatting. In that case, explode it with X into line-by-line text and retype each line (⚠️ exploding loses the font and height it named). ⚠️ Rotated paragraphs, and paragraphs whose insertion corner is not the top-left, cannot be opened yet either.</li>
+</ul>
+</section>
+<section id="引出線"><h2>LE / leader</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Type LE → Enter.
+</div></li>
+<li><span class="mark">②</span><div>Click the tip of the arrow (it snaps to the hole or corner you want to point at).
+</div></li>
+<li><span class="mark">③</span><div>Click the elbow (the line lands horizontally from there).
+</div></li>
+<li><span class="mark">④</span><div>Give the text height with one more point (move left or right and the side the words come out on swaps; Enter = the previous height).
+</div></li>
+<li><span class="mark">⑤</span><div>Type the words and press Enter.
+</div></li>
+</ol>
+</section>
+<section id="ハッチ"><h2>H / HATCH</h2>
+<ol class="steps">
+<li><span class="mark">①</span><div>Type H → Enter (the ハッチ (Hatch) button on the ribbon does the same).
+</div></li>
+<li><span class="mark">②</span><div><b>Click once inside</b> the area you want filled. That alone sets the machine looking for the shape that encloses that place, and fills it. If circles or rectangles float inside it, they are left out as islands.
+</div></li>
+</ol>
+<ul>
+<li>Shapes with rounded or chamfered corners, rooms made of crossing lines, rough sketches with corners still overshooting — all of them fill with one click inside.</li>
+<li>It searches <b>only the part visible on the screen</b>. Bring the area you want filled into view before you press.</li>
+</ul>
+<p>◆ When the shape is not closed (there is a gap, or the lines do not meet), it says 囲まれていません (not enclosed) and the point you pressed becomes the first point. Carry on with 【click the corners in order → Enter】 to enclose it and fill (snapping works; right-click takes back one point). Over a sketch, or where lines are missing, this way is the sure one.</p>
+<ul>
+<li>The pattern is chosen on the <b>bar</b> that appears at the very bottom of the screen. Nine samples sit there; just press one. ← → step through them as well. The moment you press, the preview of the area you are enclosing takes on that pattern = you can compare them on the drawing itself, before filling. (The bar appears only during the hatch command and withdraws when you finish.)</li>
+<li>H ? also lists what is available (and H ANSI37 names one directly).</li>
+<li>The fineness of the pattern (the pitch) is set with 【ピッチ】 on the bar. The default is 【自動】 (automatic) = the scale denominator becomes the multiplier directly (the patterns are defined in paper mm, so 1:20 means ×20 to give the paper look. It announces “＝紙で 12.7mm” — 12.7 mm on paper). Type a number to set it by hand (expressions work). A hatch takes the value in force when you place it, and does not move if you change the scale later.</li>
+<li>From the Command Line: H ANSI31 20 = hatching at a multiplier of 20 (raise the number and the pattern opens out).</li>
+<li>If it says the pattern would draw no lines, or too many and it stopped, correct the multiplier (the history says how many lines).</li>
+</ul>
+</section>
+<section id="建築記号"><h2>Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</h2>
+<p>The symbols familiar from construction drawings can be typed and placed on the spot.</p>
+<p>There are three ways in: 【記号】 (Symbol) in the 作成 (Create) group / 記号 in the Command Line / the flick shelf.</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>A <b>bar</b> appears at the very bottom of the screen. From the left: beam tag, column tag, footing tag, mat-slab tag, level mark, section arrow, drawing-title box. Each shows a sample, so press to choose.
+</div></li>
+<li><span class="mark">②</span><div>Set the <b>paper text height</b> and the <b>scale</b> in the fields on the bar. The scale defaults to the one in <b>Page Setup</b> (the scale that fits the paper, if it is automatic; the named value if it is named). It reads the same single scale as dashed lines, dimensions and hatching = there is only one place to correct. On entering the tool, the history announces “ページ設定の縮尺に合わせました” (set to the Page Setup scale). If it is wrong, correct the scale in Page Setup and dashed lines, dimensions, hatching and symbols all fall into place together. To place symbols at a different scale in this drawing alone, use the field on the bar or 記号 1:50. On paper (in a layout) it is always 1:1. ⚠️ For a drawing imported from a PDF (1 unit = 1 mm on paper), name 1:1 in Page Setup. · If the size is still wrong, you can correct it after placing with 【拡大縮小（SC）】 (Scale). A symbol is made of ellipses, lines and text, so it behaves like any ordinary object. A symbol is sized by <b>how many millimetres it should be on paper</b> (3.5 is the usual JIS value). The drawing is at full size, so on a 1:50 drawing it is placed 50 times larger. The bar shows the result of that multiplication too (= 175 on the drawing). ⚠️ Get this wrong and the symbols alone come out wildly large or small.
+</div></li>
+<li><span class="mark">③</span><div>Click where it goes. Snapping works, so it drops exactly onto a grid intersection.
+</div></li>
+<li><span class="mark">④</span><div>Type it there and then. Tab = the next field / Shift+Tab = the previous / ↑↓ = the field above or below. As you type, the ellipse or the box grows to fit what is in it.
+</div></li>
+<li><span class="mark">⑤</span><div>✓ or Ctrl(⌘)+Enter accepts. Esc = cancel (the drawing is unchanged). After placing, <b>you can carry straight on</b> = click the next place. Finish with a right-click or Esc.
+</div></li>
+</ol>
+</section>
+<section id="それぞれの姿と、打つ欄"><h2>What each one looks like, and the fields you fill</h2>
+<ul>
+<li>Beam tag　　= an ellipse divided into three by two lines. Five fields: top of the foundation beam (outside the tag, above) / top of concrete / beam mark / beam width * depth (formwork size) / added thickness (outside the tag, below).</li>
+<li>Footing tag　= the footing mark on the left, and two rows on the right (bottom of footing / footing thickness).</li>
+<li>Mat-slab tag　= a rectangle divided into three by two lines (top level / mark / thickness).</li>
+<li>Column tag　　= a rectangular box with three rows (column mark / section / reinforcement). No dividing lines.</li>
+<li>Level mark　　= a ▽ with a horizontal line. The apex of the ▽ is the position of that level itself.</li>
+<li>Section arrow　= the mark (A, B) + the arrow + the right-angled end of the cutting line. The shape was built by measuring a real drawing. Draw the cutting line itself with a line (L) = its length differs from drawing to drawing, so the symbol does not carry it.</li>
+<li>Drawing-title box　= a rectangle with the drawing name.</li>
+</ul>
+<ul>
+<li>A symbol you place becomes <b>ellipses, lines and text</b>. No special “symbol” object lives in the drawing = move, rotate, scale, trim and changing layers all work on it exactly as usual. It opens as it is in other CAD programs too.</li>
+<li>One press of U removes a whole symbol at once.</li>
+<li>For the section arrow, the <b>direction of view</b> and the <b>head</b> are chosen on the bar below.</li>
+</ul>
+<p>◇ Direction of view = four (up, right, down, left) Choose the section arrow and four arrow pictures appear on the bar below. Just press one. · The way the arrowhead points = the direction you look at the drawing · The end of the cutting line folds 90° clockwise from that direction · The mark (A, B) stays upright whichever direction you choose = because that is how real drawings do it. To cut on a slant, place it and then turn it with Rotate (RO). ◇ Head (the arrowhead) = three · Single barb = the shape measured from a real construction drawing (the default). The axis of the cutting line serves as one side of the head. · Open arrow = a slim symmetrical triangle. · Hollow triangle = a stubby triangle (the same apex angle as the arrow on a real leader). None of them is “the correct one” — the drafting standards do not go as far as prescribing the <b>shape</b> of the arrow on a cutting line (JIS A 0150 and JIS Z 8316 both require the arrow, but neither prescribes its shape). Choose to match the practice of your office and your drawing.</p>
+<ul>
+<li>From the Command Line you can name the type, the scale, the paper text height and the arrow direction directly: 記号 梁 / 記号 1:50 / 記号 3.5 / 記号 左.</li>
+<li>The grid bubbles (the circles marked X1, Y1) are not placed from this bar; the grid command (GRID) raises them together with the lines (the circles are 9 mm across on paper = decided by the Page Setup scale).</li>
+</ul>
+</section></main><footer>The words in this manual are the same as the manual inside K'Ad itself (the book button in the 案内 group of the ribbon).<br>Correct the manual there and this one is corrected the same day.<span class="noprint"><br>十六期三号窯 ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a></span></footer></div><script>
+// 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
+// 印刷のときは CSS が全部の節を出す。
+(function(){
+  var note=document.getElementById('only');
+  function apply(){
+    var id=decodeURIComponent(location.hash.replace(/^#/,''));
+    var secs=document.querySelectorAll('main section');
+    var hit=id&&document.getElementById(id);
+    secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
+    if(note) note.classList.toggle('on',!!hit);
+    if(hit) window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',apply); apply();
+})();
+</script></body></html>

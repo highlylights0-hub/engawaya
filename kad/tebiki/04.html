@@ -12,6 +12,9 @@ body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
 a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
 h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
 h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.lang{text-align:right;font-size:.9rem;padding:.3em 0}
+.lang b{color:#a95c2a}
+@media print{.lang{display:none}}
 .nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
 .nav .sp{flex:1}
 .toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
@@ -41,7 +44,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
   figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="03.html">← 画面を動かす</a><a href="05.html">点と分割点 →</a></nav><h1>4. 数字の打ち方（座標と距離）</h1><div class="toc"><a href="#二つの打ち場">二つの打ち場</a><a href="#絶対座標と相対座標">絶対座標と相対座標</a><a href="#距離入力">距離入力（カーソル脇）</a><a href="#1点目を絶対座標で置きたいとき">1点目を絶対座標で置きたいとき</a><a href="#カーソル脇の欄は三段">カーソル脇の欄は三段（↑↓で選びます）</a><a href="#基点そのものをずらす">基点そのものをずらす（@）</a><a href="#計算しながら打てます">計算しながら打てます（電卓）</a><a href="#小窓のもうひとつの顔">小窓のもうひとつの顔</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="二つの打ち場"><h2>二つの打ち場</h2>
+</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/04.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="03.html">← 画面を動かす</a><a href="05.html">点と分割点 →</a></nav><h1>4. 数字の打ち方（座標と距離）</h1><div class="toc"><a href="#二つの打ち場">二つの打ち場</a><a href="#絶対座標と相対座標">絶対座標と相対座標</a><a href="#距離入力">距離入力（カーソル脇）</a><a href="#1点目を絶対座標で置きたいとき">1点目を絶対座標で置きたいとき</a><a href="#カーソル脇の欄は三段">カーソル脇の欄は三段（↑↓で選びます）</a><a href="#基点そのものをずらす">基点そのものをずらす（@）</a><a href="#計算しながら打てます">計算しながら打てます（電卓）</a><a href="#小窓のもうひとつの顔">小窓のもうひとつの顔</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="二つの打ち場"><h2>二つの打ち場</h2>
 <ul>
 <li>小窓（画面下・名札は「小窓：CommandLine」）＝言葉と数字の受付。</li>
 <li>カーソル脇の欄＝距離の受付（距離DYNが入のとき）。</li>
@@ -98,7 +101,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <section id="小窓のもうひとつの顔"><h2>小窓のもうひとつの顔</h2>
 <p>円の半径は 4000・R2000・D8000（直径）のようにも打てます。</p>
 <p>移動・複製の行き先も @1000,0 のように打てます。</p>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br> ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期三号窯 ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){

@@ -12,6 +12,9 @@ body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
 a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
 h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
 h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.lang{text-align:right;font-size:.9rem;padding:.3em 0}
+.lang b{color:#a95c2a}
+@media print{.lang{display:none}}
 .nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
 .nav .sp{flex:1}
 .toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
@@ -41,7 +44,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
   figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="07.html">← キーの一覧</a><a href="09.html">寸法の手順 →</a></nav><h1>8. 作図の手順</h1><div class="toc"><a href="#線分">L / LINE（線分）</a><a href="#ポリライン">PL / PLINE（ポリライン）</a><a href="#円">C / CIRCLE（円）</a><a href="#3点円弧">A / ARC（3点円弧）</a><a href="#楕円">EL / ELLIPSE（楕円）</a><a href="#スプライン">SPL / SPLINE（スプライン）＝自由な曲線</a><a href="#四角">REC / 四角</a><a href="#ポリゴン">POL / ポリゴン（正多角形）</a><a href="#通り芯">GRID / 通り芯</a><a href="#文字記入">DT（文字記入）＝一行の文字を、枠で置く</a><a href="#文字の基準">文字の基準（九マス）は、いつでも変えられます</a><a href="#文字の書体">文字の書体＝標準・細・太・機械彫刻から選べます</a><a href="#段落文字">MT（段落文字）＝改行のある注記を、枠の中へ流し込む</a><a href="#段落文字と、ふつうの文字">段落文字と、ふつうの文字（DT）の使い分け</a><a href="#他所の図面から来た段落文字">他所の図面から来た段落文字</a><a href="#引出線">LE / 引出線</a><a href="#ハッチ">H / ハッチ</a><a href="#建築記号">建築記号（記号）＝梁・柱・基礎・耐圧盤・レベル・矢視・図面名</a><a href="#それぞれの姿と、打つ欄">それぞれの姿と、打つ欄</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="線分"><h2>L / LINE（線分）</h2>
+</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/08.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="07.html">← キーの一覧</a><a href="09.html">寸法の手順 →</a></nav><h1>8. 作図の手順</h1><div class="toc"><a href="#線分">L / LINE（線分）</a><a href="#ポリライン">PL / PLINE（ポリライン）</a><a href="#円">C / CIRCLE（円）</a><a href="#3点円弧">A / ARC（3点円弧）</a><a href="#楕円">EL / ELLIPSE（楕円）</a><a href="#スプライン">SPL / SPLINE（スプライン）＝自由な曲線</a><a href="#四角">REC / 四角</a><a href="#ポリゴン">POL / ポリゴン（正多角形）</a><a href="#通り芯">GRID / 通り芯</a><a href="#文字記入">DT（文字記入）＝一行の文字を、枠で置く</a><a href="#文字の基準">文字の基準（九マス）は、いつでも変えられます</a><a href="#文字の書体">文字の書体＝標準・細・太・機械彫刻から選べます</a><a href="#段落文字">MT（段落文字）＝改行のある注記を、枠の中へ流し込む</a><a href="#段落文字と、ふつうの文字">段落文字と、ふつうの文字（DT）の使い分け</a><a href="#他所の図面から来た段落文字">他所の図面から来た段落文字</a><a href="#引出線">LE / 引出線</a><a href="#ハッチ">H / ハッチ</a><a href="#建築記号">建築記号（記号）＝梁・柱・基礎・耐圧盤・レベル・矢視・図面名</a><a href="#それぞれの姿と、打つ欄">それぞれの姿と、打つ欄</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="線分"><h2>L / LINE（線分）</h2>
 <ol class="steps">
 <li><span class="mark">①</span><div>リボン「線分」か、小窓に L →Enter。
 <figure><img src="e/08-線分-1.png" alt="①" loading="lazy"><figcaption>①</figcaption></figure>
@@ -307,7 +310,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li>小窓からは 記号 梁／記号 1:50／記号 3.5／記号 左 のように、種類・縮尺・紙の字高・矢視の向きを直に指定できます。</li>
 <li>通り芯の符号（X1・Y1 の丸）は、この帯ではなく通り芯（GRID）が芯と一緒に立てます（丸は紙で直径 9mm＝ページ設定の縮尺で決まります）。</li>
 </ul>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br> ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期三号窯 ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){

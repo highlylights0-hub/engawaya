@@ -12,6 +12,9 @@ body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
 a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
 h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
 h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+.lang{text-align:right;font-size:.9rem;padding:.3em 0}
+.lang b{color:#a95c2a}
+@media print{.lang{display:none}}
 .nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
 .nav .sp{flex:1}
 .toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
@@ -41,7 +44,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
   figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="13.html">← 開く・保存・実寸</a><a href="15.html">立体（3DとSTL） →</a></nav><h1>14. 印刷（紙へ刷る）</h1><div class="toc"><a href="#レイアウト">レイアウト（紙の空間）</a><a href="#紙の上では、道具が一手ずつ案内します">紙の上では、道具が一手ずつ案内します（追従するUI）</a><a href="#ビューポート">ビューポート（MV）＝紙の上に置く、図面を映すカメラ</a><a href="#窓の中の注記は、大筋が自動です">窓の中の注記は、大筋が自動です</a><a href="#さらに、窓ごとに微調整できる">さらに、窓ごとに微調整できる＝ビューポートの板（VP）</a><a href="#映す範囲を絞る">映す範囲を絞る＝X1〜X2・Y1〜Y2 の通りだけ</a><a href="#窓の中の破線のきざみ">窓の中の破線のきざみ</a><a href="#モデルの図面を、紙へ切り出して貼る">モデルの図面を、紙へ切り出して貼る</a><a href="#手元の三角スケールに合わせる">手元の三角スケールに合わせる</a><a href="#窓とのちがい">窓とのちがい</a><a href="#貼った注記が、大きすぎる">貼った注記が、大きすぎる／小さすぎる時</a><a href="#図枠">図枠（ずわく）＝棚から呼んで、用紙に合わせる</a><a href="#紙を何枚でも">紙を何枚でも</a><a href="#プレビューを開く">プレビューを開く</a><a href="#用紙と縮尺">用紙と縮尺</a><a href="#範囲">範囲（窓で刷る）</a><a href="#紙の上の身だしなみ">紙の上の身だしなみ</a><a href="#紙になるとき">紙になるとき</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="レイアウト"><h2>レイアウト（紙の空間）</h2>
+</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/14.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="13.html">← 開く・保存・実寸</a><a href="15.html">立体（3DとSTL） →</a></nav><h1>14. 印刷（紙へ刷る）</h1><div class="toc"><a href="#レイアウト">レイアウト（紙の空間）</a><a href="#紙の上では、道具が一手ずつ案内します">紙の上では、道具が一手ずつ案内します（追従するUI）</a><a href="#ビューポート">ビューポート（MV）＝紙の上に置く、図面を映すカメラ</a><a href="#窓の中の注記は、大筋が自動です">窓の中の注記は、大筋が自動です</a><a href="#さらに、窓ごとに微調整できる">さらに、窓ごとに微調整できる＝ビューポートの板（VP）</a><a href="#映す範囲を絞る">映す範囲を絞る＝X1〜X2・Y1〜Y2 の通りだけ</a><a href="#窓の中の破線のきざみ">窓の中の破線のきざみ</a><a href="#モデルの図面を、紙へ切り出して貼る">モデルの図面を、紙へ切り出して貼る</a><a href="#手元の三角スケールに合わせる">手元の三角スケールに合わせる</a><a href="#窓とのちがい">窓とのちがい</a><a href="#貼った注記が、大きすぎる">貼った注記が、大きすぎる／小さすぎる時</a><a href="#図枠">図枠（ずわく）＝棚から呼んで、用紙に合わせる</a><a href="#紙を何枚でも">紙を何枚でも</a><a href="#プレビューを開く">プレビューを開く</a><a href="#用紙と縮尺">用紙と縮尺</a><a href="#範囲">範囲（窓で刷る）</a><a href="#紙の上の身だしなみ">紙の上の身だしなみ</a><a href="#紙になるとき">紙になるとき</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="レイアウト"><h2>レイアウト（紙の空間）</h2>
 <p>製図台の下に、もう一段タブがあります＝モデル｜レイアウト1。</p>
 <ul>
 <li>モデル＝実物大で図面を描く所。一つだけです。（図面の現物は、いつでもここにあります）</li>
@@ -61,10 +64,10 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <p>レイアウトのタブへ移ると、白い紙の上に小さな札が出ます。</p>
 <p>書いてあるのは、いま一手だけ。済むと、札は自分で次へ進みます。</p>
 <ul>
-<li>\u2460 リボンの「窓」を押す　→ リボンの「窓」が琥珀に光ります</li>
-<li>\u2461 紙の上で対角の二点をクリック</li>
-<li>\u2462 窓をクリックして選ぶ　→ 窓そのものが光ります</li>
-<li>\u2463 下の帯で、縮尺・映す範囲・ロック　→ 画面の下の帯が光ります</li>
+<li>① リボンの「窓」を押す　→ リボンの「窓」が琥珀に光ります</li>
+<li>② 紙の上で対角の二点をクリック</li>
+<li>③ 窓をクリックして選ぶ　→ 窓そのものが光ります</li>
+<li>④ 下の帯で、縮尺・映す範囲・ロック　→ 画面の下の帯が光ります</li>
 </ul>
 <p>光っている所が、次に押す所です。札の中の橙の一行と、同じ色です。</p>
 <ul>
@@ -89,7 +92,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li>掴んで動かす（中ボタン、またはスペース＋ドラッグ）＝映す場所が動きます。⚠️ホイールは、窓の上でも<b>いつも紙</b>が拡大縮小します。だから、うっかり回して縮尺が狂う、ということが起きません。</li>
 <li>ロック＝構図と縮尺に錠をかけます（押せば外せます）。</li>
 </ul>
-<p>⚠️窓の中の図面は、ここでは直せません。モデルのタブで直します。窓は「カメラ」なので、映っているものを触るのではなく、カメラの設定（縮尺・映す場所）を直す、という考え方です。※ほかのCADで「窓の中に入る」と呼ばれる操作にあたるものは、K\'Adでは「窓を選ぶ」の一手です。いま自分がどちらの空間に居るのか、分からなくなることがありません。</p>
+<p>⚠️窓の中の図面は、ここでは直せません。モデルのタブで直します。窓は「カメラ」なので、映っているものを触るのではなく、カメラの設定（縮尺・映す場所）を直す、という考え方です。※ほかのCADで「窓の中に入る」と呼ばれる操作にあたるものは、K'Adでは「窓を選ぶ」の一手です。いま自分がどちらの空間に居るのか、分からなくなることがありません。</p>
 </section>
 <section id="窓の中の注記は、大筋が自動です"><h2>窓の中の注記は、大筋が自動です</h2>
 <p>窓に映るとき、紙の上で「読むもの」は、読める大きさへ自動で直ります。</p>
@@ -236,7 +239,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <section id="紙になるとき"><h2>紙になるとき</h2>
 <p>「PDFへ」＝Macは保存ウインドウ、Webはダウンロードへ。</p>
 <p>出てくるPDFは日本語もそのまま。コンビニ印刷もできます。</p>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br> ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期三号窯 ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){

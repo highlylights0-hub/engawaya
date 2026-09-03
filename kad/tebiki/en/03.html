@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>15. 立体（3DとSTL） — K'Ad蔵人 手引き</title><style>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3. Moving around the screen — K'Ad Manual</title><style>
 *,*::before,*::after{box-sizing:border-box}
 html{font-size:18px}
 body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
@@ -44,26 +44,32 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
   figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/15.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="14.html">← 印刷（紙へ刷る）</a><a href="16.html">困ったとき →</a></nav><h1>15. 立体（3DとSTL）</h1><div class="toc"><a href="#立体表示">3D / 立体表示</a><a href="#立体書出">STL / 立体書出（3Dプリンタへ）</a><a href="#よそのSTLを見る">よそのSTLを見る</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="立体表示"><h2>3D / 立体表示</h2>
-<p>小窓に 3D →Enter＝図面に高さを与えて、立体で見ます。</p>
+</style></head><body><div class="wrap"><div class="lang"><a href="../03.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="02.html">← Using the Cursor</a><a href="04.html">Typing numbers (coordinates and distances) →</a></nav><h1>3. Moving around the screen</h1><div class="toc"><a href="#ズーム">Zoom</a><a href="#パン">Pan (sliding the drawing)</a><a href="#タブ">Tabs (one for each drawing)</a><a href="#開いたときの眺め">The view when you open a drawing</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><main><section id="ズーム"><h2>Zoom</h2>
+<p>Roll the wheel = move in and out, centred on the cursor.</p>
+<p>Two taps on the wheel = the whole drawing fits on the screen (Zoom Extents). The 【全体表示】 (Zoom Extents) button at the bottom right does the same (on a sheet, it fits the whole sheet).</p>
+</section>
+<section id="パン"><h2>Pan (sliding the drawing)</h2>
+<p>There are two hands for this. Either one does the same job.</p>
 <ul>
-<li>左ドラッグか矢印キー＝回す。</li>
-<li>1〜5＝平面・正面・右・左・背面。0＝アイソメ。</li>
-<li>PageUp / PageDown＝立ち上げる高さの増減。</li>
-<li>Esc＝図面へ戻る（図面は無傷のままです）。</li>
+<li>Hold the middle button down and drag (the traditional hand).</li>
+<li>Hold the space bar and drag with the left button (the palm hand).</li>
+</ul>
+<p>Both hands work inside the print preview as well.</p>
+<p>※ If the middle button does nothing, see Chapter 16, “If you get stuck”.</p>
+</section>
+<section id="タブ"><h2>Tabs (one for each drawing)</h2>
+<ul>
+<li>+ = a new drawing (⌘T, or NEW in the Command Line, do the same).</li>
+<li>Click a tab = go to that drawing. Click it again = rename it (the spine itself becomes the field; type and press Enter to accept, Esc to cancel).</li>
+<li>Copy (CO) can cross tabs. Window-select on tab 2 → CO → pick the base point → move to tab 1 and paste.</li>
+<li>The drawing you are looking at is brighter, taller, and lit sky-blue along its top. That colour runs right around the drawing area, so “the contents of this tab are inside this rectangle” is clear at a glance.</li>
+<li>An amber ● to the right of the name = there are changes you have not saved. ⌘S clears it (save and the mark goes — that is the sign).</li>
+<li>A ※ to the right of the name = a file that came from somewhere else (a drawing that will not be overwritten).</li>
 </ul>
 </section>
-<section id="立体書出"><h2>STL / 立体書出（3Dプリンタへ）</h2>
-<p>小窓に STL →Enter。</p>
-<ul>
-<li>立体になるのは「ぐるりと閉じた輪郭」だけです（四角・円・ハッチの境界など）。</li>
-<li>厚みは PageUp / PageDown で決めて、姿を見てから右上の「⬇ STLで保存」。</li>
-<li>出てきたSTLは Bambu Studio・Cura・PrusaSlicer 等でそのまま開けます。</li>
-</ul>
-</section>
-<section id="よそのSTLを見る"><h2>よそのSTLを見る</h2>
-<p>⌘O で .stl を開くと、立体の部屋で回して見られます。</p>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期三号窯 ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+<section id="開いたときの眺め"><h2>The view when you open a drawing</h2>
+<p>Open a drawing and it is fitted automatically to a size where you can see all of it.</p>
+</section></main><footer>The words in this manual are the same as the manual inside K'Ad itself (the book button in the 案内 group of the ribbon).<br>Correct the manual there and this one is corrected the same day.<span class="noprint"><br>十六期三号窯 ／ 2026-09-03<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a></span></footer></div><script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){
