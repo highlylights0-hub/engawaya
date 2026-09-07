@@ -80,7 +80,7 @@ html, body { margin: 0; padding: 0; }
 :root {
   --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
   --ink: #2b2622; --ink-soft: #6b625a;
-  --rule: #ded3c4; --accent: #b4703a;
+  --rule: #ded3c4; --accent: #9c5f2d;
   /* 札の色。⚠️白い字を載せるので、**明るすぎる地は使えない**。
      実測して決めた（白字とのコントラスト比。小さい字は 4.5 以上が目安）：
        緑 #3f7a52 … 5.10 ／ 琥珀 #a25f2c … 4.99 ／ 灰 #706a63 … 5.34
@@ -94,7 +94,7 @@ html, body { margin: 0; padding: 0; }
 }
 html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
 html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
-html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a95c2a; }
+html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#9d5426; }
 /* 札の三色は時刻で変えない（意味を持つ色は、時刻で揺らさない）。
    夜だけ、地を明るく・字を濃くする＝暗い画面で白地の札がまぶしくならないように。
    夜の数字は 6.2〜7.2 で足りている（実測）。 */
@@ -347,6 +347,11 @@ article.hi a, .yomikata a { color: var(--accent); }
         <p>あわせて、<a href="../meter/">メーター引き</a>と<a href="../koe/">投書箱</a>の
         <b>入力欄の枠</b>を直しました。キーボードだけでお使いのとき、いまどこを打っているかが
         分かる枠が消えていました。</p>
+        <p>あわせて、<b>差し色（焼けた木の色）を少しだけ濃く</b>しました。この家の看板の色ですが、
+        明るい時間帯には字が薄すぎて、読みにくい方には届いていませんでした。夜の色はそのままです。
+        <a href="../michi/">道のおすそわけ</a>の「地図を動かす」「なぞって道」の札の絵も、
+        <b>点を打って描き直し</b>ました。前は絵文字だったので、Windows でご覧の方には
+        別の絵柄で出ていたはずです。</p>
         <p>同じ穴が二度あかないように、<b>家じゅうの色・字・寸法の「正」を一枚にまとめた帳面</b>と、
         それと食い違っていないかを機械が見張る仕組みを作りました。これから色を触るたびに、
         全52ページぶんを自動で数えます。人の目は「そこに決まりが<b>無い</b>こと」を

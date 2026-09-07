@@ -115,7 +115,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   --card-line:  #d9cfc2;
   --wood-1:     #c69a6d;
   --wood-2:     #a97c50;
-  --accent:     #b4703a;
+  --accent:     #9c5f2d;
   /* 道の絵に使う色。線＝GeoMemoryのシアン系だと夜空に沈むので、
      昼夜どちらでも読める青緑を昼夜で少し変える。 */
   --route:      #0f766e;
@@ -124,7 +124,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 }
 html[data-time="morning"] { --sky-top: #dbe9f4; --sky-bottom: #fdfcf7; }
 html[data-time="day"]     { --sky-top: #f2efe6; --sky-bottom: #fbf8f1; }
-html[data-time="evening"] { --sky-top: #f3cfa2; --sky-bottom: #fae7cd; --accent: #a95c2a; }
+html[data-time="evening"] { --sky-top: #f3cfa2; --sky-bottom: #fae7cd; --accent: #9d5426; }
 html[data-time="night"] {
   --sky-top: #141c2b; --sky-bottom: #232c3d;
   --ink: #efe9e0; --ink-soft: #a9a49c;
@@ -510,9 +510,49 @@ footer a { color: inherit; }
   font-size: 15px;
 }
 [hidden] { display: none !important; }
+/* ---- 手と鉛筆の絵（憲法②）------------------------------------
+   2026-09-07。ここには ✋ と ✏️ の絵文字が入っていました。絵文字は
+   **見る機械によって絵柄が変わる**——Macで見えている形と、Windowsで出る形は
+   別物です。そしてこの道具を本当に必要としている人は、たいてい Windows です。
+   だから 1マス＝1ドットの矩形を並べて、自分で描き直しました
+   （帳面のドット絵と同じ作法。nikki/index.html の .choumen）。
+   色は currentColor に預けてあるので、時間帯で字の色が変われば絵も一緒に変わる
+   ＝DESIGN.md の色の表に、この絵のための色を一つも足していません。
+   読み上げソフトには渡しません（aria-hidden）。押す場所の言葉が本体で、
+   絵は添えものだからです。
+   ---------------------------------------------------------------- */
+.e {
+  width: 1.2em; height: 1.2em;
+  vertical-align: -0.24em;
+  margin-right: .38em;
+  fill: currentColor;
+}
 </style>
 </head>
 <body>
+
+<!-- 手と鉛筆。1マス＝1ドットの矩形の集まりです（絵文字は使わない＝憲法②）。
+     ここに一度だけ置いて、下の押す場所から <use> で呼びます
+     （同じ絵を二度書くと、片方だけ直る日が来るので）。 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="e-te" viewBox="0 0 11 12" shape-rendering="crispEdges">
+    <!-- 開いた手。指四本＋親指＋手のひら -->
+    <rect x="2" y="2" width="1" height="5"/><rect x="4" y="1" width="1" height="6"/>
+    <rect x="6" y="1" width="1" height="6"/><rect x="8" y="3" width="1" height="4"/>
+    <rect x="0" y="6" width="1" height="3"/>
+    <rect x="1" y="7" width="9" height="4"/>
+    <rect x="3" y="11" width="5" height="1"/>
+  </symbol>
+  <symbol id="e-enpitsu" viewBox="0 0 11 12" shape-rendering="crispEdges">
+    <!-- 斜めに構えた鉛筆と、なぞった線 -->
+    <rect x="8" y="1" width="2" height="1"/><rect x="7" y="2" width="2" height="1"/>
+    <rect x="6" y="3" width="2" height="1"/><rect x="5" y="4" width="2" height="1"/>
+    <rect x="4" y="5" width="2" height="1"/><rect x="3" y="6" width="2" height="1"/>
+    <rect x="2" y="7" width="2" height="1" fill-opacity=".5"/>
+    <rect x="1" y="8" width="2" height="1"/><rect x="1" y="9" width="1" height="1"/>
+    <rect x="0" y="11" width="11" height="1" fill-opacity=".45"/>
+  </symbol>
+</svg>
 
 <div class="wrap">
   <a class="yagou" href="/">縁 側 屋</a>
@@ -533,8 +573,8 @@ footer a { color: inherit; }
       <div class="name" style="font-size:20px;">新しい道を作る</div>
       <p style="margin:8px 0 0; font-size:14px; color:var(--ink-soft);">
         地図の下の札で、手を持ち替えます。<br>
-        <strong>✋ 地図を動かす</strong>＝引きずれば地図が動き、<strong>ちょんと押せばそこに点</strong>（曲がり角だけ拾う手）。<br>
-        <strong>✏️ なぞって道</strong>＝指やマウスで<strong>道の上をなぞると、そのまま道になります</strong>。<br>
+        <strong><svg class="e" aria-hidden="true" focusable="false"><use href="#e-te"/></svg>地図を動かす</strong>＝引きずれば地図が動き、<strong>ちょんと押せばそこに点</strong>（曲がり角だけ拾う手）。<br>
+        <strong><svg class="e" aria-hidden="true" focusable="false"><use href="#e-enpitsu"/></svg>なぞって道</strong>＝指やマウスで<strong>道の上をなぞると、そのまま道になります</strong>。<br>
         どちらの手でも、<strong>二本指のつまみと ＋ − は、いつでも地図の拡大縮小</strong>です。
       </p>
       <div class="tsukuru-ran">
@@ -565,8 +605,8 @@ footer a { color: inherit; }
           <!-- 上段：いま持っている手。押した方が色で点く。 -->
           <div class="dan">
             <div class="tebiki" role="group" aria-label="いま持っている手">
-              <button type="button" id="teMap" aria-pressed="true">✋ 地図を動かす</button>
-              <button type="button" id="teNazori" aria-pressed="false">✏️ なぞって道</button>
+              <button type="button" id="teMap" aria-pressed="true"><svg class="e" aria-hidden="true" focusable="false"><use href="#e-te"/></svg>地図を動かす</button>
+              <button type="button" id="teNazori" aria-pressed="false"><svg class="e" aria-hidden="true" focusable="false"><use href="#e-enpitsu"/></svg>なぞって道</button>
             </div>
           </div>
           <!-- 下段：戻す／できた。
@@ -1742,7 +1782,7 @@ footer a { color: inherit; }
     if (n === 0) {
       kotoba = 'まだ点がありません。道の上をなぞるか、曲がり角をちょんと押してください。';
       // 左上の札にも、いまどちらの手かを書く（合図の三枚目）。
-      mijikai = nazoruTe() ? '✏️ なぞると道になります' : '✋ 曲がり角を押していきます';
+      mijikai = nazoruTe() ? 'なぞると道になります' : '曲がり角を押していきます';
     } else if (n === 1) {
       kotoba = '点が1つ。あと1つ打つと、道になります。';
       mijikai = '点 1 つ';
@@ -1789,7 +1829,7 @@ footer a { color: inherit; }
   // 点が2つ無いと道にならない。押した人に、なぜ駄目かを正直に言う。
   function michiAruka() {
     if (chizu && chizu.pts.length >= 2) return true;
-    window.alert('まだ道になっていません。「✏️ なぞって道」で地図をなぞるか、曲がり角を2つ以上押してください。');
+    window.alert('まだ道になっていません。「なぞって道」で地図をなぞるか、曲がり角を2つ以上押してください。');
     return false;
   }
 
