@@ -238,6 +238,15 @@ h1 {
   appearance: none;
 }
 .inputwrap input:focus { border-color: var(--accent); }
+/* ⚠️上の input には outline:none が「素の決まり」として書いてあり、
+   焦点の枠が最初から最後まで消えていました。代わりは 2px の縁の色替えだけ。
+   20時間走ったあとの人が、キーボードで納金を打つ日もあります。
+   指で触った時は出さず、キーで来た時だけ出す＝:focus-visible。
+   （DESIGN.md「3.」三／DESIGN検算.py 五）） */
+.inputwrap input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
 .inputwrap .yen {
   position: absolute;
   right: 14px; top: 50%;
@@ -404,6 +413,11 @@ footer {
   background: linear-gradient(180deg, var(--wood-1), var(--wood-2));
 }
 html[data-time="night"] footer { color: #d8d2c8; }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️この一行が無いと、免責の段落の中のメールアドレスが素の青（#0000EE）
+   のまま残ります。夜の地では比 1.49＝沈みます。footer a だけでは届きません。
+   （2026-09-07、実際にそうなっていました。DESIGN.md「3. リンクの作法」）*/
+a { color: var(--accent); }
 footer a { color: inherit; }
 </style>
 </head>

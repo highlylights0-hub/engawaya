@@ -184,6 +184,14 @@ textarea:focus {
   outline: none;
   border-color: var(--accent);
 }
+/* ⚠️上の outline:none の代わりが「1px の縁の色替え」だけでは足りません。
+   キーボードだけで回っている人に、いまどこにいるかが伝わらないからです。
+   指で触った時は枠を出さず、キーで来た時だけ出す＝:focus-visible。
+   （DESIGN.md「3. リンクの作法」三／DESIGN検算.py 五）） */
+textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
 .count {
   margin: 8px 0 0;
   font-size: 13px;
@@ -267,6 +275,14 @@ footer {
   font-size: 13px;
   color: var(--ink-soft);
 }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
+   夜の地に沈みます（比 1.5 前後）。「どこそこの a」で数え上げると、
+   必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
+   ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
+   （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
+a { color: var(--accent); }
+
 footer a { color: var(--ink-soft); }
 </style>
 </head>

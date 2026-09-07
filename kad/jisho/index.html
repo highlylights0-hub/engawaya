@@ -54,6 +54,22 @@
   --wood-1:     #c69a6d;
   --accent:     #b4703a;
 }
+/* ---- 時間帯ごとの色（母屋・kad/ と同じ表）---------------------
+   ⚠️2026-09-07 まで、この辞書だけ夜の顔を持っていませんでした。
+   家じゅうが暗くなる時刻に、ここを開いた人の目にだけ真っ白（#fdfbf6）が
+   飛び込む——夜に図面を引いていて手が止まった人が、いちばん来る場所なのに。
+   建てた翌日に見つかりました。**新しい棟を建てた日は、夜も開いて見ること。**
+   （DESIGN.md「1-1. 母屋の色」「1-4. どの棟が、どの表を使うか」）
+   ---------------------------------------------------------------- */
+html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
+html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
+html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#a95c2a; }
+html[data-time="night"]   {
+  --sky-top:#141c2b; --sky-bottom:#232c3d;
+  --ink:#efe9e0; --ink-soft:#a9a49c;
+  --card:#2b3446e6; --card-line:#45506a;
+  --wood-1:#6b5236; --accent:#e0a061;
+}
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -68,6 +84,14 @@ body {
 .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 80px; }
 
 .kaeri { font-size: 14px; color: var(--ink-soft); }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
+   夜の地に沈みます（比 1.5 前後）。「どこそこの a」で数え上げると、
+   必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
+   ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
+   （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
+a { color: var(--accent); }
+
 .kaeri a { color: var(--accent); }
 h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
 .soe { margin: 0; color: var(--ink-soft); font-size: clamp(14px, 3.8vw, 16px); }
@@ -87,6 +111,10 @@ h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
   font-size: 18px; font-family: inherit; color: var(--ink);
   background: #fff; border: 2px solid var(--card-line); border-radius: 12px;
 }
+/* ⚠️小窓の地だけは変数ではなく #fff で決め打ちしてあった（打つところは
+   いちばん白いほうが見やすい、という昼の理屈）。夜はその白が凶器になるので、
+   夜だけ差し替える。字は --ink が受け持つので、ここは地と縁だけ。 */
+html[data-time="night"] .mado { background: #1c2333; }
 .mado:focus { outline: 3px solid var(--accent); outline-offset: 1px; }
 .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
 .chip {
@@ -96,6 +124,9 @@ h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
   border-radius: 999px; cursor: pointer;
 }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* ⚠️夜の差し色（#e0a061）は明るい橙。その上に白を置くと比 1.8 で沈む。
+   夜だけ、字を暗いほうへ裏返す（比 9.4）。 */
+html[data-time="night"] .chip[aria-pressed="true"] { color: #1c2230; }
 .kazu { margin: 10px 0 0; font-size: 14px; color: var(--ink-soft); }
 
 /* ---- 項目 ---------------------------------------------------- */
@@ -572,5 +603,17 @@ h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
     fuu();
   });
   fuu();
+})();
+</script>
+
+<script>
+/* 母屋・naze・kad と同じ判定。縁側は、差す光で表情が変わる場所なので。
+   ⚠️この家で「いま何時の顔か」を答える式は、棟ごとに一つずつ。
+   値そのものの正は DESIGN.md「1-1」にあります。 */
+(function () {
+  var h = new Date().getHours();
+  document.documentElement.setAttribute('data-time',
+    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
+    : (h >= 16 && h < 19) ? 'evening' : 'night');
 })();
 </script>

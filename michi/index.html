@@ -493,6 +493,11 @@ footer {
   background: linear-gradient(180deg, var(--wood-1), var(--wood-2));
 }
 html[data-time="night"] footer { color: #d8d2c8; }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️この一行が無いと、読めなかったときの案内の中のメールアドレスが
+   素の青（#0000EE）のまま残ります。夜の座布団の上では比 1.34。
+   （2026-09-07。DESIGN.md「3. リンクの作法」）*/
+a { color: var(--accent); }
 footer a { color: inherit; }
 
 /* 中身が無いとき・読めないときの案内 */

@@ -337,6 +337,10 @@ footer {
   background: linear-gradient(180deg, var(--wood-1), var(--wood-2));
 }
 html[data-time="night"] footer { color: #d8d2c8; }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️この一行が無いと、免責の中のメールアドレスが素の青（#0000EE）の
+   まま残ります。夜の地では比 1.49。（2026-09-07。DESIGN.md「3.」）*/
+a { color: var(--accent); }
 footer a { color: inherit; }
 
 [hidden] { display: none !important; }

@@ -53,6 +53,14 @@ body {
   display: inline-block; margin-bottom: 34px;
   font-size: 14px; color: var(--ink-soft); text-decoration: none;
 }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
+   夜の地に沈みます（比 1.5 前後）。「どこそこの a」で数え上げると、
+   必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
+   ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
+   （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
+a { color: var(--accent); }
+
 .back:hover { color: var(--accent); }
 
 h1 {

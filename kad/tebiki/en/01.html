@@ -5,9 +5,6 @@ html{font-size:18px}
 body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
   font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
   -webkit-font-smoothing:antialiased}
-@media (prefers-color-scheme:dark){body{background:#1c2230;color:#efe9e0}
-  a{color:#e0a061}.nav,.toc{border-color:#3d4659}.mark{background:#e0a061;color:#1c2230}
-  figure{background:#141a26}}
 .wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
 a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
 h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
@@ -37,6 +34,27 @@ figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
 .chap-list a{display:inline-block;margin:.15em .2em .15em 0}
 .chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
 footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
+/* ---- 暗い側（閲覧機の設定にしたがう）--------------------------
+   ⚠️この塊は、必ず「明るい側の指定より あと」に置くこと。
+   2026-09-07 まで、ここは先頭（body のすぐ下）にありました。同じ強さの規則は
+   あとに書いたほうが勝つので、下の a{color:#a95c2a} や .nav{border-bottom:...}
+   に上書きされ、body の地と字をのぞいて**まるごと死んでいました**。
+   実測（暗い側で）：リンク 3.22／言語の札 3.22／足元 2.66／
+   用事の札 1.1（＝ほぼ見えない）。34枚ぜんぶ同じでした。
+   読めることの床は 4.5 です。（DESIGN.md「1-4」「2.」）
+   ---------------------------------------------------------------- */
+@media (prefers-color-scheme:dark){
+  body{background:#1c2230;color:#efe9e0}
+  a{color:#e0a061}
+  .lang b{color:#e0a061}
+  h2{border-left-color:#e0a061}
+  .nav,.toc{border-bottom-color:#3d4659}
+  footer{border-top-color:#3d4659}
+  .mark{background:#e0a061;color:#1c2230}
+  figure{background:#141a26;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+  figcaption,footer,.chap-list a+a::before{color:#a9a49c}
+  .only-note{background:#2a2118;border-left-color:#e0a061;color:#efe9e0}
+}
 @media print{
   html{font-size:12pt}body{background:#fff;color:#000}
   .nav,.toc,.only-note,footer .noprint{display:none!important}
