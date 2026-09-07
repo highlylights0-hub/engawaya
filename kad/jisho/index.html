@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K'Ad蔵人 コマンド辞書 — 縁側屋</title>
+<meta name="description" content="K'Ad蔵人の道具とキーを、用事から引ける辞書。手引きの各章へつながっています。">
+
+<!-- ============================================================
+     K'Ad蔵人 コマンド辞書（2026-09-07 新設）
+
+     ■ 何のためのものか
+     手引き（kad/tebiki/）は「順に読む」ための教本です。順に読めば分かるように
+     できていますが、現場で必要なのはたいてい逆の引き方——「角を丸くしたい。
+     何を打てばいい？」です。読む道具と引く道具は、並べ方が違う。
+     だから辞書を別に建てました。
+
+     ■ 写しが二つになることについて（正直に書いておきます）
+     手引きの文は、K'Ad蔵人の中の教本と同じものです。この辞書は、そこから
+     さらに引き写した三つ目の写しになります。写しが増えれば必ず食い違う——
+     この家が何度も踏んだ病です。
+     承知のうえで写しました。理由は上のとおり、引く並べ方が要るからです。
+     そのかわり、食い違いを人の目に任せません。
+
+         python3 kad/jisho/検算.py
+
+     ⚠️ここを直したら、必ず通してください。[FAIL] が出たら commit しない。
+     この見張りは、建てた日に八項目を一つずつ壊して、ぜんぶ鳴ることを
+     確かめてあります。項目を足す日も、同じように鳴らしてから通すこと。
+
+     ■ 項目の足し方
+     下の <li class="ko"> を一つコピーして、書き換えるだけです。
+       data-yo   ＝用事。描く／測る／直す／整える／出す／キー のどれか
+       data-hiku ＝しぼり込みで引っかける言葉。短縮・正式・説明・用事を並べる
+       ko-tan    ＝小窓に打つ短い名前（L、TR、⌘S など）
+       ko-sei    ＝正式な名前。無ければ、この行ごと消す
+       ko-setu   ＝一行の説明。「何をする道具か」だけ。手順は書かない
+       ko-to     ＝手引きの何章か。札の文字も、その章の題と揃えること
+     ⚠️説明にその道具の手順まで書き始めると、辞書が二冊目の教本になります。
+     ここは「どれを打つか」までを引く場所で、打ったあとは手引きが引き受けます。
+
+     ■ 外から何も読み込みません（憲法①）
+     字も、飾りも、しぼり込みの仕組みも、ぜんぶこのファイルの中にあります。
+     回線が細い場所でも、開いた瞬間に出ます。絵文字も使いません（憲法②）。
+     ============================================================ -->
+
+<style>
+:root {
+  --sky-top:    #eaf2f8;
+  --sky-bottom: #fdfbf6;
+  --ink:        #2b2622;
+  --ink-soft:   #6b625a;
+  --card:       #ffffffcc;
+  --card-line:  #d9cfc2;
+  --wood-1:     #c69a6d;
+  --accent:     #b4703a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 38%) no-repeat;
+  background-color: var(--sky-bottom);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic",
+               "Yu Gothic", Meiryo, system-ui, sans-serif;
+  line-height: 1.9;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 80px; }
+
+.kaeri { font-size: 14px; color: var(--ink-soft); }
+.kaeri a { color: var(--accent); }
+h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
+.soe { margin: 0; color: var(--ink-soft); font-size: clamp(14px, 3.8vw, 16px); }
+
+/* ---- 引くところ ----------------------------------------------
+   窓もチップも、必要よりだいぶ大きくしてあります（憲法③）。
+   指で押せるように、というだけではありません。手が震える人でも
+   狙いを外さない大きさ、が理由です。 */
+.hikidashi {
+  position: sticky; top: 0; z-index: 5;
+  margin: 22px 0 0; padding: 16px 0 12px;
+  background: var(--sky-bottom);
+  border-bottom: 1px solid var(--card-line);
+}
+.mado {
+  width: 100%; padding: 16px 18px;
+  font-size: 18px; font-family: inherit; color: var(--ink);
+  background: #fff; border: 2px solid var(--card-line); border-radius: 12px;
+}
+.mado:focus { outline: 3px solid var(--accent); outline-offset: 1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
+.chip {
+  padding: 12px 18px; min-height: 48px;
+  font-size: 16px; font-family: inherit; color: var(--ink);
+  background: var(--card); border: 2px solid var(--card-line);
+  border-radius: 999px; cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.kazu { margin: 10px 0 0; font-size: 14px; color: var(--ink-soft); }
+
+/* ---- 項目 ---------------------------------------------------- */
+.ko-list { list-style: none; margin: 22px 0 0; padding: 0;
+           display: grid; grid-template-columns: 1fr; gap: 14px; }
+.ko {
+  padding: 18px 20px;
+  background: var(--card); border: 1px solid var(--card-line); border-radius: 14px;
+}
+.ko-na { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.ko-tan {
+  font-size: clamp(20px, 5.2vw, 24px); font-weight: 700; letter-spacing: .04em;
+  color: var(--ink);
+}
+.ko-sei { font-size: 15px; color: var(--ink-soft); letter-spacing: .08em; }
+.ko-setu { margin: 8px 0 0; font-size: clamp(15px, 3.9vw, 16px); }
+.ko-to { margin: 10px 0 0; font-size: 14px; }
+.ko-to a { color: var(--accent); }
+.karappo { margin: 30px 0; font-size: 16px; color: var(--ink-soft); }
+
+.ashi { margin: 46px 0 0; padding-top: 20px; border-top: 1px solid var(--card-line);
+        font-size: 13px; color: var(--ink-soft); }
+.ashi a { color: var(--accent); }
+
+@media (min-width: 760px) {
+  .ko-list { grid-template-columns: 1fr 1fr; }
+}
+</style>
+
+<body>
+<div class="wrap">
+
+  <p class="kaeri"><a href="../../">縁側屋</a>　／　<a href="../">K'Ad蔵人のこと</a>　／　<a href="../tebiki/">手引き</a></p>
+
+  <h1>コマンド辞書</h1>
+  <p class="soe">
+    小窓に打つ短い名前を、用事から引けます。<br>
+    打ったあとの手順は、それぞれの手引きの章に書いてあります。
+  </p>
+
+  <div class="hikidashi">
+    <label class="mado-fuda" for="mado" hidden>しぼり込み</label>
+    <input class="mado" id="mado" type="search" autocomplete="off"
+           placeholder="用事でも、名前でも（例：角を丸く／TR／消す）"
+           aria-label="コマンドをしぼり込む">
+    <div class="chips" id="chips">
+      <button class="chip" type="button" data-yo="" aria-pressed="true">ぜんぶ</button>
+      <button class="chip" type="button" data-yo="描く" aria-pressed="false">描く</button>
+      <button class="chip" type="button" data-yo="測る" aria-pressed="false">測る</button>
+      <button class="chip" type="button" data-yo="直す" aria-pressed="false">直す</button>
+      <button class="chip" type="button" data-yo="整える" aria-pressed="false">整える</button>
+      <button class="chip" type="button" data-yo="出す" aria-pressed="false">出す</button>
+      <button class="chip" type="button" data-yo="キー" aria-pressed="false">キー</button>
+    </div>
+    <p class="kazu" id="kazu" aria-live="polite"></p>
+  </div>
+
+  <ul class="ko-list" id="list">
+    <li class="ko" data-yo="描く" data-hiku="L LINE 線分。二点をむすぶ線を引きます。続けて引けます。 描く">
+      <p class="ko-na"><span class="ko-tan">L</span><span class="ko-sei">LINE</span></p>
+      <p class="ko-setu">線分。二点をむすぶ線を引きます。続けて引けます。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="PL PLINE ポリライン。何本つないでも、終えたときに一本の図形になります。 描く">
+      <p class="ko-na"><span class="ko-tan">PL</span><span class="ko-sei">PLINE</span></p>
+      <p class="ko-setu">ポリライン。何本つないでも、終えたときに一本の図形になります。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="C CIRCLE 円。中心を打って、円周が通る点で決めます。R2000・D8000 と数字でも。 描く">
+      <p class="ko-na"><span class="ko-tan">C</span><span class="ko-sei">CIRCLE</span></p>
+      <p class="ko-setu">円。中心を打って、円周が通る点で決めます。R2000・D8000 と数字でも。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="A ARC 円弧。始点・通る点・終点の三回クリック。 描く">
+      <p class="ko-na"><span class="ko-tan">A</span><span class="ko-sei">ARC</span></p>
+      <p class="ko-setu">円弧。始点・通る点・終点の三回クリック。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="EL ELLIPSE 楕円。軸の両端と、残り半分の幅で。 描く">
+      <p class="ko-na"><span class="ko-tan">EL</span><span class="ko-sei">ELLIPSE</span></p>
+      <p class="ko-setu">楕円。軸の両端と、残り半分の幅で。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="SPL SPLINE 自由な曲線。打った点を、ぜんぶ正確に通ります。 描く">
+      <p class="ko-na"><span class="ko-tan">SPL</span><span class="ko-sei">SPLINE</span></p>
+      <p class="ko-setu">自由な曲線。打った点を、ぜんぶ正確に通ります。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="REC 四角。 描く">
+      <p class="ko-na"><span class="ko-tan">REC</span></p>
+      <p class="ko-setu">四角。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="POL ポリゴン。正多角形。 描く">
+      <p class="ko-na"><span class="ko-tan">POL</span></p>
+      <p class="ko-setu">ポリゴン。正多角形。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="GRID 通り芯。 描く">
+      <p class="ko-na"><span class="ko-tan">GRID</span></p>
+      <p class="ko-setu">通り芯。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="DT 文字記入。一行の文字を、枠で置きます。 描く">
+      <p class="ko-na"><span class="ko-tan">DT</span></p>
+      <p class="ko-setu">文字記入。一行の文字を、枠で置きます。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="MT 段落文字。改行のある注記を、枠の中へ流し込みます。 描く">
+      <p class="ko-na"><span class="ko-tan">MT</span></p>
+      <p class="ko-setu">段落文字。改行のある注記を、枠の中へ流し込みます。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="LE 引出線。 描く">
+      <p class="ko-na"><span class="ko-tan">LE</span></p>
+      <p class="ko-setu">引出線。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="H ハッチ。 描く">
+      <p class="ko-na"><span class="ko-tan">H</span></p>
+      <p class="ko-setu">ハッチ。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="記号 建築記号。梁・柱・基礎・耐圧盤・レベル・矢視・図面名。 描く">
+      <p class="ko-na"><span class="ko-tan">記号</span></p>
+      <p class="ko-setu">建築記号。梁・柱・基礎・耐圧盤・レベル・矢視・図面名。</p>
+      <p class="ko-to"><a href="../tebiki/08.html">手引き　8. 作図の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="PO POINT 点を置きます。 描く">
+      <p class="ko-na"><span class="ko-tan">PO</span><span class="ko-sei">POINT</span></p>
+      <p class="ko-setu">点を置きます。</p>
+      <p class="ko-to"><a href="../tebiki/05.html">手引き　5. 点と分割点 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="FRO FROM 基点。ここから測って置く、の起点を決めます。 描く">
+      <p class="ko-na"><span class="ko-tan">FRO</span><span class="ko-sei">FROM</span></p>
+      <p class="ko-setu">基点。ここから測って置く、の起点を決めます。</p>
+      <p class="ko-to"><a href="../tebiki/05.html">手引き　5. 点と分割点 →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="DIV DIVIDE 分割点。全長を等分して、点を並べます。 描く">
+      <p class="ko-na"><span class="ko-tan">DIV</span><span class="ko-sei">DIVIDE</span></p>
+      <p class="ko-setu">分割点。全長を等分して、点を並べます。</p>
+      <p class="ko-to"><a href="../tebiki/05.html">手引き　5. 点と分割点 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="D DIM 寸法の列。 測る">
+      <p class="ko-na"><span class="ko-tan">D</span><span class="ko-sei">DIM</span></p>
+      <p class="ko-setu">寸法の列。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DAL 平行寸法。 測る">
+      <p class="ko-na"><span class="ko-tan">DAL</span></p>
+      <p class="ko-setu">平行寸法。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DDI 直径の寸法。 測る">
+      <p class="ko-na"><span class="ko-tan">DDI</span></p>
+      <p class="ko-setu">直径の寸法。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DRA 半径の寸法。 測る">
+      <p class="ko-na"><span class="ko-tan">DRA</span></p>
+      <p class="ko-setu">半径の寸法。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DAR 弧長の寸法。 測る">
+      <p class="ko-na"><span class="ko-tan">DAR</span></p>
+      <p class="ko-setu">弧長の寸法。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DI DIST 計測。図面に残さずに測ります。 測る">
+      <p class="ko-na"><span class="ko-tan">DI</span><span class="ko-sei">DIST</span></p>
+      <p class="ko-setu">計測。図面に残さずに測ります。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="AREA 面積。囲いの内側を、一回クリック。 測る">
+      <p class="ko-na"><span class="ko-tan">AREA</span></p>
+      <p class="ko-setu">面積。囲いの内側を、一回クリック。</p>
+      <p class="ko-to"><a href="../tebiki/09.html">手引き　9. 寸法の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="M2P 二点間中点。二つの点の、ちょうど真ん中。 測る">
+      <p class="ko-na"><span class="ko-tan">M2P</span></p>
+      <p class="ko-setu">二点間中点。二つの点の、ちょうど真ん中。</p>
+      <p class="ko-to"><a href="../tebiki/06.html">手引き　6. スナップと規律 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="TR TRIM トリム。はみ出した線を刈ります。 直す">
+      <p class="ko-na"><span class="ko-tan">TR</span><span class="ko-sei">TRIM</span></p>
+      <p class="ko-setu">トリム。はみ出した線を刈ります。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="EX EXTEND 延長。足りない線を、相手まで伸ばします。 直す">
+      <p class="ko-na"><span class="ko-tan">EX</span><span class="ko-sei">EXTEND</span></p>
+      <p class="ko-setu">延長。足りない線を、相手まで伸ばします。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="O OFFSET 複線。平行にずらした線をつくります。 直す">
+      <p class="ko-na"><span class="ko-tan">O</span><span class="ko-sei">OFFSET</span></p>
+      <p class="ko-setu">複線。平行にずらした線をつくります。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="F FILLET フィレット。角を丸くします。 直す">
+      <p class="ko-na"><span class="ko-tan">F</span><span class="ko-sei">FILLET</span></p>
+      <p class="ko-setu">フィレット。角を丸くします。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="CHA 面取り。角を斜めに落とします。 直す">
+      <p class="ko-na"><span class="ko-tan">CHA</span></p>
+      <p class="ko-setu">面取り。角を斜めに落とします。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="CO COPY 複製。 直す">
+      <p class="ko-na"><span class="ko-tan">CO</span><span class="ko-sei">COPY</span></p>
+      <p class="ko-setu">複製。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="M MOVE 移動。 直す">
+      <p class="ko-na"><span class="ko-tan">M</span><span class="ko-sei">MOVE</span></p>
+      <p class="ko-setu">移動。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="S STRETCH ストレッチ。掴んだ側だけを伸び縮みさせます。 直す">
+      <p class="ko-na"><span class="ko-tan">S</span><span class="ko-sei">STRETCH</span></p>
+      <p class="ko-setu">ストレッチ。掴んだ側だけを伸び縮みさせます。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="RO ROTATE 回転。 直す">
+      <p class="ko-na"><span class="ko-tan">RO</span><span class="ko-sei">ROTATE</span></p>
+      <p class="ko-setu">回転。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="SC SCALE 拡大縮小。 直す">
+      <p class="ko-na"><span class="ko-tan">SC</span><span class="ko-sei">SCALE</span></p>
+      <p class="ko-setu">拡大縮小。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="MI MIRROR 鏡像。 直す">
+      <p class="ko-na"><span class="ko-tan">MI</span><span class="ko-sei">MIRROR</span></p>
+      <p class="ko-setu">鏡像。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="AR 配列。並べて複製します。 直す">
+      <p class="ko-na"><span class="ko-tan">AR</span></p>
+      <p class="ko-setu">配列。並べて複製します。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="PAR 円形配列。まわりに並べて複製します。 直す">
+      <p class="ko-na"><span class="ko-tan">PAR</span></p>
+      <p class="ko-setu">円形配列。まわりに並べて複製します。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="J JOIN 結合。分かれている線を、一本にまとめます。 直す">
+      <p class="ko-na"><span class="ko-tan">J</span><span class="ko-sei">JOIN</span></p>
+      <p class="ko-setu">結合。分かれている線を、一本にまとめます。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="PR プロパティ。数値を直に打ち替えます。 直す">
+      <p class="ko-na"><span class="ko-tan">PR</span></p>
+      <p class="ko-setu">プロパティ。数値を直に打ち替えます。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="LIST 名札。その図形が何なのかを見ます。 直す">
+      <p class="ko-na"><span class="ko-tan">LIST</span></p>
+      <p class="ko-setu">名札。その図形が何なのかを見ます。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="APPINT 仮想交点。延ばせば交わる場所を、交点として掴みます。 直す">
+      <p class="ko-na"><span class="ko-tan">APPINT</span></p>
+      <p class="ko-setu">仮想交点。延ばせば交わる場所を、交点として掴みます。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="HIROI BOM 拾い。数量を拾います。表とCSVで出せます。 直す">
+      <p class="ko-na"><span class="ko-tan">HIROI</span><span class="ko-sei">BOM</span></p>
+      <p class="ko-setu">拾い。数量を拾います。表とCSVで出せます。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="TABLE 表。 直す">
+      <p class="ko-na"><span class="ko-tan">TABLE</span></p>
+      <p class="ko-setu">表。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="YOKE よけ。 直す">
+      <p class="ko-na"><span class="ko-tan">YOKE</span></p>
+      <p class="ko-setu">よけ。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="ISO アイソメ。 直す">
+      <p class="ko-na"><span class="ko-tan">ISO</span></p>
+      <p class="ko-setu">アイソメ。</p>
+      <p class="ko-to"><a href="../tebiki/10.html">手引き　10. 修正の手順 →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="LA 画層パネル。画層（レイヤ）をまとめて扱います。 整える">
+      <p class="ko-na"><span class="ko-tan">LA</span></p>
+      <p class="ko-setu">画層パネル。画層（レイヤ）をまとめて扱います。</p>
+      <p class="ko-to"><a href="../tebiki/11.html">手引き　11. 画層と線種 →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="B 部品化。まとめて一つの部品（ブロック）にします。 整える">
+      <p class="ko-na"><span class="ko-tan">B</span></p>
+      <p class="ko-setu">部品化。まとめて一つの部品（ブロック）にします。</p>
+      <p class="ko-to"><a href="../tebiki/12.html">手引き　12. 部品と部品箱 →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="X 分解。部品を、元の線に戻します。 整える">
+      <p class="ko-na"><span class="ko-tan">X</span></p>
+      <p class="ko-setu">分解。部品を、元の線に戻します。</p>
+      <p class="ko-to"><a href="../tebiki/12.html">手引き　12. 部品と部品箱 →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="PROJ プロジェクト。図面の目録。起動して最初に出る板です。 整える">
+      <p class="ko-na"><span class="ko-tan">PROJ</span></p>
+      <p class="ko-setu">プロジェクト。図面の目録。起動して最初に出る板です。</p>
+      <p class="ko-to"><a href="../tebiki/13.html">手引き　13. 開く・保存・実寸 →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="CAL 実寸合わせ。下絵の縮尺を、実寸に合わせます。 整える">
+      <p class="ko-na"><span class="ko-tan">CAL</span></p>
+      <p class="ko-setu">実寸合わせ。下絵の縮尺を、実寸に合わせます。</p>
+      <p class="ko-to"><a href="../tebiki/13.html">手引き　13. 開く・保存・実寸 →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="MV ビューポート。紙の上に置く、図面を映すカメラ。 出す">
+      <p class="ko-na"><span class="ko-tan">MV</span></p>
+      <p class="ko-setu">ビューポート。紙の上に置く、図面を映すカメラ。</p>
+      <p class="ko-to"><a href="../tebiki/14.html">手引き　14. 印刷（紙へ刷る） →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="VP ビューポートの板。窓ごとに、映り方を細かく直します。 出す">
+      <p class="ko-na"><span class="ko-tan">VP</span></p>
+      <p class="ko-setu">ビューポートの板。窓ごとに、映り方を細かく直します。</p>
+      <p class="ko-to"><a href="../tebiki/14.html">手引き　14. 印刷（紙へ刷る） →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="3D 立体表示。 出す">
+      <p class="ko-na"><span class="ko-tan">3D</span></p>
+      <p class="ko-setu">立体表示。</p>
+      <p class="ko-to"><a href="../tebiki/15.html">手引き　15. 立体（3DとSTL） →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="STL 立体書出。3Dプリンタへ渡す形で出します。 出す">
+      <p class="ko-na"><span class="ko-tan">STL</span></p>
+      <p class="ko-setu">立体書出。3Dプリンタへ渡す形で出します。</p>
+      <p class="ko-to"><a href="../tebiki/15.html">手引き　15. 立体（3DとSTL） →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="Esc 一歩さがる。掴みを放す・窓を閉じる・中止。 キー">
+      <p class="ko-na"><span class="ko-tan">Esc</span></p>
+      <p class="ko-setu">一歩さがる。掴みを放す・窓を閉じる・中止。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="U 元に戻す。何度でも。 キー">
+      <p class="ko-na"><span class="ko-tan">U</span></p>
+      <p class="ko-setu">元に戻す。何度でも。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="Tab 重なった図形の選び直し／吸着候補の切替。 キー">
+      <p class="ko-na"><span class="ko-tan">Tab</span></p>
+      <p class="ko-setu">重なった図形の選び直し／吸着候補の切替。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="E 選択中を削除（Delete も同じ）。 キー">
+      <p class="ko-na"><span class="ko-tan">E</span></p>
+      <p class="ko-setu">選択中を削除（Delete も同じ）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="スペース 押しながら左ドラッグ＝パン（図面をずらす）。 キー">
+      <p class="ko-na"><span class="ko-tan">スペース</span></p>
+      <p class="ko-setu">押しながら左ドラッグ＝パン（図面をずらす）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="F5 アイソメの面を回す（左・上・右）。 キー">
+      <p class="ko-na"><span class="ko-tan">F5</span></p>
+      <p class="ko-setu">アイソメの面を回す（左・上・右）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="F8 直交の入切。Shift を押している間だけ反転。 キー">
+      <p class="ko-na"><span class="ko-tan">F8</span></p>
+      <p class="ko-setu">直交の入切。Shift を押している間だけ反転。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘A 全選択（⌘⇧A で全選択解除）。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘A</span></p>
+      <p class="ko-setu">全選択（⌘⇧A で全選択解除）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘C コピー。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘C</span></p>
+      <p class="ko-setu">コピー。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘X 切り取り。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘X</span></p>
+      <p class="ko-setu">切り取り。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘V 貼り付け。貼る場所をクリックします。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘V</span></p>
+      <p class="ko-setu">貼り付け。貼る場所をクリックします。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘⇧V 控えた時と同じ座標へ、そのまま貼る。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘⇧V</span></p>
+      <p class="ko-setu">控えた時と同じ座標へ、そのまま貼る。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘Z 元に戻す（U と同じはたらき）。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘Z</span></p>
+      <p class="ko-setu">元に戻す（U と同じはたらき）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘S 保存（⌘⇧S で名前をつけて保存）。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘S</span></p>
+      <p class="ko-setu">保存（⌘⇧S で名前をつけて保存）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘O 開く。DXF・DWG・PDF・JWW・STL。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘O</span></p>
+      <p class="ko-setu">開く。DXF・DWG・PDF・JWW・STL。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘N 新しい図面のタブ（⌘T も同じ）。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘N</span></p>
+      <p class="ko-setu">新しい図面のタブ（⌘T も同じ）。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘P PDFに書き出し。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘P</span></p>
+      <p class="ko-setu">PDFに書き出し。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘K エイリアスボード。⌘の鍵を、自分の指に替えます。 キー">
+      <p class="ko-na"><span class="ko-tan">⌘K</span></p>
+      <p class="ko-setu">エイリアスボード。⌘の鍵を、自分の指に替えます。</p>
+      <p class="ko-to"><a href="../tebiki/07.html">手引き　7. キーの一覧 →</a></p>
+    </li>
+  </ul>
+
+  <p class="karappo" id="karappo" hidden>
+    その言葉では見つかりませんでした。別の言い方でお試しください。<br>
+    それでも無ければ、まだ辞書に載っていないだけかもしれません。
+    <a href="../../#toubako">投書箱</a>から教えてください。ひとつずつ足します。
+  </p>
+
+  <p class="ashi">
+    この辞書は、手引きと K'Ad蔵人の中の教本から引き写したものです。<br>
+    食い違いが出ないよう、機械（<code>kad/jisho/検算.py</code>）が突き合わせています。<br>
+    おかしいところがあれば、<a href="../../">縁側屋</a>の投書箱かメール（info アットマーク engawaya.com）へ。
+  </p>
+
+</div>
+
+<script>
+/* しぼり込み。外から何も読み込まないので、ここに全部書いてあります。
+   ⚠️この script が動かない機械でも、項目は全部そのまま出ます。
+   （隠すのは script が動いたあとだけ＝読み上げソフトでも最初から全件読めます） */
+(function () {
+  var mado  = document.getElementById('mado');
+  var list  = document.getElementById('list');
+  var kazu  = document.getElementById('kazu');
+  var kara  = document.getElementById('karappo');
+  var chips = document.getElementById('chips');
+  var kos   = Array.prototype.slice.call(list.getElementsByClassName('ko'));
+  var yo    = '';
+
+  function fuu() {
+    var kotoba = mado.value.trim().toLowerCase();
+    var nokori = 0;
+    kos.forEach(function (ko) {
+      var au = (!yo || ko.getAttribute('data-yo') === yo) &&
+               (!kotoba || ko.getAttribute('data-hiku').toLowerCase().indexOf(kotoba) >= 0);
+      ko.hidden = !au;
+      if (au) nokori++;
+    });
+    kazu.textContent = nokori + ' 件';
+    kara.hidden = nokori > 0;
+  }
+
+  mado.addEventListener('input', fuu);
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    yo = b.getAttribute('data-yo');
+    Array.prototype.forEach.call(chips.getElementsByClassName('chip'), function (c) {
+      c.setAttribute('aria-pressed', c === b ? 'true' : 'false');
+    });
+    fuu();
+  });
+  fuu();
+})();
+</script>
