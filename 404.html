@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+    404 — 「このページは、ありません」の一枚（2026-09-17）
+
+    【なぜ建てたか】この日、「なぜ、こう作ったか」のページを家の記録へ下ろした。
+      下ろすと、日記や外からそこへのリンクを踏んだ人が、GitHub の素っ気ない
+      英語の「404 File not found」を見ることになる。
+      ・英語は読めない人が居る（この家の決まりごと）
+      ・迷子にしない（思いやりは足し算でなく引き算＝どこで困らせるかから考える）
+      それだけの理由で建てた一枚。
+
+    【作り】母屋と同じ：外から何も読み込まない／絵文字を使わない／押す場所を大きく／
+      時刻で光が変わる（朝・昼・夕・夜）。色の値は母屋 index.html からそのまま写している。
+      ⚠️写しなので、母屋の色を変えた日は、ここも一緒に直すこと。
+      （母屋の CSS を外へ出して共有する手もあるが、それは「外から読み込む」ことになる＝
+        この家では、写して二人にするほうを選んだ。数が二つなら、目で追える。）
+
+    【書かないこと】なぜそのページが無くなったのか、は書かない。
+      来た人はページを探しに来たのであって、こちらの事情を聞きに来たのではない。
+      行き先だけ、大きく置く。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>このページは、ありません — 縁側屋</title>
+<meta name="robots" content="noindex">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* 時間帯ごとの色（母屋 index.html からの写し） */
+:root {
+  --sky-top:    #eaf2f8;
+  --sky-bottom: #fdfbf6;
+  --ink:        #2b2622;
+  --ink-soft:   #6b625a;
+  --card:       #ffffffcc;
+  --card-line:  #d9cfc2;
+  --accent:     #9c5f2d;
+}
+html[data-time="morning"] { --sky-top: #dbe9f4; --sky-bottom: #fdfcf7; }
+html[data-time="day"]     { --sky-top: #f2efe6; --sky-bottom: #fbf8f1; }
+html[data-time="evening"] { --sky-top: #f3cfa2; --sky-bottom: #fae7cd; --accent: #9d5426; }
+html[data-time="night"] {
+  --sky-top: #141c2b; --sky-bottom: #232c3d;
+  --ink: #efe9e0; --ink-soft: #a9a49c;
+  --card: #2b3446e6; --card-line: #45506a; --accent: #e0a061;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
+  color: var(--ink);
+  font-family: "ヒラギノ角ゴ ProN", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
+               "游ゴシック Medium", YuGothic, "メイリオ", Meiryo, sans-serif;
+  line-height: 1.9;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 640px; margin: 0 auto; padding: 56px 20px 72px; }
+
+/* 障子の桟（線だけ・絵文字も画像も使わない） */
+.shoji { display: block; width: 100%; max-width: 260px; margin: 0 auto 28px; }
+.shoji line, .shoji rect { stroke: var(--card-line); fill: none; stroke-width: 2; }
+
+h1 { font-size: clamp(22px, 5.6vw, 30px); margin: 0 0 18px; line-height: 1.6; font-weight: 700; }
+p  { font-size: clamp(15px, 4vw, 17px); margin: 0 0 14px; }
+.soft { color: var(--ink-soft); }
+
+.michi { margin-top: 34px; }
+.michi a {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: clamp(16px, 4.2vw, 18px);
+  font-weight: 700;
+}
+.michi a .setsumei { display: block; font-weight: 400; font-size: 14px; color: var(--ink-soft); margin-top: 6px; }
+.michi a:hover, .michi a:focus-visible { border-color: var(--accent); }
+.michi a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 障子。縁側屋の顔として一つだけ。線で描いてある（絵文字も画像も読み込まない） -->
+  <svg class="shoji" viewBox="0 0 260 150" aria-hidden="true">
+    <rect x="6" y="6" width="248" height="138" rx="3"/>
+    <line x1="130" y1="6" x2="130" y2="144"/>
+    <line x1="6" y1="52" x2="254" y2="52"/>
+    <line x1="6" y1="98" x2="254" y2="98"/>
+  </svg>
+
+  <h1>このページは、ありません</h1>
+
+  <p>お探しのページは、引っ越したか、もうありません。</p>
+  <p class="soft">わざわざ来ていただいたのに、申し訳ありません。<br>
+     行き先を置いておきますので、よろしければどうぞ。</p>
+
+  <div class="michi">
+    <a href="/">縁側屋の表紙へ
+      <span class="setsumei">置いてある道具が、ぜんぶ並んでいます</span></a>
+    <a href="/kad/">K'Ad蔵人（無料の2D CAD）
+      <span class="setsumei">何ができる道具か、手引き、コマンド辞書</span></a>
+    <a href="https://gcad.engawaya.com/">K'Ad蔵人 を、いますぐ開く
+      <span class="setsumei">ブラウザで動きます。入れるものはありません</span></a>
+    <a href="/nikki/">開発日記
+      <span class="setsumei">いつ・何が変わったかを、一件ずつ</span></a>
+  </div>
+
+</div>
+<script>
+/* 時刻で光を変える（母屋と同じ仕掛け・同じ境目） */
+(function () {
+  var h = new Date().getHours();
+  var t = (h >= 5 && h < 9)  ? 'morning'
+        : (h >= 9 && h < 16) ? 'day'
+        : (h >= 16 && h < 19)? 'evening'
+        :                      'night';
+  document.documentElement.setAttribute('data-time', t);
+})();
+</script>
+</body>
+</html>
