@@ -1237,6 +1237,16 @@ html[data-time="night"] .ice {
   line-height: 2.0;
   color: var(--ink-soft);
 }
+/* 土台の名乗り（2026-09-20）。玄関の言葉のすぐ下の、小さな一行。
+   補足の文（.nanya-hosoku）より一段小さく＝看板の主役は「何の道具か」のまま。
+   リンクは下線で名乗る（色だけだと、老眼の目にはリンクに見えない）。 */
+.dodai {
+  margin: 14px 0 0;
+  font-size: clamp(13px, 3.4vw, 15px);
+  line-height: 1.9;
+  color: var(--ink-soft);
+}
+.dodai a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .suwatte {
   margin: 22px 0 0;
   font-size: clamp(17px, 4.4vw, 21px);
@@ -1420,6 +1430,14 @@ html[data-time="night"] .ice {
       平面図から壁と柱を立ち上げて、立体で見ることもできます。<br>
       現場までの道と、行った場所を憶えておく道具。<br>
       ブラウザで開けば、そのまま使えます。登録もインストールも要りません。
+    </p>
+    <!-- 土台の名乗り（2026-09-20・博喜さんのご指定「この下に、Siv3D C++で開発をしている事を宣言」）。
+         ⚠️主語を「K'Ad蔵人」にしてあるのは、事実を守るため。
+         すぐ上の文には GeoMemory（現場までの道と、行った場所を憶えておく道具）も入っているが、
+         あちらは iPhone のアプリで、Siv3D ではない。「ここの道具は全部 Siv3D」と読める書き方をすると嘘になる。
+         同じ日に、軒先（お世話になっているところ）と K'Ad のページ「土台にしているもの」にも掛けた。 -->
+    <p class="dodai">
+      図面の道具「K'Ad蔵人」は、C++ と <a href="https://siv3d.github.io/ja-jp/" rel="noopener">Siv3D</a> で開発しています。
     </p>
     <p class="suwatte">用がなくても、座っていってください。</p>
   </div>
