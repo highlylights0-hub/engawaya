@@ -199,6 +199,25 @@ b { font-weight: 600; }
   white-space: nowrap;   /* 日付が「2026年8月2／日」と割れるのを防ぐ（スマホ幅で実測） */
 }
 .kazu tr:last-child th, .kazu tr:last-child td { border-bottom: none; }
+/* 🩸2026-09-20 に見つけた穴＝iPhone の縦画面（375px）で、この表だけが 24px はみ出して
+   横スクロールが出ていた。犯人は上の th の white-space: nowrap ——「借りているもの」
+   などの見出しが折り返せず、表が親より広くなっていた。
+   ⚠️文字は小さくしない（読めなくなっては本末転倒）。狭い画面でだけ、折り返しを許す。 */
+@media (max-width: 430px) {
+  .kazu th { white-space: normal; }
+  /* ⚠️見出し行（tr.midashi）の th も折り返す。上の nowrap は「日付が『2026年8月2／日』と
+     割れるのを防ぐ」ため（前の走者がスマホ幅で実測して入れたもの）＝**消していない**。
+     2026-09-20 に数えたら、日付の入った見出し行はこのページにもう一つも無く、いま
+     midashi の th に居るのは「借りているもの」「使っているもの」「参照しているもの」だけ。
+     日付が戻ってくる側（td）はそのままにしてあるので、あの穴は塞がったままです。 */
+  .kazu tr.midashi th { white-space: normal; }
+  /* 🩸ここで一度 overflow-wrap: anywhere を試して、戻した（2026-09-20）。
+     320px では確かにはみ出しが 0 になったが、**どこでも折る**ので
+     「M+ FONTS」が「M+／FO／NT／S」、「Claude」が「Cla／ude」と一文字ずつ割れて読めなくなった。
+     📌11px 横に動くことより、読めなくなることのほうがずっと悪い。
+     いまの姿＝375px（いまの iPhone の幅）で 0、320px（iPhone SE 第1世代）で 11px はみ出す。
+     次の走者へ：直すなら二列組みをやめる側（狭い画面では上下に積む）で。折り方ではありません。 */
+}
 .chu { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
 
 .sign {
@@ -279,16 +298,16 @@ footer {
          申し送りに立っている（番号を書かないか、リリースを出す道具に書かせるか）。 -->
     <div class="kama-row">
       <span class="kama-label">Windows に入れて使う版</span>
-      <span class="kama-val"><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">1.2.0（試用版）</a></span>
-      <span class="kama-date">2026年9月13日 ・ GitHub から ・ 初回に Windows の警告が出ることがあります</span>
+      <span class="kama-val"><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">1.3.0（試用版）</a></span>
+      <span class="kama-date">2026年9月20日 ・ GitHub から ・ 初回に Windows の警告が出ることがあります</span>
     </div>
     <!-- 2026-09-13 足した。Mac に入れて使う版（Apple の公証済み・中身は Windows版と同じ版）。
          行き先は Windows版と同じ /releases/latest（そのページに Windows と Mac の zip が並ぶ）。
          ⚠️Rosetta の終わりの日付は書かない（変わった日に嘘になる）。 -->
     <div class="kama-row">
       <span class="kama-label">Mac に入れて使う版</span>
-      <span class="kama-val"><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">1.2.0（試用版）</a></span>
-      <span class="kama-date">2026年9月13日 ・ GitHub から（名前に Mac の付いた zip）・ Apple の公証済み ・ Apple シリコンの Mac では Rosetta 2 を通して動きます</span>
+      <span class="kama-val"><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">1.3.0（試用版）</a></span>
+      <span class="kama-date">2026年9月20日 ・ GitHub から（名前に Mac の付いた zip）・ Apple の公証済み ・ <b>macOS 12（Monterey）以降</b> ・ Apple シリコンの Mac では Rosetta 2 を通して動きます</span>
     </div>
     <p class="kama-chu">
       <b>窯</b>（かま）は、この道具の版の数え方です。K'Ad蔵人を開くと、画面のいちばん下に
