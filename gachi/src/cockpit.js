@@ -251,7 +251,7 @@ function sms(g, [x, y, w, h], cb) {
   g.font = 'bold 18px Menlo, monospace';
   g.fillStyle = GREEN;
   g.textAlign = 'center';
-  g.fillText(`9X ${left}`, cx, cy + 92);
+  g.fillText(`${cb.missileSpec.name} ${left}`, cx, cy + 92);
   g.font = '15px Menlo, monospace';
   g.fillStyle = cb.gun.ammo === 0 ? AMB : GREEN;
   g.fillText(`GUN ${cb.gun.ammo}`, cx - 70, cy + 116);

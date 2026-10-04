@@ -33,6 +33,54 @@ export const R74 = {
   flareRate: 0.15,
 };
 
+// AGM-88 HARM（対レーダーミサイル）：敵のレーダー電波をたどる。地上目標へ、いったん上昇してから突っ込む（ロフト）
+export const HARM = {
+  ...AIM9X,
+  name: 'HARM',
+  ignite: 0.3,
+  burn: 7,
+  boostAcc: 110,
+  maxG: 22,
+  navN: 3,
+  kDrag: 0.00004,
+  life: 70,
+  arm: 1.5,
+  fuze: 12,
+  lethal: 8,
+  gimbal: 70 * DEG,
+  flareRate: 0,
+  loft: true,
+  scale: [2.4, 2.4, 1.45],
+};
+
+// SA-15（9M331 相当）：地上のレーダーが指令で誘導する。フレアは効かない。レーダーの見通しが切れると誘導も切れる
+export const SA15 = {
+  ...AIM9X,
+  name: 'SA-15',
+  ignite: 0.4,
+  burn: 4,
+  boostAcc: 250,
+  maxG: 30,
+  navN: 4,
+  kDrag: 0.0001,
+  life: 25,
+  arm: 0.8,
+  fuze: 15,
+  lethal: 10,
+  gimbal: 80 * DEG,
+  flareRate: 0,
+  radar: true,
+  scale: [1.9, 1.9, 1.0],
+};
+
+// ロフト：遠いうちは目標の上空（距離の 3 割、最大 4km）を狙い、近づくにつれて目標そのものへ
+const _lp = new THREE.Vector3();
+export function loftPoint(mpos, tpos, out = _lp) {
+  const dh = Math.hypot(tpos.x - mpos.x, tpos.z - mpos.z);
+  const k = Math.min(1, Math.max(0, (dh - 2500) / 4000));
+  return out.copy(tpos).setY(tpos.y + Math.min(4000, dh * 0.3) * k);
+}
+
 const _r = new THREE.Vector3(), _vrel = new THREE.Vector3(), _om = new THREE.Vector3();
 const _a = new THREE.Vector3(), _vh = new THREE.Vector3(), _los = new THREE.Vector3();
 const _tmp = new THREE.Vector3(), _d0 = new THREE.Vector3(), _d1 = new THREE.Vector3();
@@ -120,6 +168,7 @@ export class Missile {
     this.alive = true;
     this.smokeT = 0;
     this.mesh = buildMissileMesh();
+    if (spec.scale) this.mesh.scale.set(...spec.scale);
     this.mesh.position.copy(pos);
     scene.add(this.mesh);
     this.scene = scene;
@@ -173,7 +222,8 @@ export class Missile {
 
     this.prev.copy(this.pos);
     const s = this;
-    stepMissile(s, this.track ? this.track.pos : null, this.track ? this.track.vel : null, dt, sp);
+    const tp = this.track ? (sp.loft ? loftPoint(this.pos, this.track.pos) : this.track.pos) : null;
+    stepMissile(s, tp, this.track ? this.track.vel : null, dt, sp);
 
     // ---- 煙と炎 ----
     if (this.burning) {
@@ -278,6 +328,22 @@ export function flyoutTime(launcher, target, spec = AIM9X) {
       return s.vel.length() > 250 ? t : null;
     }
     if (!(s.age < spec.ignite + spec.burn) && s.vel.length() < 250) return null;
+  }
+  return null;
+}
+
+// 地上目標へ撃ったら届くか（ロフトして飛ばしてみる）。届くなら到達時間を返す
+export function flyoutGround(launcher, target, spec = HARM) {
+  const fwd = _tmp.set(0, 0, -1).applyQuaternion(launcher.quat);
+  const s = { pos: launcher.pos.clone(), vel: launcher.vel.clone().addScaledVector(fwd, 15), age: 0, latG: 0 };
+  const tp = target.pos, zero = new THREE.Vector3();
+  const lp = new THREE.Vector3();
+  const dt = 0.1;
+  for (let t = 0; t < spec.life; t += dt) {
+    const prev = s.pos.clone();
+    stepMissile(s, loftPoint(s.pos, tp, lp), zero, dt, spec);
+    if (s.age > spec.arm && closestApproach(prev, s.pos, tp, tp) < spec.lethal) return t;
+    if (!(s.age < spec.ignite + spec.burn) && s.vel.length() < 200) return null;
   }
   return null;
 }

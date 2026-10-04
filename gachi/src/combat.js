@@ -2,8 +2,8 @@
 import * as THREE from 'three';
 import { Enemy, SKILLS } from './enemy.js';
 import { Wreck } from './wreck.js';
-import { Missile, Flare, AIM9X, R74, flyoutTime } from './missile.js';
-import { Tunguska, AAA_SKILLS } from './ground.js';
+import { Missile, Flare, AIM9X, R74, HARM, SA15, flyoutTime, flyoutGround } from './missile.js';
+import { Tunguska, AAA_SKILLS, SamSite, SAM_SKILLS, lineOfSight } from './ground.js';
 import { STRIKE } from './world.js';
 import { missionById } from './missions.js';
 
@@ -67,6 +67,14 @@ export class Combat {
       }
     };
     this.onDetonate = (m, target, dist) => {
+      if (!target && m.spec === HARM) {
+        // 地面で炸裂：近くの地上目標に爆風
+        for (const u of this.ground) {
+          const d = u.alive ? u.pos.distanceTo(m.pos) : Infinity;
+          if (d < 30) { this.stats.mslHits += d < 12 ? 1 : 0; if (u.hit(d < 12 ? 150 : 35)) this.killGround(u); }
+        }
+        return;
+      }
       if (!target) return;
       const sp = m.spec;
       const dmg = dist < sp.lethal ? 150 : 40 + 50 * (1 - (dist - sp.lethal) / (sp.fuze - sp.lethal));
@@ -74,7 +82,7 @@ export class Combat {
       if (target === this.player) this.onHitPlayer(target, killed);
       else {
         if (m.owner === this.player) this.stats.mslHits++;
-        if (killed) this.kill(target);
+        if (killed) (target.ground ? this.killGround(target) : this.kill(target));
       }
     };
   }
@@ -92,17 +100,19 @@ export class Combat {
   setSkill(key) {
     this.skillKey = key;
     for (const e of this.enemies) e.skill = SKILLS[key];
-    for (const u of this.ground) u.skill = AAA_SKILLS[key];
+    for (const u of this.ground) u.skill = (u instanceof SamSite ? SAM_SKILLS : AAA_SKILLS)[key];
   }
 
   get def() { return missionById(this.missionId); }
+  // 自機のミサイル：対地の作戦で HARM を積むときは HARM、それ以外は AIM-9X
+  get missileSpec() { return this.def.weapon === 'harm' ? HARM : AIM9X; }
   get mode() { return this.def.kind === 'ground' ? 'strike' : 'felon'; }
 
   // ウェーブ・残り数・いまの目標の表示（HUD）
   statusText() {
     if (this.mode === 'strike') {
       const left = this.ground.filter((u) => u.alive).length;
-      return `${this.skill.name}  ${this.objectiveText()}  AAA ${left}/${this.ground.length}`;
+      return `${this.skill.name}  ${this.objectiveText()}  TGT ${left}/${this.ground.length}`;
     }
     const left = this.enemies.filter((e) => e.alive).length;
     return `${this.skill.name}  W${this.wave}  ${left}/${this.enemies.length}`;
@@ -144,15 +154,18 @@ export class Combat {
   startStrike() {
     const b = STRIKE.base, d = this.def;
     for (const [dx, dz] of d.aaa ?? []) {
-      this.ground.push(new Tunguska(this.scene, this.fx, b.x + dx, b.z + dz, 200, this.world.heightAt, this.skillKey));
+      this.ground.push(new Tunguska(this.scene, this.fx, b.x + dx, b.z + dz, 200, this.world.heightAt, this.skillKey, this));
+    }
+    for (const [dx, dz] of d.sam ?? []) {
+      this.ground.push(new SamSite(this.scene, this.fx, b.x + dx, b.z + dz, 180, this.world.heightAt, this.skillKey, this));
     }
     this.gunTargets = [...this.ground];
     this.recon = d.recon ? { done: false, prog: 0, ok: false, photo: null } : null;
     this.phase = 'ingress';
     this.waypoint = { pos: new THREE.Vector3(b.x, b.y + 30, b.z), label: d.recon ? 'RECON' : 'TGT' };
+    this.missileCount = d.msl ?? MISSILES_PER_WAVE;
     this.target = null;
     this.gun.reload();
-    this.missileCount = MISSILES_PER_WAVE;
     this.playerJet.setMissiles(this.missileCount);
     this.flareCount = FLARES_PER_WAVE;
     this.prevAmmo = this.gun.ammo;
@@ -255,17 +268,32 @@ export class Combat {
   fireMissile() {
     const p = this.player;
     if (this.missileCount <= 0 || p.crashed) return;
+    const spec = this.missileSpec;
+    // HARM は目標のレーダーをロックしてから（電波をたどるので、ロックなしでは撃てない）
+    if (spec === HARM && this.seeker.state !== 'lock') { this.message('HARM  NO LOCK', 1.5); return; }
     const st = this.playerJet.missileStations[MISSILES_PER_WAVE - this.missileCount];
     const pos = _v.set(st[0], st[1], st[2]).applyQuaternion(p.quat).add(p.pos).clone();
     const fwd = _f.set(0, 0, -1).applyQuaternion(p.quat);
     const vel = p.vel.clone().addScaledVector(fwd, 15);
     const track = this.seeker.state === 'lock' ? this.target : null;
-    this.missiles.push(new Missile(this.scene, p, pos, vel, track, AIM9X));
+    this.missiles.push(new Missile(this.scene, p, pos, vel, track, spec));
     this.missileCount--;
     this.stats.mslFired++;
     this.playerJet.setMissiles(this.missileCount);
     this.sound?.launch();
-    this.message(track ? 'FOX TWO' : 'FOX TWO (NO LOCK)', 1.5);
+    this.message(spec === HARM ? 'MAGNUM' : track ? 'FOX TWO' : 'FOX TWO (NO LOCK)', 1.5);
+    if (spec === HARM) track.harmWarning?.();          // 撃たれた側は（少し遅れて）気づく
+  }
+
+  // ---- 地対空ミサイル（SA-15）：真上に打ち上げてから向きを変える ----
+  fireSam(u) {
+    const pos = u.eye.clone().add(_v.set(0, 1.5, 0));
+    const vel = u.aimLauncher(this.player).vel.clone().addScaledVector(_f.set(0, 0, -1).applyQuaternion(u.launcher.quat), 20);
+    const m = new Missile(this.scene, u, pos, vel, this.player, SA15);
+    m.lostT = 0;
+    this.missiles.push(m);
+    this.fx.dust(pos);                       // 打ち上げの煙
+    this.sound?.explosion(pos, false);
   }
 
   // ---- 敵機のミサイル発射 ----
@@ -294,6 +322,13 @@ export class Combat {
     this.flares.push(new Flare(p, pos, vel));
     this.flareCount--;
     this.stats.flares++;
+    // チャフ（フレアと一緒にまく）：レーダー誘導のミサイルが、まいた雲に騙されて追尾を失うことがある
+    for (const m of this.missiles) {
+      if (!m.alive || !m.spec.radar || m.track !== p) continue;
+      if (m.pos.distanceTo(p.pos) > 6000) continue;
+      const ch = (SAM_SKILLS[this.skillKey] ?? SAM_SKILLS.veteran).chaff;
+      if (Math.random() < ch / 2) m.track = null;
+    }
   }
 
   // 敵機のフレア放出
@@ -312,6 +347,13 @@ export class Combat {
       e.updateBullets(dt, p, this.fx, hAt, this.onHitPlayer);
     }
     for (const u of this.ground) u.update(dt, p, hAt, this.onHitPlayer);
+    // 指令誘導のミサイル：撃った SAM のレーダーが自機を見失って 0.4 秒たつと、誘導が切れる
+    for (const m of this.missiles) {
+      if (!m.spec.radar || !m.track) continue;
+      const u = m.owner;
+      if (u.alive && u.visible) m.lostT = 0;
+      else if ((m.lostT += dt) > 0.4) m.track = null;
+    }
     this.gun.update(dt, p, trigger, this.gunTargets, this.fx, hAt, this.onHitEnemy);
 
     // プレイヤーのフレア（0.12 秒間隔）
@@ -332,6 +374,16 @@ export class Combat {
     for (const m of this.missiles) {
       if (m.owner === p) {
         // ロックせずに撃ったミサイルは、発射後しばらく前方の熱源を探す
+        if (m.spec === HARM) {
+          // 目標がレーダーを切ったら、最後に受信した位置へ（電波の方向だけが頼りなので、数十 m ずれる）
+          if (m.track?.ground && !m.track.emitting && !m.memory) {
+            const a = Math.random() * Math.PI * 2, r = 20 + Math.random() * 50;
+            m.memory = { pos: m.track.pos.clone().add(_v.set(Math.cos(a) * r, -2, Math.sin(a) * r)), vel: new THREE.Vector3(), alive: true };
+            m.track = m.memory;
+          }
+          m.update(dt, this.ground, this.flares, this.fx, hAt, this.onDetonate);
+          continue;
+        }
         if (!m.track && m.age < 3) m.track = this.acquireAfterLaunch(m);
         m.update(dt, this.enemies, this.flares, this.fx, hAt, this.onDetonate);
       } else {
@@ -475,6 +527,7 @@ export class Combat {
       sk.state = 'off'; sk.acq = 0; sk.inRange = false;
       return;
     }
+    if (this.missileSpec === HARM) { this.updateHarm(dt); return; }
     let canSee = false;
     if (t && t.alive && !t.ground) {             // 9X は空対空（地上目標はロックしない）
       _v.subVectors(t.pos, p.pos);
@@ -509,6 +562,35 @@ export class Combat {
     }
   }
 
+  // ---- HARM：機首の前 ±35° にいる敵レーダーの電波を受信してロック。届くか（ロフトで飛ばしてみる）を判定 ----
+  updateHarm(dt) {
+    const sk = this.seeker, p = this.player, t = this.target;
+    let canSee = false;
+    if (t && t.alive && t.ground) {
+      _v.subVectors(t.pos, p.pos);
+      const range = _v.length();
+      _v.divideScalar(range);
+      const off = Math.acos(Math.min(1, _v.dot(_f.set(0, 0, -1).applyQuaternion(p.quat))));
+      sk.losT = (sk.losT ?? 0) - dt;
+      if (sk.losT <= 0 || sk.losTarget !== t) {
+        sk.losT = 0.2;
+        sk.losTarget = t;
+        sk.los = range < 45000 && lineOfSight(t.eye, p.pos, this.world.heightAt);
+      }
+      canSee = t.emitting && sk.los && off < (sk.state === 'lock' ? 60 : 35) * DEG;
+      sk.range = range;
+    }
+    if (canSee) { sk.acq += dt; sk.state = sk.acq > 0.6 ? 'lock' : 'search'; }
+    else { sk.acq = 0; sk.state = 'idle'; }
+    sk.checkT -= dt;
+    if (sk.state !== 'lock') { sk.inRange = false; sk.tof = null; }
+    else if (sk.checkT <= 0) {
+      sk.checkT = 0.4;
+      sk.tof = flyoutGround(p, t, HARM);
+      sk.inRange = sk.tof !== null && sk.range > 1500;
+    }
+  }
+
   // 機首に近く、距離の近い敵を選ぶ
   pickTarget() {
     const p = this.player;
@@ -536,7 +618,7 @@ export class Combat {
   nearestTti() {
     let tti = null;
     for (const m of this.missiles) {
-      if (!m.track || !m.track.ac) continue;
+      if (m.owner !== this.player || !m.track || !(m.track.ac || m.track.ground)) continue;
       _v.subVectors(m.track.pos, m.pos);
       const r = _v.length();
       const vc = -_w.subVectors(m.track.vel, m.vel).dot(_v.normalize());
@@ -570,7 +652,7 @@ export class Combat {
   render(dt) {
     for (const u of this.ground) {
       u.sync(dt);
-      u.gun.render(this.player);
+      u.gun?.render(this.player);
     }
     for (const e of this.enemies) {
       e.sync(dt);

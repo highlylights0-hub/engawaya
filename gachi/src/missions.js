@@ -16,8 +16,12 @@ export const MISSIONS = [
     id: 'm2', no: 2, kind: 'ground', camp: 'OPERATION NEEDLE', code: 'BROKEN FANG', title: '牙を折れ',
     story: '写真の解析で、基地のまわりに対空陣地と地対空ミサイルが並んでいるのが分かった。'
       + '本丸を叩く前に、その牙を折っておく。',
-    objectives: ['基地を守る対空陣地をすべて破壊', '味方の基地まで帰還（RTB）'],
-    soon: true,
+    objectives: ['味方の基地から離陸', '盆地を守る対空砲 2 基と、地対空ミサイル SA-15 を 1 基、すべて破壊', '味方の基地まで帰還（RTB）'],
+    tips: '今回は AGM-88 HARM（敵のレーダー電波をたどるミサイル）を 4 発。谷から一瞬上がって見通しを取り、LOCK → SHOOT で撃ったら谷へ戻る（ポップアップ攻撃）。'
+      + 'SA-15 のミサイルにフレアは効かない ── 尾根に隠れてレーダーの見通しを切るか、V のチャフで。',
+    weapon: 'harm', msl: 4, killAll: true,
+    aaa: [[700, -300], [-650, 450]],
+    sam: [[1300, 750]],          // 盆地の東の縁：谷底を低く飛べば隠れ、1000m ほど上がると約 6km 先から見える
   },
   {
     id: 'm3', no: 3, kind: 'ground', camp: 'OPERATION NEEDLE', code: 'NEEDLE', title: '針の穴を通せ',

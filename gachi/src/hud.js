@@ -289,7 +289,7 @@ export class Hud {
     g.fillStyle = cb.gun.ammo === 0 ? AMBER : GREEN;
     g.fillText(cb.gun.ammo === 0 ? 'GUN XXX' : `GUN ${cb.gun.ammo}`, box.l - 18 * u, C.y - hh * 0.75 - 40 * u);
     g.fillStyle = cb.missileCount === 0 ? AMBER : GREEN;
-    g.fillText(`9X ${cb.missileCount}`, box.l - 18 * u, C.y - hh * 0.75 - 22 * u);
+    g.fillText(`${cb.missileSpec.name} ${cb.missileCount}`, box.l - 18 * u, C.y - hh * 0.75 - 22 * u);
     g.fillStyle = cb.flareCount === 0 ? AMBER : GREEN;
     g.fillText(`FLR ${cb.flareCount}`, box.l - 18 * u, C.y - hh * 0.75 - 4 * u);
     g.fillStyle = GREEN;
@@ -330,6 +330,12 @@ export class Hud {
       if (inBox(ts)) {
         const b = 11 * u;
         g.strokeRect(ts.x - b, ts.y - b, b * 2, b * 2);
+        // 地上目標がレーダーを切っている（HARM がロックできない）
+        if (d.ground && cb.missileSpec.name === 'HARM' && !d.emitting) {
+          g.save(); g.textAlign = 'center'; g.fillStyle = AMBER;
+          g.fillText('SILENT', ts.x, ts.y + b + 14 * u);
+          g.restore();
+        }
       } else {
         // ターゲットロケーターライン：HUD 中心からターゲットの方向へ
         _d.subVectors(d.pos, this.camera.position).applyQuaternion(_qInv.copy(this.camera.quaternion).invert());
@@ -791,7 +797,7 @@ export class Hud {
     // 対空砲：■ と機関砲の有効射程の輪（追尾されていたら赤く点滅）
     for (const x of gnd) {
       const [gx, gy] = toScr(x.pos, scale);
-      const rr = x.spec.gunRange * scale;
+      const rr = x.spec.ring * scale;
       const hot = x.locked;
       g.setLineDash([4 * u, 4 * u]);
       g.strokeStyle = hot && Math.sin(this.time * 10) > 0 ? 'rgba(255,80,64,0.9)' : 'rgba(255,110,90,0.5)';
@@ -803,7 +809,7 @@ export class Hud {
       if (x === cb.target) { g.strokeStyle = GREEN; g.strokeRect(gx - 10 * u, gy - 10 * u, 20 * u, 20 * u); }
       g.fillStyle = 'rgba(255,200,190,0.9)';
       g.textAlign = 'left';
-      g.fillText('AAA', gx + 9 * u, gy + 9 * u);
+      g.fillText(x.spec.label, gx + 9 * u, gy + 9 * u);
     }
 
     let status = null;

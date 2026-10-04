@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { Gun, K_DRAG } from './gun.js';
 import { GRAV } from './flight.js';
+import { flyoutTime, SA15 } from './missile.js';
 
 const DEG = Math.PI / 180;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -11,16 +12,18 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 // 腕前（ヘルプの THREAT と共通のキー）
 //   acquire: 追尾が固まるまでの秒 / filter: 目標の速度・加速度の推定の遅れ（秒） / err: 追尾誤差（rad）
 export const AAA_SKILLS = {
-  rookie: { acquire: 3.5, filter: 0.8, err: 0.010, burst: [0.8, 1.4], pause: [1.2, 2.0] },
-  veteran: { acquire: 2.2, filter: 0.45, err: 0.005, burst: [1.2, 2.0], pause: [0.6, 1.2] },
-  ace: { acquire: 1.4, filter: 0.3, err: 0.003, burst: [1.6, 2.6], pause: [0.4, 0.8] },
+  // dark: HARM を撃たれたと気づいたら、レーダーを切って隠れる確率
+  rookie: { acquire: 3.5, filter: 0.8, err: 0.010, burst: [0.8, 1.4], pause: [1.2, 2.0], dark: 0 },
+  veteran: { acquire: 2.2, filter: 0.45, err: 0.005, burst: [1.2, 2.0], pause: [0.6, 1.2], dark: 0.3 },
+  ace: { acquire: 1.4, filter: 0.3, err: 0.003, burst: [1.6, 2.6], pause: [0.4, 0.8], dark: 0.5 },
 };
 
 export const TUNGUSKA = {
-  name: 'TUNGUSKA', rwr: '19',
+  name: 'TUNGUSKA', rwr: '19', label: 'AAA',
   hp: 60, radius: 5.5,
-  radarRange: 16000,       // 捜索レーダー（RWR に出る）
+  radarRange: 12000,       // 捜索レーダーを出す距離（電波管制：これより遠いと黙っている＝RWR にも HARM にも見えない）
   gunRange: 4000,          // 2A38M 30mm の有効射程
+  ring: 4000,              // 戦術レーダーに描く射程の輪
   slewAz: 100 * DEG, slewEl: 70 * DEG, elMin: -6 * DEG, elMax: 82 * DEG,
 };
 
@@ -112,8 +115,10 @@ function buildTunguskaModel() {
 }
 
 export class Tunguska {
-  constructor(scene, fx, x, z, headingDeg, heightAt, skillKey = 'veteran') {
+  constructor(scene, fx, x, z, headingDeg, heightAt, skillKey = 'veteran', combat = null) {
     this.ground = true;
+    this.combat = combat;
+    this.darkT = 0;
     this.spec = TUNGUSKA;
     this.callsign = TUNGUSKA.name;
     this.fx = fx;
@@ -191,13 +196,14 @@ export class Tunguska {
       if (this.smokeT <= 0) { this.smokeT = 0.12; fx.damageSmoke(this.pos, this.vel, true); }
     }
     const s = this.skill, T = TUNGUSKA;
+    this.updateRadar(dt, this.combat);
 
     // ---- 探知：レーダー範囲内で見通しがあるか（0.1 秒ごと） ----
     this.range = player.pos.distanceTo(this.eye);
     this.losT -= dt;
     if (this.losT <= 0) {
       this.losT = 0.1;
-      this.visible = !player.crashed && this.range < T.radarRange && lineOfSight(this.eye, player.pos, heightAt);
+      this.visible = !player.crashed && this.emitting && lineOfSight(this.eye, player.pos, heightAt);
     }
     if (this.visible) {
       this.trackT += dt;
@@ -276,10 +282,207 @@ export class Tunguska {
   }
 }
 
+// ---- SA-15 風の地対空ミサイル車両（9K331 Tor 相当） ----
+//   捜索レーダーで探知 → 追尾（acquire 秒）→ 届くなら垂直に打ち上げ → 追尾レーダーが見えている間だけ指令で誘導。
+//   尾根の陰に入って見通しが切れると、飛んでいるミサイルも誘導を失う（Combat が判定）
+export const SAM_SKILLS = {
+  rookie: { acquire: 4.5, maxTof: 9, cool: 14, chaff: 0.35, dark: 0.2 },
+  veteran: { acquire: 3.0, maxTof: 12, cool: 9, chaff: 0.22, dark: 0.55 },
+  ace: { acquire: 2.0, maxTof: 14, cool: 6, chaff: 0.12, dark: 0.8 },
+};
+export const TOR = {
+  name: 'SA-15', rwr: '15', label: 'SAM',
+  hp: 60, radius: 5.5,
+  radarRange: 15000,       // レーダーを出す距離（電波管制）
+  ring: 12000,
+  missiles: 8,
+};
+
+function buildSamModel() {
+  const sand = new THREE.MeshStandardMaterial({ color: 0x6b6a46, roughness: 0.85, metalness: 0.1 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x2a2c27, roughness: 0.9 });
+  const steel = new THREE.MeshStandardMaterial({ color: 0x3b3e3b, roughness: 0.5, metalness: 0.6 });
+  const mats = [sand, dark, steel];
+  const box = (w, h, l, m, x, y, z, parent) => {
+    const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, l), m);
+    o.position.set(x, y, z);
+    parent.add(o);
+    return o;
+  };
+  const g = new THREE.Group();
+  box(3.0, 1.0, 7.2, sand, 0, 1.05, 0, g);
+  for (const s of [-1, 1]) {
+    box(0.6, 0.8, 7.0, dark, s * 1.5, 0.45, 0, g);
+    for (let i = 0; i < 6; i++) {
+      const w = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.2, 12), steel);
+      w.rotation.z = Math.PI / 2;
+      w.position.set(s * 1.83, 0.4, -2.7 + i * 1.08);
+      g.add(w);
+    }
+  }
+  // 箱形の砲塔：中に垂直発射のミサイル 8 発、前面に平らな追尾レーダー、上に回る捜索レーダー
+  const turret = new THREE.Group();
+  turret.position.set(0, 1.55, 0.6);
+  g.add(turret);
+  box(2.8, 2.2, 3.6, sand, 0, 1.1, 0, turret);
+  const panel = box(1.8, 1.6, 0.25, steel, 0, 1.3, -1.9, turret);
+  panel.rotation.x = -0.25;
+  const search = new THREE.Group();
+  search.position.set(0, 2.5, 0.8);
+  turret.add(search);
+  box(0.3, 0.5, 0.3, dark, 0, -0.1, 0, search);
+  const ant = box(3.0, 0.7, 0.18, steel, 0, 0.35, 0, search);
+  ant.rotation.x = 0.3;
+  // 屋根のハッチ（垂直発射口）
+  for (let i = 0; i < 4; i++) for (const s of [-1, 1]) box(0.5, 0.06, 0.5, dark, s * 0.6, 2.22, -0.9 + i * 0.6, turret);
+  return { group: g, turret, search, mats };
+}
+
+export class SamSite {
+  constructor(scene, fx, x, z, headingDeg, heightAt, skillKey, combat) {
+    this.ground = true;
+    this.spec = TOR;
+    this.callsign = TOR.name;
+    this.fx = fx;
+    this.combat = combat;
+    this.skill = SAM_SKILLS[skillKey];
+    this.model = buildSamModel();
+    this.group = this.model.group;
+    const gy = heightAt(x, z);
+    this.base = new THREE.Vector3(x, gy, z);
+    this.hdg = headingDeg * DEG;
+    this.group.position.copy(this.base);
+    this.group.rotation.y = -this.hdg;
+    scene.add(this.group);
+    this.pos = new THREE.Vector3(x, gy + 2.8, z);
+    this.vel = new THREE.Vector3();
+    this.acc = new THREE.Vector3();
+    this.radius = TOR.radius;
+    this.hp = TOR.hp;
+    this.alive = true;
+    this.eye = new THREE.Vector3(x, gy + 5.5, z);
+    this.missiles = TOR.missiles;
+    this.darkT = 0;
+    this.state = 'search';
+    this.visible = false;
+    this.losT = 0;
+    this.trackT = 0;
+    this.lostT = 0;
+    this.cool = 4;
+    this.checkT = 0;
+    this.az = this.hdg;
+    this.smokeT = 0;
+    this.range = Infinity;
+    // flyoutTime 用の「発射機」：真上に向けて打ち上げる
+    this.launcher = { pos: this.eye.clone(), vel: new THREE.Vector3(0, 30, 0), quat: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2) };
+  }
+
+  get locked() { return this.alive && this.state === 'track'; }
+  get firing() { return false; }
+
+  hit(dmg) {
+    if (!this.alive) return false;
+    this.hp -= dmg;
+    if (this.hp <= 0) {
+      this.hp = 0;
+      this.alive = false;
+      for (const m of this.model.mats) m.color.multiplyScalar(0.22);
+      return true;
+    }
+    return false;
+  }
+
+  update(dt, player, heightAt) {
+    const fx = this.fx;
+    if (!this.alive) {
+      this.smokeT -= dt;
+      if (this.smokeT <= 0) { this.smokeT = 0.1; fx.burn(this.pos, 1); }
+      return;
+    }
+    if (this.hp < 35) {
+      this.smokeT -= dt;
+      if (this.smokeT <= 0) { this.smokeT = 0.12; fx.damageSmoke(this.pos, this.vel, true); }
+    }
+    const s = this.skill;
+    this.range = player.pos.distanceTo(this.eye);
+    this.updateRadar(dt, this.combat);
+    this.losT -= dt;
+    if (this.losT <= 0) {
+      this.losT = 0.1;
+      this.visible = !player.crashed && this.emitting && lineOfSight(this.eye, player.pos, heightAt);
+    }
+    if (this.visible) { this.trackT += dt; this.lostT = 0; }
+    else { this.lostT += dt; if (this.lostT > 1.5) this.trackT = 0; }
+    this.state = this.trackT > s.acquire ? 'track' : 'search';
+    // 砲塔は目標のほうへ（見えていなければゆっくり見回す）
+    const want = this.state === 'track' || this.visible
+      ? Math.atan2(player.pos.x - this.pos.x, -(player.pos.z - this.pos.z)) : this.az + 0.3;
+    let d = want - this.az;
+    d = Math.atan2(Math.sin(d), Math.cos(d));
+    this.az += Math.max(-1.2 * dt, Math.min(1.2 * dt, d));
+
+    // 発射：追尾していて、届くと分かり、前の弾から十分たっていて、誘導中の弾が 2 発未満
+    this.cool -= dt;
+    this.checkT -= dt;
+    if (this.state === 'track' && this.visible && this.missiles > 0 && this.cool <= 0 && this.checkT <= 0) {
+      this.checkT = 0.5;
+      const guiding = this.combat.missiles.filter((m) => m.alive && m.owner === this).length;
+      this.aimLauncher(player);
+      const tof = guiding < 2 ? flyoutTime(this.launcher, player, SA15) : null;
+      if (tof !== null && tof < s.maxTof) {
+        this.combat.fireSam(this);
+        this.missiles--;
+        this.cool = s.cool;
+      }
+    }
+  }
+
+  // 垂直に打ち上げた直後、ガス噴射で目標の方へ傾ける（Tor の方式）＝最初から目標寄りの上向きで飛び出す
+  aimLauncher(player) {
+    const L = this.launcher;
+    _d.subVectors(player.pos, this.eye).normalize();
+    _d.y = Math.max(_d.y, 0) + 0.5;
+    _d.normalize();
+    L.vel.copy(_d).multiplyScalar(30);
+    L.quat.setFromUnitVectors(_w.set(0, 0, -1), _d);
+    return L;
+  }
+
+  sync(dt) {
+    const m = this.model;
+    m.turret.rotation.y = -(this.az - this.hdg);
+    if (this.alive) m.search.rotation.y += dt * Math.PI * 1.2;
+  }
+
+  dispose(scene) { scene.remove(this.group); }
+}
+
+// ---- レーダーの電波：出している間だけ探知でき、RWR に映り、HARM にロックされる ----
+//   HARM を撃たれたと気づくと（1〜2.5 秒後）、腕前に応じた確率でレーダーを切って 14〜20 秒隠れる（その間は撃てない）
+function radarMixin(C) {
+  Object.defineProperty(C.prototype, 'emitting', {
+    get() { return this.alive && this.darkT <= 0 && this.range < this.spec.radarRange; },
+  });
+  C.prototype.harmWarning = function () {
+    if (this.alertT === undefined || this.alertT <= 0) this.alertT = 1 + Math.random() * 1.5;
+  };
+  C.prototype.updateRadar = function (dt, combat) {
+    this.darkT = Math.max(0, (this.darkT ?? 0) - dt);
+    if (this.alertT > 0 && (this.alertT -= dt) <= 0) {
+      if (Math.random() < this.skill.dark) {
+        this.darkT = 14 + Math.random() * 6;
+        combat?.message(`${this.callsign}  SHUT DOWN`, 3);
+      }
+    }
+  };
+}
+
 function gauss() {
   return Math.sqrt(-2 * Math.log(Math.random() + 1e-12)) * Math.cos(2 * Math.PI * Math.random());
 }
 function rand([a, b]) { return a + (b - a) * Math.random(); }
+radarMixin(Tunguska);
+radarMixin(SamSite);
 
 // ---- 核開発基地の建物（いまは景色。次の段階で破壊目標にする） ----
 export function buildBase(scene, base, heightAt) {
