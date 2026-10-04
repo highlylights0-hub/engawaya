@@ -116,10 +116,12 @@ CSSファイルを作って読み込ませてはいけません（憲法①が�
 
 | 表 | 棟 |
 |---|---|
-| 母屋 | `index.html` `naze/` `nikki/` `koe/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `kad/` `kad/jisho/` |
+| 母屋 | `index.html` `naze/` `nikki/` `koe/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `kad/` `kad/jisho/` `404.html` |
 | 選ばせる | `oto/` `hanashiaite/` `asobiba/narabe/` `indexplayland.html` |
 | 遊び場 | `asobiba/` `asobiba/suikawari/` `asobiba/renga/` |
 | 手引き | `kad/tebiki/` とその全ページ（`prefers-color-scheme` で二枚） |
+
+📌`404.html`（迷子になった人の札）は母屋の表を写している。2026-10-04 に棟割りへ載せ忘れが見つかり、足した（博喜さんのご依頼）。
 
 `kad/tebiki/` だけは時刻の札ではなく、**閲覧機の設定**（`prefers-color-scheme`）で明暗を切り替えます。
 34枚を配る作りで、時刻を測るJSを34回写したくなかったためです。

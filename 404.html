@@ -68,6 +68,9 @@ body {
 h1 { font-size: clamp(22px, 5.6vw, 30px); margin: 0 0 18px; line-height: 1.6; font-weight: 700; }
 p  { font-size: clamp(15px, 4vw, 17px); margin: 0 0 14px; }
 .soft { color: var(--ink-soft); }
+/* 総括のリンク色（母屋と同じ）。いまのリンクは下の .michi a が上書きするので見た目は変わらない。
+   足したリンクが閲覧機の既定の青（#0000EE）で夜の地に沈まないための予防（2026-10-04） */
+a { color: var(--accent); }
 
 .michi { margin-top: 34px; }
 .michi a {
