@@ -15,6 +15,7 @@ import { Wreck } from './wreck.js';
 import { KillCam } from './killcam.js';
 import { GEffects } from './gforce.js';
 import { buildCockpit } from './cockpit.js';
+import { ClipRecorder } from './recorder.js';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -45,6 +46,11 @@ const rig = new CameraRig(camera, renderer.domElement);
 const hud = new Hud(document.getElementById('hud'));
 const help = document.getElementById('help');
 const debrief = document.getElementById('debrief');
+// 撃墜クリップ：撃墜の少し前からキルカメラまでを自動で動画保存（K で ON / OFF）
+const clips = new ClipRecorder({
+  gl: renderer.domElement, hud: hud.canvas, geff, killcam: killcam.el, sound,
+  onSaved: () => showToast('🎬 撃墜クリップを保存しました（ダウンロード）', 3500),
+});
 
 const START = { pos: new THREE.Vector3(0, 3500, 58000), heading: 0, speed: 230, throttle: 0.8 };
 function restart() {
@@ -167,6 +173,10 @@ function tick(dt, render) {
     else if (code === 'KeyI') input.invertPitch = !input.invertPitch;
     else if (code === 'KeyU') hud.visible = !hud.visible;
     else if (code === 'KeyN') hud.showData = !hud.showData;
+    else if (code === 'KeyK') {
+      clips.setEnabled(!clips.enabled);
+      showToast(!clips.supported ? 'このブラウザでは録画できません' : `🎬 撃墜クリップの自動保存: ${clips.enabled ? 'ON' : 'OFF'}`);
+    }
     else if (code === 'Tab') hud.tacMode = { small: 'large', large: 'off', off: 'small' }[hud.tacMode];
     else if (code === 'KeyT') combat.cycleTarget();
     else if (code === 'Digit1' || code === 'Digit2' || code === 'Digit3') {
@@ -203,6 +213,7 @@ function tick(dt, render) {
     // 敵を撃墜したらキルカメラ（自機が落ちている間は出さない）
     if (combat.killEvent) {
       if (!state.dead) killcam.start(combat.killEvent.w, combat.killEvent.text);
+      clips.kill(combat.killEvent.text);
       combat.killEvent = null;
     }
     killcam.update(dt);
@@ -252,6 +263,7 @@ function tick(dt, render) {
   sound.setTone(halted || ac.crashed ? 'off' : sk === 'lock' || sk === 'search' ? sk : 'off');
   sound.setRwr(halted || ac.crashed ? 'off'
     : combat.incoming.length ? 'missile' : combat.rwr.some((c) => c.locked) ? 'lock' : 'off');
+  clips.update(dt, halted);
   sound.update(dt, {
     player: ac, camera, enemies: combat.enemies, gunFiring: gun.firing,
     paused: halted, cockpit: rig.mode === 'cockpit',
@@ -264,13 +276,14 @@ function tick(dt, render) {
   state.lookAway = rig.mode === 'cockpit' && (Math.abs(rig.lookYaw) > 0.4 || Math.abs(rig.lookPitch) > 0.35);
   hud.canvas.style.visibility = state.helpOpen ? 'hidden' : '';   // ヘルプの HUD 図と重ならないように
   hud.draw(ac, state, camera, halted ? 0 : dt, combat);
+  clips.capture();
 }
 requestAnimationFrame(frame);
 
 // デバッグ用
 // step(秒): 画面が非表示でも時間を進めて確認できる
 window.__game = {
-  ac, input, camera, rig, world, hud, gun, fx, combat, sound, restart, renderer, jet, scene, buildJet, wreck, state, openHelp, closeHelp, killcam, geff, showDebrief,
+  ac, input, camera, rig, world, hud, gun, fx, combat, sound, restart, renderer, jet, scene, buildJet, wreck, state, openHelp, closeHelp, killcam, geff, showDebrief, clips,
   freeze: false,
   // 機体の見た目確認：view('f22' | 'su57', 方位°, 仰角°, 距離m)。freeze 中に使う
   view(which, azDeg, elDeg, dist = 20) {

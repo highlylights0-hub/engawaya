@@ -36,6 +36,7 @@ export class Sound {
     comp.threshold.value = -14;
     comp.ratio.value = 4;
     this.master.connect(comp).connect(ctx.destination);
+    this.out = comp;
 
     // ノイズ（白 / 茶色）
     const len = ctx.sampleRate * 2;
@@ -53,6 +54,16 @@ export class Sound {
     this.initRwr();
     this.initEngine();
     this.initGun();
+  }
+
+  // 撃墜クリップの録画用：ゲームの音（スピーカーに出しているのと同じもの）のトラック
+  captureTrack() {
+    if (!this.ctx) return null;
+    if (!this.recDest) {
+      this.recDest = this.ctx.createMediaStreamDestination();
+      this.out.connect(this.recDest);
+    }
+    return this.recDest.stream.getAudioTracks()[0];
   }
 
   // ---- シーカートーン：矩形波 + 周波数をゆらす LFO ----

@@ -48,14 +48,34 @@ export class GEffects {
       ? `grayscale(${gray.toFixed(2)}) brightness(${(1 - 0.5 * tunnel).toFixed(2)})` : '';
     if (s < 0.3 && this.red < 0.01) {
       this.el.style.opacity = 0;
+      this.overlay = null;
       return;
     }
     // トンネル：中心は見え、周りから暗くなる
     const r0 = 70 - 62 * tunnel, r1 = r0 + 25;
     const redA = this.red * 0.75;
+    const c0 = `rgba(${redA > 0 ? '120,0,0' : '0,0,0'},${(redA * 0.6).toFixed(2)})`;
+    const c1 = `rgba(${redA > 0 ? '90,0,0' : '0,0,0'},${Math.max(dark, redA).toFixed(2)})`;
+    this.overlay = this.gloc > 0 ? { black: true } : { r0, r1, c0, c1 };
     this.el.style.opacity = 1;
     this.el.style.background = this.gloc > 0
       ? '#000'
-      : `radial-gradient(ellipse at 50% 50%, rgba(${redA > 0 ? '120,0,0' : '0,0,0'},${(redA * 0.6).toFixed(2)}) ${r0.toFixed(0)}%, rgba(${redA > 0 ? '90,0,0' : '0,0,0'},${Math.max(dark, redA).toFixed(2)}) ${r1.toFixed(0)}%)`;
+      : `radial-gradient(ellipse at 50% 50%, ${c0} ${r0.toFixed(0)}%, ${c1} ${r1.toFixed(0)}%)`;
+  }
+
+  // 撃墜クリップの録画用：#gfx と同じ暗がりをキャンバスに描く（CSS の ellipse farthest-corner に合わせる）
+  paint(ctx, w, h) {
+    const o = this.overlay;
+    if (!o) return;
+    if (o.black) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h); return; }
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(1, h / w);
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, (w / 2) * Math.SQRT2);
+    g.addColorStop(Math.min(1, o.r0 / 100), o.c0);
+    g.addColorStop(Math.min(1, o.r1 / 100), o.c1);
+    ctx.fillStyle = g;
+    ctx.fillRect(-w, -w, 2 * w, 2 * w);
+    ctx.restore();
   }
 }
