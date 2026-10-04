@@ -1,0 +1,245 @@
+<!doctype html>
+<!--
+    ────────────────────────────────────────────────
+      ガチ空戦（gachi/）
+
+      この部屋を建てた理由
+        2026-10-04、博喜さんと蔵人（Claude）が一日かけて少しずつ作った、本気のドッグファイト。
+        博喜さんの言葉「ゴテゴテは子供用で、父さんはガチ空戦」。表紙ではゴテゴテ空戦の真上に置いた。
+
+      中身
+        ・自機 F-22 風 vs 敵機 Su-57 風。本物に近い飛行モデル（揚力・抗力・推力・G リミット）
+        ・機関砲（リード計算ガンサイト）、AIM-9X（シーカー・ロックオントーン・比例航法）、フレア
+        ・RWR / ミサイル警報、戦術レーダー（敵の背後を取る練習用）、G によるブラックアウト
+        ・全 5 ウェーブのミッションとデブリーフィング（評価 S〜D）
+
+      作り方
+        ・正はデスクトップの F-Dogfight フォルダ（開発用）。ここはその写し。
+          直すときは F-Dogfight で直してから、index.html・style.css・src/ をここへ写す。
+        ・3D は Three.js を CDN から読み込む（憲法①は 2026-10-04 に撤廃）。
+        ・キーボードと PS などのコントローラーで遊ぶ。スマホの指の操作には、まだ対応していない。
+    ────────────────────────────────────────────────
+-->
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ガチ空戦 — 縁側屋</title>
+  <meta name="description" content="縁側屋の遊び場。F-22 と Su-57 の本気のドッグファイト。本物に近い飛行モデル、ミサイル、フレア、G によるブラックアウト。無料・ブラウザだけで遊べます。" />
+  <link rel="icon" href="../favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <canvas id="hud"></canvas>
+  <div id="gfx"></div>
+
+  <!-- ヘルプ：F-22 のグラスコクピット風。上はキャノピー越しの景色 + HUD コンバイナー、下は計器盤 -->
+  <div id="help" class="kbd">
+    <a class="ck-home" href="https://engawaya.com/">← 縁側屋へ戻る</a>
+    <div class="ck-touch">📱 スマホの指の操作には、まだ対応していません。パソコンのキーボードか、PS などのコントローラーで遊んでください。</div>
+    <!-- HUD コンバイナー：HUD の読み方 -->
+    <div class="ck-combiner">
+      <svg viewBox="0 0 400 250" class="ck-hudsvg">
+        <g class="hl">
+          <!-- 方位テープ -->
+          <path d="M130 22 H270 M140 22 v6 M160 22 v4 M180 22 v6 M200 22 v8 M220 22 v6 M240 22 v4 M260 22 v6" />
+          <text x="140" y="16">34</text><text x="180" y="16">35</text><text x="200" y="16">00</text><text x="220" y="16">01</text><text x="260" y="16">02</text>
+          <!-- 速度・高度 -->
+          <rect x="62" y="112" width="40" height="16" /><text x="82" y="124">452</text>
+          <path d="M108 60 V180 M108 70 h-5 M108 90 h-5 M108 110 h-5 M108 130 h-5 M108 150 h-5 M108 170 h-5" />
+          <rect x="298" y="112" width="48" height="16" /><text x="322" y="124">11480</text>
+          <path d="M292 60 V180 M292 70 h5 M292 90 h5 M292 110 h5 M292 130 h5 M292 150 h5 M292 170 h5" />
+          <!-- ピッチラダー -->
+          <path d="M150 70 h30 M220 70 h30 M150 70 v5 M250 70 v5" /><text x="140" y="73">10</text><text x="260" y="73">10</text>
+          <path d="M150 170 h30 M220 170 h30" stroke-dasharray="5 4" /><text x="140" y="173">10</text><text x="260" y="173">10</text>
+          <path d="M120 120 h55 M225 120 h55" />
+          <!-- ウォーターライン（機首方向） -->
+          <path d="M185 112 h7 l3 5 l5 -5 l5 5 l3 -5 h7" />
+          <!-- FPM -->
+          <circle cx="200" cy="130" r="5" /><path d="M195 130 h-9 M205 130 h9 M200 125 v-6" />
+          <!-- 敵：TD ボックス + ロックしたシーカー円 -->
+          <rect x="246" y="82" width="14" height="14" /><circle cx="253" cy="89" r="11" />
+          <text x="253" y="112" class="sm">SHOOT</text>
+          <!-- ガンのピパー -->
+          <circle cx="232" cy="150" r="16" /><circle cx="232" cy="150" r="1.6" class="fill" />
+          <path d="M232 137 A13 13 0 1 1 219 150" class="thick" />
+          <!-- G / マッハ -->
+          <text x="70" y="200" class="sm l">α 4.2  M 0.81  G 6.5</text>
+          <text x="330" y="200" class="sm r">80%</text>
+        </g>
+        <!-- 引き出し線 -->
+        <g class="lead">
+          <path d="M200 30 L200 40 L360 40" /><path d="M82 112 L40 96" /><path d="M322 128 L360 150" />
+          <path d="M193 112 L150 98 L40 140" /><path d="M200 136 L170 236 L40 236" /><path d="M262 84 L360 70" />
+          <path d="M248 160 L360 196" /><path d="M150 70 L40 60" />
+        </g>
+      </svg>
+      <div class="ck-callout" style="left:91%;top:16%">方位</div>
+      <div class="ck-callout r" style="left:9%;top:38%">速度 kt</div>
+      <div class="ck-callout" style="left:91%;top:60%">高度 ft</div>
+      <div class="ck-callout r" style="left:9%;top:24%">ピッチラダー（破線 = 機首下げ）</div>
+      <div class="ck-callout r" style="left:9%;top:56%">W = 機首の向き</div>
+      <div class="ck-callout r" style="left:9%;top:94%">◯ = 実際に進んでいる方向（FPM）</div>
+      <div class="ck-callout" style="left:91%;top:28%">□ = 敵　◯ = 9X がロック　SHOOT = 射程内</div>
+      <div class="ck-callout" style="left:91%;top:78%">ガンの照準：ピパーを敵に重ねて撃つ</div>
+    </div>
+
+    <!-- グレアシールドと UFD（アップフロント・ディスプレイ） -->
+    <div class="ck-glare">
+      <div class="ck-ufd">
+        <div class="ck-ufd-title">ガチ空戦 <span>GACHI KUSEN · OPERATION FELON</span></div>
+        <div class="ck-ufd-msn">MISSION ▸ 全 5 ウェーブ。最後はエース率いる FELON 編隊。撃墜されたら終了</div>
+        <div class="ck-ufd-row">
+          <span class="dim">THREAT</span>
+          <button data-act="skill" data-skill="rookie">ROOKIE</button>
+          <button data-act="skill" data-skill="veteran">VETERAN</button>
+          <button data-act="skill" data-skill="ace">ACE</button>
+          <span class="dim sep">|</span>
+          <button data-act="kbd" class="mode-k">KEYBOARD</button>
+          <button data-act="pad" class="mode-p">PS4</button>
+        </div>
+        <button class="ck-start" data-act="start"><span class="k">操縦キーを押すか ここをクリックで</span><span class="p">左スティックを倒すか ここをクリックで</span> <b>FIGHT'S ON</b></button>
+      </div>
+    </div>
+
+    <!-- 計器盤 -->
+    <div class="ck-panel">
+      <!-- スロットル（左手） -->
+      <div class="ck-hotas ck-throttle">
+        <svg viewBox="0 0 200 260">
+          <path class="slot" d="M40 40 Q100 30 160 40 L160 220 Q100 232 40 220 Z" />
+          <text x="166" y="206" class="tk">IDLE</text><text x="166" y="120" class="tk">MIL</text><text x="166" y="58" class="tk ab">A/B</text>
+          <path class="det" d="M44 118 H156" />
+          <path class="grip" d="M70 150 Q60 110 72 80 Q100 62 128 80 Q140 110 130 150 Q100 166 70 150 Z" />
+          <rect class="btn" x="88" y="84" width="24" height="10" rx="3" />
+          <rect class="btn" x="124" y="106" width="10" height="18" rx="3" />
+          <path class="shaft" d="M92 152 L92 210 M108 152 L108 210" />
+        </svg>
+        <div class="ck-label" style="left:2%;top:4%"><b class="k">R ↑ / F ↓</b><b class="p">R2 / L2</b>スロットル</div>
+        <div class="ck-label" style="left:2%;top:36%"><span class="k">MIL で一旦止まる → もう一度 R で A/B</span><span class="p">MIL で R2 を押し込み続けると A/B</span></div>
+        <div class="ck-label" style="left:2%;top:84%"><b class="k">B</b><b class="p">十字 ↓</b>スピードブレーキ</div>
+        <div class="ck-label" style="left:2%;top:94%"><b class="k">G 押す間</b><b class="p">L3</b>G リミッター解除 7.5→9G</div>
+      </div>
+
+      <!-- MFD 3 枚 -->
+      <div class="ck-mfds">
+        <div class="mfd">
+          <div class="osb t"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="scr">
+            <div class="mfd-h">FLIGHT</div>
+            <table>
+              <tr><td><b class="k">W / S ・ ↑↓</b><b class="p">左スティック ↕</b></td><td>機首下げ / 上げ（G コマンド）</td></tr>
+              <tr><td><b class="k">A / D ・ ←→</b><b class="p">左スティック ↔</b></td><td>ロール</td></tr>
+              <tr><td><b class="k">Q / E</b><b class="p">L1 / R1</b></td><td>ラダー（ヨー）</td></tr>
+              <tr><td><b class="k">I</b><b class="p">—</b></td><td>ピッチ操作の反転</td></tr>
+            </table>
+            <div class="tip">G ▸ 高い G を続けると視界が灰色 → 暗く → 失神（G-LOC）。4G 以下で回復</div>
+            <div class="mfd-h sub">VIEW / SYS</div>
+            <table>
+              <tr><td><b class="k">C</b><b class="p">R3</b></td><td>カメラ（追尾 / コクピット）</td></tr>
+              <tr><td><b class="k">マウスドラッグ</b><b class="p">右スティック</b></td><td>視点を回す（ホイール = 距離）</td></tr>
+              <tr><td><b class="k">U / N</b><b class="p">十字 ↑</b></td><td>HUD 表示 / 数値パネル</td></tr>
+              <tr><td><b class="k">Tab</b><b class="p">十字 ←</b></td><td>戦術レーダー（小 → 大 → 消す）</td></tr>
+              <tr><td><b class="k">P ・ Enter</b><b class="p">OPT ・ SHARE</b></td><td>一時停止 ・ リスタート</td></tr>
+              <tr><td><b class="k">H</b><b class="p">タッチパッド</b></td><td>このコクピットヘルプ（開くと一時停止）</td></tr>
+            </table>
+          </div>
+          <div class="osb b"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <div class="mfd">
+          <div class="osb t"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="scr">
+            <div class="mfd-h">WEAPONS</div>
+            <div class="stores">
+              <div class="st"><span>GUN</span><em>M61A2 20mm<br>412 RDS</em></div>
+              <div class="st"><span>9X</span><em>AIM-9X<br>×4</em></div>
+              <div class="st"><span>FLR</span><em>FLARE<br>×60</em></div>
+            </div>
+            <table>
+              <tr><td><b class="k">Space</b><b class="p">×</b></td><td>機関砲。近距離でピパーを敵に重ねる</td></tr>
+              <tr><td><b class="k">X</b><b class="p">○</b></td><td>AIM-9X。グロウル → 高音でロック。SHOOT が出たら撃つ</td></tr>
+              <tr><td><b class="k">T</b><b class="p">△</b></td><td>ターゲット切替</td></tr>
+              <tr><td><b class="k">1 / 2 / 3</b><b class="p">—</b></td><td>敵の腕前（上の THREAT でも選べる）</td></tr>
+            </table>
+            <div class="tip">TACTICS ▸ 敵の後方 2〜4km が 9X の好位置。正面からは射程が短い</div>
+          </div>
+          <div class="osb b"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <div class="mfd">
+          <div class="osb t"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="scr">
+            <div class="mfd-h">DEFENSE</div>
+            <div class="rwr-demo">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" class="ring" /><circle cx="60" cy="60" r="36" class="ring" /><circle cx="60" cy="60" r="18" class="ring" />
+                <path d="M60 54 v11 M54 60 h12 M57 65 h6" class="ring" />
+                <text x="88" y="34">57</text>
+                <text x="34" y="94" class="amb">57</text><path d="M34 78 l12 12 l-12 12 l-12 -12 z" class="amb-s" />
+                <text x="64" y="102" class="red">M</text>
+              </svg>
+              <ul>
+                <li><b>57</b> 敵機（内側ほど近い）</li>
+                <li><b class="amb">◇</b> ロックされた</li>
+                <li><b class="red">M</b> ミサイル接近</li>
+              </ul>
+            </div>
+            <table>
+              <tr><td><b class="k">V</b><b class="p">□</b></td><td>フレア 2 発（押し続けると連続）</td></tr>
+            </table>
+            <div class="tip">MISSILE が鳴ったら ▸ フレア + BREAK（矢印の方へ旋回）+ スロットルを絞る</div>
+            <div class="tip">TAC（右下）▸ 敵の後ろの扇形に入ると BEHIND。そこから 9X / ガン</div>
+          </div>
+          <div class="osb b"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+
+      <!-- サイドスティック（右手） -->
+      <div class="ck-hotas ck-stick">
+        <svg viewBox="0 0 200 260">
+          <path class="boot" d="M50 230 Q100 200 150 230 L150 250 L50 250 Z" />
+          <path class="grip" d="M78 214 Q66 150 70 104 Q74 64 100 58 Q128 62 132 104 Q136 150 124 214 Z" />
+          <rect class="btn red" x="88" y="62" width="20" height="9" rx="3" />
+          <circle class="btn" cx="118" cy="86" r="7" />
+          <circle class="btn" cx="84" cy="88" r="6" />
+          <path class="btn" d="M70 116 Q60 124 64 140 L72 136 Q70 126 76 120 Z" />
+          <rect class="btn" x="116" y="132" width="12" height="20" rx="4" />
+          <path class="arrow" d="M100 24 v22 M100 24 l-5 7 M100 24 l5 7 M30 120 h22 M30 120 l7 -5 M30 120 l7 5 M170 120 h-22 M170 120 l-7 -5 M170 120 l-7 5" />
+        </svg>
+        <div class="ck-label r" style="right:2%;top:2%"><b class="k">X</b><b class="p">○</b>ミサイル発射（ピクル）</div>
+        <div class="ck-label r" style="right:2%;top:26%"><b class="k">T</b><b class="p">△</b>ターゲット切替</div>
+        <div class="ck-label r" style="right:2%;top:46%"><b class="k">V</b><b class="p">□</b>フレア</div>
+        <div class="ck-label r" style="right:2%;top:66%"><b class="k">Space</b><b class="p">×</b>機関砲（トリガー）</div>
+        <div class="ck-label r" style="right:2%;top:90%"><b class="k">WASD / 矢印</b><b class="p">左スティック</b>ピッチ・ロール</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- デブリーフィング（ミッション終了 / 撃墜後） -->
+  <div id="debrief" class="hidden">
+    <div class="db-mfd">
+      <div class="db-title"></div>
+      <div class="db-sub"></div>
+      <div class="db-body">
+        <table class="db-stats"></table>
+        <div class="db-grade"><span>RATING</span><b></b><em></em></div>
+      </div>
+      <div class="db-foot"><button data-act="again">AGAIN（Enter）</button><button data-act="brief">COCKPIT（H）</button></div>
+    </div>
+  </div>
+  <div id="killcam"><span class="kc-rec">● KILL CAM</span><span class="kc-label"></span><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>
+  <div id="toast"></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

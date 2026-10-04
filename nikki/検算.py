@@ -78,8 +78,9 @@ nanotta = [i+1 for i, a in enumerate(kiji) if "jotai-tsuzuku" in a and "号窯" 
 miru("「つくっている途中」が、まだ出ていない号数を名乗っていない", not nanotta, f"名乗っている記事: {nanotta}")
 
 # ⑥ 縁側屋の憲法①＝外から何も読み込まない
-soto = [u for u in re.findall(r'(?:src|href)\s*=\s*["\'](https?://[^"\']+)', s)]
-miru("外から何も読み込んでいない（憲法①）", not soto, f"外への読み込み: {soto}")
+#    📌2026-10-04 憲法①は撤廃（博喜さんの裁定「古いルールは無くしたい」）。数えるのをやめた。
+# soto = [u for u in re.findall(r'(?:src|href)\s*=\s*["\'](https?://[^"\']+)', s)]
+# miru("外から何も読み込んでいない（憲法①）", not soto, f"外への読み込み: {soto}")
 
 # ⑦ 縁側屋の憲法②＝絵文字を使わない（絵はドットで打つ）
 #    ⚠️見るのは**画面に出る字だけ**。板書（コメント）の中の ⚠️ や ① は蔵人が読む字なので数えない。
