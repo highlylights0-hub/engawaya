@@ -398,6 +398,16 @@ a { color: var(--accent); }
   font-weight: 600;
   letter-spacing: 0.06em;
 }
+/* 座布団の絵（2026-10-04、ゴテゴテ空戦に足した）。
+   絵は座布団の一部なので、押せる面は広がるだけで減らない。
+   角は座布団の内側に合わせて少しだけ丸める。 */
+.zabuton .zabuton-e {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 16px;
+  border-radius: 9px;
+}
 .zabuton .what {
   margin-top: 6px;
   font-size: 15px;
@@ -1529,7 +1539,7 @@ html[data-time="night"] .ice {
          一本のまま（そのページに Windows と Mac の zip が並ぶ）。
          ⚠️Mac は公証済みなので警告の話は Windows にだけ付ける。 -->
     <p class="zabuton-soe">
-      <a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">K'Ad蔵人 Windows版・Mac版（バージョン 2.7.0）— パソコンに入れて使う版です。中身はブラウザ版と同じ。GitHub から（Windows は初回に警告が出ることがあります）</a>
+      <a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">K'Ad蔵人 Windows版・Mac版（バージョン 2.8.0）— パソコンに入れて使う版です。中身はブラウザ版と同じ。GitHub から（Windows は初回に警告が出ることがあります）</a>
     </p>
     <!-- K'Ad蔵人の部屋への戸（2026-09-15 ここへ上げた）。
          博喜さんのご依頼「重複する内容はまとめて、K'Ad関連は上部へ」。
@@ -1633,6 +1643,27 @@ html[data-time="night"] .ice {
       <div class="name">メーター引き</div>
       <div class="what">ひと晩の運収から、納める金額を。割り算はこちらでやります。ブラウザで開けば、すぐ使えます。</div>
       <div class="tags">タクシーの納金計算 ／ 消費税と税抜運収も出る ／ 途中の式まで全部見える ／ 無料 ／ 登録もインストールも不要</div>
+    </a>
+    </div>
+
+    <!-- 2026-10-04 敷いた。博喜さんが蔵人に「遊びましょう」と声をかけ、
+         「ゴテゴテの戦闘機のドッグファイト」と言って、その席で作ったもの。
+         施主の言葉「TOPのどこかに置いてOK」「画像付きで置いてあげるといいな」。
+
+         「軒下に、ほかにも」に置いた理由＝現場とは関係のない遊びで、
+         Ochi-Gee（もう一つのゲーム）の並びがいちばん近いから。
+         奥の部屋の遊び場（asobiba/）に入れなかったのは、あちらは
+         「見えにくい方が最初のお客さん」の部屋が並んでいて、速く動く空中戦は毛色が違うため。
+
+         この座布団だけ絵を持っているのは、言葉だけでは「ゴテゴテ」が伝わらないから。
+         絵は gotegote/gamen.jpg（遊んでいる最中の一場面を切り出したもの）。
+         ⚠️札に「スマホ・コントローラーでも」と書いてあるので、操作を外す日はここも直す。 -->
+    <div class="zabuton-kumi">
+    <a class="zabuton" href="gotegote/">
+      <img class="zabuton-e" src="gotegote/gamen.jpg" alt="夕焼けの空を、王冠やリボンや旗で飾り立てた桃色の戦闘機が飛んでいる場面" width="720" height="320" loading="lazy">
+      <div class="name">ゴテゴテ空戦</div>
+      <div class="what">撃たれるたびに、飾りが一つずつ取れていく空中戦。丸裸で撃たれたら墜落です。ブラウザで開けば、すぐ遊べます。</div>
+      <div class="tags">ブラウザのゲーム ／ キーボード・スマホ・PSなどのコントローラーで ／ 無料 ／ 登録もインストールも不要</div>
     </a>
     </div>
   </div>
