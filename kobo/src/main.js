@@ -258,7 +258,7 @@ function renderKeeps() {
 function download(s) {
   const arr = arrange(s);
   const bytes = writeMidi({
-    bpm: s.bpm, beatsPerBar: s.beatsPerBar,
+    bpm: s.bpm, beatsPerBar: s.beatsPerBar, key: s.key,
     tracks: [
       { name: 'Melody', ch: 0, program: 80, notes: s.melody },
       { name: 'Guitar', ch: 1, program: 30, notes: arr.guitar },

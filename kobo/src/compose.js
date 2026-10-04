@@ -95,7 +95,7 @@ export function generateMelody({ chords, key, beatsPerBar: bpb, nBars, density =
     }
     const r = R();
     if (r < 0.18) return nearest(sp, prev);                                          // 連打（ロックっぽさ）
-    if (r < 0.3) return wpick(cp.map((p) => [p, 1 / (1 + Math.abs(p - prev))]));     // コードトーンへ跳ぶ
+    if (r < 0.3) return wpick(cp.map((p) => [p, 1 / (1 + Math.abs(p - prev)) ** 2])); // コードトーンへ跳ぶ（遠くへはめったに跳ばない）
     const i = sp.indexOf(nearest(sp, prev));
     const dir = target > prev + 1 ? 1 : target < prev - 1 ? -1 : R() < 0.5 ? 1 : -1;
     const step = (R() < 0.75 ? 1 : 2) * (R() < 0.75 ? dir : -dir);
@@ -128,7 +128,16 @@ export function generateMelody({ chords, key, beatsPerBar: bpb, nBars, density =
         const pcs = last && chordTones(ch).includes(key.tonic) ? [key.tonic] : [ch.root];
         p = nearest(pitchesOf(pcs), prev);
       } else if (useMotif) {
-        if (i === 0) motif.start = keyPitches.indexOf(nearest(keyPitches, nearest(pitchesOf(chordTones(chordAt(t))), motif.first)));
+        if (i === 0) {
+          // 同じ高さからやり直すのが基本（リフの味）。ただし前の音から1オクターブ近く跳ね戻るときは、
+          // 途中の高さから始めて、形はそのまま滑らかにつなぐ
+          const cp = pitchesOf(chordTones(chordAt(t)));
+          let s = nearest(cp, motif.first);
+          if (Math.abs(s - prev) > 7) s = nearest(cp, (motif.first + prev) / 2);
+          // 形ぜんぶが音域に収まるように始まりをずらす（はみ出すと一番下の音に張り付いて連打になる）
+          const dmin = Math.min(...motif.degs), dmax = Math.max(...motif.degs);
+          motif.start = Math.max(-dmin, Math.min(keyPitches.length - 1 - dmax, keyPitches.indexOf(nearest(keyPitches, s))));
+        }
         const idx = Math.max(0, Math.min(keyPitches.length - 1, motif.start + motif.degs[i]));
         p = fitToChord(keyPitches[idx], t, r.dur);
       } else {

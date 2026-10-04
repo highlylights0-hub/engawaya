@@ -71,7 +71,10 @@ export function parseMidi(buf) {
 }
 
 // tracks: [{ name, ch, program, notes:[{ beat, dur, pitch, vel }] }]（beat は四分音符単位）
-export function writeMidi({ bpm, beatsPerBar = 4, tracks }) {
+// 調号のシャープ(+)／フラット(-)の数。長調の主音のピッチクラスから引く（短調は平行長調＝主音+3 で引く）
+const SHARPS = { 0: 0, 7: 1, 2: 2, 9: 3, 4: 4, 11: 5, 6: 6, 1: -5, 8: -4, 3: -3, 10: -2, 5: -1 };
+
+export function writeMidi({ bpm, beatsPerBar = 4, key = null, tracks }) {
   const PPQ = 480;
   const u32 = (v) => [(v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255];
   const vlq = (v) => { const b = [v & 0x7f]; while ((v >>>= 7)) b.unshift((v & 0x7f) | 0x80); return b; };
@@ -89,6 +92,8 @@ export function writeMidi({ bpm, beatsPerBar = 4, tracks }) {
   const conductor = chunk([
     { tick: 0, order: 0, bytes: [0xff, 0x51, 3, (us >> 16) & 255, (us >> 8) & 255, us & 255] },
     { tick: 0, order: 0, bytes: [0xff, 0x58, 4, beatsPerBar, 2, 24, 8] },
+    // キー（GarageBand などがこれを見て Am などと表示する。無いと C のまま）
+    ...(key ? [{ tick: 0, order: 0, bytes: [0xff, 0x59, 2, SHARPS[(key.tonic + (key.minor ? 3 : 0)) % 12] & 255, key.minor ? 1 : 0] }] : []),
   ]);
 
   const chunks = [conductor];
