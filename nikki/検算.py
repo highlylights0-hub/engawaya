@@ -86,8 +86,10 @@ miru("外から何も読み込んでいない（憲法①）", not soto, f"外�
 #    ⌘・丸数字・▼は「絵文字」ではなく記号＝機械が変わっても形が変わらないので通す
 #    （kad は前から ⌘ を使っている）。捕まえたいのは 🍦 のように機械ごとに絵柄が変わる字と、
 #    ⚠️ のような絵文字化する記号（U+FE0F が付くと絵になる）です。
-emoji = sorted({c for c in mieru if ord(c) >= 0x1F300 or ord(c) == 0xFE0F or 0x2600 <= ord(c) <= 0x27BF})
-miru("画面に絵文字を出していない（憲法②）", not emoji, f"見つかった絵: {emoji}")
+#    📌2026-10-04 憲法②は撤廃（博喜さんの裁定「絵文字解禁にしましょう。古い制約は無くしていきたい」）。
+#    数えるのをやめた。式は戻したくなった日のために残す。
+# emoji = sorted({c for c in mieru if ord(c) >= 0x1F300 or ord(c) == 0xFE0F or 0x2600 <= ord(c) <= 0x27BF})
+# miru("画面に絵文字を出していない（憲法②）", not emoji, f"見つかった絵: {emoji}")
 
 # ⑧ リンクの行き先が、この家に本当にあるか
 saki = [h for h in re.findall(r'href="(/[^"#]*)"', s)]
