@@ -1,0 +1,112 @@
+<!doctype html>
+<!--
+    ────────────────────────────────────────────────
+      MIDI工房（kobo/）
+
+      この部屋を建てた理由
+        2026-10-04、博喜さんと蔵人（Claude）の雑談から。「名作のコード進行に著作権は無い。ここが味噌」
+        「音痴でも、ドラッグ＆ドロップして混ぜ混ぜで作れたら」。次に作るレトロ 2D ゲームの、ゲームロックの工房にもする。
+        音楽好きの若い人が、ふと触ってみたくなる道具でありたい（ギターで合わせる・GarageBand で開く）。
+
+      中身
+        ・MIDI をドロップ → コード進行・テンポ・拍子・キーを推定（借りるのは骨格だけ。元のメロディは使わない）
+        ・スケールの中で、リズムと音の並びを新しく組んだメロディを作る（押すたびに別の候補）
+        ・チップチューン＋ゲームロックで鳴らす（矩形波のメロディ・歪んだギター・三角波のベース・8ビート）
+        ・パートごとに消せる、キープ、MIDI で書き出し
+
+      作り方
+        ・正はデスクトップの MIDI-Kobo フォルダ（開発用）。ここはその写し。
+          直すときは MIDI-Kobo で直してから、index.html・style.css・src/・samples/ をここへ写す。
+        ・音はぜんぶ Web Audio で作る（音源ファイルなし）。曲はブラウザの中で分析するだけで、どこにも送らない。
+    ────────────────────────────────────────────────
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDI工房 — 縁側屋</title>
+<meta name="description" content="縁側屋の工房。名作の MIDI からコード進行だけを借りて、新しいメロディを作り、チップチューンのゲームロックで鳴らします。無料・ブラウザだけで使えます。">
+<link rel="icon" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="https://engawaya.com/">← 縁側屋へ戻る</a>
+  <h1>MIDI工房</h1>
+  <p>名作の骨格（コード進行）を借りて、新しいメロディをつくる</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2><span class="num">1</span>骨格をもらう</h2>
+    <label id="drop">
+      <input type="file" id="file" accept=".mid,.midi" hidden>
+      <span class="big">🎵 MIDI ファイルをここにドロップ</span>
+      <small>またはクリックして選ぶ</small>
+    </label>
+    <div class="or">または、コード進行を手で入れる（1小節に1つ。<code>Am-G</code> のようにつなぐと半小節ずつ）</div>
+    <div class="row">
+      <input id="prog" value="Am F G Am Am F G E" spellcheck="false">
+      <button id="useProg">使う</button>
+    </div>
+    <button id="sample" class="link">お試し用の曲（蔵人のオリジナル）を読む</button>
+    <div id="info"></div>
+    <div id="range" class="row" hidden>
+      <label>開始 <input type="number" id="startBar" min="1" value="1"> 小節目から</label>
+      <span class="seg" id="lenSeg">
+        <button data-v="4">4</button><button data-v="8">8</button><button data-v="16">16</button>
+      </span> 小節
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">2</span>コード進行 <small id="chordHint">コードをタップすると、別の候補に変わります</small></h2>
+    <div id="chords"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">3</span>メロディをつくる</h2>
+    <canvas id="roll"></canvas>
+    <div class="row controls">
+      <label>テンポ <input type="range" id="bpm" min="60" max="220" value="160"> <output id="bpmOut">160</output></label>
+      <span>細かさ <span class="seg" id="densSeg"><button data-v="0">ゆったり</button><button data-v="1">ふつう</button><button data-v="2">細かい</button></span></span>
+      <span>音域 <span class="seg" id="regSeg"><button data-v="-1">低</button><button data-v="0">中</button><button data-v="1">高</button></span></span>
+    </div>
+    <div class="row actions">
+      <button id="gen" class="primary">🎲 メロディを作る</button>
+      <button id="playFull">▶ できた曲</button>
+      <button id="playBone">▶ 骨格だけ</button>
+      <button id="playOrig">▶ 原曲</button>
+      <button id="stop">■ 止める</button>
+    </div>
+    <div class="row parts">
+      鳴らすパート
+      <button class="tog on" data-part="lead">メロディ</button>
+      <button class="tog on" data-part="guitar">ギター</button>
+      <button class="tog on" data-part="bass">ベース</button>
+      <button class="tog on" data-part="drums">ドラム</button>
+    </div>
+    <div class="row">
+      <button id="keep">⭐ キープ</button>
+      <button id="export">⬇ MIDI で書き出す</button>
+      <span id="seedInfo" class="muted"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">4</span>キープした曲</h2>
+    <ul id="keeps"><li class="muted">気に入ったメロディは ⭐ キープ で残しておけます</li></ul>
+  </section>
+</main>
+
+<footer>
+  <p>読み込んだ曲はブラウザの中で分析するだけで、どこにも送りません。借りるのはコード進行だけで、メロディは毎回新しく作ります。</p>
+  <p class="menseki">MIDI工房はまだ開発中の道具です。使ったことで起きた損害まではお引き受けできませんが、おかしいところがあれば
+    <a href="mailto:info@engawaya.com">info@engawaya.com</a> へメールをください。ひとつずつ直します。</p>
+  <p>© 2026 縁側屋 岡澤 博喜<br><span>このページの制作と管理は Claude が担当しています</span></p>
+</footer>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
