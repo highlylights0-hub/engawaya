@@ -100,6 +100,8 @@ export class Input {
       if ((Math.abs(ax) > 0.5 || Math.abs(ay) > 0.5) && !this.padMoved) {
         this.padMoved = true;
         this.events.push('PadAny');
+        // メニュー用：倒した向き
+        this.events.push(Math.abs(ay) > Math.abs(ax) ? (ay < 0 ? 'PadUp' : 'PadDown') : (ax < 0 ? 'PadLeft' : 'PadRight'));
       } else if (Math.abs(ax) < 0.2 && Math.abs(ay) < 0.2) {
         this.padMoved = false;
       }
@@ -126,6 +128,10 @@ export class Input {
 
       for (const [i, code] of Object.entries(PAD_EVENTS)) {
         if (btn(i) && !this.prevButtons[i]) this.events.push(code);
+      }
+      // メニュー用：ボタンを押した瞬間（Pad0 = × / Pad1 = ○ / Pad3 = △ / Pad12〜15 = 十字）
+      for (let i = 0; i < gp.buttons.length; i++) {
+        if (btn(i) && !this.prevButtons[i]) this.events.push(`Pad${i}`);
       }
       this.prevButtons = gp.buttons.map((b) => b.pressed);
     }

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { createWorld } from './world.js';
+import { createWorld, STRIKE } from './world.js';
+import { buildBase } from './ground.js';
+import { buildAirbase } from './airbase.js';
 import { Aircraft } from './flight.js';
 import { buildJet, initJetEnvironment } from './jet.js';
 import { Input } from './input.js';
@@ -9,6 +11,8 @@ import { Gun } from './gun.js';
 import { Combat } from './combat.js';
 import { SKILLS } from './enemy.js';
 import { MISSION_WAVES } from './combat.js';
+import { MISSIONS, missionById, saveCleared } from './missions.js';
+import { Title } from './title.js';
 import { Effects } from './effects.js';
 import { Sound } from './audio.js';
 import { Wreck } from './wreck.js';
@@ -27,6 +31,8 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.3, 200000);
 
 const world = createWorld(scene, renderer);
+buildBase(scene, STRIKE.base, world.heightAt);   // 盆地の核開発基地
+buildAirbase(scene);                             // 味方の基地（出撃・帰還）
 initJetEnvironment(renderer);
 const jet = buildJet({ type: 'f22' });
 const cockpit = buildCockpit(world.sunDir);
@@ -54,8 +60,11 @@ const clips = new ClipRecorder({
 
 const START = { pos: new THREE.Vector3(0, 3500, 58000), heading: 0, speed: 230, throttle: 0.8 };
 function restart() {
-  ac.reset(START.pos, START.heading, START.speed, START.throttle);
-  input.setThrottle(START.throttle);
+  // 対地ミッションは谷の入口の手前から、低めの高度で
+  // 対地ミッションは基地の滑走路から、エンジンはアイドル・ブレーキを踏んで
+  const st = combat.mode === 'strike' ? { ...STRIKE.start, speed: 0, throttle: 0 } : START;
+  ac.reset(st.pos, st.heading, st.speed, st.throttle, !!st.ground);
+  input.setThrottle(st.throttle);
   rig.first = true;
   wreck.reset();
   killcam?.stop();
@@ -80,14 +89,21 @@ let toastTimer = 0;
 addEventListener('gamepadconnected', (e) => {
   showToast(`🎮 コントローラー接続: ${e.gamepad.id.replace(/\s*\(.*\)\s*$/, '')}`, 4000);
 });
-const state = { paused: false, cockpit: false, flown: false, dead: false, helpOpen: true };
+const state = { paused: false, cockpit: false, flown: false, dead: false, helpOpen: false, titleOpen: true };
 
 // ---- コクピット風ヘルプ：開いている間はゲームの時間を止める ----
 function openHelp() { help.classList.remove('hidden'); state.helpOpen = true; }
-function closeHelp() { help.classList.add('hidden'); state.helpOpen = false; state.flown = true; }
+function closeHelp() {
+  help.classList.add('hidden'); state.helpOpen = false; state.flown = true;
+  // タイトルから開いた操作説明は、閉じるとタイトルに戻る
+  if (state.helpFromTitle) { state.helpFromTitle = false; openTitle(); }
+}
 function setHelpMode(pad) { help.classList.toggle('pad', pad); help.classList.toggle('kbd', !pad); syncHelp(); }
 function syncHelp() {
   for (const b of help.querySelectorAll('[data-act="skill"]')) b.classList.toggle('on', b.dataset.skill === combat.skillKey);
+  const d = combat.def;
+  help.querySelector('.ck-ufd-title span').textContent = `GACHI KUSEN · ${d.code}`;
+  help.querySelector('.ck-ufd-msn').textContent = `MISSION ▸ ${d.objectives.join(' → ')}`;
   help.querySelector('[data-act="kbd"]').classList.toggle('on', !help.classList.contains('pad'));
   help.querySelector('[data-act="pad"]').classList.toggle('on', help.classList.contains('pad'));
 }
@@ -96,11 +112,39 @@ help.addEventListener('click', (e) => {
   if (!b) return;
   const act = b.dataset.act;
   if (act === 'skill') { combat.setSkill(b.dataset.skill); syncHelp(); }
+  else if (act === 'title') { state.helpFromTitle = false; help.classList.add('hidden'); state.helpOpen = false; openTitle(); }
   else if (act === 'kbd') setHelpMode(false);
   else if (act === 'pad') setHelpMode(true);
   else if (act === 'start') closeHelp();
 });
-addEventListener('gamepadconnected', () => setHelpMode(true));
+addEventListener('gamepadconnected', () => { setHelpMode(true); title.update(); });
+
+// ---- タイトル（作戦選択） ----
+const title = new Title(document.getElementById('title'), {
+  heightAt: world.heightAt,
+  getSkill: () => combat.skillKey,
+  setSkill: (k) => { combat.setSkill(k); syncHelp(); },
+  isPad: () => help.classList.contains('pad'),
+  setPad: (p) => setHelpMode(p),
+  onStart: (id) => startMission(id),
+  onHelp: () => { title.hide(); state.titleOpen = false; state.helpFromTitle = true; openHelp(); },
+});
+function openTitle() {
+  debrief.classList.add('hidden');
+  title.show(combat.missionId);
+  state.titleOpen = true;
+}
+function startMission(id) {
+  combat.missionId = id;
+  title.hide();
+  state.titleOpen = false;
+  state.helpFromTitle = false;
+  help.classList.add('hidden');
+  state.helpOpen = false;
+  state.flown = true;
+  restart();
+  syncHelp();
+}
 
 // ---- デブリーフィング ----
 function showDebrief() {
@@ -110,10 +154,14 @@ function showDebrief() {
   const t = debrief.querySelector('.db-title');
   t.textContent = ok ? 'MISSION COMPLETE' : 'MISSION FAILED';
   t.classList.toggle('fail', !ok);
-  debrief.querySelector('.db-sub').textContent =
-    `OPERATION FELON  ·  THREAT ${combat.skill.name}  ·  WAVE ${combat.wave} / ${MISSION_WAVES}`;
+  const strike = combat.mode === 'strike', d = combat.def, rc = combat.recon;
+  debrief.querySelector('.db-sub').textContent = strike
+    ? `${d.camp} ${String(d.no).padStart(2, '0')} ${d.code}  ·  THREAT ${combat.skill.name}`
+    : `${d.camp} ${d.code}  ·  THREAT ${combat.skill.name}  ·  WAVE ${combat.wave} / ${MISSION_WAVES}`;
   const rows = [
-    ['撃墜 KILLS', combat.kills],
+    ...(rc ? [['偵察写真 RECON', rc.done ? '✓ 撮影' : '✗ 未撮影']] : []),
+    ...(strike ? [['帰還 RTB', ok ? '✓ 帰還' : '✗']] : []),
+    strike ? ['撃破 DESTROYED', `${combat.kills} / ${combat.ground.length}`] : ['撃墜 KILLS', combat.kills],
     ['飛行時間 TIME', `${mm}:${String(ss).padStart(2, '0')}`],
     ['機関砲 GUN', `${st.gunHits} 命中 / ${st.gunRounds} 発（${Math.round(r.acc * 100)}%）`],
     ['ミサイル AIM-9X', `${st.mslHits} 命中 / ${st.mslFired} 発`],
@@ -123,16 +171,71 @@ function showDebrief() {
   debrief.querySelector('.db-stats').innerHTML = rows.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join('');
   debrief.querySelector('.db-grade b').textContent = r.grade;
   debrief.querySelector('.db-grade em').textContent = `${r.score} PTS`;
+  const img = debrief.querySelector('.db-photo');
+  img.classList.toggle('show', !!rc?.photo);
+  if (rc?.photo) img.src = rc.photo;
+  if (ok) saveCleared(d.id);
+  debrief.querySelector('[data-act="next"]').classList.toggle('hidden', !nextMission());
   debrief.classList.remove('hidden');
+}
+// クリアした作戦の次（作りかけでなければ）
+function nextMission() {
+  if (combat.mission.state !== 'complete') return null;
+  const d = combat.def;
+  const n = MISSIONS.find((m) => m.camp === d.camp && m.no === d.no + 1);
+  return n && !n.soon ? n : null;
+}
+function debriefAct(act) {
+  if (act === 'again') restart();
+  else if (act === 'next') { const n = nextMission(); if (n) startMission(n.id); }
+  else if (act === 'title') openTitle();
 }
 debrief.addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
-  if (!b) return;
-  if (b.dataset.act === 'again') restart();
-  else if (b.dataset.act === 'brief') { restart(); openHelp(); }
+  if (b) debriefAct(b.dataset.act);
 });
+
+// ---- 偵察写真：機体の真下を撮って、白黒の写真にする ----
+const photoCam = new THREE.PerspectiveCamera(55, 1.5, 1, 20000);
+function capturePhoto() {
+  const W = 480, H = 320;
+  photoCam.position.copy(ac.pos);
+  const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(ac.quat).setY(0).normalize();
+  photoCam.up.copy(fwd);
+  photoCam.lookAt(ac.pos.x, ac.pos.y - 100, ac.pos.z);
+  const vis = jet.group.visible;
+  jet.group.visible = false;
+  renderer.setScissorTest(true);
+  renderer.setScissor(0, 0, W, H);
+  renderer.setViewport(0, 0, W, H);
+  renderer.render(scene, photoCam);
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  const pr = renderer.getPixelRatio(), el = renderer.domElement;
+  g.filter = 'grayscale(1) contrast(1.35) brightness(1.05)';
+  g.drawImage(el, 0, el.height - H * pr, W * pr, H * pr, 0, 0, W, H);
+  g.filter = 'none';
+  renderer.setScissorTest(false);
+  renderer.setViewport(0, 0, innerWidth, innerHeight);
+  jet.group.visible = vis;
+  // 写真の枠と記録
+  g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(W / 2 - 18, H / 2); g.lineTo(W / 2 + 18, H / 2); g.moveTo(W / 2, H / 2 - 18); g.lineTo(W / 2, H / 2 + 18); g.stroke();
+  for (const [x, y, dx, dy] of [[12, 12, 1, 1], [W - 12, 12, -1, 1], [12, H - 12, 1, -1], [W - 12, H - 12, -1, -1]]) {
+    g.beginPath(); g.moveTo(x + dx * 24, y); g.lineTo(x, y); g.lineTo(x, y + dy * 24); g.stroke();
+  }
+  g.fillStyle = 'rgba(255,255,255,0.9)'; g.font = '12px Menlo, monospace';
+  const t = combat.stats.time, d = combat.def;
+  g.fillText(`${d.code}  FRAME 0042  T+${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`, 20, 30);
+  g.fillText(`ALT ${Math.round(ac.t.agl * 3.28)} FT AGL  HDG ${String(Math.round(ac.t.heading)).padStart(3, '0')}`, 20, H - 20);
+  combat.recon.photo = c.toDataURL('image/jpeg', 0.85);
+  showToast('📷 偵察写真を撮影しました ─ 帰還せよ（RTB）', 3500);
+}
 syncHelp();
 restart();
+help.classList.add('hidden');      // 起動時はタイトル（作戦選択）から
+title.show(combat.missionId);
 const FLIGHT_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
   'Space', 'KeyR', 'KeyX', 'KeyV', 'PadAny',
@@ -158,9 +261,19 @@ function frame() {
 }
 
 function tick(dt, render) {
-  const halted = state.paused || state.helpOpen;
+  const halted = state.paused || state.helpOpen || state.titleOpen;
   input.update(halted ? 0 : dt);
   for (const code of input.consume()) {
+    // タイトル：作戦選択だけ
+    if (state.titleOpen) { title.handle(code); continue; }
+    // デブリーフィング：× / Enter = もう一度、△ / N = 次の作戦、○ / Esc = 作戦選択
+    if (!debrief.classList.contains('hidden')) {
+      if (code === 'Enter' || code === 'Pad0') debriefAct('again');
+      else if (code === 'KeyN' || code === 'Pad3') debriefAct('next');
+      else if (code === 'Escape' || code === 'Pad1') debriefAct('title');
+      continue;
+    }
+    if (code === 'Escape') { openTitle(); continue; }
     // ヘルプ表示中に操縦したらヘルプを閉じて再開（そのキーの動作はしない）
     if (state.helpOpen && FLIGHT_KEYS.has(code)) { closeHelp(); continue; }
     if (code === 'KeyX' || code === 'KeyM') { if (!state.paused) combat.fireMissile(); }
@@ -265,10 +378,11 @@ function tick(dt, render) {
     : combat.incoming.length ? 'missile' : combat.rwr.some((c) => c.locked) ? 'lock' : 'off');
   clips.update(dt, halted);
   sound.update(dt, {
-    player: ac, camera, enemies: combat.enemies, gunFiring: gun.firing,
+    player: ac, camera, enemies: combat.enemies, ground: combat.ground, gunFiring: gun.firing,
     paused: halted, cockpit: rig.mode === 'cockpit',
   });
   if (!render) return;
+  if (combat.photoRequest) { combat.photoRequest = false; capturePhoto(); }
   renderer.render(scene, camera);
   if (cockpit.group.visible) cockpit.render(renderer, camera);
   if (!state.dead) killcam.render(renderer, scene); else killcam.stop();
@@ -284,6 +398,7 @@ requestAnimationFrame(frame);
 // step(秒): 画面が非表示でも時間を進めて確認できる
 window.__game = {
   ac, input, camera, rig, world, hud, gun, fx, combat, sound, restart, renderer, jet, scene, buildJet, wreck, state, openHelp, closeHelp, killcam, geff, showDebrief, clips,
+  title, openTitle, startMission,
   freeze: false,
   // 機体の見た目確認：view('f22' | 'su57', 方位°, 仰角°, 距離m)。freeze 中に使う
   view(which, azDeg, elDeg, dist = 20) {
@@ -309,5 +424,7 @@ window.__game = {
 // URL に #freeze を付けると、停止状態・ヘルプ非表示で起動（確認作業用）
 if (location.hash.includes('freeze')) {
   window.__game.freeze = true;
+  title.hide();
+  state.titleOpen = false;
   closeHelp();
 }

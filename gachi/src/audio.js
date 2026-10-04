@@ -222,11 +222,39 @@ export class Sound {
     return v;
   }
 
+  // 対空砲（30mm 2 連装 ×2、毎分 4800 発）の「ドドドド」：ノイズを 80Hz の矩形波で刻む
+  makeAaaVoice() {
+    const ctx = this.ctx;
+    const v = {};
+    v.panner = new PannerNode(ctx, {
+      panningModel: 'HRTF', distanceModel: 'inverse',
+      refDistance: 250, rolloffFactor: 1.1, maxDistance: 30000,
+    });
+    v.air = ctx.createBiquadFilter(); v.air.type = 'lowpass'; v.air.frequency.value = 3000;
+    v.gain = ctx.createGain(); v.gain.gain.value = 0;
+    v.src = this.loop(this.noise);
+    v.bp = ctx.createBiquadFilter(); v.bp.type = 'lowpass'; v.bp.frequency.value = 700;
+    v.chop = ctx.createGain(); v.chop.gain.value = 0.5;
+    v.lfo = ctx.createOscillator(); v.lfo.type = 'square'; v.lfo.frequency.value = 80;
+    const depth = ctx.createGain(); depth.gain.value = 0.5;
+    v.lfo.connect(depth).connect(v.chop.gain);
+    v.lfo.start();
+    v.thump = ctx.createOscillator(); v.thump.type = 'sawtooth'; v.thump.frequency.value = 80;
+    const tg = ctx.createGain(); tg.gain.value = 0.35;
+    v.thump.connect(tg).connect(v.air);
+    v.thump.start();
+    v.src.connect(v.bp).connect(v.chop).connect(v.air);
+    v.air.connect(v.gain).connect(v.panner).connect(this.master);
+    v.on = false;
+    return v;
+  }
+
   dropVoice(v) {
     const t = this.ctx.currentTime;
     v.gain.gain.setTargetAtTime(0, t, 0.15);
     setTimeout(() => {
-      v.roar.stop(); v.rumble.stop(); v.whine.stop();
+      if (v.roar) { v.roar.stop(); v.rumble.stop(); v.whine.stop(); }
+      else { v.src.stop(); v.lfo.stop(); v.thump.stop(); }
       v.panner.disconnect();
     }, 1200);
   }
@@ -324,6 +352,30 @@ export class Sound {
       v.gain.gain.setTargetAtTime(g, t, 0.05);
       if (en === o.enemies[0]) Object.assign(this.debug, { e0dist: d, e0gain: g, e0dop: dop, e0rel: _rel.clone().applyQuaternion(_qi.copy(cam.quaternion).invert()) });
     }
+    // ---- 対空砲（撃っている間だけ鳴る。音は距離のぶん遅れて届く） ----
+    for (const u of o.ground ?? []) {
+      if (!u.alive && !this.voices.has(u)) continue;
+      seen.add(u);
+      let v = this.voices.get(u);
+      if (!v) { v = this.makeAaaVoice(); this.voices.set(u, v); }
+      _rel.subVectors(u.pos, cam.position);
+      const d = Math.max(1, _rel.length());
+      if (v.panner.positionX) {
+        v.panner.positionX.setTargetAtTime(_rel.x, t, 0.05);
+        v.panner.positionY.setTargetAtTime(_rel.y, t, 0.05);
+        v.panner.positionZ.setTargetAtTime(_rel.z, t, 0.05);
+      } else {
+        v.panner.setPosition(_rel.x, _rel.y, _rel.z);
+      }
+      v.air.frequency.setTargetAtTime(clamp(4000 * Math.exp(-d / 2500), 250, 4000), t, 0.1);
+      const on = !mute && u.firing;
+      if (on !== v.on) {
+        v.on = on;
+        const at = t + Math.min(4, d / C_SOUND);
+        v.gain.gain.setTargetAtTime(on ? 1.6 : 0, at, on ? 0.01 : 0.05);
+      }
+      if (mute) v.gain.gain.setTargetAtTime(0, t, 0.02);
+    }
     for (const [en, v] of this.voices) {
       if (!seen.has(en)) { this.dropVoice(v); this.voices.delete(en); }
     }
@@ -353,6 +405,24 @@ export class Sound {
     src.connect(lp).connect(g).connect(pan).connect(this.master);
     src.start(t, Math.random());
     src.stop(t + delay + 3.2);
+  }
+
+  // 偵察ポッドのシャッター（カシャ、カシャ）
+  shutter() {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    for (const dt of [0, 0.09, 0.18]) {
+      const src = ctx.createBufferSource();
+      src.buffer = this.noise;
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2500;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t + dt);
+      g.gain.exponentialRampToValueAtTime(0.5, t + dt + 0.003);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.05);
+      src.connect(hp).connect(g).connect(this.master);
+      src.start(t + dt, Math.random());
+      src.stop(t + dt + 0.07);
+    }
   }
 
   // 全体の音量（ブラックアウト中は遠のく）

@@ -41,6 +41,8 @@ export const F18E = {
   gOverride: 9.0,
   gMin: -3.0,
   rollRate: 3.6,        // rad/s (~205°/s)
+  gearH: 2.5,           // 脚を出したとき、重心から地面まで m
+  tailStrike: 0.2,      // 地上で機首を上げられる限界 rad（~11.5°、これ以上は尾部が擦る）
 };
 
 export const THROTTLE_AB_MAX = 1.25; // 1.0 = MIL, 1.0〜1.25 = アフターバーナー
@@ -67,6 +69,7 @@ const _acc = new THREE.Vector3();
 const _qi = new THREE.Quaternion();
 const _dq = new THREE.Quaternion();
 const _axis = new THREE.Vector3();
+const _eul = new THREE.Euler(0, 0, 0, 'YXZ');
 
 export class Aircraft {
   constructor(spec = F18E) {
@@ -83,6 +86,10 @@ export class Aircraft {
     this.hp = 100;
     this.radius = 7;          // 被弾判定の球
     this.t = {};              // テレメトリ（HUD 用）
+    this.gear = 0;            // 脚の出具合 0 = 収納 / 1 = 出ている
+    this.gearDown = false;
+    this.onGround = false;    // 脚で地面に乗っている
+    this.brake = false;       // ブレーキ（出撃時は踏んだまま。MIL まで上げると離す）
   }
 
   get alive() { return !this.crashed; }
@@ -99,8 +106,14 @@ export class Aircraft {
     return false;
   }
 
-  reset(pos, headingDeg, speed, throttle) {
+  // ground = true：脚を出して地面（滑走路）に置く
+  reset(pos, headingDeg, speed, throttle, ground = false) {
     this.pos.copy(pos);
+    this.gearDown = ground;
+    this.gear = ground ? 1 : 0;
+    this.onGround = ground;
+    this.brake = ground;
+    if (ground) this.pos.y = pos.y + this.spec.gearH;
     this.quat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -THREE.MathUtils.degToRad(headingDeg));
     this.vel.set(0, 0, -speed).applyQuaternion(this.quat);
     this.omega.set(0, 0, 0);
@@ -110,6 +123,31 @@ export class Aircraft {
     this.gPeak = 1;
     this.accEst.set(0, 0, 0);
     this.hp = 100;
+  }
+
+  // 地上滑走：姿勢をヨーとピッチだけにし（ロールなし、機首は 0〜尾部が擦る角度）、
+  // 横滑りはタイヤが止め、転がり抵抗とブレーキで減速する
+  groundRoll(dt, ground, gH) {
+    const s = this.spec, q = this.quat;
+    _eul.setFromQuaternion(q, 'YXZ');
+    const pitch = clamp(_eul.x, 0, s.tailStrike);
+    if ((pitch <= 0 && this.omega.x < 0) || (pitch >= s.tailStrike && this.omega.x > 0)) this.omega.x = 0;
+    this.omega.z = 0;
+    _eul.set(pitch, _eul.y, 0, 'YXZ');
+    q.setFromEuler(_eul);
+    // 地面より下には沈まない（揚力が重さを上回れば自然に浮く）
+    if (this.pos.y <= ground + gH) {
+      this.pos.y = ground + gH;
+      if (this.vel.y < 0) this.vel.y = 0;
+    }
+    // タイヤ：進行方向（機首の水平成分）以外の速度を消す
+    const hx = -Math.sin(_eul.y), hz = -Math.cos(_eul.y);
+    let vh = this.vel.x * hx + this.vel.z * hz;
+    const mu = 0.025 + (this.brake ? 0.6 : 0);
+    vh = vh > 0 ? Math.max(0, vh - mu * GRAV * dt) : Math.min(0, vh + mu * GRAV * dt);
+    this.vel.x = hx * vh;
+    this.vel.z = hz * vh;
+    this.onGround = true;
   }
 
   // ctl: { pitch, roll, yaw (-1..1), throttle (0..1.25), gOverride }
@@ -129,7 +167,7 @@ export class Aircraft {
     const V = this.vel.length();
     const vhat = V > 0.5 ? _vh.copy(this.vel).divideScalar(V) : _vh.copy(fwd);
     _vb.copy(this.vel).applyQuaternion(_qi.copy(q).invert());
-    const alpha = Math.atan2(-_vb.y, -_vb.z);
+    const alpha = V > 0.5 ? Math.atan2(-_vb.y, -_vb.z) : 0;
     const beta = V > 0.5 ? Math.asin(clamp(_vb.x / V, -1, 1)) : 0;
 
     const atm = atmosphere(this.pos.y);
@@ -142,6 +180,7 @@ export class Aircraft {
     const wave = 0.035 * smoothstep(0.8, 1.05, mach) - 0.01 * smoothstep(1.2, 2.0, mach);
     const CD = s.CD0 + wave + s.K * CL * CL
       + (this.speedbrake ? 0.06 : 0)
+      + 0.02 * this.gear
       + 0.8 * beta * beta
       + (Math.abs(alpha) > s.alphaStall ? 0.9 * Math.sin(Math.abs(alpha)) ** 2 : 0);
 
@@ -180,14 +219,24 @@ export class Aircraft {
 
     // 飛行経路の回転に追従 + 迎え角誤差を修正
     const pathRate = V > 1 ? _acc.dot(_lift) / V : 0;
-    const wxT = clamp(pathRate + 5 * (aCmd - alpha) * Math.max(auth, 0.3), -1.5, 1.5);
+    let wxT = clamp(pathRate + 5 * (aCmd - alpha) * Math.max(auth, 0.3), -1.5, 1.5);
 
     // ロール：高AOAでロールレート低下
-    const wzT = -ctl.roll * s.rollRate * clamp(qd / 16000, 0.12, 1)
+    let wzT = -ctl.roll * s.rollRate * clamp(qd / 16000, 0.12, 1)
       * (1 - 0.6 * clamp(alpha / s.alphaLimit, 0, 1));
 
     // ヨー：ラダー + 方向安定（横滑りを打ち消す）
-    const wyT = -(ctl.yaw * 0.45 * auth + 4 * beta * Math.max(auth, 0.3));
+    let wyT = -(ctl.yaw * 0.45 * auth + 4 * beta * Math.max(auth, 0.3));
+
+    // 地上：FBW は地上モード。スティックを引くと機首が上がる（舵は速度とともに効く。約 130kt から）、
+    // 放すと前脚に戻る。ラダー（と低速ではロール入力も）で前脚ステアリング
+    if (this.onGround) {
+      const eff = clamp((V - 45) / 35, 0, 1);
+      wxT = ctl.pitch > 0.05 ? ctl.pitch * 0.32 * eff - 0.1 * (1 - eff) : -0.12;
+      wzT = 0;
+      wyT = -(ctl.yaw * 0.7 + ctl.roll * 0.5) * 0.45 * clamp(1.3 - V / 70, 0.12, 1);
+      if (this.brake && ctl.throttle >= 0.999) this.brake = false;   // MIL まで上げたらブレーキを離す
+    }
 
     const kp = 1 - Math.exp(-dt * 12);
     const kr = 1 - Math.exp(-dt * 8);
@@ -208,13 +257,27 @@ export class Aircraft {
     }
 
     // ---- 地面 ----
-    const ground = Math.max(0, heightAt(this.pos.x, this.pos.z));
-    if (this.pos.y < ground + 2) {
+    const hRaw = heightAt(this.pos.x, this.pos.z);
+    const ground = Math.max(0, hRaw);
+    const gH = this.gear > 0.95 ? s.gearH : 0;
+    this.onGround = false;
+    if (gH && this.pos.y < ground + gH + 0.05) {
+      // 脚で接地：水平に近く・沈下が小さく・陸地なら転がる。それ以外は激突
+      _eul.setFromQuaternion(q, 'YXZ');
+      const ok = hRaw > 0.5 && this.vel.y > -6 && Math.abs(_eul.z) < 0.26 && _eul.x > -0.12 && _eul.x < s.tailStrike + 0.1;
+      if (ok) this.groundRoll(dt, ground, gH);
+    }
+    if (!this.onGround && this.pos.y < ground + 2) {
       this.pos.y = ground + 2;
       this.vel.set(0, 0, 0);
       this.omega.set(0, 0, 0);
       this.crashed = true;
     }
+
+    // 脚：離陸して 50m 上がったら自動で引き込む（収納に約 5 秒）
+    const agl0 = this.pos.y - ground;
+    if (this.gearDown && !this.onGround && agl0 > 50 && this.vel.y > 0) this.gearDown = false;
+    this.gear = clamp(this.gear + (this.gearDown ? 1 : -1) * dt / 5, 0, 1);
 
     // ---- テレメトリ ----
     this.gPeak = Math.max(this.gPeak, nz);
@@ -227,7 +290,7 @@ export class Aircraft {
     t.vs = this.vel.y;
     t.alpha = alpha;
     t.beta = beta;
-    t.nz = nz;
+    t.nz = this.onGround ? 1 : nz;
     t.gPeak = this.gPeak;
     t.gLimit = gMax;
     t.heading = (THREE.MathUtils.radToDeg(Math.atan2(fwd.x, -fwd.z)) + 360) % 360;

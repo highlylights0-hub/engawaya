@@ -25,7 +25,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ガチ空戦 — 縁側屋</title>
-  <meta name="description" content="縁側屋の遊び場。F-22 と Su-57 の本気のドッグファイト。本物に近い飛行モデル、ミサイル、フレア、G によるブラックアウト。無料・ブラウザだけで遊べます。" />
+  <meta name="description" content="縁側屋の遊び場。F-22 で滑走路から離陸し、谷を抜けて敵の基地を偵察する作戦と、Su-57 との本気のドッグファイト。本物に近い飛行モデル、対空砲の弾幕、ミサイル、G によるブラックアウト。無料・ブラウザだけで遊べます。" />
   <link rel="icon" href="../favicon.png" />
   <link rel="stylesheet" href="style.css" />
   <script type="importmap">
@@ -41,6 +41,44 @@
   <div id="app"></div>
   <canvas id="hud"></canvas>
   <div id="gfx"></div>
+
+  <!-- タイトル：作戦の一覧とブリーフィング -->
+  <div id="title" class="hidden">
+    <div class="tt-head">
+      <div class="tt-logo">ガチ空戦</div>
+      <div class="tt-en">GACHI KUSEN</div>
+      <a class="tt-home" href="https://engawaya.com/">← 縁側屋へ戻る</a>
+    </div>
+    <div class="tt-main">
+      <div class="tt-list"></div>
+      <div class="tt-brief">
+        <div class="tb-code"></div>
+        <div class="tb-title"></div>
+        <div class="tb-body">
+          <div class="tb-text">
+            <p class="tb-story"></p>
+            <div class="tb-h">OBJECTIVES</div>
+            <ol class="tb-obj"></ol>
+            <div class="tb-tip"></div>
+          </div>
+          <canvas class="tb-map"></canvas>
+        </div>
+        <div class="tb-row">
+          <span class="dim">THREAT</span>
+          <button data-act="skill" data-skill="rookie">ROOKIE</button>
+          <button data-act="skill" data-skill="veteran">VETERAN</button>
+          <button data-act="skill" data-skill="ace">ACE</button>
+          <span class="dim sep">|</span>
+          <button data-act="kbd">KEYBOARD</button>
+          <button data-act="pad">PS4</button>
+          <span class="dim sep">|</span>
+          <button data-act="help">操作説明</button>
+        </div>
+        <button class="tb-go" data-act="go">TAKE OFF ▶</button>
+        <div class="tb-keys"><span class="k">↑↓ 作戦を選ぶ ・ ←→ 敵の腕前 ・ Enter 出撃 ・ H 操作説明</span><span class="p">十字 / 左スティック ↑↓ 作戦 ・ ←→ 敵の腕前 ・ × 出撃 ・ タッチパッド 操作説明</span></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ヘルプ：F-22 のグラスコクピット風。上はキャノピー越しの景色 + HUD コンバイナー、下は計器盤 -->
   <div id="help" class="kbd">
@@ -98,6 +136,9 @@
       <div class="ck-ufd">
         <div class="ck-ufd-title">ガチ空戦 <span>GACHI KUSEN · OPERATION FELON</span></div>
         <div class="ck-ufd-msn">MISSION ▸ 全 5 ウェーブ。最後はエース率いる FELON 編隊。撃墜されたら終了</div>
+        <div class="ck-ufd-row">
+          <button data-act="title">◀ MISSION SELECT（Esc）</button>
+        </div>
         <div class="ck-ufd-row">
           <span class="dim">THREAT</span>
           <button data-act="skill" data-skill="rookie">ROOKIE</button>
@@ -235,7 +276,12 @@
         <table class="db-stats"></table>
         <div class="db-grade"><span>RATING</span><b></b><em></em></div>
       </div>
-      <div class="db-foot"><button data-act="again">AGAIN（Enter）</button><button data-act="brief">COCKPIT（H）</button></div>
+      <img class="db-photo" alt="偵察写真" />
+      <div class="db-foot">
+        <button data-act="again">AGAIN（Enter / ×）</button>
+        <button data-act="next">NEXT MISSION（N / △）</button>
+        <button data-act="title">MISSION SELECT（Esc / ○）</button>
+      </div>
     </div>
   </div>
   <div id="killcam"><span class="kc-rec">● KILL CAM</span><span class="kc-label"></span><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>

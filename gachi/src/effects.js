@@ -146,8 +146,23 @@ export class Effects {
     this.smoke.update(dt);
   }
 
-  muzzle(pos, vel) {
-    this.fire.spawn({ pos, vel, life: 0.05, size0: 1.6, size1: 0.6, c0: [1, 0.85, 0.5, 1], c1: [1, 0.5, 0.2, 0] });
+  muzzle(pos, vel, s = 1) {
+    this.fire.spawn({ pos, vel, life: 0.05, size0: 1.6 * s, size1: 0.6 * s, c0: [1, 0.85, 0.5, 1], c1: [1, 0.5, 0.2, 0] });
+  }
+
+  // 対空砲弾の自爆（空中の小さな黒い煙）
+  flak(pos) {
+    this.fire.spawn({ pos, life: 0.12, size0: 6, size1: 10, c0: [1, 0.8, 0.45, 1], c1: [1, 0.4, 0.1, 0] });
+    this.smoke.spawn({ pos, vel: rndVec(2), life: 3 + Math.random() * 2, size0: 5, size1: 16, c0: [0.08, 0.08, 0.08, 0.75], c1: [0.3, 0.3, 0.3, 0], drag: 1 });
+  }
+
+  // 燃え続ける残骸の炎と黒煙の柱
+  burn(pos, k = 1) {
+    this.fire.spawn({ pos, vel: _p.set(0, 4, 0).add(rndVec(2)), life: 0.4 + Math.random() * 0.3, size0: 5 * k, size1: 2 * k, c0: [1, 0.65, 0.25, 1], c1: [1, 0.3, 0.05, 0], drag: 0.5 });
+    this.smoke.spawn({
+      pos, vel: _p.set(0, 7, 0).add(rndVec(2)), life: 7 + Math.random() * 4,
+      size0: 5 * k, size1: (35 + Math.random() * 20) * k, c0: [0.07, 0.07, 0.07, 0.85], c1: [0.32, 0.32, 0.32, 0], drag: 0.15, rise: 1,
+    });
   }
 
   sparks(pos, vel) {

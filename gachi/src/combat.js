@@ -3,6 +3,9 @@ import * as THREE from 'three';
 import { Enemy, SKILLS } from './enemy.js';
 import { Wreck } from './wreck.js';
 import { Missile, Flare, AIM9X, R74, flyoutTime } from './missile.js';
+import { Tunguska, AAA_SKILLS } from './ground.js';
+import { STRIKE } from './world.js';
+import { missionById } from './missions.js';
 
 const DEG = Math.PI / 180;
 const CALLSIGNS = ['BANDIT 1', 'BANDIT 2', 'BANDIT 3'];
@@ -10,6 +13,9 @@ const NUM = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIG
 export const MISSILES_PER_WAVE = 4;
 export const FLARES_PER_WAVE = 60;
 export const MISSION_WAVES = 5;   // 5 ウェーブ目はエース編隊（FELON）
+// 偵察：基地の真上（水平 RECON_R 以内）を、低く（AGL 以下）・水平に RECON_T 秒通過すると撮影
+const RECON_R = 750, RECON_AGL = 1200, RECON_T = 1.2;
+const RTB_R = 3500;          // 出撃地点からこの距離に戻れば帰還
 
 const NO_ENGINE = { engine: 0 };
 const _v = new THREE.Vector3(), _w = new THREE.Vector3(), _f = new THREE.Vector3();
@@ -24,6 +30,12 @@ export class Combat {
     this.playerJet = playerJet;
     this.sound = sound;
     this.enemies = [];
+    this.ground = [];          // 地上の敵（対空砲）
+    this.gunTargets = [];      // 機関砲の当たり判定の対象（敵機 + 地上）
+    this.missionId = 'm1';
+    this.waypoint = null;      // HUD の目標 { pos, label }
+    this.recon = null;         // 偵察 { done, prog, ok, photo }
+    this.phase = 'ingress';    // ingress / rtb
     this.missiles = [];
     this.flares = [];
     this.missileCount = MISSILES_PER_WAVE;
@@ -45,7 +57,7 @@ export class Combat {
     this.msgTime = 0;
     this.hitFlash = 0;
     this.nextWave = 0;
-    this.onHitEnemy = (e, killed) => { this.stats.gunHits++; if (killed) this.kill(e); };
+    this.onHitEnemy = (e, killed) => { this.stats.gunHits++; if (killed) (e.ground ? this.killGround(e) : this.kill(e)); };
     this.onHitPlayer = (_p, killed) => {
       this.hitFlash = 0.35;
       if (killed) {
@@ -80,6 +92,20 @@ export class Combat {
   setSkill(key) {
     this.skillKey = key;
     for (const e of this.enemies) e.skill = SKILLS[key];
+    for (const u of this.ground) u.skill = AAA_SKILLS[key];
+  }
+
+  get def() { return missionById(this.missionId); }
+  get mode() { return this.def.kind === 'ground' ? 'strike' : 'felon'; }
+
+  // ウェーブ・残り数・いまの目標の表示（HUD）
+  statusText() {
+    if (this.mode === 'strike') {
+      const left = this.ground.filter((u) => u.alive).length;
+      return `${this.skill.name}  ${this.objectiveText()}  AAA ${left}/${this.ground.length}`;
+    }
+    const left = this.enemies.filter((e) => e.alive).length;
+    return `${this.skill.name}  W${this.wave}  ${left}/${this.enemies.length}`;
   }
 
   message(text, time = 3) {
@@ -89,10 +115,12 @@ export class Combat {
 
   reset() {
     for (const e of this.enemies) e.dispose(this.scene);
+    for (const u of this.ground) u.dispose(this.scene);
     for (const m of this.missiles) m.dispose();
     for (const r of this.wrecks) this.removeWreck(r);
     this.wrecks = [];
     this.enemies = [];
+    this.ground = [];
     this.missiles = [];
     this.flares = [];
     this.flareQueue = 0;
@@ -103,8 +131,85 @@ export class Combat {
     this.target = null;
     this.nextWave = 0;
     this.hitFlash = 0;
+    this.waypoint = null;
+    this.recon = null;
+    this.phase = 'ingress';
+    this.photoRequest = false;
     this.newStats();
-    this.startWave();
+    if (this.mode === 'strike') this.startStrike();
+    else this.startWave();
+  }
+
+  // ---- 谷と基地のミッション ----
+  startStrike() {
+    const b = STRIKE.base, d = this.def;
+    for (const [dx, dz] of d.aaa ?? []) {
+      this.ground.push(new Tunguska(this.scene, this.fx, b.x + dx, b.z + dz, 200, this.world.heightAt, this.skillKey));
+    }
+    this.gunTargets = [...this.ground];
+    this.recon = d.recon ? { done: false, prog: 0, ok: false, photo: null } : null;
+    this.phase = 'ingress';
+    this.waypoint = { pos: new THREE.Vector3(b.x, b.y + 30, b.z), label: d.recon ? 'RECON' : 'TGT' };
+    this.target = null;
+    this.gun.reload();
+    this.missileCount = MISSILES_PER_WAVE;
+    this.playerJet.setMissiles(this.missileCount);
+    this.flareCount = FLARES_PER_WAVE;
+    this.prevAmmo = this.gun.ammo;
+    this.message(`${d.code}  -  CLEARED FOR TAKEOFF`, 5);
+  }
+
+  objectiveText() {
+    if (this.phase === 'rtb') return 'RTB';
+    if (this.recon && !this.recon.done) return 'RECON';
+    return 'STRIKE';
+  }
+
+  // 偵察・帰還の判定（描画フレームごと）
+  updateObjectives(dt) {
+    const p = this.player, ms = this.mission, rc = this.recon;
+    if (ms.state !== 'active' || p.crashed || this.mode !== 'strike') return;
+    const b = STRIKE.base;
+    if (rc && !rc.done) {
+      const t = p.t;
+      const dh = Math.hypot(p.pos.x - b.x, p.pos.z - b.z);
+      rc.ok = dh < RECON_R && t.agl < RECON_AGL && Math.abs(t.bank) < 25 && Math.abs(t.pitch) < 25;
+      rc.near = dh < RECON_R * 2.5;
+      rc.prog = rc.ok ? rc.prog + dt : Math.max(0, rc.prog - dt * 2);
+      if (rc.prog >= RECON_T) {
+        rc.done = true;
+        this.photoRequest = true;           // main が真下を撮る
+        this.sound?.shutter?.();
+        this.message('RECON COMPLETE  -  RTB', 4);
+      }
+    }
+    const killed = this.ground.every((u) => !u.alive);
+    const needKill = this.def.killAll;
+    if (this.phase === 'ingress' && (!rc || rc.done) && (!needKill || killed)) {
+      this.phase = 'rtb';
+      const s = STRIKE.home;
+      this.waypoint = { pos: new THREE.Vector3(s.x, s.y, s.z), label: 'RTB' };
+    }
+    if (this.phase === 'rtb') {
+      const s = STRIKE.home;
+      if (Math.hypot(p.pos.x - s.x, p.pos.z - s.z) < RTB_R) {
+        ms.state = 'complete';
+        ms.endT = 0;
+        this.waypoint = null;
+        this.message('MISSION COMPLETE  -  WELCOME HOME', 99);
+      }
+    }
+  }
+
+  // 地上目標の撃破
+  killGround(u) {
+    if (u.handled) return;
+    u.handled = true;
+    this.fx.explosion(u.pos, u.vel);
+    this.sound?.explosion(u.pos);
+    this.kills++;
+    this.message(`${u.callsign} DESTROYED`, 3);
+    this.killEvent = { w: { pos: u.pos, vel: _f.set(0, 0, -1).clone() }, text: `${u.callsign}  DESTROYED` };
   }
 
   startWave() {
@@ -121,6 +226,7 @@ export class Combat {
       e.spawnMerge(this.player, 6500 + i * 900, (i - (n - 1) / 2) * 1800, i % 2 ? 300 : -150, this.world.heightAt);
       this.enemies.push(e);
     }
+    this.gunTargets = this.enemies;
     this.target = null;
     this.gun.reload();
     this.missileCount = MISSILES_PER_WAVE;
@@ -205,7 +311,8 @@ export class Combat {
       e.update(dt, p, this.fx, hAt, this.onHitPlayer);
       e.updateBullets(dt, p, this.fx, hAt, this.onHitPlayer);
     }
-    this.gun.update(dt, p, trigger, this.enemies, this.fx, hAt, this.onHitEnemy);
+    for (const u of this.ground) u.update(dt, p, hAt, this.onHitPlayer);
+    this.gun.update(dt, p, trigger, this.gunTargets, this.fx, hAt, this.onHitEnemy);
 
     // プレイヤーのフレア（0.12 秒間隔）
     this.flareT -= dt;
@@ -270,6 +377,7 @@ export class Combat {
       ms.endT += dt;
     }
 
+    this.updateObjectives(dt);
     if (this.enemies.length && this.enemies.every((e) => !e.alive) && !this.player.crashed && ms.state === 'active') {
       if (this.wave >= MISSION_WAVES) {
         ms.state = 'complete';
@@ -334,7 +442,12 @@ export class Combat {
       const efwd = _w.set(0, 0, -1).applyQuaternion(e.ac.quat);
       const aim = efwd.dot(_v.normalize());
       if (aim < 0.5 && !e.locked) continue;              // レーダーの視野外
-      this.rwr.push({ e, range, bearing: bearingOf(e.pos), locked: e.locked });
+      this.rwr.push({ e, range, bearing: bearingOf(e.pos), locked: e.locked, sym: '57' });
+    }
+    // 対空砲：捜索レーダーが見通しで届いていれば RWR に出る。追尾（ロック）されたら LOCK
+    for (const u of this.ground) {
+      if (!u.alive || !u.visible || p.crashed) continue;
+      this.rwr.push({ e: u, range: u.range, bearing: bearingOf(u.pos), locked: u.locked, sym: u.spec.rwr });
     }
   }
 
@@ -342,6 +455,13 @@ export class Combat {
   rating() {
     const st = this.stats;
     const acc = st.gunRounds ? Math.min(1, st.gunHits / st.gunRounds) : 0;
+    if (this.mode === 'strike') {
+      let score = this.kills * 800 + (this.recon?.done ? 2000 : 0) - Math.round(st.damage * 8);
+      if (this.mission.state === 'complete') score += 7000 + Math.max(0, Math.round((900 - st.time) * 6));
+      score = Math.max(0, score);
+      const grade = score >= 11000 ? 'S' : score >= 9000 ? 'A' : score >= 6000 ? 'B' : score >= 3000 ? 'C' : 'D';
+      return { score, grade, acc };
+    }
     let score = this.kills * 1000 + Math.round(acc * 2000) + st.mslHits * 200 - Math.round(st.damage * 8);
     if (this.mission.state === 'complete') score += 3000 + Math.max(0, Math.round((600 - st.time) * 5));
     const grade = score >= 12000 ? 'S' : score >= 9000 ? 'A' : score >= 6000 ? 'B' : score >= 3000 ? 'C' : 'D';
@@ -356,7 +476,7 @@ export class Combat {
       return;
     }
     let canSee = false;
-    if (t && t.alive) {
+    if (t && t.alive && !t.ground) {             // 9X は空対空（地上目標はロックしない）
       _v.subVectors(t.pos, p.pos);
       const range = _v.length();
       _v.divideScalar(range);
@@ -393,7 +513,7 @@ export class Combat {
   pickTarget() {
     const p = this.player;
     let best = null, bestScore = Infinity;
-    for (const e of this.enemies) {
+    for (const e of this.gunTargets) {
       if (!e.alive) continue;
       const d = e.pos.clone().sub(p.pos);
       const range = d.length();
@@ -405,7 +525,7 @@ export class Combat {
   }
 
   cycleTarget() {
-    const alive = this.enemies.filter((e) => e.alive);
+    const alive = this.gunTargets.filter((e) => e.alive);
     if (!alive.length) return;
     const i = alive.indexOf(this.target);
     this.target = alive[(i + 1) % alive.length];
@@ -448,6 +568,10 @@ export class Combat {
   }
 
   render(dt) {
+    for (const u of this.ground) {
+      u.sync(dt);
+      u.gun.render(this.player);
+    }
     for (const e of this.enemies) {
       e.sync(dt);
       if (dt > 0 && e.alive) this.fx.vapor(e.jet, e.ac, dt);

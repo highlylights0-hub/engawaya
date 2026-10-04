@@ -272,3 +272,86 @@ html, body {
   background: rgba(30,20,0,0.8); border: 1px solid rgba(255,220,120,0.7); border-radius: 6px;
 }
 @media (pointer: coarse) { #help .ck-touch { display: block; } }
+
+/* ---------- タイトル：作戦選択とブリーフィング ---------- */
+#title {
+  --u: min(1vh, 0.56vw);
+  --g: #7dff8a; --g2: #b9ffc4; --gd: rgba(125,255,138,0.55); --amb: #ffcc33; --cy: #6fe7ff;
+  position: fixed; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; justify-content: center; gap: calc(var(--u) * 3);
+  padding: calc(var(--u) * 4) calc(var(--u) * 6);
+  background: linear-gradient(90deg, rgba(0,6,2,0.92), rgba(0,10,4,0.72) 55%, rgba(0,6,2,0.88));
+  color: var(--g2); font-size: calc(var(--u) * 1.6);
+  text-shadow: 0 0 4px rgba(80,255,120,0.3);
+}
+#title.hidden { display: none; }
+.tt-head { display: flex; align-items: baseline; gap: calc(var(--u) * 2.4); }
+.tt-logo {
+  font-size: calc(var(--u) * 8); font-weight: 900; letter-spacing: 0.08em; color: #fff;
+  font-family: "Hiragino Kaku Gothic StdN", "Hiragino Sans", "Yu Gothic", sans-serif;
+  text-shadow: 0 0 calc(var(--u) * 2) rgba(255,120,60,0.7), 0 calc(var(--u) * 0.4) 0 #a02a14;
+  font-style: italic;
+}
+.tt-en { color: var(--amb); letter-spacing: 0.5em; font-size: calc(var(--u) * 2); }
+.tt-home { margin-left: auto; color: var(--gd); text-decoration: none; font-size: 0.9em; }
+.tt-home:hover { color: var(--g); }
+.tt-main { display: grid; grid-template-columns: minmax(0, 34%) minmax(0, 1fr); gap: calc(var(--u) * 3); align-items: start; }
+.tt-camp { color: var(--amb); letter-spacing: 0.3em; font-size: 0.85em; margin: calc(var(--u) * 1.4) 0 calc(var(--u) * 0.5); }
+.tt-camp:first-child { margin-top: 0; }
+.tt-m {
+  display: flex; align-items: center; gap: calc(var(--u) * 1.4); width: 100%;
+  font: inherit; color: var(--g2); text-align: left; cursor: pointer;
+  background: rgba(5,20,10,0.6); border: 1px solid #1f3a28; border-radius: 3px;
+  padding: calc(var(--u) * 0.9) calc(var(--u) * 1.4); margin-bottom: calc(var(--u) * 0.6);
+}
+.tt-m:hover { border-color: var(--gd); }
+.tt-m.on { border-color: var(--g); background: rgba(20,70,35,0.55); box-shadow: 0 0 calc(var(--u) * 1) rgba(80,255,120,0.35); }
+.tt-m.locked { opacity: 0.45; }
+.tt-m .no { font-size: 1.8em; font-weight: bold; color: var(--g); width: 1.6em; }
+.tt-m .nm { display: flex; flex-direction: column; flex: 1; }
+.tt-m .nm b { letter-spacing: 0.12em; color: #fff; }
+.tt-m .nm em { font-style: normal; color: var(--gd); font-size: 0.9em; }
+.tt-m .st { font-style: normal; font-size: 0.75em; letter-spacing: 0.1em; }
+.tt-m .st.new { color: var(--amb); } .tt-m .st.ok { color: var(--g); } .tt-m .st.dim { color: var(--gd); }
+.tt-brief {
+  padding: calc(var(--u) * 2) calc(var(--u) * 2.6);
+  background: radial-gradient(ellipse at 40% 20%, #07230f, #010804 80%);
+  border: calc(var(--u) * 0.8) solid #262a2f; border-radius: calc(var(--u) * 1);
+  box-shadow: 0 0 0 1px #3a3f45, inset 0 0 calc(var(--u) * 3) rgba(0,0,0,0.9);
+}
+.tb-code { color: var(--gd); letter-spacing: 0.25em; font-size: 0.85em; }
+.tb-title { color: var(--g); font-size: 1.9em; font-weight: bold; letter-spacing: 0.08em; margin: calc(var(--u) * 0.4) 0 calc(var(--u) * 1.2); }
+.tb-body { display: flex; gap: calc(var(--u) * 2); align-items: flex-start; }
+.tb-text { flex: 1; min-width: 0; }
+.tb-story { margin: 0 0 calc(var(--u) * 1.4); line-height: 1.7; color: #e4ffe8; }
+.tb-h { color: var(--amb); letter-spacing: 0.3em; font-size: 0.85em; }
+.tb-obj { margin: calc(var(--u) * 0.5) 0 calc(var(--u) * 1.2); padding-left: 1.6em; line-height: 1.7; }
+.tb-tip { color: var(--cy); font-size: 0.9em; line-height: 1.6; }
+.tb-map { width: calc(var(--u) * 18); height: calc(var(--u) * 20); border: 1px solid #2c4433; image-rendering: auto; flex: none; }
+.tb-row { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 0.6); align-items: center; margin-top: calc(var(--u) * 1.6); }
+.tb-row .dim { color: var(--gd); font-size: 0.9em; } .tb-row .sep { margin: 0 calc(var(--u) * 0.4); }
+#title button[data-act="skill"], #title button[data-act="kbd"], #title button[data-act="pad"], #title button[data-act="help"] {
+  font: inherit; font-size: 0.95em; cursor: pointer; color: var(--gd); background: #0a120d;
+  border: 1px solid #2c4433; border-radius: 3px; padding: calc(var(--u) * 0.2) calc(var(--u) * 1);
+}
+#title .tb-row button:hover { color: var(--g); border-color: var(--g); }
+#title .tb-row button.on { color: #051a0a; background: var(--g); border-color: var(--g); box-shadow: 0 0 8px rgba(80,255,120,0.6); }
+.tb-go {
+  display: block; width: 100%; margin-top: calc(var(--u) * 1.6); cursor: pointer;
+  font: inherit; font-size: 1.4em; font-weight: bold; letter-spacing: 0.3em;
+  color: #1a0d00; background: var(--amb); border: none; border-radius: 3px; padding: calc(var(--u) * 0.9);
+  box-shadow: 0 0 calc(var(--u) * 1.4) rgba(255,200,60,0.5);
+}
+.tb-go:disabled { background: #2a2f2b; color: var(--gd); box-shadow: none; cursor: default; letter-spacing: 0.1em; font-size: 1.05em; }
+.tb-keys { margin-top: calc(var(--u) * 0.8); text-align: center; color: var(--gd); font-size: 0.85em; }
+#title .tb-keys .p { display: none; } #title.pad .tb-keys .p { display: inline; } #title.pad .tb-keys .k { display: none; }
+@media (max-width: 700px) {
+  #title { padding: 16px; overflow-y: auto; justify-content: flex-start; font-size: 13px; }
+  .tt-main { grid-template-columns: 1fr; }
+  .tb-body { flex-direction: column; }
+}
+
+/* デブリーフィングの偵察写真 */
+.db-photo { display: none; width: 100%; margin-top: calc(var(--u) * 1.6); border: 1px solid rgba(125,255,138,0.4); }
+.db-photo.show { display: block; }
+#debrief button.hidden { display: none; }

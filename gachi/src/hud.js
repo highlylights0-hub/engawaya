@@ -7,6 +7,7 @@ const GREEN = '#7dff8a';
 const GLOW = 'rgba(70,255,110,0.55)';
 const AMBER = '#ffcc33';
 const RED = '#ff4a3a';
+const CYAN = '#6fe7ff';       // 目標地点（ステアポイント）
 
 const _p = new THREE.Vector3();
 const _d = new THREE.Vector3();
@@ -97,6 +98,7 @@ export class Hud {
       this.drawFpm(ac, box);
       if (combat) this.drawCombat(ac, combat, box, C, hh);
       this.drawHeadingTape(t, C.x, box.t - 26 * u, hw * 1.5);
+      if (combat?.waypoint) this.drawWaypointCaret(ac, combat.waypoint, C.x, box.t - 26 * u, hw * 1.5);
       this.drawSpeedTape(t, box.l - 18 * u, C.y, hh * 1.5);
       this.drawAltTape(t, box.r + 18 * u, C.y, hh * 1.5);
       this.drawBankScale(t, C.x, box.b - 24 * u, 54 * u);
@@ -120,6 +122,7 @@ export class Hud {
       this.drawMissileCue(combat, C, hh, u);
     }
     this.drawWarnings(ac, state, C.x, box.t + hh * 0.3, combat);
+    if (ac.onGround && !state.dead) this.drawTakeoff(ac, C.x, C.y + hh * 0.62);
     if (this.showData) this.drawData(ac);
   }
 
@@ -292,7 +295,7 @@ export class Hud {
     g.fillStyle = GREEN;
 
     // ロックしていない敵は小さなひし形
-    for (const e of cb.enemies) {
+    for (const e of cb.gunTargets) {
       if (!e.alive || e === cb.target) continue;
       const es = this.projPoint(e.pos);
       if (!inBox(es)) continue;
@@ -305,8 +308,7 @@ export class Hud {
 
     // 敵の腕前・ウェーブ・残り機数
     g.textAlign = 'right';
-    const left = cb.enemies.filter((e) => e.alive).length;
-    g.fillText(`${cb.skill.name}  W${cb.wave}  ${left}/${cb.enemies.length}`, box.l - 18 * u, C.y - hh * 0.75 - 58 * u);
+    g.fillText(cb.statusText(), box.l - 18 * u, C.y - hh * 0.75 - 58 * u);
 
     this.drawMissileSymbology(ac, cb, box, C, inBox);
 
@@ -386,6 +388,9 @@ export class Hud {
       }
     }
 
+    this.drawWaypoint(ac, cb, box, C, inBox);
+    this.drawRecon(ac, cb, box, C);
+
     // メッセージ（FIGHT'S ON / SPLASH）
     if (cb.msgTime > 0 && cb.msg !== 'SHOT DOWN') {
       g.save();
@@ -394,6 +399,71 @@ export class Hud {
       g.fillText(cb.msg, C.x, box.t + hh * 0.35);
       g.restore();
     }
+  }
+
+  // ---------- 目標地点（ステアポイント）：◇ と距離。視野の外なら HUD の縁に矢印 ----------
+  drawWaypoint(ac, cb, box, C, inBox) {
+    const wp = cb.waypoint;
+    if (!wp) return;
+    const g = this.ctx, u = this.u;
+    const dist = Math.hypot(wp.pos.x - ac.pos.x, wp.pos.z - ac.pos.z);
+    const s = this.projPoint(wp.pos);
+    g.save();
+    g.strokeStyle = g.fillStyle = CYAN;
+    if (inBox(s)) {
+      const b = 9 * u;
+      g.beginPath();
+      g.moveTo(s.x, s.y - b); g.lineTo(s.x + b, s.y); g.lineTo(s.x, s.y + b); g.lineTo(s.x - b, s.y); g.closePath();
+      g.moveTo(s.x, s.y + b); g.lineTo(s.x, s.y + b + 10 * u);
+      g.stroke();
+      g.textAlign = 'center';
+      g.fillText(wp.label, s.x, s.y - b - 6 * u);
+    } else {
+      _d.subVectors(wp.pos, this.camera.position).applyQuaternion(_qInv.copy(this.camera.quaternion).invert());
+      const ang = Math.atan2(-_d.y, _d.x);
+      const r = Math.min(box.r - C.x, box.b - C.y) - 14 * u;
+      const x = C.x + Math.cos(ang) * r, y = C.y + Math.sin(ang) * r;
+      g.save();
+      g.translate(x, y); g.rotate(ang);
+      g.beginPath(); g.moveTo(10 * u, 0); g.lineTo(-4 * u, -7 * u); g.lineTo(-4 * u, 7 * u); g.closePath(); g.fill();
+      g.restore();
+    }
+    g.textAlign = 'right';
+    const nm = dist / 1852;
+    g.fillText(`${wp.label} ${nm < 10 ? nm.toFixed(1) : Math.round(nm)} NM`, box.r + 120 * u, box.b + 34 * u);
+    g.restore();
+  }
+
+  drawWaypointCaret(ac, wp, cx, y, width) {
+    const g = this.ctx, u = this.u;
+    const brg = (Math.atan2(wp.pos.x - ac.pos.x, -(wp.pos.z - ac.pos.z)) / DEG + 360) % 360;
+    let dh = brg - ac.t.heading;
+    dh = ((dh + 540) % 360) - 180;
+    const x = cx + Math.max(-25, Math.min(25, dh)) * (width / 50);
+    g.save();
+    g.fillStyle = CYAN;
+    g.beginPath(); g.moveTo(x, y + 3 * u); g.lineTo(x - 6 * u, y + 13 * u); g.lineTo(x + 6 * u, y + 13 * u); g.closePath(); g.fill();
+    g.restore();
+  }
+
+  // ---------- 偵察ポッド：撮影できる条件と進み具合 ----------
+  drawRecon(ac, cb, box, C) {
+    const rc = cb.recon;
+    if (!rc || rc.done || !rc.near) return;
+    const g = this.ctx, u = this.u, t = ac.t;
+    const y = box.b - 70 * u;
+    g.save();
+    g.textAlign = 'center';
+    g.fillStyle = g.strokeStyle = rc.ok ? GREEN : AMBER;
+    let hint = 'PHOTO WINDOW';
+    if (t.agl > 1200) hint = 'DESCEND  < 1200 AGL';
+    else if (Math.abs(t.bank) > 25 || Math.abs(t.pitch) > 25) hint = 'WINGS LEVEL';
+    else if (!rc.ok) hint = 'OVERFLY TARGET';
+    g.fillText(rc.ok ? '● REC' : `RECON  ${hint}`, C.x, y);
+    const w = 120 * u, h = 8 * u;
+    g.strokeRect(C.x - w / 2, y + 8 * u, w, h);
+    g.fillRect(C.x - w / 2, y + 8 * u, w * Math.min(1, rc.prog / 1.2), h);
+    g.restore();
   }
 
   // ---------- 方位テープ ----------
@@ -529,6 +599,12 @@ export class Hud {
     const line = 18 * u;
     g.fillText(`α ${(t.alpha / DEG).toFixed(1)}`, xr, y);
     g.fillText(`M ${t.mach.toFixed(2)}`, xr, y + line);
+    if (ac.gear > 0) {
+      g.save();
+      g.fillStyle = ac.gear >= 1 ? GREEN : AMBER;
+      g.fillText(ac.gear >= 1 ? 'GEAR DN' : 'GEAR', xr - 70 * u, y);
+      g.restore();
+    }
     const over = t.nz > t.gLimit + 0.3;
     if (!over || Math.sin(this.time * 12) > 0) {
       g.fillStyle = over ? RED : GREEN;
@@ -585,11 +661,29 @@ export class Hud {
         // ミサイルの方向へブレーク（ビームに向ける）
         if (m.tti < 6) warn(m.bearing >= 0 ? 'BREAK RIGHT  ▶' : '◀  BREAK LEFT', AMBER);
       }
-      if (t.agl < 300 && t.vs < -15 && t.agl / -t.vs < 8) warn('PULL UP', RED, true);
+      if (!ac.onGround && t.agl < 300 && t.vs < -15 && t.agl / -t.vs < 8) warn('PULL UP', RED, true);
       if (t.stall) warn('STALL', RED, true);
       else if (t.aoaWarn) warn('AOA', AMBER);
       if (t.nz > t.gLimit + 0.3) warn('OVER-G', RED, true);
     }
+    g.restore();
+  }
+
+  // ---------- 離陸の手順（地上にいる間） ----------
+  drawTakeoff(ac, cx, y) {
+    const g = this.ctx, u = this.u, t = ac.t;
+    g.save();
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = `bold ${17 * u}px Menlo, Consolas, monospace`;
+    g.shadowColor = 'rgba(0,0,0,0.7)';
+    g.shadowBlur = 4;
+    const kt = Math.round(t.kts);
+    let txt, col = GREEN;
+    if (ac.brake) { txt = 'BRAKES ON  ▸  R / R2 でスロットルを MIL へ'; col = AMBER; }
+    else if (t.speed < 72) txt = `TAKEOFF ROLL  ${kt} KT  ▸  もう一度 R / R2 押し込みで A/B`;
+    else txt = `ROTATE  ${kt} KT  ▸  機首上げ（S / スティック手前）`;
+    if (t.speed < 72 || Math.sin(this.time * 9) > -0.2) { g.fillStyle = col; g.fillText(txt, cx, y); }
     g.restore();
   }
 
@@ -642,7 +736,8 @@ export class Hud {
 
     // 距離：一番近い敵が入る大きさに自動で（2 / 5 / 10 / 20 / 40 km）
     let near = Infinity;
-    for (const e of alive) near = Math.min(near, Math.hypot(e.pos.x - ac.pos.x, e.pos.z - ac.pos.z));
+    const gnd = cb.ground.filter((x) => x.alive);
+    for (const e of [...alive, ...gnd]) near = Math.min(near, Math.hypot(e.pos.x - ac.pos.x, e.pos.z - ac.pos.z));
     const ranges = [2000, 5000, 10000, 20000, 40000];
     const range = ranges.find((r) => near * 1.15 < r) ?? 40000;
     const scale = R / range;
@@ -679,6 +774,37 @@ export class Hud {
       g.lineWidth = 1;
     };
     trail(this.trails.get(ac), '125,255,138', [cx, cy]);
+
+    // 目標地点
+    if (cb.waypoint) {
+      let [wx, wy] = toScr(cb.waypoint.pos, scale);
+      const dx = wx - cx, dy = wy - cy, L = Math.hypot(dx, dy);
+      if (L > R * 1.05) { wx = cx + dx / L * R * 1.05; wy = cy + dy / L * R * 1.05; }
+      g.strokeStyle = g.fillStyle = CYAN;
+      g.beginPath();
+      g.moveTo(wx, wy - 6 * u); g.lineTo(wx + 6 * u, wy); g.lineTo(wx, wy + 6 * u); g.lineTo(wx - 6 * u, wy); g.closePath();
+      g.stroke();
+      g.textAlign = 'left';
+      g.fillText(cb.waypoint.label, wx + 8 * u, wy - 8 * u);
+    }
+
+    // 対空砲：■ と機関砲の有効射程の輪（追尾されていたら赤く点滅）
+    for (const x of gnd) {
+      const [gx, gy] = toScr(x.pos, scale);
+      const rr = x.spec.gunRange * scale;
+      const hot = x.locked;
+      g.setLineDash([4 * u, 4 * u]);
+      g.strokeStyle = hot && Math.sin(this.time * 10) > 0 ? 'rgba(255,80,64,0.9)' : 'rgba(255,110,90,0.5)';
+      g.fillStyle = hot ? 'rgba(255,60,40,0.12)' : 'rgba(255,110,90,0.05)';
+      g.beginPath(); g.arc(gx, gy, rr, 0, Math.PI * 2); g.fill(); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle = RED;
+      g.fillRect(gx - 4.5 * u, gy - 4.5 * u, 9 * u, 9 * u);
+      if (x === cb.target) { g.strokeStyle = GREEN; g.strokeRect(gx - 10 * u, gy - 10 * u, 20 * u, 20 * u); }
+      g.fillStyle = 'rgba(255,200,190,0.9)';
+      g.textAlign = 'left';
+      g.fillText('AAA', gx + 9 * u, gy + 9 * u);
+    }
 
     let status = null;
     for (const e of alive) {
@@ -795,7 +921,7 @@ export class Hud {
       const r = R * (0.3 + 0.62 * Math.min(1, c.range / 15000));
       const x = cx + Math.sin(c.bearing) * r, y = cy - Math.cos(c.bearing) * r;
       g.fillStyle = g.strokeStyle = c.locked ? AMBER : GREEN;
-      g.fillText('57', x, y);
+      g.fillText(c.sym ?? '57', x, y);
       if (c.locked && blink) {
         const b = 11 * u;
         g.beginPath();

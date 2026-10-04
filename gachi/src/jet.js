@@ -357,6 +357,8 @@ const F22 = {
   // ベイパー：翼端（渦）と右主翼上面の四角（前縁根元・前縁翼端・後縁翼端・後縁根元）
   vapor: { tips: [[-6.8, -0.06, 4.6], [6.8, -0.06, 4.6]], wing: [[1.8, 0.4, -0.6], [6.6, 0.02, 3.5], [6.6, 0.02, 5.0], [1.8, 0.4, 6.4]] },
   nozzles: [[-0.68, -0.02, 8.62], [0.68, -0.02, 8.62]],
+  // 脚：取り付け位置（付け根）と長さ。車輪の下端が y = -2.5（flight.js の gearH）
+  gear: { nose: [0, -0.7, -5.2], noseL: 1.44, main: [1.55, -0.75, 1.0], mainL: 1.25 },
   flameShape: [1.0, 0.55],        // 2 次元ノズル：横長の炎
   flameR: 0.48,
   scheme: {
@@ -620,6 +622,24 @@ const texCache = {};
 // ミサイルの搭載位置（自機 F-22、発射順）
 export const MISSILE_STATIONS = F22.stations;
 
+let _abGlow = null;
+function abGlowTexture() {
+  if (_abGlow) return _abGlow;
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,245,1)');
+  gr.addColorStop(0.18, 'rgba(255,236,190,0.95)');
+  gr.addColorStop(0.45, 'rgba(255,150,60,0.45)');
+  gr.addColorStop(1, 'rgba(255,90,20,0)');
+  g.fillStyle = gr;
+  g.fillRect(0, 0, 64, 64);
+  _abGlow = new THREE.CanvasTexture(c);
+  _abGlow.colorSpace = THREE.SRGBColorSpace;
+  return _abGlow;
+}
+
 export function buildJet({ type = 'f22' } = {}) {
   const T = TYPES[type];
   const group = new THREE.Group();
@@ -694,6 +714,57 @@ export function buildJet({ type = 'f22' } = {}) {
     group.add(fg);
     return fg;
   });
+  // A/B のノズルの輝き（白い芯とオレンジのにじみ。参考：雨の夕方の F-2 の離陸）
+  const glowMat = new THREE.SpriteMaterial({ map: abGlowTexture(), color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+  const glows = T.nozzles.map(([x, y, z]) => {
+    const sp = new THREE.Sprite(glowMat);
+    sp.position.set(x, y, z + 0.4);
+    group.add(sp);
+    return sp;
+  });
+
+  // 脚（自機のみ）：前脚は前へ、主脚は内側へ引き込む。gear = 0（収納）〜 1（出ている）
+  const gearParts = [];
+  if (T.gear) {
+    const strutM = new THREE.MeshStandardMaterial({ color: 0xc4c8cc, metalness: 0.6, roughness: 0.4 });
+    const tireM = new THREE.MeshStandardMaterial({ color: 0x18191a, roughness: 0.95 });
+    const hubM = new THREE.MeshStandardMaterial({ color: 0x9a9ea2, metalness: 0.5, roughness: 0.5 });
+    const doorM = new THREE.MeshStandardMaterial({ color: 0x8a9096, roughness: 0.7 });
+    const leg = ([x, y, z], L, r, w, axis, sign) => {
+      const pivot = new THREE.Group();
+      pivot.position.set(x, y, z);
+      const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, L, 8).translate(0, -L / 2, 0), strutM);
+      pivot.add(strut);
+      const wheel = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 16).rotateZ(Math.PI / 2), tireM);
+      wheel.position.set(0, -L, 0);
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.55, r * 0.55, w + 0.02, 12).rotateZ(Math.PI / 2), hubM);
+      hub.position.copy(wheel.position);
+      pivot.add(wheel, hub);
+      // 脚扉（脚の横で開く）
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.45, L * 0.9).translate(0, -0.22, 0), doorM);
+      door.position.set(x + (axis === 'x' ? 0.3 : sign * 0.32), y + 0.08, z + (axis === 'x' ? 0 : 0));
+      group.add(pivot, door);
+      gearParts.push({ pivot, door, axis, sign });
+    };
+    const G = T.gear;
+    leg(G.nose, G.noseL, 0.36, 0.24, 'x', 1);
+    leg([G.main[0], G.main[1], G.main[2]], G.mainL, 0.5, 0.32, 'z', 1);
+    leg([-G.main[0], G.main[1], G.main[2]], G.mainL, 0.5, 0.32, 'z', -1);
+  }
+  let gearShown = -1;
+  const setGear = (k) => {
+    if (Math.abs(k - gearShown) < 1e-3) return;
+    gearShown = k;
+    for (const p of gearParts) {
+      const th = (1 - k) * Math.PI / 2;
+      if (p.axis === 'x') p.pivot.rotation.x = th;                 // 前脚：前へたたむ
+      else p.pivot.rotation.z = p.sign * -th;                      // 主脚：内側へ
+      p.pivot.visible = k > 0.03;
+      p.door.visible = k > 0.03;
+      p.door.rotation.z = (p.axis === 'x' ? -1 : p.sign) * Math.min(1, k * 3) * 1.3;
+    }
+  };
+  setGear(0);
 
   let time = 0;
   return {
@@ -712,12 +783,17 @@ export function buildJet({ type = 'f22' } = {}) {
     },
     update(ac, dt) {
       time += dt;
+      if (ac.gear !== undefined) setGear(ac.gear);
       const ab = Math.max(0, (ac.engine - 1) / (THROTTLE_AB_MAX - 1));
       for (const f of flames) {
         const flick = 0.9 + 0.1 * Math.sin(time * 60 + f.position.x * 10);
         const [sx, sy] = f.userData.shape;
         f.visible = ab > 0.02;
         f.scale.set(sx, sy, (1.5 + ab * 4.5) * flick);
+      }
+      for (const sp of glows) {
+        sp.visible = ab > 0.02;
+        sp.scale.setScalar((1.6 + 2.6 * ab) * (0.92 + 0.08 * Math.sin(time * 47 + sp.position.x)));
       }
       // ノズル内の赤熱
       M.nozzleIn.emissiveIntensity = 1.6 * ab;          // 昼間の MIL では見えない。A/B で赤熱
