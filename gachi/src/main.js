@@ -94,11 +94,15 @@ const state = { paused: false, cockpit: false, flown: false, dead: false, helpOp
 // ---- コクピット風ヘルプ：開いている間はゲームの時間を止める ----
 function openHelp() { help.classList.remove('hidden'); state.helpOpen = true; }
 function closeHelp() {
-  help.classList.add('hidden'); state.helpOpen = false; state.flown = true;
+  help.classList.add('hidden'); help.classList.remove('boot'); state.helpOpen = false; state.flown = true;
   // タイトルから開いた操作説明は、閉じるとタイトルに戻る
   if (state.helpFromTitle) { state.helpFromTitle = false; openTitle(); }
 }
-function setHelpMode(pad) { help.classList.toggle('pad', pad); help.classList.toggle('kbd', !pad); syncHelp(); }
+function setHelpMode(pad) {
+  help.classList.toggle('pad', pad); help.classList.toggle('kbd', !pad);
+  guide.classList.toggle('pad', pad);
+  syncHelp(); syncGuide();
+}
 function syncHelp() {
   for (const b of help.querySelectorAll('[data-act="skill"]')) b.classList.toggle('on', b.dataset.skill === combat.skillKey);
   const d = combat.def;
@@ -109,7 +113,8 @@ function syncHelp() {
 }
 help.addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
-  if (!b) return;
+  // 起動直後の操作説明は、ボタン以外のどこをクリックしても作戦選択へ
+  if (!b) { if (help.classList.contains('boot') && !e.target.closest('a')) closeHelp(); return; }
   const act = b.dataset.act;
   if (act === 'skill') { combat.setSkill(b.dataset.skill); syncHelp(); }
   else if (act === 'title') { state.helpFromTitle = false; help.classList.add('hidden'); state.helpOpen = false; openTitle(); }
@@ -118,6 +123,58 @@ help.addEventListener('click', (e) => {
   else if (act === 'start') closeHelp();
 });
 addEventListener('gamepadconnected', () => { setHelpMode(true); title.update(); });
+
+// ---- 飛行中の小さな操作ガイド：L / 十字→ で消す・出す（消した状態は覚えておく） ----
+const guide = document.getElementById('guide');
+const GUIDE_KEY = 'gachi-kusen.guide';
+let guideOff = false;
+try { guideOff = localStorage.getItem(GUIDE_KEY) === 'off'; } catch {}
+function toggleGuide() {
+  guideOff = !guideOff;
+  try { localStorage.setItem(GUIDE_KEY, guideOff ? 'off' : 'on'); } catch {}
+}
+function syncGuide() {
+  const pad = guide.classList.contains('pad'), strike = combat.mode === 'strike';
+  const harm = combat.def.weapon === 'harm';
+  const rows = pad ? [
+    ['左スティック', 'ピッチ ・ ロール'],
+    ['L1 / R1', 'ラダー'],
+    ['R2 / L2', 'スロットル（奥で A/B）'],
+    ['×', '機関砲'],
+    ['○', harm ? 'HARM' : 'ミサイル 9X'],
+    ['□', strike ? 'フレア + チャフ' : 'フレア'],
+    ...(strike ? [] : [['△', 'ターゲット切替']]),
+    ['R3', 'カメラ切替'],
+    ['十字←', '戦術レーダー'],
+    ['OPTIONS', '一時停止'],
+  ] : [
+    ['W S ↑↓', '機首 下げ/上げ'],
+    ['A D ←→', 'ロール'],
+    ['Q / E', 'ラダー'],
+    ['R / F', 'スロットル（MIL→R で A/B）'],
+    ['Space', '機関砲'],
+    ['X', harm ? 'HARM' : 'ミサイル 9X'],
+    ['V', strike ? 'フレア + チャフ' : 'フレア'],
+    ...(strike ? [] : [['T', 'ターゲット切替']]),
+    ['C', 'カメラ切替'],
+    ['Tab', '戦術レーダー'],
+    ['P', '一時停止'],
+  ];
+  guide.querySelector('.gd-t').innerHTML = rows.map(([a, b]) => `<tr><td><b>${a}</b></td><td>${b}</td></tr>`).join('');
+}
+
+// HUD の速度テープ（hud.js の drawSpeedTape の左端）にかからないよう、狭い画面では縮める
+let guideFit = '';
+function fitGuide() {
+  const box = guide.querySelector('.gd-box');
+  const key = `${innerWidth}x${innerHeight}:${guide.className}`;
+  if (key === guideFit || guide.classList.contains('hidden')) return;
+  guideFit = key;
+  const u = Math.min(Math.max(innerHeight / 760, 0.8), 1.7);
+  const tapeL = innerWidth / 2 - Math.min(innerWidth * 0.24, innerHeight * 0.34) - 18 * u - 72 * u;
+  const k = Math.max(0.75, Math.min(1, (tapeL - 24) / box.offsetWidth));
+  guide.style.transform = `scale(${k})`;
+}
 
 // ---- タイトル（作戦選択） ----
 const title = new Title(document.getElementById('title'), {
@@ -144,6 +201,7 @@ function startMission(id) {
   state.flown = true;
   restart();
   syncHelp();
+  syncGuide();
 }
 
 // ---- デブリーフィング ----
@@ -233,9 +291,13 @@ function capturePhoto() {
   showToast('📷 偵察写真を撮影しました ─ 帰還せよ（RTB）', 3500);
 }
 syncHelp();
+syncGuide();
 restart();
-help.classList.add('hidden');      // 起動時はタイトル（作戦選択）から
-title.show(combat.missionId);
+// 起動時は操作説明（コクピット風ヘルプ）から。何かキー / ボタンを押すと作戦選択へ
+help.classList.add('boot');
+state.titleOpen = false;
+state.helpOpen = true;
+state.helpFromTitle = true;
 const FLIGHT_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
   'Space', 'KeyR', 'KeyX', 'KeyV', 'PadAny',
@@ -273,6 +335,8 @@ function tick(dt, render) {
       else if (code === 'Escape' || code === 'Pad1') debriefAct('title');
       continue;
     }
+    // 起動直後の操作説明：何かキー / ボタンで作戦選択へ
+    if (help.classList.contains('boot')) { closeHelp(); continue; }
     if (code === 'Escape') { openTitle(); continue; }
     // ヘルプ表示中に操縦したらヘルプを閉じて再開（そのキーの動作はしない）
     if (state.helpOpen && FLIGHT_KEYS.has(code)) { closeHelp(); continue; }
@@ -283,6 +347,7 @@ function tick(dt, render) {
     else if (code === 'Enter') restart();
     else if (code === 'KeyB') ac.speedbrake = !ac.speedbrake;
     else if (code === 'KeyH') { if (state.helpOpen) closeHelp(); else openHelp(); }
+    else if (code === 'KeyL' || code === 'Pad15') toggleGuide();
     else if (code === 'KeyI') input.invertPitch = !input.invertPitch;
     else if (code === 'KeyU') hud.visible = !hud.visible;
     else if (code === 'KeyN') hud.showData = !hud.showData;
@@ -388,7 +453,10 @@ function tick(dt, render) {
   if (!state.dead) killcam.render(renderer, scene); else killcam.stop();
   // コクピット視点で横・上を向いたら HUD は見えない（HUD は機体に固定されている）
   state.lookAway = rig.mode === 'cockpit' && (Math.abs(rig.lookYaw) > 0.4 || Math.abs(rig.lookPitch) > 0.35);
-  hud.canvas.style.visibility = state.helpOpen ? 'hidden' : '';   // ヘルプの HUD 図と重ならないように
+  hud.canvas.style.visibility = state.helpOpen ? 'hidden' : '';
+  guide.classList.toggle('hidden', state.helpOpen || state.titleOpen || state.dead || !debrief.classList.contains('hidden'));
+  guide.classList.toggle('off', guideOff);
+  fitGuide();   // ヘルプの HUD 図と重ならないように
   hud.draw(ac, state, camera, halted ? 0 : dt, combat);
   clips.capture();
 }
@@ -397,7 +465,7 @@ requestAnimationFrame(frame);
 // デバッグ用
 // step(秒): 画面が非表示でも時間を進めて確認できる
 window.__game = {
-  ac, input, camera, rig, world, hud, gun, fx, combat, sound, restart, renderer, jet, scene, buildJet, wreck, state, openHelp, closeHelp, killcam, geff, showDebrief, clips,
+  ac, input, camera, rig, guide, toggleGuide, world, hud, gun, fx, combat, sound, restart, renderer, jet, scene, buildJet, wreck, state, openHelp, closeHelp, killcam, geff, showDebrief, clips,
   title, openTitle, startMission,
   freeze: false,
   // 機体の見た目確認：view('f22' | 'su57', 方位°, 仰角°, 距離m)。freeze 中に使う
@@ -426,5 +494,6 @@ if (location.hash.includes('freeze')) {
   window.__game.freeze = true;
   title.hide();
   state.titleOpen = false;
+  state.helpFromTitle = false;
   closeHelp();
 }

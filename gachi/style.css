@@ -355,3 +355,46 @@ html, body {
 .db-photo { display: none; width: 100%; margin-top: calc(var(--u) * 1.6); border: 1px solid rgba(125,255,138,0.4); }
 .db-photo.show { display: block; }
 #debrief button.hidden { display: none; }
+
+/* 起動直後のヘルプ：何かキーで作戦選択へ */
+#help .ck-boot { display: none; }
+#help.boot .ck-boot { display: block; }
+#help.boot .ck-fly, #help.boot .ck-ufd-msn { display: none; }
+
+/* ---------- 飛行中の小さな操作ガイド（MFD 風・控えめ） ---------- */
+#guide {
+  position: fixed; left: 14px; top: 34%;
+  pointer-events: none; user-select: none;
+  font-size: 11px; line-height: 1.5; color: rgba(185,255,196,0.82);
+}
+#guide.hidden { display: none; }
+#guide .p { display: none; }
+#guide.pad .k { display: none; }
+#guide.pad .p { display: inline; }
+#guide b { color: #7dff8a; font-weight: bold; }
+#guide .gd-box {
+  position: relative; padding: 6px 10px 6px;
+  background: rgba(6,14,9,0.42);
+  border: 1px solid rgba(125,255,138,0.28); border-radius: 4px;
+  box-shadow: inset 0 0 12px rgba(120,255,160,0.05);
+}
+#guide .gd-box::before, #guide .gd-box::after {   /* MFD の縁のボタン（OSB） */
+  content: ''; position: absolute; left: 14px; right: 14px; height: 3px;
+  background: repeating-linear-gradient(90deg, rgba(125,255,138,0.3) 0 10px, transparent 10px 22px);
+}
+#guide .gd-box::before { top: -5px; } #guide .gd-box::after { bottom: -5px; }
+#guide .gd-h {
+  color: #7dff8a; letter-spacing: 0.18em; font-size: 10px; margin-bottom: 3px;
+  border-bottom: 1px solid rgba(125,255,138,0.2); padding-bottom: 2px;
+}
+#guide .gd-h span { float: right; letter-spacing: 0; color: rgba(125,255,138,0.5); margin-left: 12px; }
+#guide .gd-h span.p { display: none; } #guide.pad .gd-h span.p { display: inline; } #guide.pad .gd-h span.k { display: none; }
+#guide .gd-t { border-collapse: collapse; }
+#guide .gd-t td { padding: 0 8px 0 0; white-space: nowrap; vertical-align: top; }
+#guide .gd-t td:first-child { text-align: right; }
+#guide .gd-f { margin-top: 3px; color: rgba(185,255,196,0.6); font-size: 10px; }
+#guide .gd-mini { display: none; font-size: 10px; color: rgba(185,255,196,0.45); }
+#guide.off .gd-box { display: none; }
+#guide.off .gd-mini { display: block; }
+@media (max-height: 560px) { #guide { top: 22%; } }
+#guide { transform-origin: left top; }

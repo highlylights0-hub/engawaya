@@ -81,7 +81,7 @@
   </div>
 
   <!-- ヘルプ：F-22 のグラスコクピット風。上はキャノピー越しの景色 + HUD コンバイナー、下は計器盤 -->
-  <div id="help" class="kbd">
+  <div id="help" class="kbd boot">
     <a class="ck-home" href="https://engawaya.com/">← 縁側屋へ戻る</a>
     <div class="ck-touch">📱 スマホの指の操作には、まだ対応していません。パソコンのキーボードか、PS などのコントローラーで遊んでください。</div>
     <!-- HUD コンバイナー：HUD の読み方 -->
@@ -148,7 +148,8 @@
           <button data-act="kbd" class="mode-k">KEYBOARD</button>
           <button data-act="pad" class="mode-p">PS4</button>
         </div>
-        <button class="ck-start" data-act="start"><span class="k">操縦キーを押すか ここをクリックで</span><span class="p">左スティックを倒すか ここをクリックで</span> <b>FIGHT'S ON</b></button>
+        <button class="ck-start ck-boot" data-act="start"><span class="k">何かキーを押すと</span><span class="p">どれかボタンを押すと</span> <b>MISSION SELECT ▶</b></button>
+        <button class="ck-start ck-fly" data-act="start"><span class="k">操縦キーを押すか ここをクリックで</span><span class="p">左スティックを倒すか ここをクリックで</span> <b>FIGHT'S ON</b></button>
       </div>
     </div>
 
@@ -193,6 +194,7 @@
               <tr><td><b class="k">K</b><b class="p">—</b></td><td>撃墜クリップの自動保存 ON / OFF（撃墜の約 10 秒前〜キルカメラを動画で保存）</td></tr>
               <tr><td><b class="k">P ・ Enter</b><b class="p">OPT ・ SHARE</b></td><td>一時停止 ・ リスタート</td></tr>
               <tr><td><b class="k">H</b><b class="p">タッチパッド</b></td><td>このコクピットヘルプ（開くと一時停止）</td></tr>
+              <tr><td><b class="k">L</b><b class="p">十字 →</b></td><td>飛行中の小さな操作ガイドを消す / 出す</td></tr>
             </table>
           </div>
           <div class="osb b"><i></i><i></i><i></i><i></i><i></i></div>
@@ -268,6 +270,16 @@
   </div>
 
   <!-- デブリーフィング（ミッション終了 / 撃墜後） -->
+  <!-- 飛行中の小さな操作ガイド（コクピットの MFD 風）。L / 十字→ で消す・出す、H / タッチパッドで詳しいヘルプ -->
+  <div id="guide" class="hidden">
+    <div class="gd-box">
+      <div class="gd-h">CONTROLS<span class="k">L で消す</span><span class="p">十字→ で消す</span></div>
+      <table class="gd-t"></table>
+      <div class="gd-f"><b class="k">H</b><b class="p">タッチパッド</b> 詳しい操作説明（一時停止）</div>
+    </div>
+    <div class="gd-mini"><b class="k">L</b><b class="p">十字→</b> ガイド ・ <b class="k">H</b><b class="p">タッチパッド</b> 操作説明</div>
+  </div>
+
   <div id="debrief" class="hidden">
     <div class="db-mfd">
       <div class="db-title"></div>
