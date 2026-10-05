@@ -219,7 +219,8 @@ function showDebrief() {
   const rows = [
     ...(rc ? [['偵察写真 RECON', rc.done ? '✓ 撮影' : '✗ 未撮影']] : []),
     ...(strike ? [['帰還 RTB', ok ? '✓ 帰還' : '✗']] : []),
-    strike ? ['撃破 DESTROYED', `${combat.kills} / ${combat.ground.length}`] : ['撃墜 KILLS', combat.kills],
+    // 偵察の作戦では対空砲を壊さなくてもクリア＝「0 / 1」が失敗に見えないよう（任意）と書く
+    strike ? [rc ? '対空砲 AAA（任意）' : '撃破 DESTROYED', `${combat.kills} / ${combat.ground.length}`] : ['撃墜 KILLS', combat.kills],
     ['飛行時間 TIME', `${mm}:${String(ss).padStart(2, '0')}`],
     ['機関砲 GUN', `${st.gunHits} 命中 / ${st.gunRounds} 発（${Math.round(r.acc * 100)}%）`],
     ['ミサイル AIM-9X', `${st.mslHits} 命中 / ${st.mslFired} 発`],
@@ -457,6 +458,8 @@ function tick(dt, render) {
   guide.classList.toggle('hidden', state.helpOpen || state.titleOpen || state.dead || !debrief.classList.contains('hidden'));
   guide.classList.toggle('off', guideOff);
   fitGuide();   // ヘルプの HUD 図と重ならないように
+  // コクピット視点では HUD をコンバイナーのガラスに収める
+  state.hudFrame = cockpit.group.visible ? cockpit.glassRect(camera, innerWidth, innerHeight) : null;
   hud.draw(ac, state, camera, halted ? 0 : dt, combat);
   clips.capture();
 }

@@ -70,10 +70,19 @@ export class Hud {
     const t = ac.t;
     if (t.speed === undefined) return;
 
-    const u = Math.min(Math.max(H / 760, 0.8), 1.7);
+    let u = Math.min(Math.max(H / 760, 0.8), 1.7);
+    let C = { x: W / 2, y: H * 0.47 };
+    let hw = Math.min(W * 0.24, H * 0.34), hh = H * 0.3;
+    // コクピット視点：HUD 全体（テープ・数字まで）をコンバイナーのガラス（state.hudFrame）の中に収める
+    const F = state.hudFrame;
+    if (F) {
+      u = Math.min(u, Math.max(0.7, (F.r - F.l) / 560));
+      hw = (F.r - F.l) / 2 - 92 * u;              // 左右の外側に速度・高度テープ（18u + 72u）
+      hh = Math.max(40 * u, (F.b - F.t - 200 * u) / 1.75);   // 上に方位テープと射程の字、下に数字 6 行
+      C = { x: (F.l + F.r) / 2, y: F.t + 62 * u + hh };
+    }
     this.u = u;
-    const C = { x: W / 2, y: H * 0.47 };
-    const hw = Math.min(W * 0.24, H * 0.34), hh = H * 0.3;
+    this.frame = F;
     const box = { l: C.x - hw, r: C.x + hw, t: C.y - hh, b: C.y + hh };
 
     if (this.visible && !state.dead && !state.lookAway) {
@@ -85,6 +94,7 @@ export class Hud {
       g.lineCap = 'round';
       g.font = `${13 * u}px Menlo, Consolas, monospace`;
       g.textBaseline = 'middle';
+      if (F) { g.beginPath(); g.rect(F.l, F.t, F.r - F.l, F.b - F.t); g.clip(); }   // ガラスの外には映らない
 
       // --- 景色に重なるもの（HUD 枠でクリップ） ---
       g.save();
@@ -252,8 +262,9 @@ export class Hud {
         }
       }
       // ステータス（右側）
-      g.textAlign = 'left';
-      const x = box.r + 18 * u, y = C.y - (box.b - box.t) * 0.375 - 76 * u;
+      // コクピット視点ではガラスの右端に右寄せ（はみ出さないように）
+      g.textAlign = this.frame ? 'right' : 'left';
+      const x = this.frame ? this.frame.r - 6 * u : box.r + 18 * u, y = C.y - (box.b - box.t) * 0.375 - 76 * u;
       if (sk.state === 'lock') {
         g.fillText(sk.inRange ? `IN RNG  TOF ${Math.round(sk.tof)}` : 'LOCK', x, y);
       }
@@ -308,7 +319,8 @@ export class Hud {
 
     // 敵の腕前・ウェーブ・残り機数
     g.textAlign = 'right';
-    g.fillText(cb.statusText(), box.l - 18 * u, C.y - hh * 0.75 - 58 * u);
+    if (this.frame) { g.textAlign = 'left'; g.fillText(cb.statusText(), this.frame.l + 6 * u, C.y - hh * 0.75 - 58 * u); }   // ガラスの左端から
+    else g.fillText(cb.statusText(), box.l - 18 * u, C.y - hh * 0.75 - 58 * u);
 
     this.drawMissileSymbology(ac, cb, box, C, inBox);
 
@@ -436,7 +448,9 @@ export class Hud {
     }
     g.textAlign = 'right';
     const nm = dist / 1852;
-    g.fillText(`${wp.label} ${nm < 10 ? nm.toFixed(1) : Math.round(nm)} NM`, box.r + 120 * u, box.b + 34 * u);
+    const label = `${wp.label} ${nm < 10 ? nm.toFixed(1) : Math.round(nm)} NM`;
+    if (this.frame) { g.textAlign = 'right'; g.fillText(label, this.frame.r - 6 * u, C.y + (box.b - C.y) * 0.75 + 22 * u + 18 * u * 5); }   // ガラスの中：右下の数字の下
+    else g.fillText(label, box.r + 120 * u, box.b + 34 * u);
     g.restore();
   }
 

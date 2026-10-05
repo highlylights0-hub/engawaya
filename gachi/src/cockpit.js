@@ -52,17 +52,19 @@ export function buildCockpit(sunDir) {
   glare.position.set(0, 0.755, -5.16);
   group.add(glare);
   // HUD コンバイナー（2 本の細い支柱、ガラスは薄い緑）
+  // 本物（視野 約 30°）より大きくしてある＝画面で HUD の字が読めるように。HUD はこのガラスの外形に合わせて描く（hud.js の frame）
+  const GW = 0.8, GH = 0.52;
   const glass = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.22, 0.18),
-    new THREE.MeshBasicMaterial({ color: 0x88ffaa, transparent: true, opacity: 0.06, depthWrite: false, side: THREE.DoubleSide }),
+    new THREE.PlaneGeometry(GW, GH),
+    new THREE.MeshBasicMaterial({ color: 0x88ffaa, transparent: true, opacity: 0.05, depthWrite: false, side: THREE.DoubleSide }),
   );
-  glass.position.set(0, 0.92, -5.05);
-  glass.rotation.x = -0.25;
+  glass.position.set(0, 0.775 + GH / 2, -5.1);
+  glass.rotation.x = -0.12;
   group.add(glass);
   for (const sx of [-1, 1]) {
-    const post = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.17, 0.006), dark);
-    post.position.set(sx * 0.112, 0.86, -5.07);
-    post.rotation.x = -0.25;
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.008, GH, 0.008), dark);
+    post.position.set(sx * (GW / 2 + 0.004), 0.775 + GH / 2, -5.1);
+    post.rotation.x = -0.12;
     group.add(post);
   }
   // サイドコンソール（左：スロットル、右：サイドスティック）
@@ -87,9 +89,21 @@ export function buildCockpit(sunDir) {
   group.add(seat);
 
   let acc = 0;
+  const _c = new THREE.Vector3();
   return {
     scene,
     group,
+    // ガラスの四隅を画面に投影した外接矩形（px）。HUD をここに収める
+    glassRect(camera, w, h) {
+      group.updateMatrixWorld();
+      let l = Infinity, r = -Infinity, t = Infinity, b = -Infinity;
+      for (const [x, y] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+        _c.set(x * GW / 2, y * GH / 2, 0).applyMatrix4(glass.matrixWorld).project(camera);
+        const px = (_c.x + 1) / 2 * w, py = (1 - _c.y) / 2 * h;
+        l = Math.min(l, px); r = Math.max(r, px); t = Math.min(t, py); b = Math.max(b, py);
+      }
+      return { l, r, t, b };
+    },
     // 外の景色の上に重ねて描く（同じカメラ）
     render(renderer, camera) {
       renderer.autoClear = false;

@@ -251,10 +251,11 @@ html, body {
 .db-grade span { display: block; letter-spacing: 0.3em; color: rgba(125,255,138,0.6); }
 .db-grade b { display: block; font-size: 5em; line-height: 1.1; color: #ffcc33; text-shadow: 0 0 12px rgba(255,200,60,0.6); }
 .db-grade em { font-style: normal; color: rgba(185,255,196,0.8); }
-.db-foot { display: flex; justify-content: center; gap: calc(var(--u) * 2); margin-top: calc(var(--u) * 2); }
+.db-foot { display: flex; justify-content: center; gap: calc(var(--u) * 1.2); margin-top: calc(var(--u) * 2); }
+/* 字の折り返しをしない（「×)」だけが 2 行目に落ちていた） */
 #debrief button {
-  font: inherit; cursor: pointer; color: #7dff8a; background: #0a120d;
-  border: 1px solid #2c4433; border-radius: 3px; padding: calc(var(--u) * 0.5) calc(var(--u) * 2);
+  font: inherit; font-size: 0.85em; white-space: nowrap; cursor: pointer; color: #7dff8a; background: #0a120d;
+  border: 1px solid #2c4433; border-radius: 3px; padding: calc(var(--u) * 0.6) calc(var(--u) * 1.2);
 }
 #debrief button:hover { border-color: #7dff8a; box-shadow: 0 0 8px rgba(80,255,120,0.5); }
 
