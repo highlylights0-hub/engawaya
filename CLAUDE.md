@@ -44,7 +44,7 @@ iPhone のクロード・Mac のクロード・web のクロードは、**記憶
 | **K'Ad蔵人 配信** | `gcad-web` | 公開 | Web版（gcad.engawaya.com）と、Windows版・Mac版の置き場（GitHub Releases） |
 | 母屋 | `engawaya` | 公開 | このサイト（engawaya.com） |
 | Ochi-Gee | `Ochigee_iOS_v2` | 非公開 | iPhone用の落ちものパズル。**憲法は同リポジトリの `CLAUDE.md`** |
-| GeoMemory | `geomemory-help` / `geomemory-support` | 公開 | 道を憶える道具の窓口 |
+| TAXI PRO NAVI（旧 GeoMemory） | `geomemory-help` / `geomemory-support` | 公開 | 乗務員のナビの窓口（使い方ガイド・サポート・プライバシーポリシー・高速の網の ODbL）。2026-10-09 に改名。本体のソースは非公開の `TaxyVoice` |
 
 **各棟の詳しい決まり事は、その棟の `CLAUDE.md` にあります。**
 母屋（ここ）には、全部の棟に共通する作法だけを置く。
@@ -77,7 +77,7 @@ iPhone のクロード・Mac のクロード・web のクロードは、**記憶
 | 母屋 | `index.html` | 玄関。道具の紹介・無料の宣言・免責・連絡先 |
 | なぜ | `naze/index.html` | **なぜこう作ったかの説明**。ここが憲法の出どころ |
 | 開発日記 | `nikki/index.html` | **蔵人が書く帳面**（→下の「開発日記」の節） |
-| 道メモ | `michi/index.html` | 地図に道を描く道具。GeoMemory の道の共有リンクの受け皿も兼ねる（道のデータはリンクの#以降に丸ごと入っていて、サーバーへは送られない）。形と読み方はファイル冒頭の板書に |
+| 道メモ | `michi/index.html` | 地図に道を描く道具。TAXI PRO NAVI（旧 GeoMemory）の道の共有リンクの受け皿も兼ねる（道のデータはリンクの#以降に丸ごと入っていて、サーバーへは送られない）。形と読み方はファイル冒頭の板書に |
 | 赤ペン | `akapen/index.html` | 地図に手で書き込む |
 | メーター引き | `meter/index.html` | タクシーの納金の計算。**看板の一行目は「割り算はこちらでやります」**——20時間走ったあとの人が最初に言うのが「何を割ったら良いんだい〜！」だから。途中の式まで全部出すのは、間違えると自分の財布から出るため |
 | Ochi-Gee | `ochigee/index.html` ／ `ochigee/privacy/` | 落ちものパズルの紹介／プライバシーポリシー（App Store 提出に必須） |
