@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!--
     ============================================================
-    縁側屋 /michi/ — GeoMemory「道のおすそわけ」受け皿ページ
+    縁側屋 /michi/ — TAXI PRO NAVI（旧 GeoMemory）「道のおすそわけ」受け皿ページ
 
     何をする一枚か:
-      GeoMemory アプリが作る共有リンク
+      TAXI PRO NAVI（旧 GeoMemory）アプリが作る共有リンク
         https://engawaya.com/michi/#<データ>
       を開いた人に、その道の中身（名前・どこからどこまで・形・メモ）を
-      見せて、「GeoMemory で受け取る」へ橋渡しする。
+      見せて、「TAXI PRO NAVI で受け取る」へ橋渡しする。
 
     なぜファイル（.gmem）でなくリンクなのか:
       .gmem をLINE等で送ると「知らない拡張子＝ウイルスかも」と
@@ -70,7 +70,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="/favicon.png">
 <title>道メモ — 地図に道を描いて渡す｜縁側屋</title>
-<meta name="description" content="地図をなぞるだけで道が作れて、リンク・絵・ファイルにして渡せます。GeoMemory の共有リンクの受け皿でもあります。道のデータはリンクの中にあり、サーバーには保存されません。">
+<meta name="description" content="地図をなぞるだけで道が作れて、リンク・絵・ファイルにして渡せます。TAXI PRO NAVI（乗務員のナビ・旧 GeoMemory）の共有リンクの受け皿でもあります。道のデータはリンクの中にあり、サーバーには保存されません。">
 <!-- 【検索の扱い・2026-08-01 施主判断で変更】
      以前は一律 noindex にしていた（中身は毎回リンク次第で、検索から来ても
      空のページだったから）。母屋の座布団に「道メモ」として並べた日に、
@@ -116,7 +116,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   --wood-1:     #c69a6d;
   --wood-2:     #a97c50;
   --accent:     #9c5f2d;
-  /* 道の絵に使う色。線＝GeoMemoryのシアン系だと夜空に沈むので、
+  /* 道の絵に使う色。線＝TAXI PRO NAVI（旧 GeoMemory）のシアン系だと夜空に沈むので、
      昼夜どちらでも読める青緑を昼夜で少し変える。 */
   --route:      #0f766e;
   --route-start:#1a7f37;   /* 出発の印（緑） */
@@ -236,7 +236,7 @@ h1 {
 .ezu canvas.ugoku { touch-action: none; cursor: grab; }
 .ezu canvas.ugoku:active { cursor: grabbing; }
 
-/* ボタンは GeoMemory の地図と同じ作法＝丸くて、地図の上に浮いている。
+/* ボタンは TAXI PRO NAVI の地図と同じ作法＝丸くて、地図の上に浮いている。
    施主「ジオメモリーみたいにフローティングだと優しくて親切です」（2026-08-01）。
    アプリで見慣れた形をそのまま持ってくる＝はじめての人にも読み方が要らない。 */
 .mapctl {
@@ -557,7 +557,7 @@ footer a { color: inherit; }
 <div class="wrap">
   <a class="yagou" href="/">縁 側 屋</a>
   <h1>道メモ</h1>
-  <p class="lead" id="lead">GeoMemory で覚えた道が、リンクになって届きました。</p>
+  <p class="lead" id="lead">道が、リンクになって届きました。</p>
 
   <!-- 道の中身がある時だけ現れる本体。最初は隠しておき、JSが読めたら開く。 -->
   <div id="michi" hidden>
@@ -646,7 +646,7 @@ footer a { color: inherit; }
         <button class="btn btn-main" id="linkNisuru" type="button">リンクにする（そのまま送れます）</button>
         <p class="btn-note">できたリンクを LINE などに貼るだけ。受け取った人はアプリなしで見られます。</p>
         <button class="btn btn-sub" id="ePng"  type="button">いま見えている範囲を絵で保存（PNG）</button>
-        <button class="btn btn-sub" id="eGmem" type="button">GeoMemory のファイルで保存（.gmem）</button>
+        <button class="btn btn-sub" id="eGmem" type="button">TAXI PRO NAVI のファイルで保存（.gmem）</button>
         <button class="btn btn-sub" id="eGpx"  type="button">GPX で保存（他の地図ソフト用）</button>
       </div>
       <div class="dekita" id="dekita" hidden>
@@ -657,9 +657,9 @@ footer a { color: inherit; }
     </div>
 
     <div class="actions" id="uketoriActions">
-      <a class="btn btn-main" id="openApp" href="#">GeoMemory で道を受け取る</a>
-      <p class="btn-note">iPhone に GeoMemory が入っている人は、これを押すとアプリが開いて「覚えた道」に入ります。</p>
-      <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
+      <a class="btn btn-main" id="openApp" href="#">TAXI PRO NAVI で道を受け取る</a>
+      <p class="btn-note">iPhone に TAXI PRO NAVI が入っている人は、これを押すとアプリが開いて「マイルート」に入ります。</p>
+      <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">TAXI PRO NAVI を入手する（無料・App Store）</a>
     </div>
 
     <p class="anshin">
@@ -683,10 +683,10 @@ footer a { color: inherit; }
     <button class="btn btn-main" id="tsukuruHajime" type="button" style="width:100%;">新しく道を作る</button>
 
     <hr style="margin:22px 0; border:none; border-top:1px solid var(--card-line);">
-    ここは <strong>GeoMemory の「道の共有リンク」の受け皿</strong>でもあります。<br>
-    GeoMemory アプリで道を「リンクで共有」すると、ここのリンクが作られます。
-    GeoMemory は、走った道・歩いた道を憶えて、あとで再生できる無料のアプリです。<br><br>
-    <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">GeoMemory を入手する（無料・App Store）</a>
+    ここは <strong>TAXI PRO NAVI の「道の共有リンク」の受け皿</strong>でもあります。<br>
+    TAXI PRO NAVI で道を「リンクで共有」すると、ここのリンクが作られます。
+    TAXI PRO NAVI は、タクシーなど仕事で道を走る方のための無料のナビです。走った道を「マイルート」に記録して、あとで再生できます。<br><br>
+    <a class="btn btn-sub" href="https://apps.apple.com/jp/app/id6788990853">TAXI PRO NAVI を入手する（無料・App Store）</a>
   </div>
 
   <!-- リンクが読めなかったとき（途中で切れた等）。正直に言う。 -->
@@ -700,7 +700,7 @@ footer a { color: inherit; }
   </div>
 
   <p class="disclaimer">
-    GeoMemory はまだ開発中の道具です。移動経路は自宅・職場などが推測されうる大切な個人情報です。
+    道メモも TAXI PRO NAVI も、まだ育てている途中の道具です。移動経路は自宅・職場などが推測されうる大切な個人情報です。
     もらった道も、人に渡すときは相手と中身をよく確かめてから。
     使ったことで起きた損害まではお引き受けできませんが、おかしいところがあれば
     メールをください。ひとつずつ直します。
@@ -1672,7 +1672,7 @@ footer a { color: inherit; }
      受け取った人は寄って確かめられるし、アプリに取り込めば再生もできる。
 
      出口は四つ：リンク（そのまま送れる）／PNG（いま見えている範囲）／
-     .gmem（GeoMemory に入る）／GPX（他の地図ソフトへ）。
+     .gmem（TAXI PRO NAVI に入る）／GPX（他の地図ソフトへ）。
      ================================================================== */
 
   var tsukuruDekiru = false;   // 作成モードに入ったか
@@ -1908,8 +1908,8 @@ footer a { color: inherit; }
     }
   }
 
-  /* GeoMemory がそのまま開けるファイル。アプリ側は何も直さなくていい
-     ＝ここで作った道が、iPhone の「覚えた道」に入って再生までできる。 */
+  /* TAXI PRO NAVI がそのまま開けるファイル。アプリ側は何も直さなくていい
+     ＝ここで作った道が、iPhone の「マイルート」に入って再生までできる。 */
   function eGmem() {
     if (!michiAruka()) return;
     var t = tsukuruTane();
