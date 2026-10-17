@@ -1191,6 +1191,45 @@ html[data-time="night"] .ice {
           drop-shadow(0 0 7px #ffcf8a80);
 }
 
+/* ---- 夜の虫の声（2026-10-17 施主「秋といえば、夜に鳴くコオロギなんて心休まりますね〜」）
+   夜の秋だけ、縁の下からコオロギが一匹のぞく。札を押すと鳴く。
+
+   ⚠️開いただけでは鳴らさない。ブラウザが許さないから、というだけでなく、
+   夜中に開いた人の部屋で、いきなり音が出てはいけない。鳴らすのは押した人だけ。
+   ⚠️声は録音ではなく、その場で作る（Web Audio）。借り物の音源が要らず、軽い。
+   ⚠️板の上（景物の段）には置かない。上は二人と芋と盆で詰まっている。
+   板の手前の下のほう＝縁の下に近いところが、本物のコオロギの居場所。
+   札は「添えの押す場所」の寸法（DESIGN.md 5. 高さ 48px）より一段大きく 56px。
+   色は夜の木札と同じ値（夜にしか出ないので、夜の値で決め打ち）。 */
+.koorogi {
+  position: absolute;
+  left: 4%; bottom: 14px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 18px 6px 12px;
+  border: 1px solid #8a6c48;
+  border-radius: 12px;
+  background: #6b5236;
+  color: #f4ead9;
+  font-family: var(--fuda-font);
+  font-size: 16px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  box-shadow: 0 3px 6px #00000040;
+}
+.koorogi:focus-visible { outline: 3px solid var(--akari); outline-offset: 3px; }
+.koorogi svg { width: 40px; height: auto; display: block;
+               filter: drop-shadow(0 0 5px #ffcf8a66); }
+html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
+/* 鳴いているあいだ、羽をこすっている体で小さくふるえる */
+.koorogi[aria-pressed="true"] svg { animation: koorogi-furue .09s steps(2) infinite; }
+@keyframes koorogi-furue {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-1px); }
+}
+
 /* 動きが苦手な人のために、OS 設定を尊重して全部止める。 */
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
@@ -2607,6 +2646,55 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
       </g>
     </svg>
   </button>
+
+  <!-- 夜の虫の声。夜の秋だけ出る（CSS の「夜の虫の声」の項）。
+       エンマコオロギを横から。黒っぽい体・長い触角・太い後ろ脚。
+       ⚠️この大きさでは触角を細く長く描くのが要。触角が短いと、ただの黒い豆になる。 -->
+  <button class="koorogi" id="koorogi" type="button" aria-pressed="false">
+    <svg viewBox="0 0 20 11" shape-rendering="crispEdges" aria-hidden="true">
+      <!-- 触角。頭から前上へ一本、背中の上を後ろへ一本 -->
+      <g fill="#c9a77a">
+        <rect x="2" y="2" width="1" height="1"/>
+        <rect x="1" y="1" width="1" height="1"/>
+        <rect x="0" y="0" width="1" height="1"/>
+        <rect x="5" y="1" width="2" height="1"/>
+        <rect x="7" y="0" width="5" height="1"/>
+      </g>
+      <!-- 体（羽）と頭 -->
+      <g fill="#3b2a1c">
+        <rect x="2"  y="3" width="4"  height="4"/>
+        <rect x="6"  y="3" width="10" height="4"/>
+        <rect x="16" y="4" width="1"  height="2"/>
+      </g>
+      <!-- 光の当たる背中。一段明るいと、黒い塊ではなく丸い体に見える -->
+      <g fill="#6e5236">
+        <rect x="3" y="3" width="2" height="1"/>
+        <rect x="7" y="3" width="8" height="1"/>
+      </g>
+      <!-- 目 -->
+      <rect x="3" y="4" width="1" height="1" fill="#e2c38c"/>
+      <!-- 尾の毛（尾角）。二本、後ろへ -->
+      <g fill="#5a4330">
+        <rect x="17" y="4" width="2" height="1"/>
+        <rect x="17" y="6" width="3" height="1"/>
+      </g>
+      <!-- 後ろ脚。太いもも（ここが跳ぶ力）と、下へ折れるすね -->
+      <g fill="#4e3a27">
+        <rect x="9"  y="7" width="6" height="1"/>
+        <rect x="13" y="6" width="3" height="1"/>
+        <rect x="9"  y="8" width="1" height="2"/>
+        <rect x="8"  y="10" width="2" height="1"/>
+      </g>
+      <!-- 前脚と中脚 -->
+      <g fill="#4e3a27">
+        <rect x="3" y="7" width="1" height="2"/>
+        <rect x="2" y="9" width="1" height="1"/>
+        <rect x="6" y="7" width="1" height="2"/>
+        <rect x="5" y="9" width="1" height="1"/>
+      </g>
+    </svg>
+    <span class="koorogi-kotoba">虫の声をきく</span>
+  </button>
 </div>
 
 </section>
@@ -2950,6 +3038,22 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
         : (md <  AKI)                 ? 'summer'
         :                               'autumn';
   document.documentElement.setAttribute('data-season', k);
+
+  /* 旬（しゅん）＝季節の中の、もう一段こまかい札。
+     （2026-10-17 施主のご依頼「秋も深まりまして、縁側屋の模様替えなどいかがですか？」）
+     8月20日の秋と、10月半ばの秋は、同じ「秋」でも景色が違う。
+     美瑛の丘は黄金色と紅葉に変わり、大雪山には初雪が来る
+     （大雪山の初冠雪は、例年9月の終わりごろ）。
+
+     ⚠️季節の札（data-season）は増やさずに、別の札を一枚足した。
+     「autumn」を読んでいる仕掛け（景物・焼き芋・ひとこと）は家じゅうにあるので、
+     秋を二つに割ると、それを全部書き直すことになる＝必ずどこかで書き漏れる。
+     晩秋は「秋の上に重ねる札」にしておけば、知らない仕掛けは今までどおりの秋で動く。
+     ⚠️日付を見るのは、ここだけ（上の約束と同じ）。数字は毎年見直してよい。 */
+  var BANSHU = 1010;  /* 10月10日から 晩秋（冬の札が立つ 12月1日まで） */
+  if (k === 'autumn' && md >= BANSHU) {
+    document.documentElement.setAttribute('data-shun', 'banshu');
+  }
 })();
 
 /* ============================================================
@@ -3363,6 +3467,109 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
 })();
 
 /* ------------------------------------------------------------
+   夜の虫の声（2026-10-17 施主「秋といえば、夜に鳴くコオロギなんて心休まりますね〜」）
+
+   エンマコオロギの「コロコロリー」を、その場で作る。
+   ・声の正体は、羽をこすって出る高い一つの音（4キロヘルツあたり）。
+     その音を、ごく短く区切って並べると「コロ」になる。
+     区切りを細かく長く続けると「リー」になる。
+   ・二匹いる。少し高さの違う声を左と右に置き、鳴く間合いをずらす。
+     一匹だけだと「機械の音」、二匹だと「庭」になる。
+   ・音量は小さく。虫の声は、耳を澄ませて聞くものなので。
+   ⚠️iPhone は、消音（マナー）のスイッチが入っていると、この音も出ません。
+     札の言葉ではなく、ここに書いておく（音が出ない人のための説明は宿題）。
+   ⚠️ページを閉じかけたら（裏へ回ったら）止める。見ていない所で鳴り続けない。
+   ------------------------------------------------------------ */
+(function () {
+  var btn = document.getElementById('koorogi');
+  if (!btn) return;
+  var kotoba = btn.querySelector('.koorogi-kotoba');
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { kotoba.textContent = 'この機械では鳴りません'; btn.disabled = true; return; }
+
+  var ctx = null, mushi = [], timer = null;
+
+  /* 一匹ぶん。hz＝声の高さ、pan＝左右、ma＝鳴いたあとの間（秒） */
+  function umareru(hz, pan, ma, hajime) {
+    var osc = ctx.createOscillator();
+    var vol = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = hz;
+    vol.gain.value = 0;
+    osc.connect(vol);
+    var ato = vol;
+    if (ctx.createStereoPanner) {           /* 左右に置けない古い機械では、真ん中で鳴く */
+      var lr = ctx.createStereoPanner();
+      lr.pan.value = pan;
+      vol.connect(lr); ato = lr;
+    }
+    ato.connect(ctx.destination);
+    osc.start();
+    return { osc: osc, vol: vol, ma: ma, tsugi: ctx.currentTime + hajime, kai: 0 };
+  }
+
+  /* 一粒＝羽をひとこすり。立ち上がりと消え際をなめらかにしないと「プツッ」と鳴る */
+  function hitotsubu(m, t, nagasa, ookisa) {
+    var g = m.vol.gain;
+    g.setValueAtTime(0, t);
+    g.linearRampToValueAtTime(ookisa, t + 0.004);
+    g.setValueAtTime(ookisa, t + nagasa - 0.004);
+    g.linearRampToValueAtTime(0, t + nagasa);
+  }
+
+  /* 一節＝「コロ・コロ・リー」 */
+  function hitofushi(m) {
+    var t = m.tsugi, O = 0.05;
+    for (var k = 0; k < 2; k++) {               /* コロ、コロ */
+      for (var i = 0; i < 4; i++) { hitotsubu(m, t, 0.018, O); t += 0.030; }
+      t += 0.11;
+    }
+    var n = 9 + (m.kai % 3) * 2;                 /* リー（毎回すこし長さを変える） */
+    for (var j = 0; j < n; j++) { hitotsubu(m, t, 0.016, O * (1 - j / (n * 2.2))); t += 0.024; }
+    m.kai++;
+    m.tsugi = t + m.ma + (m.kai % 2) * 0.35;      /* 間合いも揺らす＝生きものの拍子 */
+  }
+
+  /* 少し先まで、まとめて予約しておく（タイマーは正確でないので、音の時計で刻む） */
+  function kizamu() {
+    mushi.forEach(function (m) {
+      while (m.tsugi < ctx.currentTime + 1.2) hitofushi(m);
+    });
+  }
+
+  function naku() {
+    if (!ctx) ctx = new AC();
+    if (ctx.resume) ctx.resume();
+    mushi = [ umareru(4300, -0.45, 0.9, 0.05),
+              umareru(4650,  0.50, 1.3, 0.75) ];
+    kizamu();
+    timer = setInterval(kizamu, 250);
+    btn.setAttribute('aria-pressed', 'true');
+    kotoba.textContent = '虫の声をとめる';
+  }
+
+  function damaru() {
+    clearInterval(timer); timer = null;
+    mushi.forEach(function (m) {
+      var g = m.vol.gain, t = ctx.currentTime;
+      g.cancelScheduledValues(t);
+      g.setValueAtTime(0, t);
+      m.osc.stop(t + 0.05);
+    });
+    mushi = [];
+    btn.setAttribute('aria-pressed', 'false');
+    kotoba.textContent = '虫の声をきく';
+  }
+
+  btn.addEventListener('click', function () {
+    if (timer) damaru(); else naku();
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden && timer) damaru();
+  });
+})();
+
+/* ------------------------------------------------------------
    縁側の二人の会話（2026-09-03 施主のご依頼
    「botスタイルでいいです。会話を吹き出しで」）
 
@@ -3524,6 +3731,22 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
                      ['#a89050','#b89f5d','#937d43']],
               road:'#d5cbb2', roadEdge:'#b3a68b',
               tree:'#6b5a2f', trunk:'#4a3a28', flower:null },
+    /* 晩秋（2026-10-17）。秋の上に重ねる札 data-shun="banshu" のときだけ使う。
+       麦を刈ったあとの黄金色・起こした畑の焦げ茶・紅葉した防風林の朱。
+       ⚠️三つの丘を全部赤くしない。紅葉は木と帯のところどころに置くから
+       紅葉に見える。一面を赤く塗ると、夕焼けか火事に見える。
+       空は秋より少し高く澄ませる（晩秋の空は、夏より青が深い）。
+       snowLine＝雪の下がり方。初冠雪なので、夏秋（50）より一段深いだけ。
+       ⚠️一度 54 にしたら、白い帽子が大きく尖って富士山に見えた（大雪山の項の
+       「富士山の親戚になる」病）。初冠雪は頂に薄く——52 で止める。 */
+    banshu: { skyTop:'#5f97c0', skyBot:'#e6e2d2', cloud:'#fdfbf5',
+              mtn:'#76829a', snow:'#ffffff', mtnShade:'#5a6577', snowLine:52,
+              hills:[['#c9a24e','#d8b45c','#b38c40'],
+                     ['#7c5636','#b0562f','#6a482c'],
+                     ['#c0943f','#d07a35','#a87e36']],
+              road:'#d8cdb2', roadEdge:'#b2a487',
+              tree:'#b4502c', trunk:'#4a3a28', flower:null,
+              ochiba:['#c4552b','#d9892f','#a8402a','#e0a93a'] },
     /* 冬。山は淡く置く。地面が真っ白なので、夏と同じ濃さで山を
        置くと山が手前に飛び出して見えて、奥行きが壊れる。 */
     winter: { skyTop:'#9fb9cc', skyBot:'#e8eff4', cloud:'#f7fbfd',
@@ -3596,7 +3819,7 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
       var y = Math.round(mtnY(x));
       px(x, y, 1, Y(108) - y, p.mtn);
       /* 雪。稜線から深めに。冬はさらに下まで。 */
-      var line = (p === PAL.winter) ? Y(58) : Y(50);
+      var line = (p === PAL.winter) ? Y(58) : Y(p.snowLine || 50);
       var snow = Math.max(0, Math.round((line - y) * 1.15));
       if (snow > 0) px(x, y, 1, snow, p.snow);
       /* 影。右下がりの斜面だけ、稜線のすぐ下に短く。
@@ -3907,7 +4130,41 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
      札が無い機械（JSが途中で止まった等）では、丘は夏の色で出る
      ——景色そのものが出ない機械もあるので、そこは色の話に留める。 */
   function seasonNow(){
-    return document.documentElement.getAttribute('data-season') || 'summer';
+    var s = document.documentElement.getAttribute('data-season') || 'summer';
+    /* 晩秋の札が重なっていれば、晩秋の色で描く（札を立てるのは上の一箇所） */
+    if (s === 'autumn' && document.documentElement.getAttribute('data-shun') === 'banshu') return 'banshu';
+    return s;
+  }
+
+  /* ------------------------------------------------------------
+     落ち葉（2026-10-17 施主「落ち葉のひらりいいですよ！」）。
+     庇の上の木（絵の外にある、と思ってください）から、ひらりと落ちる。
+
+     ・晩秋だけ。色の表に ochiba を持っている季節だけ降る。
+     ・枚数は少なく（九枚）。たくさん降らせると「嵐」になって、
+       縁側でぼんやりする景色ではなくなる。
+     ・葉は、落ちながら左右にゆれて、ときどき裏返る。
+       裏返りは「横長の二マス」と「縦長の二マス」を入れ替えるだけ。
+       この大きさでは、それだけで葉が回って見える。
+     ・位置は乱数ではなく tane（決まった散らし方）で。開くたびに
+       違う降り方になると、同じ家の同じ景色ではなくなる（星と同じ理由）。
+     ・動きを止める設定の人には t が 0 のまま届くので、葉は宙で止まって見える
+       ＝ひらりの一瞬を写した絵になる。消すより、そのほうが秋が残る。
+     ------------------------------------------------------------ */
+  function drawOchiba(p, t){
+    if (!p.ochiba) return;
+    var top = Y(TENJOU), fall = H - top + 6;
+    for (var i = 0; i < 9; i++){
+      var v   = 4 + tane(i + 300) * 5;               /* 落ちる速さ（遅め） */
+      var ofs = tane(i + 310) * fall;
+      var y   = top + ((t * v + ofs) % fall) - 3;
+      var x0  = tane(i + 320) * W;
+      var x   = x0 + Math.sin(t * (0.6 + tane(i + 330) * 0.5) + i) * 6 + t * 1.5;
+      x = ((x % (W + 8)) + (W + 8)) % (W + 8) - 4;   /* 右へ流れ出たら左から */
+      var c = p.ochiba[i % p.ochiba.length];
+      var ura = Math.sin(t * 1.3 + i * 2.1) > 0;     /* 裏返り */
+      if (ura) px(x, y, 2, 1, c); else px(x, y, 1, 2, c);
+    }
   }
 
   var moving = !(window.matchMedia &&
@@ -3926,6 +4183,7 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
     drawRoad(p);
     drawJifubuki(p, t);
     drawTrees(p, sil);
+    drawOchiba(p, t);      /* 木より手前、庇より奥 */
     drawTenjou();          /* いちばん手前。景色の上に庇がかぶる */
     drawTint(time);
 
