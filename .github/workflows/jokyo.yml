@@ -1,0 +1,110 @@
+# ============================================================
+# 稼働中の札の係（2026-10-27）
+#
+# 博喜さんのご依頼：「サイト、上部に ODPT のサーバーが稼働中か。Cloud Flare、engawaya が稼働中か」。
+# 15 分ごとに三つを見に行き、結果だけを小さな札（jokyo.json）に書いて、枝 jokyo に置く。
+# 表紙はその札を読むだけ（raw.githubusercontent.com から）。
+#
+# 【なぜ表紙から直に見に行かないか】
+#   中継（Cloudflare の haneda-ita）の住所は、わざと人目から隠してある（どのページも noindex・仲間の板は合言葉）。
+#   表紙から直に見に行くと、住所を公開のソースに書くことになり、次が起きうる：
+#   ・誰でも読める口を叩かれて、Cloudflare の無料の枠（一日 10 万回）を使い切られる
+#     → 朝 9 時に戻るまで、仲間の板もアプリの情報も止まる
+#   ・合言葉の総当たり／アプリの入口を「ただの ODPT の窓口」にされる（ODPT の基本ライセンスに触れかねない）
+#   だから住所は GitHub の金庫（シークレット CHUKEI_URL）に入れ、見に行くのはこの係だけにした。
+#   表紙を何万人が開いても、中継へ行くのは 15 分に一度。（博喜さんの裁定 2026-10-27）
+#
+# 【お金】公開リポジトリの係は無料・時間の上限なし。中継へは一日 96 回（無料の枠の 0.1% 未満）。
+#        ODPT は鍵を使わず、入口が返事をするかを聞くだけ。
+#
+# ⚠️この係の記録（ログ）は公開される。中継の住所を一字も出さないこと：
+#   ・住所の家の名を ::add-mask:: で伏せる（金庫の値そのものは GitHub が伏せるが、
+#     エラーの文に「家の名だけ」が出ると伏せられない）
+#   ・見に行く道具はエラーの文を出さない（Python の例外を握りつぶして、番号だけ残す）
+#   ・札（jokyo.json）にも住所は書かない。書くのは「動いているか・返事の番号・かかった時間」だけ
+#
+# 【決まった時刻の係の癖】GitHub が混んでいると数分遅れることがある。表紙は「○時○分の様子」と書き、
+#   一時間より古い札は「様子が古いです」と出す（係そのものが止まったことも分かる）。
+#   ⚠️決まった時刻の係は、既定の枝（main）にあるときだけ動く。
+# ============================================================
+name: 稼働中の札
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jokyo
+  cancel-in-progress: true
+
+jobs:
+  miru:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 中継の家の名を記録から伏せる
+        env:
+          CHUKEI_URL: ${{ secrets.CHUKEI_URL }}
+        run: |
+          if [ -n "${CHUKEI_URL:-}" ]; then
+            ie="${CHUKEI_URL#*://}"; ie="${ie%%/*}"
+            echo "::add-mask::${ie}"
+          fi
+
+      - name: 三つを見に行って、札を書く
+        env:
+          CHUKEI_URL: ${{ secrets.CHUKEI_URL }}
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.error, datetime
+
+          def miru(url, ok):
+              """url を一度だけ見に行く。返事の番号・かかった時間・動いているか、を返す。
+                 ⚠️例外の文は出さない（住所が記録に出るため）。番号 0 は「返事が無かった」。"""
+              t = time.time()
+              try:
+                  req = urllib.request.Request(url, headers={'User-Agent': 'engawaya-jokyo (+https://engawaya.com/)'})
+                  with urllib.request.urlopen(req, timeout=20) as r:
+                      code = r.status
+              except urllib.error.HTTPError as e:
+                  code = e.code
+              except Exception:
+                  code = 0
+              return {'ugoku': ok(code), 'kotae': code, 'ms': int((time.time() - t) * 1000)}
+
+          fuda = {'mita': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+          # ODPT：鍵を使わずに入口へ。鍵が無いので 401／403 が返るのがふつう＝入口は動いている。
+          #       500 番台か、返事が無いときだけ「止まっている」とする。
+          fuda['odpt'] = miru('https://api.odpt.org/api/v4/odpt:Calendar', lambda c: 0 < c < 500)
+
+          # 中継：合言葉なしの無料のページ（/free）。置き場や ODPT を呼ばない、いちばん軽い口。200 なら動いている。
+          #       無料の枠を使い切られたときは 429 などが返る＝止まっている、と出る。
+          base = os.environ.get('CHUKEI_URL', '').rstrip('/')
+          fuda['chukei'] = miru(base + '/free', lambda c: c == 200) if base else {'ugoku': None, 'kotae': None, 'ms': None}
+
+          # engawaya.com：表紙そのもの。
+          fuda['engawaya'] = miru('https://engawaya.com/', lambda c: 200 <= c < 400)
+
+          os.makedirs('fuda', exist_ok=True)
+          with open('fuda/jokyo.json', 'w', encoding='utf-8') as f:
+              json.dump(fuda, f, ensure_ascii=False)
+          # 記録には、動いているかだけを出す（住所は出さない）
+          print({k: (v['ugoku'] if isinstance(v, dict) else v) for k, v in fuda.items()})
+          PY
+
+      - name: 札を枝 jokyo に置く（一つだけの commit を上書き＝履歴を増やさない）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd fuda
+          git init -q
+          git checkout -q -b jokyo
+          git add jokyo.json
+          git -c user.name='稼働中の係' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -q -m '稼働中の札（15 分ごとに上書き）'
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" jokyo
