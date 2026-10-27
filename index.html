@@ -58,6 +58,44 @@
         道具に着く。それだけで成立させる。
      ============================================================ -->
 
+
+<!-- ============================================================
+     2026-10-27 建て替え（蔵人 Opus 5.5）
+
+     博喜さんのご依頼（同日）：
+       「縁側屋はフレンドリーですが、実際何をしているところか想像しにくい」
+       「今が、ジーンズにTシャツで、気軽なイメージもいいですが。真面目なスーツを着たような」
+       「新しくお付き合いしていく方にも失礼ではない。何か頼んでも、任せられそうなイメージ」
+       （App Store にアプリを出して、アナリティクスを見て実際に感じたこと）
+       「雲や月を動かしたり、下のドット絵も動きます。それらの技術を踏襲しながら」
+     下絵を二案（紺のスーツ／生成りのスーツ）描いて、**案B「生成りのスーツ」**を選んでいただいた。
+     暗い顔も同じ席で「これでよいです」。ドメインは変えない（博喜さん「つまらないBUGを呼ばないために」）。
+
+     考え方は一つ：**表は無地のスーツ、凝るのは裏地。**
+       ・表＝何を作っているか、が最初の一画面で分かる。見出しは明朝、地は生成り、差し色は焼き色。
+         節は罫で区切り、面を浮かせる影は付けない。
+       ・裏地＝空の窓（日と月が渡り、雲が流れ、鳥が8の字を描く）と、底の縁側の場面
+         （二人・季節の景物・虫の声）。描く仕組みは一行も描き直さずに移した。
+       ・時刻で変わるのは、空の窓と縁側の場面だけ。字と地は、閲覧機の明るい／暗いの設定に合わせる
+         （kihon.css・kihon.js。上の行のボタンで選び直せる）。
+
+     表紙から下ろしたもの（消してはいない）：
+       ・吊ってある看板（一枚板の屋号）＝表紙の上から下ろした。描く仕組みは git の履歴に残る。
+       ・遊びの間（ガチ空戦・ゴテゴテ空戦・MIDI工房）＝ asobi/「遊びの部屋」へ。
+       ・軒先（お世話になっているところ）＝ osewa/ へ。
+       ・奥の部屋の四つ＝「そのほかに作ったもの」の一覧へ。
+     ⚠️下の「設計の考え方」は、建てた日（2026-07）の板書。いまと違うところもあるが、
+       この家の出発点なので消さない（1. は 2026-10-04 に撤廃、2. は 2026-10-27 に空と縁側だけへ）。
+     ============================================================ -->
+<!-- 字（2026-10-27）。見出しは明朝（しっぽり明朝）、本文はゴシック（Zen 角ゴシック New）、
+     縁側の一言だけ点の字（DotGothic16）。届かない日は機械の字で出る（display=swap）＝真っ白にはならない。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<!-- 家じゅうで一枚の見た目。正は DESIGN.md の「1-0」。 -->
+<link rel="stylesheet" href="kihon.css">
+<!-- 明るい顔／暗い顔。本文より先に札を立てるため、ここ（head）で読む。 -->
+<script src="kihon.js"></script>
 <style>
 /* ---- 土台のリセット（最小限だけ） ---- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -68,6 +106,117 @@ html, body { margin: 0; padding: 0; }
    読まれるし、指で操作する人には図面のように扱いにくい。ここで一度に塞ぐ。 */
 html, body { overflow-x: hidden; }
 
+/* ============================================================
+   表紙だけの間取り（2026-10-27）。色は kihon.css の変数だけを使う＝ここに色の値を書かない。
+   ⚠️例外は、空の窓の下地（#bcdcee）と動画の下地（#1b1f24）。どちらも絵が描かれるまでの
+     一瞬だけ見える色で、字の色ではない。
+   ============================================================ */
+
+/* ---- 玄関：一行と、空の窓 ---- */
+.genkan {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+  padding: 72px 0 88px;
+}
+.genkan-eyebrow { margin: 0 0 20px; font-size: 13px; letter-spacing: .2em; color: var(--usu); }
+.genkan h1 {
+  margin: 0;
+  font-family: var(--min); font-weight: 700;
+  font-size: clamp(27px, 5.6vw, 44px); line-height: 1.55; letter-spacing: .04em;
+}
+.genkan-lead { margin: 24px 0 0; font-size: 16px; color: var(--usu); }
+/* 空の窓。額縁で区切った一枚の絵。中身は下の script（空の窓）が描く。 */
+.mado {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--sen2);
+  border-radius: 4px;
+  background: #bcdcee;
+}
+.mado canvas { display: block; image-rendering: pixelated; }
+.mado-cap { margin: 10px 0 0; font-size: 12px; color: var(--usu); text-align: right; }
+
+/* ---- 作っているもの ----
+   道具の並べ方（.row・.spec・.tools・.hoka）は、遊びの部屋でも使うので kihon.css へ移した（2026-10-27）。 */
+/* スマホで来た人への案内（2026-10-27。博喜さんのご依頼
+   「スマホで engawaya にアクセスしても、WEB の K'Ad にはアクセスできない。その案内が欲しい」）
+   【何をするか】スマホでは「ブラウザで開く」をしまい、代わりにこの箱を出す。
+     押しても動かないボタンを置いておくのは、看板が嘘をつくのと同じ。
+   【どう見分けるか】端末の名前ではなく「指で触る画面か」と「画面の短いほうの辺」で見る。
+     ・端末の名前（UA）は当てにならない。iPad は自分を Mac だと名乗る。
+     ・指で触る（pointer: coarse）だけだと iPad まで入る。iPad で K'Ad が使えるかは
+       まだ確かめていないので、短い辺が 600px 以下＝スマホだけを拾う。縦持ちは幅で、横持ちは高さで当たる。
+   【なぜ CSS で見分けるか】JS で見分けると、出た一瞬だけ「開く」が見えてから消える。 */
+.sumaho-annai { display: none; }
+@media (pointer: coarse) and (max-width: 600px),
+       (pointer: coarse) and (max-height: 600px) {
+  .row .btns .kad-hiraku, .kad-pc-note { display: none; }
+  .sumaho-annai {
+    display: block;
+    margin: 24px 0 0; padding: 18px 18px 16px;
+    border: 1px solid var(--futo); border-radius: 2px;
+    background: var(--ji2);
+  }
+}
+.sumaho-midashi { margin: 0; font-family: var(--min); font-size: 19px; font-weight: 700; line-height: 1.55; }
+.sumaho-annai p { margin: 8px 0 0; font-size: 14px; line-height: 1.85; color: var(--usu); }
+.sumaho-annai .sumaho-jusho { margin-top: 12px; color: var(--sumi); }
+/* 住所は大きく。パソコンの前で、スマホを見ながら打ち写せるように。長押し一回で住所だけが選ばれる。 */
+.sumaho-jusho b { display: block; margin-top: 2px; font-size: 21px; letter-spacing: .02em; user-select: all; -webkit-user-select: all; }
+.sumaho-annai .btn {
+  width: 100%; margin-top: 14px;
+  flex-direction: column; gap: 2px; min-height: 64px; padding: 10px 18px;
+  font-family: inherit; line-height: 1.4; cursor: pointer;
+}
+.sumaho-annai .btn small { font-size: 12px; font-weight: 400; }
+
+/* ---- 開発の記録 ---- */
+.kiroku { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; margin-top: 32px; }
+.kiroku h3 { margin: 0 0 12px; font-family: var(--min); font-size: 18px; font-weight: 700; letter-spacing: .06em; }
+.ban-hyo { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ban-hyo th, .ban-hyo td { padding: 14px 8px; text-align: left; border-bottom: 1px solid var(--sen); font-weight: 400; }
+.ban-hyo thead th { border-bottom: 1px solid var(--futo); font-size: 13px; font-weight: 500; color: var(--usu); }
+.ban-hyo tbody th { font-weight: 500; }
+.ban-ku { display: inline-block; }
+.ban-ashi { margin: 12px 0 0; font-size: 13px; color: var(--usu); }
+.nikki-saikin { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--futo); }
+.nikki-saikin li { padding: 14px 0; border-bottom: 1px solid var(--sen); }
+.nikki-saikin .hi { font-size: 13px; color: var(--usu); }
+.nikki-saikin a { display: block; margin-top: 2px; font-size: 15px; font-weight: 500; color: var(--sumi); text-decoration-color: var(--sen2); }
+.nikki-saikin a:hover { color: var(--sashi); text-decoration-color: currentColor; }
+.fuda {
+  display: inline-block; margin-left: 8px; padding: 0 8px;
+  border: 1px solid var(--ten); border-radius: 2px;
+  font-size: 12px; font-weight: 400; color: var(--usu); vertical-align: 1px;
+}
+
+/* ---- つくり手 ---- */
+.tsukurite { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; margin-top: 32px; }
+.tsukurite .ichigen {
+  margin: 0;
+  font-family: var(--min); font-weight: 600;
+  font-size: clamp(20px, 3.4vw, 24px); line-height: 1.8; letter-spacing: .04em;
+}
+.tsukurite p { margin: 0 0 14px; font-size: 15px; }
+.tsukurite p b { color: var(--sashi); }
+.tsukurite .btns { margin-top: 20px; }
+
+@media (max-width: 760px) {
+  .genkan { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 0 52px; }
+  .mado-waku { order: -1; }       /* スマホでは窓が先＝開いた最初の一画面に空が入る */
+  .mado { aspect-ratio: 16 / 10; }
+  .genkan-lead { font-size: 15px; }
+  .kiroku, .tsukurite { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+}
+
+/* ============================================================
+   ここから下は、縁側の場面（裏地）。2026-10-27、前の表紙から一行も変えずに移した。
+   場面の色は、母屋の表（時刻の四つの顔）のまま＝絵は光で表情が変わるもの。
+   ⚠️打ち直さないこと（一マスずつ手で打った絵は、打ち直すと必ずどこかが変わる）。
+   ============================================================ */
 /* ---- 時間帯ごとの色 --------------------------------------
    JS が <html data-time="morning|day|evening|night"> を付ける。
    色はここに全部まとめてあるので、気に入らなければここだけ
@@ -102,507 +251,6 @@ html[data-time="night"] {
   --accent: #e0a061;
 }
 
-/* ---- 全体 ---- */
-body {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%);
-  color: var(--ink);
-  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
-               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
-  line-height: 1.9;
-  -webkit-font-smoothing: antialiased;
-  transition: background 1.2s ease, color 1.2s ease;
-}
-
-.wrap {
-  flex: 1;
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: clamp(48px, 12vw, 96px) 24px 0;
-}
-
-/* ---- 見出し ---- */
-h1 {
-  margin: 0;
-  font-size: clamp(38px, 9vw, 56px);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  line-height: 1.3;
-}
-.yomi {
-  margin: 6px 0 0;
-  font-size: 13px;
-  letter-spacing: 0.3em;
-  color: var(--ink-soft);
-}
-.lead {
-  margin: 28px 0 0;
-  font-size: clamp(16px, 4vw, 18px);
-  color: var(--ink-soft);
-}
-
-/* ---- 看板（吊ってある一枚板）--------------------------------
-   山荘やキャンプ場の入口にある、あの看板。耳（皮のついた自然な
-   縁）を残した板に、屋号を彫って、縄で吊ってある。
-
-   なぜ canvas で描くか:
-   矩形を千個ならべても同じ絵は描けるが、木目と節は「計算で
-   散らす」ほうが板らしくなる。美瑛の丘と同じ作り方——小さな板
-   （1マス＝1ドット）に描いてから、ぼかさずに整数倍で拡大する。
-   写真もフォントも読み込まないので、憲法①はそのまま守られる。
-
-   なぜ押せるようにしたか:
-   「看板がでかいと、ついクリックしたくなる」（施主 2026-08-01）。
-   大きい絵は、それだけで押せそうに見える。押して何も起きなければ
-   「壊れている」と思われるし、かといって玄関の看板を押した人を
-   よそへ飛ばすのは看板の仕事ではない。
-   だから、吊ってある物として正しく振る舞う——押されたら、揺れる。
-
-   canvas が描けない古い機械では、この板は出ない。
-   代わりに、もとの文字の見出し（h1 と ENGAWAYA）がそのまま残る。
-   だから板は既定で display:none、描けた時だけ JS が出す。
-   ------------------------------------------------------------ */
-.kanban-ita { display: none; }
-html.ita-ok .kanban-ita { display: block; }
-
-/* ---- 看板の背後の空（2026-08-20 施主のご依頼）------------------
-   ページの下（縁側の外）に美瑛の丘がある。その空を、上にも掛けた。
-   ⚠️色は自分で持たない。丘と同じ棚（ENGAWAYA_SORA）から借りている。
-     同じ空の色を二箇所に書くと、季節の色を直した日に「上と下で違う空」になる。
-   ⚠️空は揺れない。看板は押すと揺れる（.ita-btn に transform が掛かる）ので、
-     空を看板の中に描くと、空ごと揺れてしまう。だから別の一枚にして後ろへ敷く。
-   canvas が描けない機械では、空は出ないまま看板だけが立つ（今までどおり）。
-   ------------------------------------------------------------ */
-/* 空は画面いっぱいに広げる（2026-08-20 施主「大きく全体でもOK」）。
-   ⚠️.wrap（最大680px）の中に居るので、左右へはみ出させて画面幅にする。
-     はみ出したぶんは overflow:hidden で切る＝横スクロールを出さない
-     （狭い画面で横に動く作りは、それだけで「壊れている」と読まれる）。
-   ⚠️空の粒（ドットの大きさ）は、下の美瑛の丘と同じ式で決めている。
-     上と下で粒が違うと、同じ空に見えない。 */
-.kanban-ba {
-  position: relative;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  overflow: hidden;
-}
-#soraCv {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 0;
-}
-html.sora-ok #soraCv { display: block; }
-.kanban-ba .kanban-ita { position: relative; z-index: 1; }
-/* 空が出たら、ページのてっぺんから空にする（施主「上部を空で」2026-08-20）。
-   ⚠️余白を詰めても看板は詰まらない——空の中に、板を吊るぶんの高さ（UE）が
-     すでに入っているため。空が出ない機械では、今までどおりの余白のまま。
-   ⚠️クラスを二つ重ねて書いてある（.sora-ok.ita-ok）。一つだけだと、上に書いてある
-     「html.ita-ok .wrap { padding-top: clamp(...) }」と同じ強さになり、
-     **後に書いてあるほう（あちら）が勝って**余白が残る。実際に一度そうなった。 */
-html.sora-ok.ita-ok .wrap { padding-top: 0; }
-/* 板の上には、縄を通すぶんの空きが絵の中にもうある。
-   文字の見出しのときと同じ余白を上に取ると、そのぶん道具（座布団）が
-   下へ押し出される。玄関で先に見えるべきは道具なので、ここは詰める。 */
-html.ita-ok .wrap { padding-top: clamp(20px, 5vw, 40px); }
-/* 板が出たら、文字の見出しは読み上げ用にだけ残して画面から下げる */
-html.ita-ok h1,
-html.ita-ok .yomi {
-  position: absolute; width: 1px; height: 1px;
-  margin: 0; padding: 0; overflow: hidden;
-  clip: rect(0 0 0 0); white-space: nowrap;
-}
-.ita-btn {
-  display: block; margin: 0 auto; padding: 0; border: 0; background: none;
-  line-height: 0; cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transform-origin: 50% 4%;        /* 吊り環の位置。ここを軸に振れる */
-}
-.ita-btn canvas { display: block; filter: drop-shadow(0 6px 10px #00000026); }
-.ita-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 8px; }
-
-/* 揺れ。振り子なので、だんだん小さくなって止まる。 */
-@keyframes yure {
-  0%   { transform: rotate(0deg); }
-  10%  { transform: rotate(-2.4deg); }
-  25%  { transform: rotate(1.9deg); }
-  40%  { transform: rotate(-1.3deg); }
-  55%  { transform: rotate(.85deg); }
-  70%  { transform: rotate(-.5deg); }
-  85%  { transform: rotate(.22deg); }
-  100% { transform: rotate(0deg); }
-}
-.ita-btn.yureru { animation: yure 2.8s cubic-bezier(.36,.07,.3,1) both; }
-/* 動きを嫌う設定の人には揺らさない（風鈴・雲と同じ作法） */
-@media (prefers-reduced-motion: reduce) { .ita-btn.yureru { animation: none; } }
-
-/* ---- 縁側の図面のこと（2026-08-01 に下ろしました）------------
-   ここには開通の日から、縁側の断面図が線で引かれる絵がありました。
-   地面・束石・縁板・柱・桁・屋根、そして一間（1,820mm）の寸法線。
-   線 → 寸法 → 木、の三手で立ち上がる図面でした。
-
-   置いた理由は「家は figma で生まれない。図面が先にあって、そのあと
-   大工が建てる」から。この屋号は大工の建てた家から取った名前なので、
-   玄関も同じ順番で立ち上がるべきだと思って引いた絵です。
-
-   下ろした理由は、その上に木の看板が建ったこと。玄関に看板が二枚
-   並ぶと、道具（座布団）がそのぶん下へ押し出されます。
-   施主の言葉は「図面に感謝。休んでいただきましょう」でした。
-   消したのではなく、休んでいます。絵は commit a1bdca4 の一つ前まで
-   遡れば、そのまま残っています。
-   ------------------------------------------------------------ */
-
-/* ---- 版と更新日の札（2026-08-20 に足しました）----------------
-   施主のご依頼:
-     「K'Adのバージョン。ジオメモリーのバージョン、落ちゲーのバージョン。
-       最終更新日を載せたいです。このサイトうごいているか、どうか、
-       ユーザーが知るためです」
-
-   なぜ看板のすぐ下なのか:
-     無料の道具は「置きっぱなしで、もう誰も直していない」ものが
-     本当に多い。初めて来た人が道具を選ぶ前にいちばん知りたいのは
-     機能ではなく **この家に人が居るかどうか**。だから道具（座布団）より
-     前に置く。
-
-   なぜ道具ごとに日付まで出すのか:
-     サイトが生きている証拠は、ページを直した日ではなく
-     **道具そのものが動いていること**。三つとも止まっていれば、
-     ページだけ新しくても意味がない。逆に道具が動いていれば、
-     ページの更新が少し古くても、この家は生きている。
-
-   ⚠️**ここの数字は手で書いてあります。**
-     外から取ってくれば自動になりますが、それはこの家の決まりごとの①
-     「外から何も読み込まない」を破ります（回線の細い人の画面が、
-     版を取りに行くあいだ止まる）。だから手で書く道を選びました。
-     → **道具を更新した日は、ここも一緒に直すこと。**
-       直し忘れた札は「もう動いていません」と名乗るのと同じで、
-       置かないより悪い。直す場所は本文の <table class="ban-hyo"> の
-       中だけ、三行です。
-   ------------------------------------------------------------ */
-.ban {
-  margin: 20px 0 0;
-  padding: 14px 0 0;
-  border-top: 1px solid var(--card-line);
-}
-.ban-hyo {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
-  line-height: 1.75;
-  text-align: left;
-}
-/* 見出しの行。小さくても、色を薄くしすぎない
-   （何の列か読めないと、版の数字がただの記号になる）。 */
-.ban-hyo th {
-  font-weight: 600;
-  letter-spacing: .04em;
-  padding: 0 14px 4px 0;
-  white-space: nowrap;
-}
-.ban-hyo thead th {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ink-soft);
-  border-bottom: 1px solid var(--card-line);
-  padding-bottom: 6px;
-}
-.ban-hyo td {
-  padding: 4px 14px 0 0;
-  color: var(--ink-soft);
-}
-.ban-hyo tbody th { padding-top: 4px; }
-/* いちばん右の列（日付）は、右に余白を残さない */
-.ban-hyo th:last-child, .ban-hyo td:last-child { padding-right: 0; }
-
-/* 日付だけは、途中で折らない。
-   「2026年8月」／「20日」と割れると、日付ではなく別の何かに見える。
-   逆に真ん中の版（十五期百二十三号）は折れてよい＝折れても意味は変わらない。
-   ⚠️ここを両方 nowrap にすると、320px幅の機械で
-   **ページ全体が横にずれます**（2026-08-20 に実測して直した穴）。
-   小さい画面の古い機械こそ、この家がいちばん助けたい相手です。 */
-.ban-hyo td:last-child { white-space: nowrap; }
-
-/* 狭い画面では字と間を詰めて、折り返さずに三列を収める。
-   380px は iPhone SE などの縦幅（320〜375px）を丸ごと含む線。 */
-@media (max-width: 380px) {
-  .ban-hyo { font-size: 12px; }
-  .ban-hyo thead th { font-size: 11px; }
-  .ban-hyo th, .ban-hyo td { padding-right: 8px; }
-  .ban-hyo th:last-child, .ban-hyo td:last-child { padding-right: 0; }
-}
-
-/* 版の字の塊。中では折れないので、折れるとしても塊と塊の境目になる。
-   ⚠️字を小さくして一行に押し込む道は採りませんでした。
-   狭い画面の人ほど、字が読めないと困るからです。 */
-.ban-ku { display: inline-block; }
-
-/* このページ自身の更新日。道具の表とは主語が違うので、行を分ける。 */
-.ban-ashi {
-  margin: 10px 0 0;
-  font-size: 12.5px;
-  color: var(--ink-soft);
-}
-
-/* 版の表から、その中身を読める場所への一行（2026-08-20）。
-   ⚠️なぜ表のすぐ足元に置くか：表を見て「新しくなっている」と気づいた人が、
-   次に知りたいのは「では、何が変わったのか」。ところが開発日記の戸は
-   このページの2,000px下にあって、気づいた気持ちのまま辿り着けなかった。
-   問いと答えは隣にあるべきなので、ここに一行だけ置く。
-   ⚠️戸を二つにしたのではありません。下の奥の部屋の並びにある戸が本体で、
-   これは表を読んだ人のための近道です。 */
-.ban-nikki { margin: 6px 0 0; font-size: 12.5px; }
-.ban-nikki a {
-  display: inline-block;
-  padding: 9px 12px 9px 0;      /* 指で押せる高さを持たせる。左は表の字と頭を揃えるので取らない */
-  color: var(--accent);
-}
-
-/* ---- リンクの色（総括）------------------------------------
-   ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
-   夜の地に沈みます（比 1.5 前後）。「どこそこの a」で数え上げると、
-   必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
-   ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
-   （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
-a { color: var(--accent); }
-
-/* ---- 座布団（道具のカード） --------------------------------
-   ホバーではなく「押せる面積が大きいこと」を優先。
-   指でも、震える手でも、狙いを外さない大きさにしてある。
-   ------------------------------------------------------------ */
-.zabuton-list {
-  margin: 44px 0 0;
-  display: grid;
-  gap: 16px;
-}
-.zabuton {
-  display: block;
-  padding: 24px 26px;
-  background: var(--card);
-  border: 1px solid var(--card-line);
-  border-radius: 14px;
-  text-decoration: none;
-  color: inherit;
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.zabuton:hover, .zabuton:focus-visible {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 26px #0000001f;
-  outline: none;
-}
-.zabuton:focus-visible { border-color: var(--accent); }
-.zabuton .name {
-  font-size: clamp(21px, 5vw, 25px);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-}
-/* 座布団の絵（2026-10-04、ゴテゴテ空戦に足した）。
-   絵は座布団の一部なので、押せる面は広がるだけで減らない。
-   角は座布団の内側に合わせて少しだけ丸める。 */
-.zabuton .zabuton-e {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0 0 16px;
-  border-radius: 9px;
-}
-.zabuton .what {
-  margin-top: 6px;
-  font-size: 15px;
-  color: var(--ink-soft);
-}
-.zabuton .tags {
-  margin-top: 14px;
-  font-size: 12.5px;
-  letter-spacing: .04em;
-  color: var(--accent);
-}
-/* 正直な帳簿の一行。看板の色（accent）を使わないのは、
-   ここが「できること」ではなく「まだできないこと」だから。
-   目立たせないが、押す前に読める位置に置く。 */
-.zabuton .tags-note {
-  margin-top: 6px;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--ink-soft);
-}
-/* 小座布団。座布団に添えるもう一本の道（使い方ガイドなど）。
-   ------------------------------------------------------------
-   座布団の中にリンクを二つ入れるとHTMLの決まりで壊れるので外へ出す。
-   ただし「外に出す」を口実に、脚注みたいな薄い小さな字にしてはいけない。
-   見えないリンクは無いのと同じ＝看板だけあって中身へ行けない家になる。
-   だから座布団と同じ作法で、縁を持たせて、指で狙える大きさにする。
-   母屋の座布団より一回り小さいのは、主従を字の大小で伝えるため。 */
-.zabuton-soe {
-  margin: 10px 0 0;
-}
-.zabuton-soe a {
-  display: inline-block;
-  padding: 13px 20px;
-  background: var(--card);
-  border: 1px solid var(--card-line);
-  border-radius: 11px;
-  font-size: 14.5px;
-  letter-spacing: .03em;
-  text-decoration: none;
-  color: inherit;
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.zabuton-soe a:hover, .zabuton-soe a:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px #00000017;
-  border-color: var(--accent);
-  outline: none;
-}
-
-/* ---- 但し書き（開発中であること・連絡先） ------------------
-   道具のすぐ下に置く。なぜここかというと、押す前に目に入る位置で
-   なければ後出しになるから。軒先の考え方と同じで、最初から在れば
-   「そういう店」として受け取ってもらえる。慣れた頃に出てくると、
-   同じ文でも裏切りに見える。
-
-   詫びの文にはしない。開発中であることは恥ではなく、ことわり。
-   点線の枠にしてあるのは「まだ引き終わっていない線」の意味。
-   ------------------------------------------------------------ */
-.tadashi {
-  margin: 22px 0 0;
-  padding: 18px 20px;
-  border: 1px dashed var(--card-line);
-  border-radius: 12px;
-  font-size: 14.5px;
-  color: var(--ink-soft);
-}
-.tadashi b { color: var(--ink); font-weight: 600; }
-.tadashi a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid var(--accent);
-}
-.tadashi .kubiri { margin-top: 10px; }   /* 免責と、連絡先の間の一息 */
-
-/* 投書箱への口。文字の大きさは周りに合わせたまま、当たり判定だけ広げる。
-   inline 要素の上下 padding は行の高さを変えずに押せる範囲だけ増えるので、
-   見た目を崩さずに憲法③（押す場所を必要よりだいぶ大きく）を満たせる。
-   ここを押すのは、たいてい何かに困っている人の指なので。
-   左右にも付けると前後の助詞との間に隙間が空いて文が途切れて見えるので、
-   広げるのは上下だけ。 */
-.tadashi a.toubako { padding: 12px 0; }
-
-/* ---- ちいさな但し書き ---- */
-.note {
-  margin: 52px 0 0;
-  font-size: 14.5px;
-  color: var(--ink-soft);
-}
-.note b { color: var(--ink); font-weight: 600; }
-/* 奥の部屋への戸。主張しない大きさで、しかし見つかる位置に。 */
-.note a.naze {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-}
-.note a.naze:hover, .note a.naze:focus-visible {
-  border-bottom-color: var(--accent);
-  outline: none;
-}
-
-/* ---- 軒先（のきさき） --------------------------------------
-   「軒先を貸す」——場所を貸すことを、日本語はもともとそう言う。
-   ここが、素材屋さんや部材メーカーさんの案内を置く区画。
-
-   【なぜ今から空き地を用意するのか】
-   後から広告を足すと、人は裏切られたと感じる。無料で使えるから
-   来たのに、慣れた頃に画面が変わるからだ。最初から在れば「そういう
-   お店」として受け入れられる。同じものでも順番だけで印象が逆になる。
-   施主の判断（2026-07-24）：「広める前に配置することが、後から
-   増やして嫌がられるより良い」。
-
-   【軒先の掟】ここに何かを置く者は、次を必ず守ること。
-     一． 動かさない・光らせない・音を出さない。図面を描く人の隣で
-          動くものは、道具ではなく邪魔物になる。
-     二． 追いかけない。第三者Cookieも行動追跡も置かない。
-          誰が来たかを売って稼ぐ店にはしない。
-     三． 道具の中には出さない。蔵人の作図画面（wasm）は仕事場。
-          軒先はこの母屋と、これから書く解説記事だけ。
-     四． 増やしてよい。ただし数ではなく「揃うこと」で選ぶ。
-          施主の裁定（2026-08-30）：「沢山リンクを置いて、うちを開けば、
-          材料、素材、CAD 全てが揃うものを目指します」。
-          ＝ここは一枠を貸す広告欄ではない。図面を描く人の手元に要るものを
-          集めた棚。だから上限の数は決めない。効かせるのは次の掟五のほう。
-          ⚠️元は「一枠だけ。増やさない」だった（2026-07-24〜2026-08-30）。
-             後から広告が増えて嫌がられるのを避けるための縛りだったが、
-             増えていたのは広告ではなく行き先の数だった。縛る所が違った。
-          📌数が増えて読みにくくなったら、棚を「材料 / 素材 / 道具」で
-             見出し分けすること。いまは四軒なので、分けないほうが読みやすい。
-     五． 関係のあるものだけ。CADを使う人に用のあるものに限る。
-          機械が勝手に選んだ広告は、ここには馴染まない。
-     六． 座る場所より下に置かない。縁側（アイス）は最後に残す。
-
-   いまは <div class="nokisaki" hidden> のまま伏せてある。
-   最初のお付き合いが決まったら hidden を外すだけで顔を出す。
-   ------------------------------------------------------------ */
-.nokisaki {
-  margin: 56px 0 0;
-  padding-top: 26px;
-  border-top: 1px solid var(--card-line);
-}
-.nokisaki .fuda {            /* 「軒先」の小さな札。広告であることを隠さない */
-  font-size: 12px;
-  letter-spacing: .18em;
-  color: var(--ink-soft);
-  opacity: .75;
-}
-.nokisaki-list {
-  margin-top: 14px;
-  display: grid;
-  gap: 12px;
-}
-/* 座布団（道具）より一段ひかえめ。主役は道具であって、こちらではない。 */
-.noren {
-  display: block;
-  padding: 16px 18px;
-  border: 1px solid var(--card-line);
-  border-radius: 12px;
-  text-decoration: none;
-  color: inherit;
-  background: transparent;
-  transition: background .18s ease;
-}
-.noren:hover, .noren:focus-visible {
-  background: var(--card);
-  outline: none;
-}
-.noren:focus-visible { border-color: var(--accent); }
-/* 店の名（文字看板の店用に残す）。左に「印（しるし）」を置けるようにしてある。 */
-.noren .mise { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-/* 印＝先方が自分の看板の頭に付けている小さなしるし。
-   ロゴ画像を持たないお店でも、印だけは持っていることが多い。
-   文字看板が三軒四軒と並んだとき、名前を読む前に見分けがつく＝
-   軒先が増えても棚が「文字の列」にならない（掟四を書き換えた日の備え）。
-   ⚠️絵はこのファイルの中に直接書き写すこと（憲法①）。相手のサーバから
-      読み込むと、来た人のアクセスが向こうに残る＝掟二「追いかけない」に触れる。
-   ⚠️印はドット絵に描き直さない。この家の絵は点で打つ決まりだが（憲法②）、
-      それはこの家の絵の話。他所様の印を、うちの肌ざわりに合わせて描き変える
-      のは失礼にあたる。CAD素材.comのロゴを加工せずに掛けているのと同じ理由。 */
-.noren .mise-shirushi { flex: none; width: 20px; height: 20px; }
-/* ロゴ看板。原寸380×60を半分で表示＝Retinaで滲まない。
-   下地の色ごといただいた画像（透過なし）なので、角だけこちらで丸めて
-   座布団の上に看板の板が載っているように見せる。 */
-.noren .mise-logo { display: block; height: 30px; width: auto; border-radius: 6px; }
-/* f.k 機械彫刻の看板。字は f.k 機械彫刻フォントの実物をアウトライン化した
-   パス（経緯は下の軒先のf.kの項の板書に）。fill=currentColor なので、
-   夜のインク（--ink）にもそのまま追従する。高さ38px＝CAD素材のロゴ(30px)より
-   一回り大きい——「ありがたいものですから、しっかりご紹介したい」
-   （博喜さん・2026-09-02）の、看板の側。 */
-.noren .mise-logo-fk { display: block; height: 38px; width: auto; }
-.noren .koto { margin-top: 4px; font-size: 13.5px; color: var(--ink-soft); }
-/* なぜここに在るのか。一段小さく、しかし読める大きさで。
-   CAD素材.com の規約に「ご利用いただいた旨を記載の上、リンクを」とある。
-   （義務の対象は紙媒体への収録なのでこの家は外れるが、書けば筋が通る。）
-   これが在ると、軒先が広告ではなく縁だと分かる。 */
-.noren .wake { margin-top: 7px; font-size: 12.5px; color: var(--ink-soft); opacity: .8; }
 
 /* ---- 縁側（板の間） ----------------------------------------
    ページのいちばん下に、実際に板を敷いた。
@@ -1120,20 +768,6 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
   .fuki::after { left: auto; right: 18px; margin-left: 0; }
 }
 
-/* ---- 足元 ---- */
-footer {
-  padding: 22px 24px 30px;
-  text-align: center;
-  font-size: 12.5px;
-  color: var(--ink-soft);
-  background: var(--sky-bottom);
-}
-/* 作った者の名前。事実なので、小さく、しかし隠さずに置く。 */
-footer .by {
-  display: inline-block;
-  margin-top: 4px;
-  opacity: .75;
-}
 
 /* ---- 夜のランプ（夜だけ出る） ---------------------------------
    施主の指定（2026-07-30）:
@@ -1235,299 +869,85 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   * { transition: none !important; animation: none !important; }
 }
 
-/* ---- 玄関（2026-09-07 建て替えの案）--------------------------
-   PCとスマホで「並べ方」を変える。中身は一箇所のまま、間取りだけ二通り。
-   ⚠️ページを二枚に割らないのは、割ると片方だけ古くなるため。
-   この家が何度も踏んだ病なので、文章の実体は必ず一箇所に置く。
 
-   ・スマホ（〜899px）＝縦一列。看板 → 何屋か → 座っていってください。
-     親指で読み下ろす順に、上から素直に積む。
-   ・PC（900px〜）＝横二段。左に看板、右に言葉。
-     横に広い画面で縦一列にすると、看板だけで一画面が終わって、
-     何屋かを読む前にスクロールが要る。横に並べれば、開いた瞬間に
-     「看板」と「何屋か」が同時に目に入る。 */
-/* 群の見出し。大きくしすぎない——ここは章立てではなく、棚の仕切り札。
-   見出しを立てすぎると、道具そのものより分類のほうが目立つ。 */
-.gun-midashi {
-  margin: 44px 0 14px;
-  font-size: clamp(15px, 3.8vw, 17px);
-  font-weight: 700;
-  letter-spacing: .16em;
-  color: var(--ink-soft);
-}
-.gun-soe { margin: -6px 0 14px; font-size: clamp(13px, 3.4vw, 14px); color: var(--ink-soft); }
-
-.genkan { margin: 0; }
-
-/* K'Ad蔵人の画面。図面の画面は暗いので、生成りの紙の上でよく立ちます。 */
-.gamen { margin: 28px 0 0; }
-.gamen img,
-.gamen video {
-  display: block; width: 100%; height: auto;
-  border: 1px solid var(--card-line); border-radius: 12px;
-  background: #1b1f24;
-}
-.gamen figcaption { margin: 8px 0 0; font-size: 13px; color: var(--ink-soft); }
-
-/* 札と「手引き」をくくった箱。狭い画面では無いものとして扱い、
-   いまの並びを一ミリも動かさない。PCのときだけ箱として立ち上がる。 */
-.zabuton-kumi { display: contents; }
-
-.nanya {
-  margin: 26px 0 0;
-  font-size: clamp(22px, 6.2vw, 34px);
-  line-height: 1.55;
-  font-weight: 700;
-  color: var(--ink);
-}
-.nanya-hosoku {
-  margin: 16px 0 0;
-  font-size: clamp(15px, 3.9vw, 17px);
-  line-height: 2.0;
-  color: var(--ink-soft);
-}
-/* 土台の名乗り（2026-09-20）。玄関の言葉のすぐ下の、小さな一行。
-   補足の文（.nanya-hosoku）より一段小さく＝看板の主役は「何の道具か」のまま。
-   リンクは下線で名乗る（色だけだと、老眼の目にはリンクに見えない）。 */
-.dodai {
-  margin: 14px 0 0;
-  font-size: clamp(13px, 3.4vw, 15px);
-  line-height: 1.9;
-  color: var(--ink-soft);
-}
-.dodai a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-.suwatte {
-  margin: 22px 0 0;
-  font-size: clamp(17px, 4.4vw, 21px);
-  line-height: 1.8;
-  color: var(--accent);
-}
-
-/* つくり手の一行。縦棒を一本立てるだけで「誰かの声」に見える */
-.tsukurite {
-  margin: 30px 0 0;
-  padding: 16px 18px;
-  border-left: 5px solid var(--wood-1);
-  border-radius: 0 12px 12px 0;
-  background: var(--card);
-  font-size: clamp(15px, 3.9vw, 16px);
-  line-height: 1.95;
-  color: var(--ink);
-}
-
-/* ガラス張りの間 */
-.garasu {
-  margin: 40px 0 0;
-  padding: 24px 22px;
-  border: 1px solid var(--card-line);
-  border-radius: 16px;
-  background: var(--card);
-}
-.garasu h2 { margin: 0; font-size: clamp(17px, 4.6vw, 21px); line-height: 1.6; }
-.garasu > p { margin: 12px 0 0; color: var(--ink-soft);
-              font-size: clamp(14px, 3.7vw, 16px); line-height: 1.95; }
-.garasu .ban { margin: 20px 0 0; }
-.garasu-to { margin: 18px 0 0; }
-.garasu-to a { color: var(--accent); font-size: clamp(15px, 4vw, 17px); }
-
-@media (min-width: 900px) {
-  .wrap { max-width: 1060px; }
-  .genkan {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 48px;
-    align-items: center;
-  }
-  .nanya { margin-top: 0; }
-  /* 画面が左、言葉が右。並びは升で決める——書いてある順（言葉が先）は
-     狭い画面のためで、狭い画面では「何屋か」を先に読ませたい。 */
-  .gamen { margin: 0; grid-column: 1; grid-row: 1; }
-  .genkan-kotoba { grid-column: 2; grid-row: 1; }
-  /* 道具の座布団も二列に。PCで一列だと、縦にどこまでも続いて全体が見えない */
-  .zabuton-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-  .zabuton-kumi { display: flex; flex-direction: column; gap: 10px; }
-  .garasu { padding: 30px 32px; }
-}
-/* ============================================================
-   間取りの組み直し（2026-10-04 蔵人 Opus 5.5。博喜さんのご依頼「私なら、こう作る」を
-   下絵で見ていただき、裁定「これでいきましょう」）。
-   上の決まりを消さずに、あとから重ねている＝同じ強さなら、あとに書いたほうが勝つ。
-   考え方は三つ：
-   一）玄関＝K'Ad の戸。「開く」を、押せる形のボタンとして一つだけ大きく置く。
-   二）縁側の場面を、ページの底から真ん中へ。屋号の場所が、いちばん見られない所にあった
-       （スマホで 7,000px あまり下＝ほとんどの人が着かない）。無料の宣言の真下に敷く。
-   三）見出しは、看板と同じ「点の字」の木札に。家じゅうが一枚の絵に見えるように。
-   ============================================================ */
-:root { --fuda-font: "DotGothic16", "Hiragino Sans", sans-serif; }
-
-/* ---- 一）玄関＝K'Ad の戸 ---- */
-.nanya { font-size: clamp(20px, 5.4vw, 28px); }
-.doma-na {
-  margin: 22px 0 0;
-  font-family: var(--fuda-font);
-  font-size: clamp(30px, 8vw, 42px);
-  line-height: 1.2;
-  letter-spacing: .04em;
-}
-.doma-na span {
-  display: block;
-  margin-top: 6px;
-  font-size: clamp(14px, 3.6vw, 16px);
-  letter-spacing: .2em;
-  color: var(--ink-soft);
-}
-.genkan .nanya-hosoku { margin-top: 12px; }
-.hiraku {
-  display: block;
-  margin: 22px 0 0;
-  padding: 18px 22px;
-  border-radius: 14px;
-  background: var(--accent);
-  color: #fffaf3;
-  text-decoration: none;
-  font-size: clamp(20px, 5.4vw, 24px);
-  font-weight: 700;
-  letter-spacing: .06em;
-  line-height: 1.4;
-  box-shadow: 0 4px 0 var(--wood-2);
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-.hiraku span {
-  display: block;
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: .04em;
-  opacity: .92;
-}
-.hiraku:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--wood-2); }
-.hiraku:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--wood-2); }
-.hiraku:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
-html[data-time="night"] .hiraku { color: #1b1f24; }
-
-.fuda-narabi {
-  list-style: none;
-  margin: 14px 0 0; padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.fuda-narabi a {
-  display: flex; align-items: center; justify-content: center;
-  min-height: 52px;
-  padding: 6px 10px;
-  border: 1px solid var(--card-line);
-  border-radius: 10px;
-  background: var(--card);
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 15px;
+/* ---- 縁側の場面の置き場所（2026-10-27） ----
+   ページの底、足元の真上。画面の端から端まで敷く。
+   上に一言だけ「用がなくても、座っていってください。」を点の字で置く（絵の中の言葉なので、絵と同じ肌の字）。 */
+.engawa-ba { border-top: 1px solid var(--sen); padding-top: 56px; overflow-x: clip; }
+.engawa-ba .suwatte {
+  margin: 0 0 24px; padding: 0 20px;
   text-align: center;
-  line-height: 1.4;
+  font-family: "DotGothic16", var(--goth);
+  font-size: clamp(17px, 4.4vw, 22px); letter-spacing: .12em;
+  color: var(--sumi);
 }
-.fuda-narabi a:hover, .fuda-narabi a:focus-visible { border-color: var(--accent); color: var(--accent); }
-.doma-dwg { margin: 12px 0 0; font-size: 12.5px; line-height: 1.8; color: var(--ink-soft); }
-.genkan .dodai { margin-top: 10px; }
-
-/* ---- 三）見出しを木札に ---- */
-.gun-midashi, .garasu h2, .nokisaki .fuda {
-  display: inline-block;
-  margin: 56px 0 16px;
-  padding: 6px 16px 5px;
-  font-family: var(--fuda-font);
-  font-weight: 400;
-  font-size: clamp(17px, 4.4vw, 20px);
-  letter-spacing: .14em;
-  color: #2b2219;
-  background:
-    repeating-linear-gradient(0deg, #0000 0 5px, #00000010 5px 6px),
-    var(--wood-1);
-  border: 2px solid #3a2a1a;
-  border-radius: 3px;
-  box-shadow: 3px 3px 0 #3a2a1a55;
+/* スマホでは字を少し詰める。そのままだと「い。」だけが次の行へこぼれた（375px で実測 2026-10-27） */
+@media (max-width: 760px) {
+  .engawa-ba { padding-top: 40px; }
+  .engawa-ba .suwatte { font-size: clamp(14px, 4.1vw, 17px); letter-spacing: .05em; }
 }
-html[data-time="night"] .gun-midashi,
-html[data-time="night"] .garasu h2,
-html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5236; }
-.garasu h2 { margin: 0; }
-.gun-soe { margin: 0 0 14px; }
-
-/* ---- 道具・遊び・奥の部屋の並び ---- */
-.zabuton .name { font-family: var(--fuda-font); font-weight: 400; letter-spacing: .05em; }
-.oku { display: grid; gap: 12px; }
-.oku-to {
-  display: block;
-  padding: 16px 20px;
-  min-height: 64px;
-  border: 1px solid var(--card-line);
-  border-left: 6px solid var(--wood-1);
-  border-radius: 12px;
-  background: var(--card);
-  color: var(--ink);
-  text-decoration: none;
-}
-.oku-to b { display: block; font-family: var(--fuda-font); font-weight: 400; font-size: 18px; letter-spacing: .05em; }
-.oku-to span { display: block; margin-top: 2px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; }
-.oku-to:hover, .oku-to:focus-visible { border-color: var(--accent); }
-
-/* ---- 二）縁側を真ん中に ---- */
-.engawa-ba { margin-top: 72px; }
-.engawa-kotoba {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 24px;
-  text-align: center;
-}
-.engawa-kotoba .note { margin: 0; font-size: clamp(16px, 4.2vw, 19px); line-height: 2; color: var(--ink); }
-.engawa-kotoba .note b { color: var(--accent); }
-.engawa-kotoba .suwatte { margin: 18px 0 0; font-family: var(--fuda-font); font-size: clamp(19px, 5vw, 24px); }
-.engawa-ba .keshiki { margin-top: 28px; }
-
-@media (min-width: 900px) {
-  .oku { grid-template-columns: 1fr 1fr; }
-  .fuda-narabi { grid-template-columns: 1fr 1fr; }
-  .zabuton-list.asobi { align-items: stretch; }
-}
-@media (max-width: 430px) {
-  .gun-midashi, .garasu h2, .nokisaki .fuda { font-size: 15.5px; letter-spacing: .06em; padding: 5px 12px 4px; }
-  .engawa-kotoba .suwatte { font-size: 17px; }
-}
-
 </style>
-<!-- 見出しの「点の字」（DotGothic16）。2026-10-04、憲法①の撤廃を受けて初めて外から借りた字。
-     看板がドット絵の一枚板なので、見出しも点の字にして、家じゅうを一枚の絵に見せる。
-     届かない日は、いつもの字で出る（display=swap）＝真っ白にはならない。 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 </head>
+
+
 <body>
 
-<div class="wrap">
-
-  <!-- 見出しは文字のまま置いておく。板（canvas）が描けた時だけ、
-       JS が html に ita-ok を付けて、この二行を読み上げ用に下げる。
-       描けない機械には、これまでどおり文字の屋号が出る。 -->
-  <h1>縁側屋</h1>
-  <p class="yomi">ENGAWAYA</p>
-
-  <!-- 吊ってある一枚板の看板と、その背後の空。中身は下の script で描く。
-       空は 2026-08-20 に施主のご依頼で足した：
-         「縁側屋の看板の背景に、蔵人さん特製の美瑛町の空をのせることができますか？
-           この絵下部の絵大好きなんです。上部に鳥羽ばたかせたら素敵です」
-       ＝ページの下（縁側の外）に美瑛の丘があるので、上にその空を掛けた。
-       一枚の絵で言えば、上が空、下が丘。あいだに家がある形。 -->
-  <div class="kanban-ba">
-    <canvas id="soraCv" aria-hidden="true"></canvas>
-    <div class="kanban-ita">
-      <button class="ita-btn" id="itaBtn" aria-label="縁側屋の看板。押すと揺れます。">
-        <canvas id="itaCv" aria-hidden="true"></canvas>
-      </button>
+<!-- 上の行（2026-10-27）。屋号・このページの行き先・明るさの切り替え。
+     屋号は明朝で、小さく ENGAWAYA を添える（前の看板の「縁側屋／ENGAWAYA」と同じ二段の名乗り）。
+     ⚠️ボタンの字は kihon.js が「押すと、どうなるか」に書き換える（暗くする／明るくする）。 -->
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="./">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="このページの行き先">
+        <a href="#tsukutte">作っているもの</a>
+        <a href="#kiroku">開発の記録</a>
+        <a href="#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
     </div>
   </div>
+</header>
 
+<main>
+
+<!-- 玄関（2026-10-27）。最初の一画面で「何をしているところか」が分かること。
+     博喜さんのお言葉「縁側屋はフレンドリーですが、実際何をしているところか想像しにくい」への答え。
+     一行目に作っているもの二つ、補いの文に名前と、作っているのが誰か、無料であること。
+     隣の窓は、前の看板の背後に掛かっていた空（描き方は script「空の窓」）。 -->
+<section class="ie-in" id="top" aria-labelledby="genkan-midashi">
   <div class="genkan">
+    <div>
+      <p class="genkan-eyebrow">ソフトウェアの個人開発</p>
+      <h1 id="genkan-midashi">図面の道具と、<br>乗務員のナビを<br>つくっています。</h1>
+      <p class="genkan-lead">建築・土木の 2D CAD「K'Ad蔵人」と、タクシー乗務員のための「TAXI PRO NAVI」。つくっているのは会社ではなく、ひとり（岡澤 博喜）と蔵人（AI）です。どれも無料で使えます。</p>
+      <div class="btns">
+        <a class="btn btn-p" href="#tsukutte">作っているものを見る</a>
+        <a class="btn btn-s" href="nikki/">開発日記を読む</a>
+      </div>
+    </div>
+    <div class="mado-waku">
+      <div class="mado" id="mado">
+        <canvas id="soraCv" role="img" aria-label="美瑛の空と、遠くの丘。時刻によって、日や月や星が出ます。"></canvas>
+      </div>
+      <p class="mado-cap">いまの空（時刻で変わります）</p>
+    </div>
+  </div>
+</section>
 
+<section class="sec" id="tsukutte" aria-labelledby="tsukutte-midashi">
+  <div class="ie-in">
+    <div class="sec-head">
+      <h2 id="tsukutte-midashi">作っているもの</h2>
+      <p class="sec-sub">仕事で使う道具を中心に。どれも無料です。</p>
+    </div>
+
+    <!-- K'Ad蔵人（2026-10-27 表紙の建て替えで、玄関の戸からここへ）。
+         ⚠️版の番号（パソコン版 3.3.0）は、下の札の中の一か所だけ。版を出した日に直す三箇所の一つ
+           （kad/index.html の二行と、ここ）。Web 版の号数は「開発の記録」の版の表にだけ書く
+           ＝同じ数字を二か所に置かない（この家が何度も踏んだ病）。
+         ---- ここから下は、前の表紙の板書（消さない）---- -->
   <!-- K'Ad蔵人の実際の画面（2026-09-07）。
        施主のご依頼「左の絵のスペースへ、K'Adの見栄えする画像」。
        ここに図面の画面を置く理由：この家がいちばん言いたいのは
@@ -1599,32 +1019,6 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
          他所様の素材は使っていない（CAD素材.com さんの足場図は、看板の顔にするのは
          別のお願いになるため、ここでは使わない＝下の板書と同じ約束）。
        ⚠️前の絵（kad/gamen-3d.png）は消していません。開発日記が指しています。 -->
-  <figure class="gamen">
-    <video src="kad/kutai-3d-0929.mp4?v=20260929b" poster="kad/kutai-3d-0929.jpg?v=20260929b"
-           width="960" height="540"
-           autoplay loop muted playsinline
-           aria-label="K'Ad蔵人の画面。平面図と東西南北の立面図を読み込み、立面図に描いた窓や穴を壁に貼って、3Dの箱に組み立てていくところ。音はありません。">
-    </video>
-    <figcaption>平面図と立面図から、3Dの箱を組み立てているところ（2026年9月の工事・約45秒）。音はありません。</figcaption>
-  </figure>
-
-  <!-- 玄関の言葉（2026-09-07 建て替え）。
-       なぜ差し替えたか：ここには版と更新日の表が出ていた。あの表は、
-       いま使っている人には要るが、初めて来た人には一文字も読めない
-       （「十六期二十一号」が何なのか分からない）。看板の真下が読めない表だと、
-       「ここは、もう知っている人の場所だ」と読まれて、そのまま閉じられる。
-       表は捨てずに、下の「開けてあります」の中へ移した——
-       版の話は「何が変わったか」の話なので、日記の隣がほんとうの居場所だった。
-
-       言葉の順は、確かめられる事実から並べてある。
-         一）何屋か（ブラウザで開くだけの2D CAD。JWWもDXFも読める）
-         二）つくっているのは、それを使う人間だということ
-         三）つくる工程が開けてあること
-       「無料」を大きく掲げていないのは、遠慮ではない。無料を強く言うほど
-       「裏があるのでは」が先に立つため。無料は各道具の札に事実として
-       一語ずつ入っていれば、それで伝わる。 -->
-  <div class="genkan-kotoba">
-    <p class="nanya">建築と土木の現場に、<br>道具を置いています。</p>
     <!-- K'Ad の戸（2026-10-04 蔵人 Opus 5.5・博喜さんの裁定「これでいきましょう」）。
          【なぜ組み直したか】それまでの玄関は、動画・言葉・つくり手・座布団・細長い道五本と
          五段に割れていて、肝心の「開く」が、どこにもボタンの形をしていなかった。
@@ -1696,53 +1090,55 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
          向こうの部屋が59日目に進んだ日に古いまま残った——**同じ数字が二箇所にあると、
          片方だけ古くなる**（この家が何度も踏んだ病。開発日記が「いま配っている版の一覧」を
          作らないのと、まったく同じ理由）。日数の正は kad/index.html の表ひとつだけ。 -->
-    <p class="doma-na">K'Ad蔵人<span>図面を描く 2D CAD</span></p>
-    <p class="nanya-hosoku">
-      JWW も DXF も PDF も読めます。<br>
-      平面図から壁と柱を立ち上げて、立体で見ることもできます。
-    </p>
-    <a class="hiraku" href="https://gcad.engawaya.com/">
-      K'Ad蔵人を開く →
-      <span>無料 ／ 登録もインストールも要りません</span>
-    </a>
-    <ul class="fuda-narabi">
-      <li><a href="kad/tebiki/">手引き（絵つき）</a></li>
-      <li><a href="kad/jisho/">コマンド辞書</a></li>
-      <li><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">パソコン版 3.3.0</a></li>
-      <li><a href="kad/">K'Ad蔵人とは</a></li>
-    </ul>
-    <p class="doma-dwg">※ DWG は、Mac 版に限り、無料の別ソフト（LibreDWG）を入れると読めます。むずかしい時は、送り主に「DXF で」と頼むのが早道です。</p>
-    <p class="dodai">
-      図面の道具「K'Ad蔵人」は、C++ と <a href="https://siv3d.github.io/ja-jp/" rel="noopener">Siv3D</a> で開発しています。
-    </p>
-    
-  </div>
-  </div>
+    <article class="row row-hajime">
+      <figure class="row-e">
+        <video src="kad/kutai-3d-0929.mp4?v=20260929b" poster="kad/kutai-3d-0929.jpg?v=20260929b"
+               width="960" height="540"
+               autoplay loop muted playsinline
+               aria-label="K'Ad蔵人の画面。平面図と東西南北の立面図を読み込み、立面図に描いた窓や穴を壁に貼って、3Dの箱に組み立てていくところ。音はありません。">
+        </video>
+        <figcaption>平面図と立面図から、3Dの箱を組み立てているところ（2026年9月の工事・約45秒）。音はありません。</figcaption>
+      </figure>
+      <div>
+        <p class="tag">図面を描く 2D CAD</p>
+        <h3>K'Ad蔵人</h3>
+        <p class="desc">JWW も DXF も PDF も読めます。平面図から壁と柱を立ち上げて、立体で確かめることもできます。</p>
+        <dl class="spec">
+          <dt>動く場所</dt><dd>ブラウザ（パソコン）・Windows・Mac</dd>
+          <dt>料金</dt><dd>無料。ブラウザ版は登録もインストールも要りません</dd>
+        </dl>
+        <!-- スマホで来た人への案内。見分け方と理由は <style> の「スマホで来た人への案内」の項。
+             パソコンでは出ない。スマホでは「ブラウザで開く」の代わりに、ここが出る。
+             【なぜ「自分に送る」か】スマホで K'Ad を見つけた人は、たいてい職場のパソコンで使いたい人。
+             住所を覚えて、パソコンの前で打ち直すのは手間。LINE やメールで自分に送っておけば、開くだけで済む。 -->
+        <div class="sumaho-annai">
+          <p class="sumaho-midashi">K'Ad蔵人は、<br>パソコンで使う道具です</p>
+          <p>スマホでは開けません。図面を描くには、マウスとキーボードと広い画面が要るためです。</p>
+          <p class="sumaho-jusho">パソコンのブラウザで、この住所を開いてください。<b>gcad.engawaya.com</b></p>
+          <button type="button" class="btn btn-p" id="jibun-ni-okuru">
+            <span id="okuru-kotoba">この住所を、自分に送る</span>
+            <small>LINE やメールで送っておけば、パソコンで開くだけです</small>
+          </button>
+          <p>手引きと辞書は、スマホでも読めます。</p>
+        </div>
+        <div class="btns">
+          <a class="btn btn-p kad-hiraku" href="https://gcad.engawaya.com/">ブラウザで開く</a>
+          <a class="btn btn-s btn-sm" href="kad/tebiki/">手引き（絵つき）</a>
+          <a class="btn btn-s btn-sm" href="kad/jisho/">コマンド辞書</a>
+          <a class="btn btn-s btn-sm" href="https://github.com/highlylights0-hub/gcad-web/releases/latest">パソコン版 3.3.0</a>
+          <a class="btn btn-s btn-sm" href="kad/">K'Ad蔵人とは</a>
+        </div>
+        <p class="note kad-pc-note">スマホでは使えません。パソコンのブラウザで開いてください。</p>
+        <p class="note">DWG は、Mac 版に限り、無料の別ソフト（LibreDWG）を入れると読めます。むずかしい時は、送り主に「DXF で」と頼むのが早道です。</p>
+        <p class="note">C++ と <a href="https://siv3d.github.io/ja-jp/" rel="noopener">Siv3D</a> で開発しています。</p>
+      </div>
+    </article>
 
-  <!-- つくり手の一行（2026-09-07）。
-       最初は「現場に出ている人間です。ゴンドラにも高所作業車にも乗ります」と
-       書いたが、施主から事実が違うと指摘があり、落とした。
-       資格は持っておられるが、いま現場に出ているわけではない。
-       ⚠️ここに書いてよいのは、確かめられる事実だけです。
-       「作った人を信じてもらう」ための一行が事実でないなら、いちばん壊れる。
-       代わりに、確かに本当のこと——会社ではないこと、ひとりと蔵人で
-       作っていること、直しも間違いも開発日記に出していること——を置いた。 -->
-  <p class="tsukurite">
-    つくっているのは、会社ではありません。<br>
-    ひとりと、蔵人（AI）です。<br>
-    直したことも、間違えたことも、そのまま開発日記に書いています。
-  </p>
-
-  <!-- 道具たち。増えたらここに座布団を足すだけ。 -->
-  <!-- 道具を二群に分けた（2026-09-07）。
-       理由：この家は建築と土木の現場に向けて出す、と施主が決めた。
-       それなら、初めて来た人が最初に触るべき三つ（図面・道・記録）と、
-       現場とは関係のない二つ（遊び・納金）を、同じ列に混ぜてはいけない。
-       混ぜると「何の店か」がぼやける。捨てはしない——軒下へ下げるだけ。
-       タクシーの納金計算をいちばん下に置くのは施主の裁定。 -->
-  <h2 class="gun-midashi">現場の道具</h2>
-  <div class="zabuton-list">
-
+    <!-- TAXI PRO NAVI（2026-10-27 ここへ）。
+         ⚠️絵は新しく撮っていない。開発日記の中にある実物（nikki/2026-10-09-taxi-pro-navi.png）をそのまま指す
+           ＝同じ絵をもう一枚置くと、片方だけ古い画面が残る（K'Ad の玄関の絵と同じ作法）。
+           画面が大きく変わった版を出した日は、日記の新しい絵へ指し替える。
+         ---- ここから下は、前の表紙の板書（消さない）---- -->
     <!-- 2026-07-24 開通。表札（gcad-web の CNAME）と Enforce HTTPS まで済み。
          旧 https://highlylights0-hub.github.io/gcad-web/ もGitHubが自動で
          こちらへ転送するので、外に配ったリンクは死んでいない。 -->
@@ -1751,23 +1147,34 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
          「GeoMemory」の字ごと押せば、そのまま入手の窓口に着く。
          使い方ガイド（GitHub Pages）は下に小さく添える＝
          押せる面積は座布団のまま、道は二本。 -->
-    <div class="zabuton-kumi">
     <!-- 2026-10-09 改名（v2.0）。GeoMemory → TAXI PRO NAVI。札の中身も「道を憶える道具」から
          「乗務員のためのナビ」へ。行き先は App Store の番号（id6788990853）だけの住所にした
          （名前の部分は改名で変わるが、番号は変わらない）。 -->
-    <a class="zabuton" href="https://apps.apple.com/jp/app/id6788990853">
-      <div class="name">TAXI PRO NAVI</div>
-      <div class="what">高速の入口・出口を自分で選べる、乗務員のためのナビです。iPhone で動きます。</div>
-      <div class="tags">iPhone ／ 全国の高速 ／ 乗禁地区のお知らせ ／ 無料 ／ App Store で配布中</div>
-    </a>
     <!-- 入手の窓口（座布団＝App Store）と、中身を知る窓口（ここ）。
          押す前に「どんな道具か」を確かめたい人の行き先が無いと、
          看板だけあって中身へ行けない家になる。 -->
-    <p class="zabuton-soe">
-      <a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方ガイドを見る</a>
-    </p>
-    </div>
+    <article class="row">
+      <figure class="row-e">
+        <img src="nikki/2026-10-09-taxi-pro-navi.png" width="660" height="460" loading="lazy"
+             alt="TAXI PRO NAVI の画面を三枚並べたもの。左は、高速の入口と出口を選ぶ画面で、地図に入口と出口の緑の札と、その間の高速を示す緑の線、下に出口の一覧。真ん中は、首都高速の上を走っている画面で、上の帯に次の分かれ道の案内。右は、空港中央入口から湾岸習志野出口まで、東京湾ぞいに緑の線が伸びている画面。">
+        <figcaption>入口と出口を選ぶ・走る・道を確かめる（開発日記 2026年10月9日の絵）。</figcaption>
+      </figure>
+      <div>
+        <p class="tag">乗務員のためのナビ</p>
+        <h3>TAXI PRO NAVI</h3>
+        <p class="desc">高速の入口・出口を自分で選べる、乗務員のためのナビです。全国の高速と、乗禁地区のお知らせに対応しています。</p>
+        <dl class="spec">
+          <dt>動く場所</dt><dd>iPhone</dd>
+          <dt>料金</dt><dd>無料（App Store で配布）</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn btn-p" href="https://apps.apple.com/jp/app/id6788990853">App Store で見る</a>
+          <a class="btn btn-s btn-sm" href="https://highlylights0-hub.github.io/geomemory-help/">使い方ガイド</a>
+        </div>
+      </div>
+    </article>
 
+    <div class="tools">
     <!-- 2026-08-01 開通。施主の実機検収「大歓声、大完成」を受けて敷いた。
          道の道具どうしを隣に並べる（GeoMemory の下・遊びの上）＝
          上から「図面 → 道 → 道 → 遊び」で読める並びにする。
@@ -1780,44 +1187,12 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
          GeoMemory の共有リンクの受け皿も兼ねているが、それは札に書かない。
          玄関から来る人は道具を探しに来ているので、兼務は中で説明すれば足りる
          （札には「この先で動くこと」だけを書く＝K'Ad蔵人のDWGと同じ作法）。 -->
-    <div class="zabuton-kumi">
-    <a class="zabuton" href="michi/">
-      <div class="name">道メモ</div>
-      <div class="what">地図をなぞれば、道になります。ブラウザで開けば、すぐ使えます。</div>
-      <div class="tags">地図に道を描く ／ リンク・絵・ファイルで渡せる ／ 無料 ／ 登録もインストールも不要</div>
-    </a>
-    </div>
-  </div>
-
-  <h2 class="gun-midashi">軒下に、ほかにも</h2>
-  <p class="gun-soe">現場とは関係のないものです。用がなければ、通り過ぎてください。</p>
-  <div class="zabuton-list">
-
-    <!-- 2026-07-29 開通。App Store の審査を通って公開になったので、三枚目を敷いた。
-         それまで母屋には Ochi-Gee の名前が一つも出ておらず、せっかく並んでも
-         この家からは辿り着けなかった（ochigee/index.html の冒頭にも同じ書き置きがある）。
-
-         GeoMemory と同じ作法にしてある。名前ごと押せば入手の窓口（App Store）へ、
-         中身を先に知りたい人のために紹介とサポートのページを下へ小さく添える。
-         座布団の中にリンクを二つ入れるとHTMLの決まりで壊れるので、外へ出している。
-
-         配信はいまのところ日本のみだが、その断り書きは置かない（2026-07-29・施主判断）。
-         母屋は日本語だけのページで、読む人はまず日本の App Store を使う人だから、
-         断り書きは大多数にとって「自分は使えないかも」と一瞬思わせるだけの一行になる。
-         GeoMemory の札にも書いていないので、二枚の調子も揃う。 -->
-    <div class="zabuton-kumi">
-    <a class="zabuton" href="https://apps.apple.com/jp/app/ochi-gee-%E6%98%9F%E3%81%AE%E3%81%8A%E3%81%A1%E3%82%82%E3%81%AE/id6794781236">
-      <div class="name">Ochi-Gee 星のおちもの</div>
-      <div class="what">落ちてくるのは、星です。iPhone で遊べる落ちものパズル。</div>
-      <!-- 「広告なし・通信なし」を札に出すのは、遠慮ではなく事実の告知。
-           無料のゲームを押す前にいちばん気にされるのがそこだから。 -->
-      <div class="tags">iPhone ／ 落ちものパズル ／ 無料 ／ 広告なし・通信なし</div>
-    </a>
-    <p class="zabuton-soe">
-      <a href="ochigee/">Ochi-Gee の遊び方と、困ったときは</a>
-    </p>
-    </div>
-
+      <article class="tool">
+        <h3>道メモ</h3>
+        <p>地図をなぞれば、道になります。リンク・絵・ファイルで人に渡せます。</p>
+        <p class="meta">ブラウザで開けば、すぐ使えます ・ 無料 ・ 登録もインストールも不要</p>
+        <a class="more" href="michi/">道メモを開く →</a>
+      </article>
     <!-- 2026-08-01 開通。道メモの隣に敷く（上から「図面 → 道 → 道 → 納金 → 遊び」）。
          道メモの下に置いたのは、この二枚が同じ人の一日の両端だから
          ——走る前に道を確かめ、走り終えて納金する。
@@ -1830,56 +1205,156 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
          道メモと同じで、これは入手の窓口ではなく**押したその場で動く**道具。
          だから「ブラウザで開けば、すぐ使えます」を札に書いて、
          入手の段が無いことを押す前に伝える。 -->
-    <div class="zabuton-kumi">
-    <a class="zabuton" href="meter/">
-      <div class="name">メーター引き</div>
-      <div class="what">ひと晩の運収から、納める金額を。割り算はこちらでやります。ブラウザで開けば、すぐ使えます。</div>
-      <div class="tags">タクシーの納金計算 ／ 消費税と税抜運収も出る ／ 途中の式まで全部見える ／ 無料 ／ 登録もインストールも不要</div>
-    </a>
+      <article class="tool">
+        <h3>メーター引き</h3>
+        <p>ひと晩の運収から、納める金額を。割り算はこちらでやります。途中の式まで全部見えます。</p>
+        <p class="meta">タクシーの納金計算 ・ 無料 ・ 登録もインストールも不要</p>
+        <a class="more" href="meter/">メーター引きを開く →</a>
+      </article>
+    </div>
+
+    <!-- そのほかに作ったもの（2026-10-27）。
+         仕事の道具の並びに混ぜると「何の店か」がぼやける（2026-09-07 に道具を二群に分けたのと同じ理由）。
+         捨てはしない——一行ずつの戸にして、ここへ置く。
+         前の表紙の「軒下に、ほかにも」（Ochi-Gee）と「遊びの間」「奥の部屋」をまとめた。
+         ---- Ochi-Gee の板書（前の表紙から。消さない）---- -->
+    <!-- 2026-07-29 開通。App Store の審査を通って公開になったので、三枚目を敷いた。
+         それまで母屋には Ochi-Gee の名前が一つも出ておらず、せっかく並んでも
+         この家からは辿り着けなかった（ochigee/index.html の冒頭にも同じ書き置きがある）。
+
+         GeoMemory と同じ作法にしてある。名前ごと押せば入手の窓口（App Store）へ、
+         中身を先に知りたい人のために紹介とサポートのページを下へ小さく添える。
+         座布団の中にリンクを二つ入れるとHTMLの決まりで壊れるので、外へ出している。
+
+         配信はいまのところ日本のみだが、その断り書きは置かない（2026-07-29・施主判断）。
+         母屋は日本語だけのページで、読む人はまず日本の App Store を使う人だから、
+         断り書きは大多数にとって「自分は使えないかも」と一瞬思わせるだけの一行になる。
+         GeoMemory の札にも書いていないので、二枚の調子も揃う。 -->
+    <div class="hoka">
+      <h3>そのほかに作ったもの</h3>
+      <ul>
+        <li><a href="ochigee/"><b>Ochi-Gee 星のおちもの</b><span>iPhone の落ちものパズル。広告なし・通信なし。</span></a></li>
+        <li><a href="asobi/"><b>遊びの部屋</b><span>ガチ空戦・ゴテゴテ空戦・MIDI工房・遊び場。</span></a></li>
+        <li><a href="indexplayland.html"><b>縁側屋バリアフリー</b><span>大きな字と、大きな絵で遊べる入り口。</span></a></li>
+        <li><a href="oto/"><b>音の縁側</b><span>目をつかわなくても使える入り口。</span></a></li>
+        <li><a href="hanashiaite/"><b>話し相手がほしいとき</b><span>AI と話してみるための、個人の案内。</span></a></li>
+      </ul>
     </div>
   </div>
+</section>
 
-  <!-- 但し書き。道具の真下＝リンクのすぐそば。押す前に読める位置に置く。
-       連絡先を生のまま書かないのは、公開ページのメールアドレスを
-       迷惑メール業者の巡回ロボットが拾って回るため。ここには字で
-       「アットマーク」と書いておき、下の script が開いた瞬間に
-       押せるリンクへ組み直す。人には普通に見えて、機械には読みにくい。
-       JS が動かない機械でも、この字のままなら人は読めるので誰も締め出さない。 -->
-  <p class="tadashi">
-    どの道具も、まだ<b>開発中</b>です。うまく動かないところが残っています。<br>
-    <b>ファイルを扱うときは、必ず控え（バックアップ）を取ってから</b>どうぞ。
-    上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、
-    別の場所にも控えを置いてください。
-    使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。
-    <!-- 投書箱への口。但し書きの中に置くのは、ここが「まだ開発中です」と
-         読んだ直後の位置だから。不便を知らされた人が、その足で一言
-         置いていける。並びに独立した項目として立てなかったのは、
-         「そっと置いてある」の方が この家に合うため（施主の言葉：
-         宣伝しても人は来ない・選ぶのはユーザー）。
-         メールの口も残す。窓口を消すと、箱が使えない人を締め出す。 -->
-    <span class="kubiri" style="display:block">
-      おかしいところ、こうしてほしいところがあれば、<a class="toubako" href="koe/">投書箱</a>に
-      置いていってください。登録も名乗りも要りません。
-      メールでも構いません（<span class="renraku">info アットマーク engawaya.com</span>）。
-      ひとつずつ直していきます。
-    </span>
-  </p>
+<!-- 開発の記録（2026-10-27。前の表紙の「つくっている途中も、開けてあります」）。
+     ⚠️**窯の札（K'Ad の号数・更新した日）は、この表の一か所だけ。** K'Ad を焼き直した日は、ここと
+       「このページの最終更新」を直す（CLAUDE.md「K'Ad を焼き直した日・版を出した日に直す場所」）。
+     ⚠️右の「最近の日記」は、ここに書き写さない。開くたびに開発日記（nikki/）から上の三件を読んでくる
+       （下の script「最近の日記」）。写すと、日記を書くたびにここも直す約束が増え、いつか必ず古びる。
+       読めなかった日（手元で開いた・回線が切れた）は、日記への戸だけが残る。
+     ---- ここから下は、前の表紙の板書（消さない）---- -->
+  <!-- ガラス張りの間（2026-09-07 新設）。
+       施主の言葉「ガラス張りの開発。工程そのものが全てコンテンツです」を、
+       そのまま一部屋にした。ここに版の表を移してある：
+       「いま何が出ているか」と「何が変わったか」は同じ話なので、
+       表と日記は隣に置いたほうが、どちらも読まれる。 -->
+<section class="sec" id="kiroku" aria-labelledby="kiroku-midashi">
+  <div class="ie-in">
+    <div class="sec-head">
+      <h2 id="kiroku-midashi">開発の記録</h2>
+      <p class="sec-sub">いつ、何を直したか。直したことも、間違えたことも、開発日記に書いています。</p>
+    </div>
+    <div class="kiroku">
+      <div>
+        <h3>いま配っている版</h3>
+        <table class="ban-hyo">
+          <thead>
+            <tr>
+              <th scope="col">道具</th>
+              <th scope="col">版</th>
+              <th scope="col">更新した日</th>
+            </tr>
+          </thead>
+          <tbody>
+        <!-- K'Ad蔵人だけ版が数字ではありません。この道具は一号ずつ焼いて
+             配っているので、家の中の呼び名（十五期百二十三号）がそのまま版です。
+             初めて来た人には隣の日付が読めれば足りるので、両方を並べています。 -->
+            <tr>
+              <th scope="row">K'Ad蔵人</th>
+          <!-- 二つに分けてあるのは飾りではありません。狭い画面ではこの字が
+               どうしても一行に収まらず、放っておくと「十五期百二十／三号」と
+               語の途中で割れます。塊にしておくと、折れる場所が必ず
+               「十五期／百二十三号」＝意味の継ぎ目になります。 -->
+              <td><span class="ban-ku">十七期</span><span class="ban-ku">五号</span></td>
+              <td>2026年10月19日</td>
+            </tr>
+            <tr>
+              <th scope="row">TAXI PRO NAVI</th>
+              <td>3.1</td>
+              <td>2026年10月27日</td>
+            </tr>
+        <!-- 座布団の札は「Ochi-Gee 星のおちもの」ですが、ここは短いほうだけ。
+             表の一列目が長くなると、右の日付が画面の外へ押し出されます。 -->
+            <tr>
+              <th scope="row">Ochi-Gee</th>
+              <td>1.1</td>
+              <td>2026年7月30日</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="ban-ashi">このページの最終更新　2026年10月27日</p>
+      </div>
+      <div>
+        <h3>最近の日記</h3>
+        <ul class="nikki-saikin" id="nikkiSaikin" hidden></ul>
+    <!-- 開発日記への戸は、ここ一つだけ（2026-09-15 まとめた）。
+         それまではこの真下にもう一枚「開発日記（いつ、何を直したか。つづきがあるか）→」
+         があり、同じ行き先の戸が二枚続いていた。版の表を見た人がいちばん次に知りたいのは
+         「他に何が変わったのか」「自分の版に入っているのか」なので、表のすぐ隣のこちらを残した。
+         ⚠️この帳面は K'Ad 専用ではなく縁側屋ぜんぶの帳面。K'Ad の組へは上げない。 -->
+        <a class="more" href="nikki/">開発日記をすべて読む →</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-  
-</div><!-- /wrap：縁側は画面の端から端まで敷くので、いったん囲いを出る -->
+<section class="sec" id="tsukurite" aria-labelledby="tsukurite-midashi">
+  <div class="ie-in">
+    <h2 id="tsukurite-midashi">つくり手</h2>
+  <!-- つくり手の一行（2026-09-07）。
+       最初は「現場に出ている人間です。ゴンドラにも高所作業車にも乗ります」と
+       書いたが、施主から事実が違うと指摘があり、落とした。
+       資格は持っておられるが、いま現場に出ているわけではない。
+       ⚠️ここに書いてよいのは、確かめられる事実だけです。
+       「作った人を信じてもらう」ための一行が事実でないなら、いちばん壊れる。
+       代わりに、確かに本当のこと——会社ではないこと、ひとりと蔵人で
+       作っていること、直しも間違いも開発日記に出していること——を置いた。 -->
+    <!-- 2026-10-27：無料の宣言を、縁側からここへ。作っている者の言葉として置く。
+         ⚠️言い切って、説明しない（2026-09-17、理由を並べる戸を外したときの作者のお言葉
+           「変な気を使わせても、仕方ない気がしたので」）。 -->
+    <div class="tsukurite">
+      <p class="ichigen">会社ではありません。<br>ひとりと、蔵人（AI）で<br>作っています。</p>
+      <div>
+        <p>つくっているのは岡澤 博喜です。直したことも、間違えたことも、そのまま開発日記に書いています。</p>
+        <p>ここの道具は、ぜんぶ<b>無料</b>です。お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。使ってみて、役に立ったなら、それでじゅうぶんです。</p>
+        <div class="btns">
+          <a class="btn btn-s btn-sm" href="naze/">なぜ、こう作ったか</a>
+          <a class="btn btn-s btn-sm" href="osewa/">お世話になっているところ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- 縁側の場面（2026-10-27 ページの底へ。裏地）。
+     表は無地のスーツ、凝るのは裏地——空の窓と、この場面。
+     ⚠️場面の中身（景色・板・二人・季節の景物・虫の声）は、前の表紙から一行も変えずに移した。
+     ---- ここから下は、前の表紙の板書（消さない）---- -->
 <!-- 縁側（2026-10-04、ページの底からここへ移した）。
      屋号の場所が、いちばん見られない所にあった。無料の宣言の真下に敷いて、
      道具を見た人が、縁側に出てから、途中の帳面や遊びの間へ進む間取りにした。
      「用がなくても、座っていってください。」も、玄関からここへ。縁側で言う言葉なので。 -->
-<section class="engawa-ba">
-  <div class="engawa-kotoba">
-  <p class="note">
-    ここの道具は、ぜんぶ<b>無料</b>です。<br>
-    お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。<br>
-    使ってみて、役に立ったなら、それでじゅうぶんです。
-  </p>
+<section class="engawa-ba" aria-label="縁側">
   <p class="suwatte">用がなくても、座っていってください。</p>
-  </div>
 <!-- 縁側の外の景色。美瑛の丘。
      写真は一枚も使っていない（憲法①）。開いた時に計算して描く。
      小さな板に描いてから、ぼかさずに拡大している（憲法②）ので、
@@ -2696,291 +2171,59 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
     <span class="koorogi-kotoba">虫の声をきく</span>
   </button>
 </div>
-
 </section>
-<div class="wrap">
 
 
-  <!-- 🩸2026-09-17、「なぜ、こう作ったか」への戸を外した（ページごと家の記録へ移した）。
-       作者のお言葉（正文）：「これも、家へ」「思い出です」「変な気を使わせても、仕方ない気がしたので。」
-       ⚠️無料の宣言の真下に「その理由」を置く並びは、2026-09-15 にわざわざ直した所だった。
-       それでも下ろしたのは、理由を並べること自体が、読む人に気を使わせるから。
-       ⚠️宣言（すぐ上の三行）は残す＝**言い切って、説明しない**。下ろした全文は
-       GCad/記録_縁側屋から下ろした文.md にある。 -->
-  <!-- ガラス張りの間（2026-09-07 新設）。
-       施主の言葉「ガラス張りの開発。工程そのものが全てコンテンツです」を、
-       そのまま一部屋にした。ここに版の表を移してある：
-       「いま何が出ているか」と「何が変わったか」は同じ話なので、
-       表と日記は隣に置いたほうが、どちらも読まれる。 -->
-  <section class="garasu">
-    <h2>つくっている途中も、開けてあります</h2>
-    <p>
-      いつ、何を直したか。まだ配っていないのか。見送ったならその理由まで、
-      蔵人が帳面に書いています。直したことが届いていない、をなくすためです。
-    </p>
-  <div class="ban">
-    <table class="ban-hyo">
-      <thead>
-        <tr>
-          <th scope="col">道具</th>
-          <th scope="col">版</th>
-          <th scope="col">更新した日</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- K'Ad蔵人だけ版が数字ではありません。この道具は一号ずつ焼いて
-             配っているので、家の中の呼び名（十五期百二十三号）がそのまま版です。
-             初めて来た人には隣の日付が読めれば足りるので、両方を並べています。 -->
-        <tr>
-          <th scope="row">K'Ad蔵人</th>
-          <!-- 二つに分けてあるのは飾りではありません。狭い画面ではこの字が
-               どうしても一行に収まらず、放っておくと「十五期百二十／三号」と
-               語の途中で割れます。塊にしておくと、折れる場所が必ず
-               「十五期／百二十三号」＝意味の継ぎ目になります。 -->
-          <td><span class="ban-ku">十七期</span><span class="ban-ku">五号</span></td>
-          <td>2026年10月19日</td>
-        </tr>
-        <tr>
-          <th scope="row">TAXI PRO NAVI</th>
-          <td>3.1</td>
-          <td>2026年10月27日</td>
-        </tr>
-        <!-- 座布団の札は「Ochi-Gee 星のおちもの」ですが、ここは短いほうだけ。
-             表の一列目が長くなると、右の日付が画面の外へ押し出されます。 -->
-        <tr>
-          <th scope="row">Ochi-Gee</th>
-          <td>1.1</td>
-          <td>2026年7月30日</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="ban-ashi">このページの最終更新　2026年10月27日</p>
-  </div>
-    <!-- 開発日記への戸は、ここ一つだけ（2026-09-15 まとめた）。
-         それまではこの真下にもう一枚「開発日記（いつ、何を直したか。つづきがあるか）→」
-         があり、同じ行き先の戸が二枚続いていた。版の表を見た人がいちばん次に知りたいのは
-         「他に何が変わったのか」「自分の版に入っているのか」なので、表のすぐ隣のこちらを残した。
-         ⚠️この帳面は K'Ad 専用ではなく縁側屋ぜんぶの帳面。K'Ad の組へは上げない。 -->
-    <p class="garasu-to"><a href="nikki/">開発日記を読む（いつ、何を直したか。つづきがあるか）→</a></p>
-  </section>
-
-  <!-- ガチ空戦への戸（2026-10-04 敷いた）。
-       博喜さんと蔵人が一日かけて少しずつ作った、本気のドッグファイト（正はデスクトップの F-Dogfight）。
-       施主の裁定「ゴテゴテ空戦の上に置きましょう」「ゴテゴテは子供用で、父さんはガチ空戦」。
-       ゴテゴテ空戦と同じ座布団の組に並べた（同じ遊びの兄弟なので、別の組にすると探しにくい）。
-       ⚠️スマホの指の操作にはまだ対応していないので、札にそう書いた。対応した日はここも直す。 -->
-  <!-- ゴテゴテ空戦への戸（2026-10-04 敷いた）。
-       博喜さんが蔵人に「遊びましょう」と声をかけ、「ゴテゴテの戦闘機のドッグファイト」と
-       言って、その席で作ったもの。施主の言葉「TOPのどこかに置いてOK」「画像付きで」。
-
-       はじめは「軒下に、ほかにも」の最後（Ochi-Gee・メーター引きの並び）に敷いたが、
-       公開した日に博喜さんご本人が「入り口が見つからない」。施主の裁定
-       「この開発日記の下で良い」で、同じ日のうちにここへ移した。
-       開発日記を読んで「何ができたのか」を知った人が、そのまま遊びに行ける位置。
-       ⚠️戸は一枚だけ。軒下の座布団は消した（同じ行き先の戸を二枚置かない）。
-
-       下の遊び場たちのような小さな一行にしなかったのは、言葉だけでは
-       「ゴテゴテ」が伝わらないから。絵は gotegote/gamen.jpg。
-       奥の部屋の遊び場（asobiba/）に入れないのは、あちらは「見えにくい方が
-       最初のお客さん」の部屋が並んでいて、速く動く空中戦は毛色が違うため。
-       ⚠️札に「スマホ・コントローラーでも」と書いてあるので、操作を外す日はここも直す。 -->
-  <!-- MIDI工房への戸（2026-10-04 敷いた）。
-       博喜さんと蔵人の雑談「名作のコード進行に著作権は無い。ここが味噌」から、その晩に作った道具（正はデスクトップの MIDI-Kobo）。
-       施主のご依頼「縁側屋に部屋を作って欲しい。開発中でも構わない」。
-       遊びの間の空戦二枚の下に並べた。道具ではあるが、用があって開くページ（K'Ad・メーター引き）とは違い、
-       触って遊ぶもの。次に作るレトロ 2D ゲームの BGM の工房でもあるので、遊びの間に置いた。
-       外した案：軒下（Ochi-Gee・メーター引き）に置く → 仕事の道具の並びで、毛色が違う。 -->
-  <h2 class="gun-midashi">遊びの間</h2>
-  <div class="zabuton-list asobi">
-    <a class="zabuton" href="gachi/">
-      <img class="zabuton-e" src="gachi/gamen.jpg" alt="青い空で、灰色のステルス戦闘機が高い G で旋回し、翼の端から白い渦の筋を引いている場面" width="720" height="320" loading="lazy">
-      <div class="name">ガチ空戦</div>
-      <div class="what">F-22 と Su-57 の本気のドッグファイト。本物に近い飛び方、ミサイルとフレア、引きすぎると目の前が暗くなる G。ゴテゴテ空戦の、大人版です。</div>
-      <div class="tags">ブラウザのゲーム ／ パソコンのキーボード・PSなどのコントローラーで（スマホは未対応） ／ 無料 ／ 登録もインストールも不要</div>
-    </a>
-    <a class="zabuton" href="gotegote/">
-      <img class="zabuton-e" src="gotegote/gamen.jpg" alt="夕焼けの空を、王冠やリボンや旗で飾り立てた桃色の戦闘機が飛んでいる場面" width="720" height="320" loading="lazy">
-      <div class="name">ゴテゴテ空戦</div>
-      <div class="what">撃たれるたびに、飾りが一つずつ取れていく空中戦。丸裸で撃たれたら墜落です。ブラウザで開けば、すぐ遊べます。</div>
-      <div class="tags">ブラウザのゲーム ／ キーボード・スマホ・PSなどのコントローラーで ／ 無料 ／ 登録もインストールも不要</div>
-    </a>
-    <a class="zabuton" href="kobo/">
-      <img class="zabuton-e" src="kobo/gamen.jpg" alt="点の字の看板「MIDI工房」の下に、Am・F・G・E のコードの上で、水色の音符が階段のように並んだピアノロール" width="720" height="320" loading="lazy">
-      <div class="name">MIDI工房</div>
-      <div class="what">名作の MIDI から、コード進行だけを借りて、新しいメロディを作ります。押すたびに別のメロディ。ファミコンの音と歪んだギターの、ゲームロックで鳴ります。音感がなくても、聴いて選ぶだけです。</div>
-      <div class="tags">ブラウザの道具 ／ 作っている途中です ／ MIDI で書き出せます（GarageBand などで開けます） ／ 無料 ／ 登録もインストールも不要</div>
-    </a>
-  </div>
-  <h2 class="gun-midashi">奥の部屋</h2>
-  <div class="oku">
-    <a class="oku-to" href="asobiba/"><b>遊び場</b><span>すうじならべ・星つなぎ・スイカわり・れんがくずし</span></a>
-    <a class="oku-to" href="indexplayland.html"><b>縁側屋バリアフリー</b><span>大きな字と 大きな絵で あそべる 入り口</span></a>
-    <a class="oku-to" href="oto/"><b>音の縁側</b><span>目をつかわなくても つかえる入り口</span></a>
-    <a class="oku-to" href="hanashiaite/"><b>話し相手が ほしいとき</b><span>AIと話してみる・個人の案内</span></a>
-  </div>
-
-  <!-- 軒先。掟は <style> の「軒先（のきさき）」の項に書いてある。必ず読むこと。
-       2026-08-09、CAD素材.com（田村さま）のご承諾をいただいて開けた。
-       空き地だった一年ぶんの掟は、そのまま生きている。
-
-       置く順は「道具 → 無料の宣言 → なぜ → 軒先 → 縁側」。
-       無料だと言った直後に店を出すのではなく、理由を読める場所を挟んでから
-       出す。この店がなぜ続いているのかを、隠さずに置くための順番。
-
-       【札の文言について】
-       「軒先をお貸ししています」とは書かない。掲載料のやり取りが無いのに
-       そう書くと、貸し借りのある広告に見えて、載っている側にも失礼になる。
-       いまここに在るのは、こちらからお礼を申し出て、承諾をいただいた縁。
-       だから札は「お世話になっているところ」。
-       将来ほんとうに軒先を貸す日が来たら、その時に札を替えること。
-       札は区画の名前ではなく、実態の申告。
-
-       【（順不同）】2026-09-15 博喜さんのご指定で札に足した。
-       軒先が四軒に増え、上から並べると「一番上が一番の恩人」と読まれうる。
-       f.k 機械彫刻を一番上に置いたのは博喜さんのご指定（2026-09-02）だが、
-       それは順位ではない。
-       博喜さんの言葉（同日）：「うちは、どちら様も平等に感謝とお礼を申し上げています
-       （書かなくてOK その気持ちです）」。
-       ⚠️**だから「平等に感謝しています」の類の文は、画面にも日記にも書かないこと。**
-       気持ちは（順不同）の四文字に預けてある。言葉にして掲げると、お礼が宣伝の文句に変わる。 -->
-  <div class="nokisaki" id="nokisaki">
-    <div class="fuda">お世話になっているところ（順不同）</div>
-    <div class="nokisaki-list">
-      <!-- f.k 機械彫刻（作者：木村陽介さま＝Kimさん・font.kim）。
-           2026-09-01に博喜さんがメールでご連絡し、翌朝ご快諾のお返事をいただいた
-           （フォントのライセンスに「二次配布する場合は事前に御連絡ください」とあり、
-           K'Adへの同梱＝二次配布に当たるため）。クレジット表記は「必須ではありません」
-           とのお言葉だったが、この家は載せる側（憲法「価値のある道を堂々と歩む」）。
-           置き場所は一番上＝博喜さんの指定（2026-09-02「一番上です」）。
-
-           【看板について】下のSVGは、f.k 機械彫刻のフォントそのもので
-           「f.k 機械彫刻」と組み、グリフをアウトライン化したもの（v0.320のOTFから
-           fontToolsでパスに起こした）。ライセンスに「グリフをアウトライン化した
-           ベクタ画像の配布は、本フォントの二次配布に当たりません」とあり、
-           この形は明示的に許されている。先方HPの看板画像（/misc/header_title-*.png）は
-           転載の許可をいただいていないので使わない（掟「グレーなら聞く」）。
-           📌看板の字がフォントの実物＝これ以上正直な見本は無い。
-
-           【「JIS準拠」と書かない】作者ご自身が「JISに適合したものではありません」と
-           明記しておられる（1969〜77年のJIS 機械彫刻用標準書体の「再現」）。
-           紹介文もその線で書くこと。
-
-           【wake＝うちとの縁】K'Adへの搭載はまだ工事前（器から建てる＝
-           GCadの段取り書のとおり）。「載せています」とは書かない。
-           「載せる準備をすすめています」までが今日の正直。
-           搭載が世に出た日に、この行を書き替えること。
-           → 2026-09-20 に書き替えた（搭載は 9/3 に世に出ていて、K'Ad のページは
-             その日から「積んでいます」と言っていたのに、この行だけ十七日間「準備中」のままだった）。 -->
-      <a class="noren" href="https://font.kim/" rel="noopener">
-        <svg class="mise-logo mise-logo-fk" viewBox="0 0 377 65" role="img" aria-label="f.k 機械彫刻" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M17.168 55.328C18.4403203125 55.328 19.471360351562502 54.2969599609375 19.471360351562502 53.0246396484375V22.3046396484375H28.00319921875C29.27551953125 22.3046396484375 30.306560546875 21.2736005859375 30.306560546875 20.0012802734375C30.306560546875 18.729600585937504 29.27551953125 17.697920898437502 28.00319921875 17.697920898437502H19.471360351562502V16.757120117187505C19.471360351562502 12.2387177734375 22.704 9.250557617187503 27.662720703125 9.250557617187503C28.934400390625 9.250557617187503 29.966080078125 8.219518554687504 29.966080078125 6.947198242187504C29.966080078125 5.6755185546875 28.934400390625 4.643838867187505 27.662720703125 4.643838867187505C20.185599609375 4.643838867187505 14.8633603515625 9.663999023437505 14.8633603515625 16.758397460937502V17.6991982421875H8.795519531250001C7.5225595703125006 17.6991982421875 6.4921591796875 18.7308779296875 6.4921591796875 20.0025576171875C6.4921591796875 21.274877929687506 7.5225595703125006 22.3059208984375 8.795519531250001 22.3059208984375H14.8633603515625V53.025918945312505C14.8633603515625 54.298239257812504 15.894400390625 55.329279296875 17.166719726562498 55.329279296875Z M40.8 55.392C42.707839843749994 55.392 44.2553603515625 53.845120117187506 44.2553603515625 51.936639648437506C44.2553603515625 50.0287998046875 42.707839843749994 48.481279296875 40.8 48.481279296875C38.89151953125 48.481279296875 37.3446396484375 50.0287998046875 37.3446396484375 51.936639648437506C37.3446396484375 53.845120117187506 38.89151953125 55.392 40.8 55.392Z M56.389759765624994 55.328C57.6627197265625 55.328 58.6931201171875 54.2969599609375 58.6931201171875 53.0246396484375V43.0553603515625L64.18624023437499 37.441279296875L77.151359375 54.408960937500005C77.57183984375 54.967680664062506 78.24 55.328640625000006 78.99264062499999 55.328640625000006C80.26496093749999 55.328640625000006 81.29599999999999 54.2976005859375 81.29599999999999 53.0252802734375C81.29599999999999 52.4947197265625 81.11680078124999 52.0051201171875 80.815359375 51.616L67.440640625 34.114560546875L79.797119140625 21.48671875C80.202880859375 21.070718750000005 80.453759765625 20.502398437500005 80.453759765625 19.875199218750005C80.453759765625 18.60351953125 79.42208007812499 17.57183984375 78.150400390625 17.57183984375C77.505279296875 17.57183984375 76.922880859375 17.836800781250005 76.5043203125 18.2636796875L58.693121093749994 36.46848046875V7.587199218750001C58.693121093749994 6.315519531250004 57.662720703125 5.283839843750002 56.3897607421875 5.283839843750002C55.118081054687494 5.283839843750002 54.086400390624995 6.315519531250004 54.086400390624995 7.587199218750001V53.027199218750006C54.086400390624995 54.299519531250006 55.118081054687494 55.3305595703125 56.3897607421875 55.3305595703125Z M176.032 60.576C177.312 60.576 178.336 59.55200000000001 178.336 58.272000000000006C178.336 57.312000000000005 177.76 56.480000000000004 176.928 56.160000000000004C174.304 55.008 171.936 53.344 169.888 51.29600000000001C172.128 48.864000000000004 173.856 46.048 174.88 43.168000000000006C174.94400000000002 42.976 175.008 42.72 175.008 42.400000000000006C175.008 41.120000000000005 173.984 40.096000000000004 172.704 40.096000000000004C171.61599999999999 40.096000000000004 170.784 40.800000000000004 170.528 41.696000000000005C169.76 43.80800000000001 168.544 45.856 166.88 47.776C165.088 45.152 163.552 42.016000000000005 162.464 38.56H175.904C177.184 38.56 178.208 37.536 178.208 36.256C178.208 34.976 177.184 33.952 175.904 33.952H172.96C172.128 32.480000000000004 170.912 30.816000000000003 169.824 29.6C169.376 29.088 168.736 28.832 168.096 28.832C166.816 28.832 165.792 29.856 165.792 31.136000000000003C165.792 31.776000000000003 165.984 32.288000000000004 166.368 32.672000000000004C166.752 33.056 167.072 33.44 167.45600000000002 33.952H161.248C160.99200000000002 32.672000000000004 160.8 31.456000000000003 160.672 30.368000000000002C160.544 29.216 159.52 28.320000000000004 158.368 28.320000000000004C157.088 28.320000000000004 156.064 29.344 156.064 30.624000000000002C156.064 31.072000000000003 156.32 32.672000000000004 156.576 33.952H141.984C140.704 33.952 139.68 34.976 139.68 36.256C139.68 37.536 140.704 38.56 141.984 38.56H144.096C143.392 46.816 141.6 52.64 138.656 56.288000000000004C138.336 56.672000000000004 138.144 57.184000000000005 138.144 57.760000000000005C138.144 59.040000000000006 139.168 60.064 140.448 60.064C141.152 60.064 141.792 59.744 142.24 59.168000000000006C144.608 56.224000000000004 146.336 52.256 147.488 47.072C149.40800000000002 47.968 151.2 49.120000000000005 152.48000000000002 50.272000000000006C152.928 50.656000000000006 153.44 50.848 154.016 50.848C155.296 50.848 156.32 49.824000000000005 156.32 48.544000000000004C156.32 47.904 156.064 47.264 155.552 46.816C153.76 45.216 151.072 43.55200000000001 148.32 42.336C148.512 41.056000000000004 148.64 39.904 148.768 38.56H157.664C159.008 43.29600000000001 160.99200000000002 47.52 163.552 50.976C161.248 52.896 158.624 54.304 156.0 55.008C155.04 55.264 154.272 56.160000000000004 154.272 57.248000000000005C154.272 58.528000000000006 155.296 59.55200000000001 156.576 59.55200000000001C156.704 59.55200000000001 156.89600000000002 59.55200000000001 157.344 59.42400000000001C160.544 58.528000000000006 163.744 56.800000000000004 166.56 54.496C169.056 56.992000000000004 171.936 58.976000000000006 175.072 60.384C175.392 60.512 175.712 60.576 176.032 60.576ZM142.88 28.128000000000004H154.464C156.32 28.128000000000004 157.792 26.656000000000002 157.792 24.8C157.792 24.032000000000004 157.536 23.328000000000003 157.088 22.752000000000002L154.464 19.488C154.016 18.912 153.376 18.592 152.672 18.592C151.392 18.592 150.368 19.616 150.368 20.896C150.368 21.472 150.56 21.984 150.88 22.368000000000002L151.84 23.520000000000003H145.568L154.976 12.128C155.296 11.744 155.488 11.232 155.488 10.655999999999999C155.488 9.376000000000005 154.464 8.352000000000004 153.184 8.352000000000004C152.48000000000002 8.352000000000004 151.84 8.672000000000004 151.392 9.184000000000005L147.296 14.176000000000002L144.992 11.296L150.88 4.896000000000001C151.264 4.448 151.45600000000002 3.936 151.45600000000002 3.3599999999999994C151.45600000000002 2.0799999999999983 150.43200000000002 1.0560000000000045 149.152 1.0560000000000045C148.512 1.0560000000000045 147.872 1.3120000000000047 147.424 1.8240000000000052L141.152 8.672000000000004C139.872 10.016000000000005 139.808 12.128 140.96 13.600000000000001L144.288 17.824000000000005L140.32 22.688000000000002C139.744 23.392000000000003 139.552 24.160000000000004 139.552 24.8C139.552 26.656000000000002 141.024 28.128000000000004 142.88 28.128000000000004ZM161.376 28.128000000000004H173.664C175.52 28.128000000000004 176.99200000000002 26.656000000000002 176.99200000000002 24.8C176.99200000000002 24.032000000000004 176.736 23.264000000000003 176.224 22.624000000000002L173.40800000000002 19.36C172.96 18.848 172.32 18.528 171.61599999999999 18.528C170.336 18.528 169.312 19.552 169.312 20.832C169.312 21.408 169.50400000000002 21.92 169.888 22.368000000000002L170.912 23.520000000000003H164.128L173.92000000000002 12.064C174.304 11.616 174.496 11.104 174.496 10.527999999999999C174.496 9.248000000000005 173.472 8.224000000000004 172.192 8.224000000000004C171.488 8.224000000000004 170.848 8.544000000000004 170.4 9.056000000000004L166.048 14.176000000000002L163.61599999999999 11.232L169.44 4.896000000000001C169.824 4.448 170.016 3.936 170.016 3.3599999999999994C170.016 2.0799999999999983 168.99200000000002 1.0560000000000045 167.712 1.0560000000000045C167.072 1.0560000000000045 166.43200000000002 1.3120000000000047 165.984 1.8240000000000052L159.776 8.608000000000004C158.496 10.016000000000005 158.43200000000002 12.192 159.648 13.664000000000001L162.976 17.760000000000005L158.816 22.624000000000002C158.304 23.264000000000003 158.048 24.032000000000004 158.048 24.8C158.048 26.656000000000002 159.52 28.128000000000004 161.376 28.128000000000004ZM129.696 61.088C130.976 61.088 132.0 60.064 132.0 58.784000000000006V33.696C132.832 35.168000000000006 133.664 36.384 134.56 37.472C135.008 37.984 135.648 38.304 136.352 38.304C137.632 38.304 138.656 37.28 138.656 36.0C138.656 35.42400000000001 138.464 34.912000000000006 138.08 34.464C135.84 31.840000000000003 133.856 27.680000000000003 132.0 21.728V17.184000000000005H135.968C137.248 17.184000000000005 138.272 16.160000000000004 138.272 14.880000000000003C138.272 13.600000000000001 137.248 12.576 135.968 12.576H132.0V2.975999999999999C132.0 1.696000000000005 130.976 0.6720000000000041 129.696 0.6720000000000041C128.416 0.6720000000000041 127.392 1.696000000000005 127.392 2.975999999999999V12.576H122.08C120.8 12.576 119.776 13.600000000000001 119.776 14.880000000000003C119.776 16.160000000000004 120.8 17.184000000000005 122.08 17.184000000000005H127.392V20.64C125.21600000000001 29.152 122.208 36.32000000000001 118.816 41.056000000000004C118.496 41.504000000000005 118.368 41.952 118.368 42.400000000000006C118.368 43.68000000000001 119.392 44.704 120.672 44.704C121.44 44.704 122.144 44.32 122.592 43.68000000000001C124.256 41.376000000000005 125.92 38.368 127.392 34.976V58.784000000000006C127.392 60.064 128.416 61.088 129.696 61.088Z M194.72 61.088C196.0 61.088 197.024 60.064 197.024 58.784000000000006V32.928C198.112 34.72 199.26399999999998 36.32000000000001 200.48 37.6C200.928 38.048 201.504 38.304 202.14399999999998 38.304C203.93599999999998 38.304 205.024 36.384 204.128 34.848C204.576 35.29600000000001 205.152 35.488 205.72799999999998 35.488H207.00799999999998C206.81599999999997 42.848 205.79199999999997 47.456 203.808 50.336000000000006C203.552 50.72 203.42399999999998 51.168000000000006 203.42399999999998 51.616C203.42399999999998 52.896 204.44799999999998 53.92 205.72799999999998 53.92C206.49599999999998 53.92 207.2 53.536 207.648 52.896C210.14399999999998 49.248000000000005 211.42399999999998 43.68000000000001 211.61599999999999 35.488H216.224V48.032000000000004C216.224 49.312000000000005 217.248 50.336000000000006 218.528 50.336000000000006C219.808 50.336000000000006 220.832 49.312000000000005 220.832 48.032000000000004V35.488H222.624C223.904 35.488 224.928 34.464 224.928 33.184C224.928 31.904000000000003 223.904 30.880000000000003 222.624 30.880000000000003H220.832V22.944000000000003C220.832 21.664 219.808 20.64 218.528 20.64C217.248 20.64 216.224 21.664 216.224 22.944000000000003V30.880000000000003H211.61599999999999V23.456000000000003C211.61599999999999 22.176000000000002 210.59199999999998 21.152 209.31199999999998 21.152C208.03199999999998 21.152 207.00799999999998 22.176000000000002 207.00799999999998 23.456000000000003V30.880000000000003H205.72799999999998C203.93599999999998 30.880000000000003 202.84799999999998 32.8 203.74399999999997 34.336C201.31199999999998 31.712000000000003 199.136 27.744000000000003 197.024 21.664V17.184000000000005H201.696C202.976 17.184000000000005 204.0 16.160000000000004 204.0 14.880000000000003C204.0 13.600000000000001 202.976 12.576 201.696 12.576H197.024V2.975999999999999C197.024 1.696000000000005 196.0 0.6720000000000041 194.72 0.6720000000000041C193.44 0.6720000000000041 192.416 1.696000000000005 192.416 2.975999999999999V12.576H186.272C184.992 12.576 183.968 13.600000000000001 183.968 14.880000000000003C183.968 16.160000000000004 184.992 17.184000000000005 186.272 17.184000000000005H192.416V21.088C189.79199999999997 29.728 186.72 36.128 182.88 40.928000000000004C182.55999999999997 41.376000000000005 182.368 41.824000000000005 182.368 42.400000000000006C182.368 43.68000000000001 183.392 44.704 184.672 44.704C185.37599999999998 44.704 186.07999999999998 44.384 186.528 43.744C188.64 41.120000000000005 190.624 37.856 192.416 34.08V58.784000000000006C192.416 60.064 193.44 61.088 194.72 61.088ZM240.28799999999998 60.064C241.56799999999998 60.064 242.59199999999998 59.040000000000006 242.59199999999998 57.760000000000005C242.59199999999998 57.120000000000005 242.33599999999998 56.480000000000004 241.82399999999998 56.032000000000004C238.688 53.344 236.0 49.632000000000005 233.82399999999998 44.576C236.95999999999998 38.816 239.136 32.224000000000004 239.77599999999998 25.696C239.904 24.352000000000004 238.81599999999997 23.200000000000003 237.47199999999998 23.200000000000003C236.32 23.200000000000003 235.296 24.032000000000004 235.16799999999998 25.312C234.71999999999997 29.792 233.504 34.336 231.648 38.56C229.92 32.736000000000004 228.70399999999998 25.632 228.064 17.184000000000005H240.03199999999998C241.31199999999998 17.184000000000005 242.33599999999998 16.160000000000004 242.33599999999998 14.880000000000003C242.33599999999998 13.600000000000001 241.31199999999998 12.576 240.03199999999998 12.576H228.0V3.2319999999999993C228.0 1.9519999999999982 226.976 0.9280000000000044 225.69599999999997 0.9280000000000044C224.416 0.9280000000000044 223.392 1.9519999999999982 223.392 3.2319999999999993V12.576H207.77599999999998C206.49599999999998 12.576 205.47199999999998 13.600000000000001 205.47199999999998 14.880000000000003C205.47199999999998 16.160000000000004 206.49599999999998 17.184000000000005 207.77599999999998 17.184000000000005H223.456C224.224 28.192000000000004 226.016 37.152 228.70399999999998 44.192C225.88799999999998 48.736000000000004 222.56 52.384 218.784 54.816C218.20799999999997 55.2 217.76 55.904 217.76 56.736000000000004C217.76 58.016000000000005 218.784 59.040000000000006 220.064 59.040000000000006C220.512 59.040000000000006 220.95999999999998 58.912000000000006 221.344 58.656000000000006C224.79999999999998 56.416000000000004 228.128 53.088 230.88 49.184000000000005C233.12 53.536 235.808 56.928000000000004 238.75199999999998 59.488C239.2 59.872 239.712 60.064 240.28799999999998 60.064ZM236.44799999999998 12.192C237.72799999999998 12.192 238.75199999999998 11.168 238.75199999999998 9.888000000000005C238.75199999999998 9.440000000000005 238.624 8.992000000000004 238.368 8.608000000000004C237.27999999999997 6.944000000000003 235.296 4.5760000000000005 233.632 3.039999999999999C233.12 2.5919999999999987 232.54399999999998 2.4639999999999986 232.096 2.4639999999999986C230.81599999999997 2.4639999999999986 229.79199999999997 3.4879999999999995 229.79199999999997 4.768000000000001C229.79199999999997 5.408000000000001 230.048 6.048000000000002 230.56 6.496000000000002C231.904 7.712000000000003 233.56799999999998 9.632000000000005 234.528 11.168C234.84799999999998 11.68 235.552 12.192 236.44799999999998 12.192Z M279.9276796875 60.565759765625C281.199359375 60.565759765625 282.2310390625 59.535359375000006 282.2310390625 58.2623994140625V7.350399414062501C282.2310390625 4.951680664062501 280.27839843749996 2.9990400390625 277.8796796875 2.9990400390625H255.25951953125C252.86079980468747 2.9990400390625 250.90816015624998 4.951680664062501 250.90816015624998 7.350399414062501V26.920961914062502C250.90816015624998 40.8377607421875 249.97055957031247 47.281281250000006 246.77631933593747 55.393921875000004C246.66111914062498 55.6684814453125 246.59711914062498 55.96928125 246.59711914062498 56.28544140625C246.59711914062498 57.5571220703125 247.62879882812499 58.588801757812504 248.900478515625 58.588801757812504C249.892478515625 58.588801757812504 250.73855859374999 57.9616015625 251.06175878906248 57.081601562500005C254.46719921874998 48.433921875 255.51487890624998 41.3068818359375 255.51487890624998 26.920322265625003V7.605763671875003H277.62303906249997V58.261763671875C277.62303906249997 59.5347236328125 278.65471875 60.565124023437505 279.9263984375 60.565124023437505ZM261.745919921875 54.862723632812504H270.880640625C272.994560546875 54.862723632812504 274.71999999999997 53.1385634765625 274.71999999999997 51.02336328125V40.08768359375C274.71999999999997 37.97248437500001 272.994560546875 36.24832421875 270.880640625 36.24832421875H261.745919921875C259.632 36.24832421875 257.9065595703125 37.97248437500001 257.9065595703125 40.08768359375V51.02336328125C257.9065595703125 53.1385634765625 259.632 54.862723632812504 261.745919921875 54.862723632812504ZM262.51391992187496 50.2547236328125V40.8550439453125H270.112640625V50.2547236328125ZM259.445759765625 30.602243164062504H273.18016015625C274.45248046874997 30.602243164062504 275.48351953125 29.571842773437503 275.48351953125 28.2988837890625C275.48351953125 27.027202148437503 274.45248046874997 25.9955224609375 273.18016015625 25.9955224609375H268.6169609375V19.4758427734375H274.07935937499997C275.3510390625 19.4758427734375 276.38272070312496 18.444163085937504 276.38272070312496 17.1724833984375C276.38272070312496 15.9001630859375 275.3510390625 14.8691240234375 274.07935937499997 14.8691240234375H268.6169609375V10.4102412109375C268.6169609375 9.138561523437502 267.586560546875 8.1068818359375 266.313599609375 8.1068818359375C265.041919921875 8.1068818359375 264.010240234375 9.138561523437502 264.010240234375 10.4102412109375V14.8691240234375H258.54783984375C257.27616015625 14.8691240234375 256.24448046875 15.9001630859375 256.24448046875 17.1724833984375C256.24448046875 18.444163085937504 257.27616015625 19.4758427734375 258.54783984375 19.4758427734375H264.010240234375V25.9955224609375H259.4470400390625C258.17536035156246 25.9955224609375 257.14367968749997 27.027202148437503 257.14367968749997 28.2988837890625C257.14367968749997 29.571842773437503 258.17536035156246 30.602243164062504 259.4470400390625 30.602243164062504ZM286.99264160156247 59.8291220703125C287.44128222656246 59.8291220703125 287.8592001953125 59.7011220703125 288.21312207031247 59.479041992187504C296.4358408203125 54.513921875 301.6755205078125 48.99776171875 306.4044814453125 40.328322265625005C306.5952001953125 39.992322265625006 306.70464160156246 39.603841796875 306.70464160156246 39.189761718750006C306.70464160156246 37.91808203125 305.6729619140625 36.88640234375001 304.4012822265625 36.88640234375001C303.5136025390625 36.88640234375001 302.74304003906246 37.38944140625 302.3590400390625 38.125441406250005C297.9628798828125 46.183681640625004 293.4553603515625 50.9331220703125 285.8342392578125 55.534722656250004C285.1500791015625 55.9334423828125 284.68992285156247 56.6758427734375 284.68992285156247 57.5257626953125C284.68992285156247 58.797442382812505 285.7209619140625 59.829123046875004 286.9932822265625 59.829123046875004ZM287.78176269531247 36.823681640625C288.1606416015625 36.823681640625 288.5171220703125 36.732802734375 288.8320009765625 36.5708828125C295.4329619140625 33.356162109375006 299.7023994140625 29.999361328125 304.2092822265625 24.480642578125003C304.5395205078125 24.081921875000003 304.7385595703125 23.569921875000002 304.7385595703125 23.011201171875C304.7385595703125 21.739521484375004 303.7068798828125 20.707841796875 302.4352001953125 20.707841796875C301.70880175781247 20.707841796875 301.0611220703125 21.043841796875 300.63936035156246 21.569283203125003C296.50623925781247 26.629761718750004 292.8928017578125 29.469441406250002 286.81792285156246 32.42944140625001C286.0275205078125 32.7936015625 285.4783994140625 33.5936015625 285.4783994140625 34.5216015625C285.4783994140625 35.79328125000001 286.5100791015625 36.824962890625 287.78176269531247 36.824962890625ZM287.6972822265625 18.846080078125C288.0889619140625 18.846080078125 288.45823925781247 18.748802734375005 288.78080175781247 18.576001953125C294.77312207031247 15.519361328125001 299.2211220703125 11.681923828125 303.12384082031247 6.200962890625C303.4022392578125 5.820802734375 303.5654423828125 5.351681640625003 303.5654423828125 4.844802734375001C303.5654423828125 3.571841796874999 302.5350400390625 2.541443359375002 301.2620791015625 2.541443359375002C300.47807910156246 2.541443359375002 299.7849619140625 2.9331230468750036 299.3689619140625 3.5328027343750037C295.8387197265625 8.488322265625001 292.1088017578125 11.707521484375 286.6905595703125 14.471681640625C285.9225595703125 14.844162109374999 285.3926416015625 15.632642578125001 285.3926416015625 16.544642578125C285.3926416015625 17.816962890625 286.4243212890625 18.848001953125 287.69600097656246 18.848001953125Z M314.912 44.448C315.36 44.448 315.74399999999997 44.32 316.06399999999996 44.128C325.59999999999997 39.008 333.472 31.072000000000003 340.0 20.128C340.256 19.68 340.384 19.296 340.384 18.848C340.384 17.568000000000005 339.36 16.544000000000004 338.08 16.544000000000004C337.248 16.544000000000004 336.47999999999996 16.992000000000004 336.096 17.696000000000005C333.536 21.984 330.848 25.696 327.96799999999996 28.896L321.632 23.328000000000003L331.808 11.68H342.688C343.96799999999996 11.68 344.99199999999996 10.655999999999999 344.99199999999996 9.376000000000005C344.99199999999996 8.096000000000004 343.96799999999996 7.072000000000003 342.688 7.072000000000003H330.52799999999996V2.911999999999999C330.52799999999996 1.632000000000005 329.50399999999996 0.6080000000000041 328.224 0.6080000000000041C326.94399999999996 0.6080000000000041 325.91999999999996 1.632000000000005 325.91999999999996 2.911999999999999V7.072000000000003H313.76C312.47999999999996 7.072000000000003 311.45599999999996 8.096000000000004 311.45599999999996 9.376000000000005C311.45599999999996 10.655999999999999 312.47999999999996 11.68 313.76 11.68H325.728L317.664 20.896C316.256 22.496000000000002 316.384 24.928 318.048 26.336000000000002L324.768 32.160000000000004C321.44 35.36 317.792 37.984 313.888 40.096000000000004C313.12 40.480000000000004 312.608 41.248000000000005 312.608 42.144000000000005C312.608 43.42400000000001 313.632 44.448 314.912 44.448ZM343.072 59.040000000000006C344.352 59.040000000000006 345.376 58.016000000000005 345.376 56.736000000000004C345.376 56.288000000000004 345.248 55.776 344.864 55.264C342.56 52.256 338.592 48.480000000000004 334.368 45.216C337.50399999999996 42.016000000000005 340.32 38.56 342.688 34.976C342.94399999999996 34.592 343.072 34.144000000000005 343.072 33.696C343.072 32.416000000000004 342.048 31.392000000000003 340.768 31.392000000000003C339.936 31.392000000000003 339.23199999999997 31.840000000000003 338.848 32.416000000000004C332.57599999999996 41.952 323.23199999999997 50.144000000000005 313.76 54.368C312.928 54.688 312.352 55.52 312.352 56.480000000000004C312.352 57.760000000000005 313.376 58.784000000000006 314.656 58.784000000000006C314.976 58.784000000000006 315.296 58.720000000000006 315.616 58.592000000000006C320.928 56.224000000000004 326.176 52.704 330.976 48.416000000000004C335.13599999999997 51.552 339.03999999999996 55.2 341.216 58.080000000000005C341.664 58.656000000000006 342.304 59.040000000000006 343.072 59.040000000000006ZM350.752 42.336C352.032 42.336 353.056 41.312000000000005 353.056 40.032000000000004V9.952000000000005C353.056 8.672000000000004 352.032 7.648000000000003 350.752 7.648000000000003C349.472 7.648000000000003 348.448 8.672000000000004 348.448 9.952000000000005V40.032000000000004C348.448 41.312000000000005 349.472 42.336 350.752 42.336ZM360.864 59.80800000000001C364.128 59.80800000000001 366.752 57.184000000000005 366.752 53.92V3.4879999999999995C366.752 2.2079999999999984 365.728 1.1840000000000046 364.448 1.1840000000000046C363.168 1.1840000000000046 362.144 2.2079999999999984 362.144 3.4879999999999995V53.92C362.144 54.624 361.568 55.2 360.864 55.2C359.008 55.2 356.512 54.56 353.69599999999997 53.344C353.376 53.216 353.056 53.152 352.736 53.152C351.456 53.152 350.432 54.176 350.432 55.456C350.432 56.416000000000004 351.008 57.248000000000005 351.96799999999996 57.632000000000005C355.104 58.976000000000006 358.432 59.80800000000001 360.864 59.80800000000001Z"/></svg>
-        <div class="koto">機械彫刻の文字——どの字画も一定の太さで、先端が半円——を再現したフォント「f.k 機械彫刻」を、無償で配っておられます。1969〜77年にJISに定められた「機械彫刻用標準書体」がもとで、CADソフトで使う人のためにTrueType版まで用意されています。</div>
-        <div class="wake">K'Ad蔵人の図面の文字に、この書体を選べます（2026年9月、作者の木村様にご連絡のうえ、ご承諾をいただいて載せました）。</div>
-      </a>
-
-      <!-- ロゴ（看板）。2026-08-11、田村さまから
-           「ご利用いただいて問題ございません」と承諾をいただいて掛けた。
-           規約でロゴは2次利用禁止の「画像」に当たるため、掛ける前に
-           お伺いを立てた（グレーなら聞く）。
-           画像は nokisaki/ に置いた自前の控え。相手のサーバから直接
-           読み込むと、来た人のアクセスが向こうに残る＝軒先の掟二
-           「追いかけない」に触れるので、必ずこの家の中から読むこと。
-           alt に店名を書いてあるので、画像が読めない環境でも名前は立つ。 -->
-      <a class="noren" href="https://cad-freed-rawingsamples.com/" rel="noopener">
-        <img class="mise-logo" src="nokisaki/cadsozai-logo.png" alt="CAD素材.com" width="380" height="60" loading="lazy">
-        <div class="koto">建築の図面に使えるCADデータを、無料で配っておられます。人物・樹木・鉄骨・建具・サッシ・記号ほか217種。</div>
-        <div class="wake">K'Ad蔵人の文字まわりの不具合は、ここの笠木データが教えてくれました。</div>
-      </a>
-
-      <!-- 施工図.com（在宅CAD日記・AKIさま）。2026-08-29、リンクのご承諾をいただいた。
-           先方のお言葉「リンクぜひお願いします。こちらのサイトでも貼らせていただきますね。」
-           ⚠️ロゴは、まだお伺いを立てていない。だから文字看板で置く（掟「グレーなら聞く」）。
-           掛けたくなった日は、先に伺うこと。
-
-           【wake（うちとの縁）を書いていない理由】
-           あの欄は「この店に、うちが何を助けられたか」を書く所。まだ何も無い。
-           無い縁を書けば、それは軒先ではなく広告になる。
-           助けられた日が来たら、その時に一行足すこと。 -->
-      <a class="noren" href="https://sekouzu.com/" rel="noopener">
-        <div class="mise">施工図.com</div>
-        <div class="koto">在宅CAD歴38年のCADオペレーターご本人が、書きながら覚えた金物施工図を解説しておられます。鋼材表などのダウンロード素材も。</div>
-      </a>
-
-      <!-- 鋼材情報一覧.com（三宅小豆さま）。2026-08-30、リンクのご承諾をいただいた。
-           先方のお言葉「掲載については問題ございません。むしろ、ありがたい話なので、
-           よろしくお願い致します。」バナー・意匠も使ってよい、とのお言葉つき。
-
-           【店の名を、一度まちがえた】
-           最初この蔵人は <title> の「JIS規格鋼材寸法・重量データベース」を店の名だと
-           思い込み、その長い名で掛けた。施主のご指摘で直した。看板に出ている名は
-           「鋼材情報一覧.com」——先方の PWA の名乗りも同じ。
-           📌<title> は検索よけの説明文であって、名乗りではない。次に軒先を足す人は、
-             画面のいちばん上に出ている字（と manifest の name）を見ること。
-
-           【印】名前の左のオレンジ色は、先方が自分の看板の頭に付けている印。
-           形も色も、先方の画面から写した（樽が三段。色は #FF8904）。
-           この家の絵は点で打つ決まりだが、他所様の印は写した形のまま掛ける
-           （理由は <style> の .mise-shirushi の項に）。
-           ⚠️バナーは無い。先方のサイトに置かれていないので、掛けられるものが無い。
-              用意された日に、文字看板から掛け替えること。
-
-           【wake（うちとの縁）を書いていない理由】施工図.com と同じ。
-           あの欄は「この店に、うちが何を助けられたか」を書く所で、まだ何も無い。
-           助けられた日が来たら、その時に一行足すこと。 -->
-      <a class="noren" href="https://kouzai-db.com/" rel="noopener">
-        <div class="mise">
-          <svg class="mise-shirushi" viewBox="0 0 24 24" fill="none" stroke="#ff8904"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <ellipse cx="12" cy="5" rx="9" ry="3"/>
-            <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
-            <path d="M3 12A9 3 0 0 0 21 12"/>
-          </svg>
-          鋼材情報一覧.com
-        </div>
-        <div class="koto">H形鋼・L形鋼（アングル）・溝形鋼（チャンネル）・平鋼・角形鋼管・配管用鋼管など、JIS規格の鋼材の寸法・重量・断面性能を無料で引けます。重量計算とボルト長さ計算も、その場でできます。</div>
-      </a>
-
-      <!-- Siv3D（作者：Ryo Suzuki さん＝鈴木 遼さん。⚠️「亮」ではない）。2026-09-20 に掛けた。
-           きっかけ＝博喜さんの一言「縁側屋で、Siv3Dのリンク紹介をしてなかった」。
-
-           【ほかの四軒と、掛け方が一つだけ違う】
-           四軒は「こちらからお礼を申し出て、承諾をいただいてから」掛けた。
-           Siv3D は**掛けてから、博喜さんがご報告する**形（博喜さんの裁定・同日「これが自然です」）。
-           理由＝公式の文書を当たったが、リンクにも紹介にも許可の決まりが一つも無い
-           （MIT ライセンス／公式チュートリアル「60. アプリの公開」にも、ロゴ・リンクの規定なし）。
-           決まりが無い所へ「よろしいですか」と伺うと、相手に返事の手間だけを掛ける。
-           だから伺いではなく報告＝断る自由は残し、手間は掛けない。
-           博喜さんの言葉：「感謝＝リンクをさせていただく＝みんなに知ってもらう＝Siv3Dのユーザーが広がる
-           ＝鈴木さんの、お仕事が良い方へ広がる可能性が上がる＝結果winwin」。
-
-           【ロゴは掛けていない】ロゴの使い方の決まりが見つからなかった＝グレー（掟「グレーなら聞く」）。
-           だから施工図.com と同じ文字看板。掛けたくなった日は、先に伺うこと。
-
-           【掟五との関係】Siv3D はプログラムを書く人の道具で、図面を描く人が直接使う行き先ではない。
-           それでも掛けたのは、札が「お世話になっているところ」＝実態の申告だから。
-           足元をぜんぶ支えている所が居ないのは、申告として欠けている。
-           ⚠️だから koto は背伸びさせない（「CADを描く人に便利」とは書かない）。
-
-           【置き場所】いちばん下＝掛けた順。札の（順不同）のとおり、順位ではない。 -->
-      <a class="noren" href="https://siv3d.github.io/ja-jp/" rel="noopener">
-        <div class="mise">Siv3D</div>
-        <div class="koto">ゲームやアプリを C++ で楽しく簡単に作るためのフレームワークを、無償で公開しておられます。</div>
-        <div class="wake">K'Ad蔵人は、この Siv3D の上に建っています。ブラウザでそのまま動くのも、Siv3D のおかげです。</div>
-      </a>
+<!-- 足元（2026-10-27）。連絡先・決まりごと・免責・作った者の名。
+     免責は四つの趣旨を全部置く（CLAUDE.md「免責の書き方」＝開発中／控えを取ってから／損害はお引き受けできない／
+     おかしいところはメールを。文言を変えるときは全ページ揃える）。
+     ---- ここから下は、前の表紙の板書（消さない）---- -->
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="naze/">なぜ、こう作ったか</a></li>
+          <li><a href="ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-
-</div>
-
-
-<footer>
+  <!-- 但し書き。道具の真下＝リンクのすぐそば。押す前に読める位置に置く。
+       連絡先を生のまま書かないのは、公開ページのメールアドレスを
+       迷惑メール業者の巡回ロボットが拾って回るため。ここには字で
+       「アットマーク」と書いておき、下の script が開いた瞬間に
+       押せるリンクへ組み直す。人には普通に見えて、機械には読みにくい。
+       JS が動かない機械でも、この字のままなら人は読めるので誰も締め出さない。 -->
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
   <!-- 名を二つ並べているのは、施主の言葉「これも、事実なのでお願いします」による。
        盛った献辞ではなく、実際にこの家を建てている二人の名前。
        屋号の権利は施主にある（K'Ad蔵人の「蔵人」と同じ、功績を名に入れる作法）。 -->
-  © 2026 縁側屋　岡澤博喜　蔵人Claude<br>
-  <span class="by">このページの制作と管理は Claude が担当しています</span>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
 </footer>
 
 <script>
+/* 2026-10-27 の建て替えで、時刻の札（data-time）が変えるのは、縁側の場面と空の窓だけになった。
+   字と地は kihon.css（閲覧機の明るい／暗いの設定）。下の板書は、家じゅうの色を時刻で変えていた頃のもの。 */
 /* ------------------------------------------------------------
    時刻で光を変える。
    縁側は、そこに差す光で表情が変わる場所なので、
@@ -2994,6 +2237,7 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
         :                      'night';
   document.documentElement.setAttribute('data-time', t);
 })();
+
 
 /* ------------------------------------------------------------
    季節で衣替えする。
@@ -3056,364 +2300,81 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
   }
 })();
 
-/* ============================================================
-   看板。吊ってある一枚板に、屋号を彫る。
 
-   ここで守っていること:
-   ① 写真もフォントも読み込まない。点をひとつずつ打って板を作る。
-   ② 小さな板（1マス＝1ドット）に描いてから、ぼかさずに整数倍で
-      拡大する。倍率を整数にしないと、点の大きさが揃わず汚れる。
-   ③ 木目と節の位置は乱数で決めない。開くたびに木目が変わる板は、
-      同じ家の同じ看板ではなくなる（美瑛の丘の星と同じ理由）。
-   ④ 光は時刻で変わる。夜は木も暗い。座った人には選ばせない。
-
-   字の大きさが、看板の大きさを決めている:
-   はじめ32マスで彫ってみたら「縁」の糸偏と彖が潰れて読めなかった。
-   画数の多い字が成り立つ最小が40マス。だから板はこの寸法になった。
-   飾りで大きくしたのではない。
-   ============================================================ */
+/* ------------------------------------------------------------
+   スマホの「この住所を、自分に送る」（2026-10-27）。
+   スマホの「共有」の窓を開く＝LINE・メール・AirDrop など、その人がいつも使う道で送れる。
+   共有の窓を持たない閲覧機では、住所を写しておく（あとで貼るだけ）。
+   🩸写すのは閲覧機に断られることがある（2026-10-27 手元で実際に断られた）。
+     断られたときに黙ると「押しても何も起きない」になるので、住所を長押しで写す道を言う。
+   ------------------------------------------------------------ */
 (function () {
-
-  /* ---- 彫る字の型。'#' が彫るところ。40×40 ---- */
-  var KANJI = {};
-
-  KANJI['縁'] = [
-  "........................................",
-  "........................................",
-  "........................................",
-  ".........#..............................",
-  ".........###............................",
-  ".........##......###############........",
-  "........###......###############........",
-  "........##...#................##........",
-  ".......###...###..............##........",
-  "....#####...###...#...........##........",
-  "....#####...###...##############........",
-  ".....###...###....##############........",
-  "......###..##.................##........",
-  "......###.###.................##........",
-  ".......#####....#####################...",
-  "........###..#..#####################...",
-  "........###..##.#####################...",
-  ".......###...##.......###..##...........",
-  ".......##....###.....###...##....##.....",
-  "....############...######..###...###....",
-  "....############.####..##...##..###.....",
-  "....###..###..#####....###..##.###......",
-  ".........###...........###..#####.......",
-  ".....##..###..#......######.####........",
-  ".....##..###.##....####..##..##.........",
-  ".....##..###.##.######...##..###........",
-  ".....##..###.##.####.....###..##........",
-  ".....##..###..##.#.....#####..###.......",
-  ".....##..###..##......######...###......",
-  "....###..###..##....####.###...####.....",
-  "....###..###..##..#####..###....####....",
-  "....##...###....######...###.....####...",
-  "....##...###...#####.....###......###...",
-  "...###...###....##.......###.......#....",
-  ".........###.........######.............",
-  ".........###.........######.............",
-  ".........###............................",
-  "........................................",
-  "........................................",
-  "........................................"];
-
-  KANJI['側'] = [
-  "........................................",
-  "........................................",
-  "........................................",
-  ".........#..............................",
-  ".........###....................###.....",
-  ".........###.###########........###.....",
-  ".........##..###########..###...###.....",
-  "........###..##......###..###...###.....",
-  "........###..##......###...##...###.....",
-  "........##...##......###...##...###.....",
-  ".......###...##......###...##...###.....",
-  ".......###...##......###...##...###.....",
-  "......###....###########...##...###.....",
-  "......###....###########...##...###.....",
-  ".....####....##......###...##...###.....",
-  ".....####....##......###...##...###.....",
-  "....#####....##......###...##...###.....",
-  "...###.##....##......###...##...###.....",
-  "..####.##....###########...##...###.....",
-  "...##..##....###########...##...###.....",
-  ".......##....###########...##...###.....",
-  ".......##....##......###...##...###.....",
-  ".......##....##......###...##...###.....",
-  ".......##....##......###...##...###.....",
-  ".......##....##......###...##...###.....",
-  ".......##....###########...##...###.....",
-  ".......##....###########..###...###.....",
-  ".......##....##.......##..###...###.....",
-  ".......##.......................###.....",
-  ".......##......##..###..........###.....",
-  ".......##.....###..###..........###.....",
-  ".......##....###....###.........###.....",
-  ".......##....###.....###........###.....",
-  ".......##...###.......###..########.....",
-  ".......##.####........###...#######.....",
-  ".......##..............#....######......",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................"];
-
-  KANJI['屋'] = [
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  ".......##...............................",
-  ".......###########################......",
-  ".......###########################......",
-  ".......###.....................###......",
-  ".......###.....................###......",
-  ".......###.....................###......",
-  ".......###########################......",
-  ".......###########################......",
-  ".......###..............................",
-  ".......###..............................",
-  ".......###..............................",
-  ".......############################.....",
-  ".......############################.....",
-  ".......###.......###.......#............",
-  ".......##........##......####...........",
-  ".......##.......###........###..........",
-  ".......##......###..........###.........",
-  ".......##..#####################........",
-  "......###..######################.......",
-  "......###..#####...............###......",
-  "......###...........###.................",
-  "......###...........###.................",
-  "......###...........###.................",
-  "......##...#######################......",
-  ".....###...#######################......",
-  ".....###............###.................",
-  "....####............###.................",
-  "....###.............###.................",
-  "....###.............###.................",
-  "...###..############################....",
-  "....##..############################....",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................"];
-
-  /* ---- 焼印のローマ字。5×7 の手打ち ---- */
-  var EIJI = {
-    'E':["#####","#....","#....","####.","#....","#....","#####"],
-    'N':["#...#","##..#","##..#","#.#.#","#..##","#..##","#...#"],
-    'G':[".###.","#...#","#....","#.###","#...#","#...#",".###."],
-    'A':["..#..",".#.#.","#...#","#####","#...#","#...#","#...#"],
-    'W':["#...#","#...#","#...#","#.#.#","#.#.#","##.##","#...#"],
-    'Y':["#...#","#...#",".#.#.","..#..","..#..","..#..","..#.."]
-  };
-
-  /* ---- 寸法（ドット） ---- */
-  var W = 160, H = 80;                          /* 板ぜんたいの枠 */
-  var BX0 = 9, BX1 = 151, BY0 = 18, BY1 = 76;   /* 木の四隅 */
-  var RX = 80, RY = 3;                          /* 吊り環の中心＝揺れの軸 */
-
-  var cv = document.getElementById('itaCv');
-  if (!cv || !cv.getContext) return;             /* 描けない機械では文字の見出しのまま */
-  var vg = cv.getContext('2d');
-  var off = document.createElement('canvas');
-  off.width = W; off.height = H;
-  var g = off.getContext('2d');
-
-  function px(x, y, w, h, c) {
-    g.fillStyle = c;
-    g.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
-  }
-  /* 同じ数を入れれば必ず同じ値。木目と節を固定するため（乱数は使わない） */
-  function tane(n) { var t = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return t - Math.floor(t); }
-
-  /* ---- 時間帯ごとの木の色 ---- */
-  var PAL = {
-    day:     { base:'#c89a67', lite:'#dcb283', dark:'#ac7d4c', grain:'#9a6c3d', grain2:'#82552c',
-               edge:'#7a4e29', bark:'#6a4222', carve:'#5b3a1d', deep:'#40280f', bevel:'#eccb9c',
-               rope:'#cbb68d', ropeD:'#9a8760', ring:'#736a5e', ringL:'#a79c8c' },
-    evening: { base:'#c08349', lite:'#dda05f', dark:'#a06334', grain:'#8b5427', grain2:'#73411c',
-               edge:'#6b3d1c', bark:'#5b3316', carve:'#4c2c12', deep:'#361d09', bevel:'#f0bb7e',
-               rope:'#c6a473', ropeD:'#94764a', ring:'#6e5f4d', ringL:'#a08a6d' },
-    night:   { base:'#6b543a', lite:'#7d6446', dark:'#57432c', grain:'#4a3826', grain2:'#3b2c1d',
-               edge:'#33261a', bark:'#291e13', carve:'#241a10', deep:'#171009', bevel:'#9c7c55',
-               rope:'#6f6249', ropeD:'#4e4433', ring:'#4a443b', ringL:'#6e6659' }
-  };
-  PAL.morning = PAL.day;
-
-  /* 板の上端・下端。耳を残した板なので、まっすぐではない。 */
-  function topAt(x) {
-    return BY0 + Math.round(Math.sin(x*0.11)*1.2 + Math.sin(x*0.37+1.7)*0.7 + tane(x)*0.6 + 1.4);
-  }
-  function botAt(x) {
-    return BY1 - Math.round(Math.sin(x*0.09+2.4)*1.3 + Math.sin(x*0.31+0.6)*0.6 + tane(x+99)*0.6 + 1.4);
-  }
-
-  function drawIta(p) {
-    var x, y;
-    for (x = BX0; x < BX1; x++) {
-      var y0 = topAt(x), y1 = botAt(x);
-      px(x, y0, 1, y1 - y0, p.base);
-      px(x, y0, 1, 3, p.lite);          /* 上のほうが光を受ける */
-      px(x, y1 - 3, 1, 3, p.dark);      /* 下は影になる＝板に厚みが出る */
-      px(x, y0, 1, 1, p.bark);          /* 耳。皮の残った縁 */
-      px(x, y1 - 1, 1, 1, p.bark);
+  var b = document.getElementById('jibun-ni-okuru');
+  var k = document.getElementById('okuru-kotoba');
+  if (!b || !k) return;
+  var url = 'https://gcad.engawaya.com/';
+  function iu(kotoba) { k.textContent = kotoba; }
+  function nagaoshi() { iu('上の住所を長押しすると、写せます'); }
+  b.addEventListener('click', function () {
+    if (navigator.share) {
+      /* 閉じた（送らなかった）ときも失敗として返ってくるので、何もしない */
+      navigator.share({ title: "K'Ad蔵人（パソコンで開く）", url: url }).catch(function () {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function () {
+        iu('住所を写しました。LINE やメールに貼って送ってください');
+      }, nagaoshi);
+    } else {
+      nagaoshi();
     }
-    /* 木口（左右の切り口）。縦に暗い帯を入れて、切った面だと分かるように */
-    for (var i = 0; i < 2; i++) {
-      for (y = topAt(BX0+i); y < botAt(BX0+i); y++)       px(BX0+i, y, 1, 1, i ? p.dark : p.edge);
-      for (y = topAt(BX1-1-i); y < botAt(BX1-1-i); y++)   px(BX1-1-i, y, 1, 1, i ? p.dark : p.edge);
-    }
-  }
-
-  /* ---- 木目。板の長手に流れる ---- */
-  function drawMokume(p) {
-    var lines = [
-      {y:0.18, a:1.5, f:0.055, ph:0.4, c:'grain'},
-      {y:0.32, a:1.1, f:0.071, ph:2.1, c:'grain2'},
-      {y:0.46, a:1.8, f:0.048, ph:4.0, c:'grain'},
-      {y:0.61, a:1.2, f:0.083, ph:1.2, c:'grain'},
-      {y:0.74, a:1.6, f:0.061, ph:3.3, c:'grain2'},
-      {y:0.88, a:1.0, f:0.093, ph:0.9, c:'grain'}
-    ];
-    for (var i = 0; i < lines.length; i++) {
-      var L = lines[i];
-      for (var x = BX0 + 2; x < BX1 - 2; x++) {
-        var y0 = topAt(x), y1 = botAt(x);
-        if (tane(x*3 + i*17) < 0.16) continue;   /* ときどき切る。切れ目のない線は木目に見えない */
-        px(x, y0 + (y1-y0)*L.y + Math.sin(x*L.f + L.ph)*L.a, 1, 1, p[L.c]);
-      }
-    }
-    fushi(p, 28, 0.84, 3);      /* 節（ふし）。枝のあとが輪になって残る */
-    fushi(p, 138, 0.26, 2);
-  }
-  function fushi(p, cx, ry, r) {
-    var y0 = topAt(cx), y1 = botAt(cx);
-    var cy = Math.round(y0 + (y1-y0)*ry);
-    for (var y = -r-1; y <= r+1; y++) for (var x = -r-1; x <= r+1; x++) {
-      var d = Math.sqrt(x*x + y*y*2.2);          /* 節は横に長い楕円 */
-      if (d > r + 1.1) continue;
-      px(cx+x, cy+y, 1, 1, (d < r-0.9) ? p.grain2 : p.grain);
-    }
-    px(cx, cy, 1, 1, p.deep);
-  }
-
-  /* ---- 字を彫る --------------------------------------------
-     彫った字は「下がって」見えないと彫りに見えない。
-     字の点を暗く塗り、その右下の外側だけを明るくする。光が左上から
-     来ていて、彫り跡の右下の縁だけが光を受ける——その一段だけで、
-     字が板に食い込んで見える。
-     ---------------------------------------------------------- */
-  function drawHori(p) {
-    var mask = {};
-    function put(x, y) { mask[x + ',' + y] = 1; }
-    function has(x, y) { return mask[x + ',' + y] === 1; }
-
-    var chars = ['縁','側','屋'], gx = 16, gy = 22, gw = 40, gap = 4;
-    for (var i = 0; i < chars.length; i++) {
-      var rows = KANJI[chars[i]];
-      for (var y = 0; y < rows.length; y++)
-        for (var x = 0; x < rows[y].length; x++)
-          if (rows[y].charAt(x) === '#') put(gx + i*(gw+gap) + x, gy + y);
-    }
-    var word = 'ENGAWAYA', lw = 5, lgap = 3;
-    var total = word.length*lw + (word.length-1)*lgap;
-    var lx = Math.round((BX0+BX1)/2 - total/2), ly = 63;
-    for (var k = 0; k < word.length; k++) {
-      var f = EIJI[word.charAt(k)];
-      for (var yy = 0; yy < 7; yy++)
-        for (var xx = 0; xx < 5; xx++)
-          if (f[yy].charAt(xx) === '#') put(lx + k*(lw+lgap) + xx, ly + yy);
-    }
-
-    var key, q, X, Y;
-    for (key in mask) {                    /* 先に光の縁（右下） */
-      q = key.split(','); X = +q[0]; Y = +q[1];
-      if (!has(X+1, Y+1)) px(X+1, Y+1, 1, 1, p.bevel);
-      if (!has(X+1, Y) && !has(X+1, Y+1)) px(X+1, Y, 1, 1, p.bevel);
-      if (!has(X, Y+1) && !has(X+1, Y+1)) px(X, Y+1, 1, 1, p.bevel);
-    }
-    for (key in mask) {                    /* そのうえに彫り跡を落とす */
-      q = key.split(','); X = +q[0]; Y = +q[1];
-      px(X, Y, 1, 1, (!has(X-1,Y) || !has(X,Y-1)) ? p.deep : p.carve);
-    }
-  }
-
-  /* ---- 吊り具。麻縄を二本、環ひとつに集めて吊る ----
-     こう吊ると、看板は環を軸にした振り子になる。二本を平行に
-     垂らすと（多くの絵がそう描いてあるが）振り子にならない。 */
-  function drawTsuri(p) {
-    var ax = [24, 136], ay = 19;
-    for (var s = 0; s < 2; s++) {
-      var x0 = RX, y0 = RY + 3, x1 = ax[s], y1 = ay;
-      var n = Math.max(Math.abs(x1-x0), Math.abs(y1-y0));
-      for (var t = 0; t <= n; t++) {
-        var x = Math.round(x0 + (x1-x0)*t/n), y = Math.round(y0 + (y1-y0)*t/n);
-        px(x, y,   1, 1, (t % 3 === 0) ? p.ropeD : p.rope);   /* 縄の撚り（より） */
-        px(x, y+1, 1, 1, p.ropeD);
-      }
-    }
-    var r = 3;                                                 /* 環。金物なので木より冷たい色 */
-    for (var yy = -r; yy <= r; yy++) for (var xx = -r; xx <= r; xx++) {
-      var d = Math.sqrt(xx*xx + yy*yy);
-      if (d <= r + 0.4 && d >= r - 1.2) px(RX+xx, RY+yy, 1, 1, (xx < 0 && yy < 0) ? p.ringL : p.ring);
-    }
-  }
-
-  function draw() {
-    var p = PAL[document.documentElement.getAttribute('data-time')] || PAL.day;
-    g.clearRect(0, 0, W, H);
-    drawTsuri(p);
-    drawIta(p);
-    drawMokume(p);
-    drawHori(p);
-    vg.imageSmoothingEnabled = false;
-    vg.mozImageSmoothingEnabled = false;
-    vg.webkitImageSmoothingEnabled = false;
-    vg.msImageSmoothingEnabled = false;
-    vg.drawImage(off, 0, 0, W, H, 0, 0, cv.width, cv.height);
-  }
-
-  /* 拡大率は整数で決める。小数倍にすると点の大きさが揃わず、絵が汚れる。 */
-  function resize() {
-    var vw = document.documentElement.clientWidth || 360;
-    var avail = Math.min(vw - 48, 720 - 48);       /* .wrap の左右の余白ぶんを引く */
-    var S = Math.max(1, Math.min(5, Math.floor(avail / W)));
-    cv.width = W * S; cv.height = H * S;
-    cv.style.width = (W * S) + 'px';
-    cv.style.height = (H * S) + 'px';
-    draw();
-  }
-
-  /* 揺らす。
-     揺れ終わったら印（yureru）を自分で外しておく。そうしておけば、
-     次に押されたときは必ず最初から揺れる。
-     揺れている最中にもう一度押された時のために、いったん外して
-     「今の姿を確定させて（offsetWidth を読む）」から掛け直す。
-     それでも掛け直らない機械はあるが、その時は揺れが続くだけで、
-     押しても何も起きないようには見えない。 */
-  var btn = document.getElementById('itaBtn');
-  function yurasu() {
-    btn.classList.remove('yureru');
-    void btn.offsetWidth;
-    btn.classList.add('yureru');
-  }
-  btn.addEventListener('click', yurasu);
-  btn.addEventListener('animationend', function () { btn.classList.remove('yureru'); });
-
-  var rt = null;
-  window.addEventListener('resize', function () {
-    clearTimeout(rt); rt = setTimeout(resize, 150);   /* 幅を動かしている間は描き直さない */
   });
+})();
 
-  resize();
-  document.documentElement.className += ' ita-ok';   /* ここまで来たら板を出す */
-  setTimeout(yurasu, 420);                           /* 着いた人に、一度だけ会釈する */
+/* ------------------------------------------------------------
+   最近の日記（2026-10-27）。開発日記の上から三件を、開くたびに読んでくる。
+   【なぜ書き写さないか】写すと、日記を書くたびにここも直す約束が一つ増える。
+     人の手で守る約束は、必ずいつか破れる（窯の札・releases/tag の固定で実際に踏んだ）。
+     読んでくれば、日記を書いた瞬間にここも新しくなる＝正は日記の一か所のまま。
+   【読めなかったら】何も出さない（箱は hidden のまま）。すぐ下の「開発日記をすべて読む」の戸は残る。
+     手元でファイルを直接開いたとき（file://）や、回線が切れているときがそう。
+   【読み方】日記の <article class="hi"> を上から三つ。板書の中の見本（雛形）は
+     注釈（<!-- -->）の中にあるので、DOMParser には記事として数えられない。
+   ⚠️日記の札の名（hi-date・hi-dougu・hi-jotai）を変える日は、ここも直すこと。
+   ------------------------------------------------------------ */
+(function () {
+  var ul = document.getElementById('nikkiSaikin');
+  if (!ul || !window.fetch || !window.DOMParser) return;
+  fetch('nikki/', { cache: 'no-cache' }).then(function (r) {
+    if (!r.ok) throw new Error('nikki ' + r.status);
+    return r.text();
+  }).then(function (html) {
+    var doc  = new DOMParser().parseFromString(html, 'text/html');
+    var kiji = doc.querySelectorAll('article.hi');
+    var n = 0;
+    for (var i = 0; i < kiji.length && n < 3; i++) {
+      var a = kiji[i];
+      var hi = a.querySelector('.hi-date'), dougu = a.querySelector('.hi-dougu'),
+          jotai = a.querySelector('.hi-jotai'), h2 = a.querySelector('h2');
+      if (!hi || !h2) continue;
+      var li = document.createElement('li');
+      var s  = document.createElement('span');
+      s.className = 'hi';
+      s.textContent = hi.textContent.trim() + (dougu ? '　' + dougu.textContent.trim() : '');
+      var to = document.createElement('a');
+      to.href = 'nikki/' + (a.id ? '#' + a.id : '');
+      to.textContent = h2.textContent.trim();
+      if (jotai) {
+        var f = document.createElement('span');
+        f.className = 'fuda';
+        f.textContent = jotai.textContent.trim();
+        to.appendChild(f);
+      }
+      li.appendChild(s);
+      li.appendChild(to);
+      ul.appendChild(li);
+      n++;
+    }
+    if (n) ul.hidden = false;
+  }).catch(function () { /* 読めなかった日は、戸だけ残す */ });
 })();
 
 /* ------------------------------------------------------------
@@ -3465,6 +2426,7 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
     });
   });
 })();
+
 
 /* ------------------------------------------------------------
    夜の虫の声（2026-10-17 施主「秋といえば、夜に鳴くコオロギなんて心休まりますね〜」）
@@ -3569,6 +2531,7 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
   });
 })();
 
+
 /* ------------------------------------------------------------
    縁側の二人の会話（2026-09-03 施主のご依頼
    「botスタイルでいいです。会話を吹き出しで」）
@@ -3636,6 +2599,7 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
   /* 開いてすぐ喋り出さない。景色が描けて、目が落ち着いてから */
   setTimeout(susumu, 2400);
 })();
+
 
 /* ============================================================
    縁側の外の景色 ── 美瑛の丘
@@ -4244,7 +3208,21 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
   };
 })();
 
+
 /* ============================================================
+   空の窓（2026-10-27 建て替え。博喜さんのご依頼「ジーンズにTシャツから、スーツへ」）
+
+   それまで、この空は看板（吊ってある一枚板）の背後に掛かっていた。
+   建て替えで看板を表紙から下ろし、空は玄関の一行の隣の「窓」へ移した。
+   描き方（日と月の渡り・月齢・雲・鳥の8の字・夜の星・色かけ）は、一つも変えていない。
+   変えたのは、大きさの決め方と、下の端だけ。
+     ・大きさ：看板の実寸からではなく、窓の実寸から決める（resize）。
+     ・日と月の高さ：板の上の空き（UE）が無くなったので、空の高さ（H）から決める（watari・ookisa）。
+     ・下の端：本文の地へ溶かす（tokeru）のをやめ、美瑛の丘を遠くに置いた（drawOka）。
+       窓は額縁で区切られた一枚の絵なので、地へ溶かすと縁が曖昧になる。
+       丘の色は景色の棚（PAL の hills）から借りる＝下の縁側の丘と、季節がいつも揃う。
+   ---- ここから下は、看板の背後にあった頃の板書（消さない）----
+
    看板の背後の空（2026-08-20 施主のご依頼）
 
    施主の言葉：
@@ -4276,16 +3254,15 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
 (function () {
   var SORA = window.ENGAWAYA_SORA;
   var cv   = document.getElementById('soraCv');
-  var ita  = document.getElementById('itaCv');
-  var ba   = document.querySelector('.kanban-ita');
-  if (!SORA || !cv || !cv.getContext || !ita || !ba) return;   /* 空が無くても看板は立つ */
+  var mado = document.getElementById('mado');
+  if (!SORA || !cv || !cv.getContext || !mado) return;   /* 空が描けなくても、窓は地の色で残る */
 
   var vg  = cv.getContext('2d');
   var off = document.createElement('canvas');
   var g   = off.getContext('2d');
 
   var W = 160;            /* 空の横幅（ドット）。画面幅から毎回決め直す */
-  var UE = 18;            /* 板の上に空くぶん（ドット）。ここを鳥が飛ぶ */
+  var UE = 18;            /* 板の上に空くぶん（ドット）。看板の頃の寸法。窓へ移してからは使っていない（板書の名残として残す） */
   var H = 98;             /* 空の高さ（ドット）。看板の実寸から決め直す */
   var S = 2;              /* 拡大率。下の美瑛の丘と同じ式で決める＝粒が揃う */
 
@@ -4346,17 +3323,20 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
      ⚠️端（昇りぎわ・沈みぎわ）だけは H の割合で下ろす。そこは板の左右の外側なので、
        深く下ろしても板に隠れない。下ろしすぎないこと——空の下から45%は背景へ
        溶かす場所で、そこまで行くと溶けかけの半端な丸になる。 */
+  /* 2026-10-27 窓へ移したので、高さは空の高さ（H）から決め直した。
+     看板の輪をよける理由（下の UE の話）は、窓には無い。
+     昇りぎわ・沈みぎわは丘の少し上（H の 52%）、真ん中は空の上から 16%。 */
   function watari(u) {
     var takasa = Math.sin(Math.PI * u);                 /* 端で0・真ん中で1 */
-    var hashi  = H * 0.26;                              /* 昇りぎわ・沈みぎわの高さ */
-    var itadaki = UE * 0.5;                             /* 真ん中でいちばん高いところ */
+    var hashi  = H * 0.52;                              /* 昇りぎわ・沈みぎわの高さ */
+    var itadaki = H * 0.16;                             /* 真ん中でいちばん高いところ */
     return [W * (0.06 + 0.88 * u), hashi - (hashi - itadaki) * takasa];
   }
 
   /* 丸の半径。これも UE から決める（上と同じ理由。輪をよけるのは寸法の話）。
      ⚠️鳥（横7ドット）より小さくしない。空に浮かんだ点にしか見えなくなる。
      ⚠️UE の四割より大きくしない。板の上の空きからはみ出して、輪に触る。 */
-  function ookisa() { return Math.max(5, Math.round(UE * 0.39)); }
+  function ookisa() { return Math.max(5, Math.round(H * 0.07)); }   /* 窓へ移して H から（2026-10-27） */
 
   /* 丸を、点で描く。canvas の arc は使わない——縁がなめらかに繋がって、
      点で描いた空から浮くため（憲法②の肌ざわり）。 */
@@ -4551,6 +3531,35 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
     }
   }
 
+  /* ---- 遠くの丘（2026-10-27 窓へ移したときに足した）----
+     窓の下の端に、美瑛の丘を二列だけ遠く置く。
+     ① 色は景色の棚（PAL の hills）から借りる。自分で持たない（上の①と同じ理由）。
+        前の列＝奥の丘（hills[0]）、手前の列＝手前の丘（hills[2]）。
+        ⚠️三列とも置くと、下の縁側の景色と同じ絵が二枚ある家になる。窓は「遠くに見える」だけ。
+     ② 稜線は正弦波を二つ足すだけ（景色の丘と同じ作り方）。乱数は使わない。
+     ③ 畑の帯を二本と、光が乗る稜線を一段。これだけで美瑛のパッチワークに見える。
+     ⚠️色かけ（TINT）より前に描く＝夜は丘も一緒に暮れる。 */
+  var OKA = [
+    { base: 0.72, a1: 0.040, f1: 0.031, p1: 0.4, a2: 0.016, f2: 0.083, p2: 1.9, iro: 0 },
+    { base: 0.85, a1: 0.050, f1: 0.022, p1: 2.1, a2: 0.020, f2: 0.061, p2: 0.6, iro: 2 }
+  ];
+  function drawOka(p) {
+    if (!p.hills) return;
+    for (var i = 0; i < OKA.length; i++) {
+      var o = OKA[i], c = p.hills[o.iro];
+      var lip = SORA.mix(SORA.hex(c[0]), [255, 255, 255], 0.30);
+      for (var x = 0; x < W; x++) {
+        var y = Math.round(H * (o.base
+                - o.a1 * Math.sin(x * o.f1 + o.p1)
+                - o.a2 * Math.sin(x * o.f2 + o.p2)));
+        px(x, y, 1, H - y, c[0]);
+        px(x, y + 3, 1, 3, c[1]);     /* 畑の帯。稜線に沿って曲がる */
+        px(x, y + 9, 1, 3, c[2]);
+        px(x, y, 1, 1, lip);          /* 光が乗る稜線 */
+      }
+    }
+  }
+
   var moving = !(window.matchMedia &&
                  window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
@@ -4566,9 +3575,11 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
        ⚠️色かけ（TINT）より前に描く＝鳥も一緒に暮れる。空だけ暮れて鳥が
        昼のままだと、貼り付けた絵に見える。 */
     drawBirds(t, (time === 'night') ? '#98a7c8' : '#3a4453');
+    drawOka(p);        /* 鳥より手前＝低く下りた鳥は丘の向こうへ回る（看板の裏へ回り込んだのと同じ奥行き） */
     drawTint(time);
     if (time === 'night') drawTsuki();   /* 月は、色かけの後＝夜に沈まない（星と同じ） */
-    tokeru();          /* いちばん最後。時刻の色かけが済んだ空を、背景へ溶かす */
+    /* tokeru()（背景へ溶かす）は、窓へ移して呼ばなくなった（2026-10-27）。
+       窓は額縁で区切った一枚の絵なので、溶かすと縁がにじむ。関数は戻したくなった日のために残す。 */
 
     vg.imageSmoothingEnabled = false;
     vg.mozImageSmoothingEnabled = false;
@@ -4590,72 +3601,41 @@ html[data-time="night"] .nokisaki .fuda { color: #f4ead9; background-color: #6b5
      ・縦は看板の実寸から。板の上に UE ドットぶんの空を残して吊る。
      ⚠️看板がまだ描かれていない瞬間に測ると、粒も高さも嘘になる。
        その時は何もせずに帰り、次の呼び出しを待つ。 */
+  /* 2026-10-27 窓へ移した。大きさは窓の実寸から決める。
+     ・粒（S）は**下の美瑛の丘とまったく同じ式**のまま。上と下で粒が違うと、同じ空に見えない。
+     ・W と H は「窓の幅・高さ ÷ 粒」を切り上げ。端の一粒ぶんは額縁の外へはみ出して隠れる
+       （canvas を窓に合わせて縮めると、小数倍になって点が濁る。はみ出させるほうを選ぶ）。
+     ⚠️窓の高さは CSS の aspect-ratio が決める。まだ組み上がっていない瞬間に測ると 0 なので、
+       そのときは何もせずに帰り、次の呼び出しを待つ。 */
   function resize() {
     var vw = document.documentElement.clientWidth || 360;
-    var itaH = ita.height ? (ita.height / (ita.width / 160)) : 0;   /* 看板の高さ（ドット） */
-    if (!ita.width || !itaH) return;              /* 看板がまだ描かれていない */
+    var mw = mado.clientWidth, mh = mado.clientHeight;
+    if (!mw || !mh) return;                       /* 窓がまだ組み上がっていない */
 
     S = (vw >= 900) ? 3 : 2;                      /* ← 美瑛の丘と同じ式 */
-    W = Math.ceil(vw / S);
-    /* 空の高さ＝看板の高さ（px）＋上の空。看板の拡大率は空と違うことがあるので、
-       ドットではなく px で足してから、空の粒に直す。 */
-    var takasa = ita.height + UE * S;
-    H = Math.ceil(takasa / S);
+    W = Math.ceil(mw / S);
+    H = Math.ceil(mh / S);
 
     off.width = W; off.height = H;
     cv.width = W * S; cv.height = H * S;
     cv.style.width  = (W * S) + 'px';
     cv.style.height = (H * S) + 'px';
-    /* 板を、空の上端から UE ドットぶん下げて吊る＝上に空が空く */
-    ba.style.marginTop = (UE * S) + 'px';
     draw(moving ? ((((window.performance && performance.now) ? performance.now() : Date.now()) - t0) / 1000) : 0);
-    if (document.documentElement.className.indexOf('sora-ok') < 0) {
-      document.documentElement.className += ' sora-ok';
-    }
   }
 
   /* 追いかけ方は二本立て（同じ結果に至る道を二本持つ・十四期四十九号の作法）。
-     ⚠️window の resize だけに頼らない——看板は 150ms 待ってから描き直すので、
-       こちらが先に測ると古い寸法を掴む。
-     ⚠️ResizeObserver だけにも頼らない——最初の一回が、看板がまだ小さいうちに
-       走ることがある（実際、そうなって空の粒が看板と食い違った）。
-     だから両方仕掛けて、さらに少し遅れてもう一度測る。何度測っても
-     答えは同じなので、多く測って困ることはない。 */
-  if (window.ResizeObserver) { new ResizeObserver(resize).observe(ita); }
+     窓の大きさが変わったら（向きを変えた・幅を変えた）、描き直す。 */
+  if (window.ResizeObserver) { new ResizeObserver(resize).observe(mado); }
   var rt = null;
   window.addEventListener('resize', function () {
-    clearTimeout(rt); rt = setTimeout(resize, 260);   /* 看板（150ms）より後に */
+    clearTimeout(rt); rt = setTimeout(resize, 160);
   });
-  setTimeout(resize, 300);                            /* 看板が落ち着いたころに、もう一度 */
 
   resize();
   if (moving) requestAnimationFrame(frame);
 })();
 
-/* ------------------------------------------------------------
-   連絡先を、開いた瞬間に組み立てる。
-
-   なぜ HTML に生で書かないか：公開ページに書かれたメールアドレスは、
-   迷惑メール業者の巡回ロボットが拾って歩く。文字を分けて持っておき、
-   ここで @ に組み直せば、人には押せて機械には読みにくい。
-   完全には防げないので、増えてきたら受け側（Gmail）で振り分ける。
-
-   件名を入れておくのは、届いたときに何の話か一目で分かるように。
-   ------------------------------------------------------------ */
-/* 窓口は info@engawaya.com（K'Ad蔵人の免責事項に書いてある住所と同じ）。
-   窓口を二つ作ると、片方が忘れられて「返事が来ない店」になる。一つに揃える。 */
-(function () {
-  var na = 'info', ie = 'engawaya.com';
-  var list = document.querySelectorAll('.renraku');
-  for (var k = 0; k < list.length; k++) {
-    var a = document.createElement('a');
-    a.href = 'mailto:' + na + '@' + ie
-           + '?subject=' + encodeURIComponent('縁側屋の道具のこと');
-    a.textContent = na + '@' + ie;
-    list[k].textContent = '';
-    list[k].appendChild(a);
-  }
-})();
+/* 連絡先を開いた瞬間に組み立てる仕掛けは、どのページでも使うので kihon.js へ移した（2026-10-27）。 */
 </script>
 
 </body>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--
+    遊びの部屋（asobi/）。2026-10-27 建てた。
+
+    【なぜ建てたか】
+    表紙を「スーツ」に建て替えた日（博喜さんのご依頼「ジーンズにTシャツから、スーツへ」）、
+    表紙は「何を作っているか」に絞った。遊びの間（ガチ空戦・ゴテゴテ空戦・MIDI工房）は、
+    仕事の道具の並びに混ぜると「何の店か」がぼやける（2026-09-07 に道具を二群に分けたのと同じ理由）。
+    捨てはしない——一部屋にまとめて、表紙の「そのほかに作ったもの」から一本の戸で通す。
+
+    【見た目】家じゅうで一枚の kihon.css（正は DESIGN.md「1-0」）。この部屋の <style> に色を書かない。
+    【戸の板書】下の各戸の板書は、表紙の遊びの間にあったものをそのまま移した（消さない）。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>遊びの部屋 — 縁側屋</title>
+<meta name="description" content="縁側屋の遊びの部屋。F-22 と Su-57 の本気のドッグファイト「ガチ空戦」、飾りが取れていく「ゴテゴテ空戦」、名作のコード進行から新しいメロディを作る「MIDI工房」。どれも無料で、ブラウザで開けばすぐ遊べます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../kihon.css">
+<script src="../kihon.js"></script>
+</head>
+<body>
+
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../#tsukutte">作っているもの</a>
+        <a href="../#kiroku">開発の記録</a>
+        <a href="../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="ie-in heya-atama" aria-labelledby="heya-na">
+  <p class="kaeri"><a href="../">← 縁側屋の表紙へ</a></p>
+  <h1 id="heya-na">遊びの部屋</h1>
+  <p class="lead">仕事の道具のほかに、作って遊んでいるものです。どれも無料で、ブラウザで開けば、すぐ遊べます。</p>
+</section>
+
+<section class="sec" aria-label="遊び">
+  <div class="ie-in">
+  <!-- ガチ空戦への戸（2026-10-04 敷いた）。
+       博喜さんと蔵人が一日かけて少しずつ作った、本気のドッグファイト（正はデスクトップの F-Dogfight）。
+       施主の裁定「ゴテゴテ空戦の上に置きましょう」「ゴテゴテは子供用で、父さんはガチ空戦」。
+       ゴテゴテ空戦と同じ座布団の組に並べた（同じ遊びの兄弟なので、別の組にすると探しにくい）。
+       ⚠️スマホの指の操作にはまだ対応していないので、札にそう書いた。対応した日はここも直す。 -->
+    <article class="row row-hajime">
+      <figure class="row-e">
+        <img src="../gachi/gamen.jpg" width="720" height="320" loading="lazy"
+             alt="青い空で、灰色のステルス戦闘機が高い G で旋回し、翼の端から白い渦の筋を引いている場面">
+      </figure>
+      <div>
+        <p class="tag">ブラウザのゲーム</p>
+        <h2 class="sec-h">ガチ空戦</h2>
+        <p class="desc">F-22 と Su-57 の本気のドッグファイト。本物に近い飛び方、ミサイルとフレア、引きすぎると目の前が暗くなる G。ゴテゴテ空戦の、大人版です。</p>
+        <dl class="spec">
+          <dt>遊び方</dt><dd>パソコンのキーボード・PS などのコントローラーで（スマホは未対応）</dd>
+          <dt>料金</dt><dd>無料。登録もインストールも要りません</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn btn-p" href="../gachi/">ガチ空戦で遊ぶ</a>
+        </div>
+      </div>
+    </article>
+
+  <!-- ゴテゴテ空戦への戸（2026-10-04 敷いた）。
+       博喜さんが蔵人に「遊びましょう」と声をかけ、「ゴテゴテの戦闘機のドッグファイト」と
+       言って、その席で作ったもの。施主の言葉「TOPのどこかに置いてOK」「画像付きで」。
+
+       はじめは「軒下に、ほかにも」の最後（Ochi-Gee・メーター引きの並び）に敷いたが、
+       公開した日に博喜さんご本人が「入り口が見つからない」。施主の裁定
+       「この開発日記の下で良い」で、同じ日のうちにここへ移した。
+       開発日記を読んで「何ができたのか」を知った人が、そのまま遊びに行ける位置。
+       ⚠️戸は一枚だけ。軒下の座布団は消した（同じ行き先の戸を二枚置かない）。
+
+       下の遊び場たちのような小さな一行にしなかったのは、言葉だけでは
+       「ゴテゴテ」が伝わらないから。絵は gotegote/gamen.jpg。
+       奥の部屋の遊び場（asobiba/）に入れないのは、あちらは「見えにくい方が
+       最初のお客さん」の部屋が並んでいて、速く動く空中戦は毛色が違うため。
+       ⚠️札に「スマホ・コントローラーでも」と書いてあるので、操作を外す日はここも直す。 -->
+    <article class="row">
+      <figure class="row-e">
+        <img src="../gotegote/gamen.jpg" width="720" height="320" loading="lazy"
+             alt="夕焼けの空を、王冠やリボンや旗で飾り立てた桃色の戦闘機が飛んでいる場面">
+      </figure>
+      <div>
+        <p class="tag">ブラウザのゲーム</p>
+        <h2 class="sec-h">ゴテゴテ空戦</h2>
+        <p class="desc">撃たれるたびに、飾りが一つずつ取れていく空中戦。丸裸で撃たれたら墜落です。</p>
+        <dl class="spec">
+          <dt>遊び方</dt><dd>キーボード・スマホ・PS などのコントローラーで</dd>
+          <dt>料金</dt><dd>無料。登録もインストールも要りません</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn btn-p" href="../gotegote/">ゴテゴテ空戦で遊ぶ</a>
+        </div>
+      </div>
+    </article>
+
+  <!-- MIDI工房への戸（2026-10-04 敷いた）。
+       博喜さんと蔵人の雑談「名作のコード進行に著作権は無い。ここが味噌」から、その晩に作った道具（正はデスクトップの MIDI-Kobo）。
+       施主のご依頼「縁側屋に部屋を作って欲しい。開発中でも構わない」。
+       遊びの間の空戦二枚の下に並べた。道具ではあるが、用があって開くページ（K'Ad・メーター引き）とは違い、
+       触って遊ぶもの。次に作るレトロ 2D ゲームの BGM の工房でもあるので、遊びの間に置いた。
+       外した案：軒下（Ochi-Gee・メーター引き）に置く → 仕事の道具の並びで、毛色が違う。 -->
+    <article class="row">
+      <figure class="row-e">
+        <img src="../kobo/gamen.jpg" width="720" height="320" loading="lazy"
+             alt="点の字の看板「MIDI工房」の下に、Am・F・G・E のコードの上で、水色の音符が階段のように並んだピアノロール">
+      </figure>
+      <div>
+        <p class="tag">ブラウザの道具（作っている途中です）</p>
+        <h2 class="sec-h">MIDI工房</h2>
+        <p class="desc">名作の MIDI から、コード進行だけを借りて、新しいメロディを作ります。押すたびに別のメロディ。ファミコンの音と歪んだギターの、ゲームロックで鳴ります。音感がなくても、聴いて選ぶだけです。</p>
+        <dl class="spec">
+          <dt>書き出し</dt><dd>MIDI で書き出せます（GarageBand などで開けます）</dd>
+          <dt>料金</dt><dd>無料。登録もインストールも要りません</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn btn-p" href="../kobo/">MIDI工房を開く</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ほかの遊び（2026-10-27）。表紙の「奥の部屋」にあった遊び場と、二つの入り口、Ochi-Gee。
+         ⚠️遊び場・バリアフリー・音の縁側は「見えにくい方が最初のお客さん」の部屋。
+           速く動く空中戦とは毛色が違うので、絵の並びには入れず、一行ずつの戸にした
+           （前の表紙で、遊び場を遊びの間に入れなかったのと同じ理由）。 -->
+    <div class="hoka">
+      <h3>ほかの遊び</h3>
+      <ul>
+        <li><a href="../asobiba/"><b>遊び場</b><span>すうじならべ・星つなぎ・スイカわり・れんがくずし。</span></a></li>
+        <li><a href="../ochigee/"><b>Ochi-Gee 星のおちもの</b><span>iPhone の落ちものパズル。広告なし・通信なし。</span></a></li>
+        <li><a href="../indexplayland.html"><b>縁側屋バリアフリー</b><span>大きな字と、大きな絵で遊べる入り口。</span></a></li>
+        <li><a href="../oto/"><b>音の縁側</b><span>目をつかわなくても使える入り口。</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- 足元。表紙の足元と同じ中身（免責の四つの趣旨・連絡先・作った者の名）。
+     ⚠️文言を変えるときは、表紙（index.html）と、この形の足元を持つ部屋（asobi/・osewa/）を揃えること。 -->
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../naze/">なぜ、こう作ったか</a></li>
+          <li><a href="../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+</body>
+</html>

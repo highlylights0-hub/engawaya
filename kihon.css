@@ -1,0 +1,299 @@
+/* ============================================================
+   kihon.css — 縁側屋の、家じゅうで一枚の見た目（2026-10-27〜）
+
+   ⚠️これは生成物です。正は DESIGN.md の「1-0. 生成りの表」と「4. 字」。
+     色や寸法を変えたくなったら、先に DESIGN.md を直してから、ここへ写す。
+     直したら python3 DESIGN検算.py を通す（九）がここを見張っている）。
+
+   【なぜ一枚にしたか】
+     憲法①（外から何も読み込まない）があったころ、この家は共通の CSS を持てず、
+     棟が増えるたびに色の表がまるごと写された。写しが増えれば必ず食い違う——
+     素の青いリンクが六つの棟に三十四日以上残っていたのが、その証拠（DESIGN.md）。
+     2026-10-04 に①が撤廃されたので、2026-10-27 の建て替え（博喜さんのご依頼
+     「ジーンズにTシャツから、スーツへ」）を機に、一枚にした。
+     写しが無ければ、食い違いようがない。
+
+   【なぜ「生成りのスーツ」か】
+     下絵を二案（紺のスーツ／生成りのスーツ）描いて、博喜さんに選んでいただいた。
+     生成りと焼き色は、縁側屋がはじめから持っていた色。それを少し落ち着かせ、
+     見出しを明朝にして、背筋を伸ばした。「はしゃぎ」から「真摯」へ。
+
+   【明るい顔と暗い顔】
+     閲覧機の設定（ダークモード）に合わせる。上の行のボタンで選び直せる
+     （kihon.js が <html data-iro="akarui|kurai"> を立てる）。
+     ⚠️時刻では変えない。時刻で変わるのは、空の窓と縁側の場面だけ。
+
+   【並べ方の約束】
+     ⚠️暗い顔の二つの塊は、このファイルのいちばん最後に置くこと。
+       同じ強さの規則は、あとに書いたほうが勝つ。暗い顔を先に書くと、
+       あとの明るい側の指定に塊ごと上書きされて死ぬ（2026-09-07、手引き34枚で実際に起きた）。
+   ============================================================ */
+
+/* ---- 明るい顔（素） ---- */
+:root {
+  --ji:         #f6f2ea;   /* 地（生成り） */
+  --ji2:        #efe8dc;   /* 一段沈んだ地（押したとき・仮置きの面） */
+  --sumi:       #26221e;   /* 本文の字（墨） */
+  --usu:        #5e554b;   /* 補足の字 */
+  --sen:        #ddd3c4;   /* 罫 */
+  --sen2:       #cfc3b0;   /* 枠（絵や窓のふち） */
+  --futo:       #26221e;   /* 太い罫（節の頭）・押す物のふち */
+  --sashi:      #8f5528;   /* 差し色（焼き色）・リンク */
+  --sashi2:     #6f4019;   /* 差し色を押したとき */
+  --sashi-moji: #ffffff;   /* 差し色の上の字 */
+  --ten:        #a99a84;   /* 点線・札のふち */
+  --ft:         #26221e;   /* 足元の地 */
+  --ft-moji:    #ede6da;   /* 足元の字 */
+  --ft-usu:     #c2b8a8;   /* 足元の補足 */
+  --ft-sen:     #45403a;   /* 足元の罫 */
+
+  /* 字。見出しは明朝（名刺や便箋の字）、本文はゴシック。
+     Google Fonts から借りる。届かない日は、後ろに並べた機械の字で出る。 */
+  --min:  "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  --goth: "Zen Kaku Gothic New", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+          "Yu Gothic Medium", "Yu Gothic", Meiryo, sans-serif;
+  color-scheme: light;
+}
+
+/* ---- 土台 ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ji);
+  color: var(--sumi);
+  font-family: var(--goth);
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, canvas { max-width: 100%; }
+
+/* リンクの総括。「どこそこの a」で数え上げると、必ず数え落とす（DESIGN.md 3.）。
+   下線は残す——色だけで「押せる」を伝えない（色の見え方は人によって違う）。 */
+a { color: var(--sashi); text-underline-offset: 3px; }
+a:hover { color: var(--sashi2); }
+
+/* 焦点の枠。キーボードで来た人が、いまどこにいるか分かるように。消さない。 */
+:focus-visible { outline: 3px solid var(--sashi); outline-offset: 2px; }
+
+.min { font-family: var(--min); }
+
+/* 横幅。読みやすい長さで止める。 */
+.ie-in { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
+
+/* ---- 上の行（屋号・行き先・明るさ） ---- */
+.ie-hd-in {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  min-height: 76px;
+  border-bottom: 1px solid var(--sen);
+}
+.ie-mark {
+  display: flex; align-items: baseline; gap: 12px;
+  color: var(--sumi); text-decoration: none;
+  font-family: var(--min); font-weight: 700; font-size: 22px; letter-spacing: .08em;
+}
+.ie-mark span { font-family: var(--goth); font-size: 11px; font-weight: 500; letter-spacing: .26em; color: var(--usu); }
+.ie-mark:hover { color: var(--sumi); }
+.ie-hd-migi { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.ie-nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.ie-nav a {
+  display: inline-flex; align-items: center;
+  min-height: 48px; padding: 0 14px;
+  color: var(--sumi); text-decoration: none; font-size: 14px;
+}
+.ie-nav a:hover { color: var(--sashi); text-decoration: underline; text-underline-offset: 6px; }
+.iro-btn {
+  display: inline-flex; align-items: center;
+  min-height: 48px; padding: 0 16px;
+  border: 1px solid var(--sen2); border-radius: 2px;
+  background: transparent; color: var(--sumi);
+  font-family: inherit; font-size: 13px; cursor: pointer;
+}
+.iro-btn:hover { background: var(--ji2); }
+
+/* ---- 押す物 ---- */
+.btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 52px; padding: 0 24px;
+  border: 1px solid var(--futo); border-radius: 2px;
+  font-size: 15px; font-weight: 500; text-decoration: none;
+}
+.btn-p { background: var(--sashi); border-color: var(--sashi); color: var(--sashi-moji); }
+.btn-p:hover { background: var(--sashi2); border-color: var(--sashi2); color: var(--sashi-moji); }
+.btn-s { background: transparent; color: var(--sumi); }
+.btn-s:hover { background: var(--ji2); color: var(--sumi); }
+.btn-sm { min-height: 48px; padding: 0 18px; font-size: 14px; }
+
+/* ---- 節 ---- */
+.sec { padding: 88px 0; border-top: 1px solid var(--sen); }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap; }
+.sec h2, .sec-h {
+  margin: 0;
+  font-family: var(--min); font-weight: 700;
+  font-size: clamp(24px, 4.5vw, 30px); line-height: 1.5; letter-spacing: .06em;
+}
+.sec-sub { margin: 0; font-size: 15px; color: var(--usu); }
+.tag  { margin: 0; font-size: 13px; letter-spacing: .1em; color: var(--usu); }
+.note { margin: 14px 0 0; font-size: 13px; line-height: 1.8; color: var(--usu); }
+
+/* ---- 道具の並べ方（表紙の「作っているもの」・遊びの部屋）2026-10-27 ----
+   一つの道具を一行に。左に絵（動画・画面写真）、右に名前と中身。行と行は罫で区切る（影は付けない）。
+   ⚠️絵の下地 #1b1f24 は、絵が届くまでの一瞬だけ見える色（字の色ではない）。 */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 48px;
+  align-items: start;
+  padding: 44px 0;
+  border-bottom: 1px solid var(--sen);
+}
+.row-hajime { margin-top: 28px; border-top: 1px solid var(--futo); }
+.row-e { margin: 0; }
+.row-e img, .row-e video {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--sen2); border-radius: 2px;
+  background: #1b1f24;
+}
+.row-e figcaption { margin: 8px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--usu); }
+.row h3 {
+  margin: 4px 0 0;
+  font-family: var(--min); font-weight: 700;
+  font-size: clamp(26px, 4.6vw, 32px); line-height: 1.4; letter-spacing: .04em;
+}
+.desc { margin: 14px 0 0; font-size: 15px; }
+.spec {
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 20px; row-gap: 6px;
+  margin: 22px 0 0; padding: 16px 0;
+  border-top: 1px solid var(--sen); border-bottom: 1px solid var(--sen);
+  font-size: 14px;
+}
+.spec dt { color: var(--usu); }
+.spec dd { margin: 0; }
+.row .btns { margin-top: 24px; }
+.tools {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px; padding: 36px 0;
+  border-bottom: 1px solid var(--sen);
+}
+.tool h3 { margin: 0; font-family: var(--min); font-weight: 700; font-size: 22px; letter-spacing: .04em; }
+.tool p { margin: 8px 0 0; font-size: 14px; }
+.tool .meta { font-size: 13px; color: var(--usu); }
+.more { display: inline-flex; align-items: center; min-height: 48px; font-size: 14px; font-weight: 500; }
+.hoka { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; padding: 36px 0 0; }
+.hoka h3 { margin: 0; font-family: var(--min); font-size: 16px; font-weight: 700; letter-spacing: .08em; }
+.hoka ul { list-style: none; margin: 0; padding: 0; }
+.hoka li { border-bottom: 1px dotted var(--sen2); }
+.hoka a {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px;
+  min-height: 52px; padding: 12px 0;
+  color: var(--sumi); text-decoration: none;
+}
+/* 名前には下線を残す。色だけで「押せる」を伝えない。 */
+.hoka b { font-size: 15px; text-decoration: underline; text-decoration-color: var(--sen2); text-underline-offset: 4px; }
+.hoka a:hover b { color: var(--sashi); text-decoration-color: currentColor; }
+.hoka span { font-size: 14px; color: var(--usu); }
+
+/* ---- 部屋の頭（表紙のほかのページの、いちばん上）2026-10-27 ----
+   表紙へ戻る道・部屋の名（明朝）・一言。 */
+/* ⚠️左右の余白は .ie-in が持つ。padding をまとめて書くと左右まで 0 になる（上の行で一度やった）。上下だけ書く。 */
+.heya-atama { padding-top: 56px; padding-bottom: 40px; }
+/* 部屋の頭のすぐ下の節は、罫と上の余白を省く（一つ目の行の太い罫が、区切りを引き受ける） */
+.heya-atama + .sec { padding-top: 0; border-top: 0; }
+.heya-atama .kaeri { margin: 0 0 18px; font-size: 13px; }
+.heya-atama h1 {
+  margin: 0;
+  font-family: var(--min); font-weight: 700;
+  font-size: clamp(27px, 5vw, 40px); line-height: 1.5; letter-spacing: .06em;
+}
+.heya-atama .lead { margin: 18px 0 0; max-width: 680px; font-size: 16px; color: var(--usu); }
+
+/* ---- 足元（連絡先・決まりごと・免責） ---- */
+.ie-ft { background: var(--ft); color: var(--ft-moji); padding: 52px 0 40px; font-size: 14px; }
+.ie-ft a { color: var(--ft-moji); }
+.ie-ft a:hover { color: #ffffff; }
+.ie-ft-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.ie-ft-h { margin: 0 0 10px; font-size: 13px; font-weight: 500; letter-spacing: .14em; color: var(--ft-usu); }
+.ie-ft p { margin: 0 0 6px; }
+.ie-ft ul { list-style: none; margin: 0; padding: 0; }
+.ie-ft li a { display: inline-flex; align-items: center; min-height: 40px; }
+.ie-ft-men {
+  margin: 32px 0 0; padding-top: 20px;
+  border-top: 1px solid var(--ft-sen);
+  font-size: 13px; line-height: 1.9; color: var(--ft-usu);
+}
+.ie-ft-men p { margin: 0 0 4px; }
+.ie-ft-mei { margin: 20px 0 0; font-size: 12.5px; color: var(--ft-usu); }
+
+/* ---- 狭い画面（スマホ） ---- */
+@media (max-width: 760px) {
+  .ie-in { padding: 0 20px; }
+  /* ⚠️左右の余白は .ie-in が持つ。ここで padding をまとめて書くと左右まで 0 になり、
+     屋号が画面の端にくっつく（2026-10-27 実際にやった）。上下だけ書く。 */
+  .ie-hd-in { padding-top: 10px; padding-bottom: 4px; min-height: 0; }
+  /* 狭い画面では、屋号と明るさのボタンを一行目に、行き先を二行目に。
+     包み（.ie-hd-migi）をほどいて、三つを同じ並びの仲間にする。 */
+  .ie-hd-migi { display: contents; }
+  .iro-btn { order: 1; min-height: 44px; padding: 0 12px; }
+  /* 行き先の四つは、幅いっぱいに割り付ける（iPhone の幅 375px で一行に収まる。実測 2026-10-27） */
+  .ie-nav { order: 2; width: 100%; gap: 0; margin: 0; justify-content: space-between; }
+  .ie-nav a { padding: 0 4px; font-size: 13px; }
+  .btns .btn { flex: 1 1 100%; }
+  .sec { padding: 56px 0; }
+  .heya-atama { padding-top: 36px; padding-bottom: 28px; }
+  .row { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 32px 0; }
+  .tools { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 0; }
+  .hoka { grid-template-columns: minmax(0, 1fr); gap: 8px; padding-top: 28px; }
+  .hoka a { flex-direction: column; gap: 0; }
+  /* 添えの押す物は二列に。一列に積むと、K'Ad の四つだけで画面一枚を使ってしまう */
+  .row .btns .btn-sm { flex: 1 1 calc(50% - 6px); }
+  .ie-ft-cols { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+
+/* ============================================================
+   暗い顔。⚠️ここから下に、明るい側の指定を書き足さないこと（いちばん最後に置く約束）。
+   同じ値を二つの塊に書いているのは、CSS だけでは「設定に合わせる」と
+   「ボタンで選んだ」を一つにまとめられないため。値を変える日は、二つとも直す
+   （検算の九）が、二つの食い違いを鳴らす）。
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-iro="akarui"]) {
+    --ji:         #1c1a17;
+    --ji2:        #26231f;
+    --sumi:       #ece5d8;
+    --usu:        #b5ab9b;
+    --sen:        #36312a;
+    --sen2:       #4a443b;
+    --futo:       #8c8273;
+    --sashi:      #d9a06a;
+    --sashi2:     #e8b583;
+    --sashi-moji: #1c1a17;
+    --ten:        #6e665a;
+    --ft:         #121110;
+    --ft-moji:    #ddd5c7;
+    --ft-usu:     #a89e8e;
+    --ft-sen:     #2e2a25;
+    color-scheme: dark;
+  }
+}
+:root[data-iro="kurai"] {
+  --ji:         #1c1a17;
+  --ji2:        #26231f;
+  --sumi:       #ece5d8;
+  --usu:        #b5ab9b;
+  --sen:        #36312a;
+  --sen2:       #4a443b;
+  --futo:       #8c8273;
+  --sashi:      #d9a06a;
+  --sashi2:     #e8b583;
+  --sashi-moji: #1c1a17;
+  --ten:        #6e665a;
+  --ft:         #121110;
+  --ft-moji:    #ddd5c7;
+  --ft-usu:     #a89e8e;
+  --ft-sen:     #2e2a25;
+  color-scheme: dark;
+}
