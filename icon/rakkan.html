@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+    縁側屋の印（アイコン）を描く台。2026-10-27。
+
+    【これは何か】
+    ホーム画面用（apple-touch-icon.png・180px）と、ブラウザのタブ用（favicon.png・32px）の
+    絵の「正」。ここで描いて、PNG に書き出したものが生成物。
+    ⚠️絵を直したくなったら、PNG を直接いじらず、ここを直して書き出し直すこと（正典 → 生成物）。
+    色の正は DESIGN.md の「11. 印（アイコン）」。
+
+    【形が決まるまで】（博喜さんと、下絵の台で 2026-10-27）
+    ・三案（軒と縁側／落款／窓の月）から「落款」＝作者の印の形を選んでいただいた。
+    ・地の色は博喜さんのご指定の青緑 #37BEB0。字は、同じ色の仲間の深い青緑 #0F3D39
+      （生成りの字だと地との比が 2.1 で溶けた。深い青緑なら 5.2）。
+    ・字は「f.k 機械彫刻で試したい」とのことだったが、v0.320 に「縁」が無かった。
+      同じ性格（線の太さが一定・先が丸い）の丸ゴシックを二つ並べ、Zen Maru Gothic を選んでいただいた。
+    ・枠は蔵人の琥珀 #C98F3D（縁側の場面で蔵人が着ている色）。博喜さん「蔵人さんカラーの琥珀色を、どこかにアクセント」。
+      ⚠️琥珀と地の青緑は明るさがほぼ同じ（比 1.2）で、そのまま置くと溶ける。だから琥珀の線の両側を
+        深い青緑で縁どってある（琥珀と深い青緑の比 4.1）。縁どりを外さないこと。
+
+    【書体の決まり】Zen Maru Gothic（作者 Yoshimichi Ohira）は SIL Open Font License 1.1。
+    字を絵にして配るのは自由。書体のファイルそのものは、この家に置かない（Google Fonts から借りて描くだけ）。
+
+    【小さい札（32px）】180px の絵をそのまま縮めると、枠の琥珀が 1px に満たず濁る。
+    だから小さい札は、枠と字の太さの割合を変えて、その大きさのために描き直す（下の KOFUDA）。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>縁側屋の印を描く台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; padding: 32px; background: #f6f2ea; color: #26221e; font-family: "Hiragino Sans", sans-serif; }
+h1 { margin: 0 0 8px; font-size: 20px; }
+p { margin: 0 0 20px; font-size: 14px; color: #5e554b; }
+a { color: #8f5528; }
+.narabi { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px; }
+.narabi figure { margin: 0; text-align: center; font-size: 13px; color: #5e554b; }
+.narabi canvas { display: block; margin: 0 auto 8px; image-rendering: auto; }
+.kadomaru canvas { border-radius: 22.4%; }
+</style>
+</head>
+<body>
+<h1>縁側屋の印</h1>
+<p>下の絵を右クリックで保存するか、書き出しのリンクを押してください。180px が apple-touch-icon.png、32px が favicon.png。</p>
+<div class="narabi">
+  <figure><canvas id="ookii" width="180" height="180"></canvas>180（ホーム画面）<br><a id="dl180" download="apple-touch-icon.png" href="#">書き出す</a></figure>
+  <figure class="kadomaru"><canvas id="mihon" width="180" height="180"></canvas>角を丸めた見え方</figure>
+  <figure><canvas id="chiisai" width="32" height="32"></canvas>32（タブ）<br><a id="dl32" download="favicon.png" href="#">書き出す</a></figure>
+  <figure><canvas id="chiisai16" width="16" height="16"></canvas>16（32 を縮めた見え方）</figure>
+</div>
+<script>
+/* 色（正は DESIGN.md「11. 印」） */
+var IRO = { ji: '#37beb0', sumi: '#0f3d39', kohaku: '#c98f3d' };
+var SHOTAI = "'Zen Maru Gothic'";
+
+/* 寸法は 180 を基準にした割合。ookisa に合わせて伸び縮みする。
+   ⚠️小さい札（KOFUDA）は割合を変えてある：枠を外へ寄せ、線を太く、字を大きく。 */
+var OOFUDA = { soto: 22, haba: 136, maru: 10, fuchi: 10, kohaku: 4, ji: 92, jiY: 0 };
+var KOFUDA = { soto: 9,  haba: 162, maru: 14, fuchi: 22, kohaku: 10, ji: 112, jiY: 2 };
+
+function kakumaru(g, x, y, w, h, r) {
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+function egaku(cv, F) {
+  var S = cv.width, k = S / 180, g = cv.getContext('2d');
+  g.clearRect(0, 0, S, S);
+  /* 地（角は丸めない。iPhone が自分で丸める） */
+  g.fillStyle = IRO.ji;
+  g.fillRect(0, 0, S, S);
+  /* 枠：深い青緑で太く引いてから、琥珀を細く重ねる＝琥珀の両側が縁どられる */
+  kakumaru(g, F.soto * k, F.soto * k, F.haba * k, F.haba * k, F.maru * k);
+  g.lineJoin = 'round';
+  g.strokeStyle = IRO.sumi;   g.lineWidth = F.fuchi * k;  g.stroke();
+  g.strokeStyle = IRO.kohaku; g.lineWidth = F.kohaku * k; g.stroke();
+  /* 字。墨の形（インクの箱）で上下の真ん中を合わせる——文字の基準線で置くと、字によって上下にずれる */
+  g.fillStyle = IRO.sumi;
+  g.font = '900 ' + (F.ji * k) + 'px ' + SHOTAI;
+  g.textAlign = 'center';
+  g.textBaseline = 'alphabetic';
+  var m = g.measureText('縁');
+  var y = S / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2 + F.jiY * k;
+  g.fillText('縁', S / 2, y);
+}
+
+document.fonts.load("900 100px 'Zen Maru Gothic'", '縁').then(function () {
+  egaku(document.getElementById('ookii'), OOFUDA);
+  egaku(document.getElementById('mihon'), OOFUDA);
+  egaku(document.getElementById('chiisai'), KOFUDA);
+  var c16 = document.getElementById('chiisai16').getContext('2d');
+  c16.imageSmoothingQuality = 'high';
+  c16.drawImage(document.getElementById('chiisai'), 0, 0, 16, 16);
+  document.getElementById('dl180').href = document.getElementById('ookii').toDataURL('image/png');
+  document.getElementById('dl32').href = document.getElementById('chiisai').toDataURL('image/png');
+  document.documentElement.setAttribute('data-kakiowari', '1');
+});
+</script>
+</body>
+</html>
