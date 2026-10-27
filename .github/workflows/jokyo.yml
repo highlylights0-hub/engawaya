@@ -2,8 +2,25 @@
 # 稼働中の札の係（2026-10-27）
 #
 # 博喜さんのご依頼：「サイト、上部に ODPT のサーバーが稼働中か。Cloud Flare、engawaya が稼働中か」。
+# 【何のためか】博喜さん「ODPT がダウンした時の目印、申し送りのための機能です」。
+#   アプリの電車・飛行機の情報が出ないとき、それが ODPT 側で止まっているのかを一目で分かるようにし、
+#   いつから止まっているか・いつ戻ったかを、交代のときの申し送りに書けるようにする。
+#
 # 15 分ごとに三つを見に行き、結果だけを小さな札（jokyo.json）に書いて、枝 jokyo に置く。
 # 表紙はその札を読むだけ（raw.githubusercontent.com から）。
+#
+# 【ODPT の見方】（2026-10-27 夜に直した）
+#   最初は ODPT の入口に鍵なしで聞いて、返事があれば「動いている」としていた。だが入口は返事をするのに、
+#   中のデータ（運行情報）だけが止まることがある＝目印としていちばん困る外れ方。
+#   → 中継の無料の口（/api/free）が答える「運行情報が取れているか」（trains.failed＝本線の窓口から取れなかった・
+#     trains.fresh＝データの期限内）で見る。中継は ODPT への問い合わせを 2〜10 分に一度にまとめているので、
+#     ODPT への負担は増えない。中継が答えられないときだけ、入口に聞く（札に hakari:"iriguchi" と書く）。
+#   ⚠️チャレンジ（期間限定）の窓口の分は、取れなくても failed にならない作り（中継の worker.js）。
+#     期間が終わっても、この目印は誤って鳴らない。
+#
+# 【いつから・記録】前の札を読んで、止まりはじめに気づいた時刻（kara）を引き継ぐ。戻ったら、
+#   「いつから・いつまで」を記録（kiroku）の頭に足す。直近 10 件だけ残す。
+#   ⚠️時刻は 15 分ごとの見回りで「気づいた」時刻。実際は最大 15 分早く止まり／戻っていることがある。
 #
 # 【なぜ表紙から直に見に行かないか】
 #   中継（Cloudflare の haneda-ita）の住所は、わざと人目から隠してある（どのページも noindex・仲間の板は合言葉）。
@@ -15,17 +32,17 @@
 #   表紙を何万人が開いても、中継へ行くのは 15 分に一度。（博喜さんの裁定 2026-10-27）
 #
 # 【お金】公開リポジトリの係は無料・時間の上限なし。中継へは一日 96 回（無料の枠の 0.1% 未満）。
-#        ODPT は鍵を使わず、入口が返事をするかを聞くだけ。
 #
 # ⚠️この係の記録（ログ）は公開される。中継の住所を一字も出さないこと：
 #   ・住所の家の名を ::add-mask:: で伏せる（金庫の値そのものは GitHub が伏せるが、
 #     エラーの文に「家の名だけ」が出ると伏せられない）
 #   ・見に行く道具はエラーの文を出さない（Python の例外を握りつぶして、番号だけ残す）
-#   ・札（jokyo.json）にも住所は書かない。書くのは「動いているか・返事の番号・かかった時間」だけ
+#   ・札（jokyo.json）にも住所は書かない。書くのは「動いているか・返事の番号・かかった時間・時刻」だけ
 #
 # 【決まった時刻の係の癖】GitHub が混んでいると数分遅れることがある。表紙は「○時○分の様子」と書き、
 #   一時間より古い札は「様子が古いです」と出す（係そのものが止まったことも分かる）。
 #   ⚠️決まった時刻の係は、既定の枝（main）にあるときだけ動く。
+#   ⚠️このファイルを直して押すときは GitHub Desktop で（gh の鍵には workflow の権限が無く、断られる）。
 # ============================================================
 name: 稼働中の札
 
@@ -58,43 +75,98 @@ jobs:
       - name: 三つを見に行って、札を書く
         env:
           CHUKEI_URL: ${{ secrets.CHUKEI_URL }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error, datetime
 
-          def miru(url, ok):
-              """url を一度だけ見に行く。返事の番号・かかった時間・動いているか、を返す。
-                 ⚠️例外の文は出さない（住所が記録に出るため）。番号 0 は「返事が無かった」。"""
+          UA = {'User-Agent': 'engawaya-jokyo (+https://engawaya.com/)'}
+
+          def kiku(url, headers=None):
+              """url に一度だけ聞く。（返事の番号, 中身, かかったミリ秒）を返す。番号 0 は「返事が無かった」。
+                 ⚠️例外の文は出さない（住所が記録に出るため）。"""
               t = time.time()
               try:
-                  req = urllib.request.Request(url, headers={'User-Agent': 'engawaya-jokyo (+https://engawaya.com/)'})
+                  req = urllib.request.Request(url, headers={**UA, **(headers or {})})
                   with urllib.request.urlopen(req, timeout=20) as r:
-                      code = r.status
+                      return r.status, r.read(), int((time.time() - t) * 1000)
               except urllib.error.HTTPError as e:
-                  code = e.code
+                  return e.code, b'', int((time.time() - t) * 1000)
               except Exception:
-                  code = 0
-              return {'ugoku': ok(code), 'kotae': code, 'ms': int((time.time() - t) * 1000)}
+                  return 0, b'', int((time.time() - t) * 1000)
 
-          fuda = {'mita': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}
+          ima = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          fuda = {'mita': ima}
 
-          # ODPT：鍵を使わずに入口へ。鍵が無いので 401／403 が返るのがふつう＝入口は動いている。
-          #       500 番台か、返事が無いときだけ「止まっている」とする。
-          fuda['odpt'] = miru('https://api.odpt.org/api/v4/odpt:Calendar', lambda c: 0 < c < 500)
+          # 前の札（いつから止まっているか・記録を引き継ぐ）。raw の配り口は数分古いことがあるので、GitHub の窓口から直に読む。
+          mae = {}
+          code, body, _ = kiku('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/contents/jokyo.json?ref=jokyo',
+                               {'Authorization': 'Bearer ' + os.environ.get('GH_TOKEN', ''), 'Accept': 'application/vnd.github.raw'})
+          if code == 200:
+              try:
+                  mae = json.loads(body)
+              except Exception:
+                  mae = {}
 
-          # 中継：合言葉なしの無料のページ（/free）。置き場や ODPT を呼ばない、いちばん軽い口。200 なら動いている。
-          #       無料の枠を使い切られたときは 429 などが返る＝止まっている、と出る。
+          # 中継：無料の口（/api/free＝運行情報の板）。200 で中身が読めれば動いている。
+          # ここは ODPT の様子も答える（trains.failed＝本線の窓口から取れなかった／trains.fresh＝データの期限内）。
           base = os.environ.get('CHUKEI_URL', '').rstrip('/')
-          fuda['chukei'] = miru(base + '/free', lambda c: c == 200) if base else {'ugoku': None, 'kotae': None, 'ms': None}
+          odpt_data = None
+          if base:
+              code, body, ms = kiku(base + '/api/free')
+              ugoku = False
+              if code == 200:
+                  try:
+                      tr = json.loads(body)['trains']
+                      ugoku = True
+                      odpt_data = {'ugoku': bool(tr.get('fresh')) and not tr.get('failed'),
+                                   'kotae': code, 'ms': ms, 'hakari': 'data', 'dataTime': tr.get('dataTime')}
+                  except Exception:
+                      ugoku = False
+              fuda['chukei'] = {'ugoku': ugoku, 'kotae': code, 'ms': ms}
+          else:
+              fuda['chukei'] = {'ugoku': None, 'kotae': None, 'ms': None}
+
+          # ODPT：中継が答えた「データが届いているか」。中継が答えられないときだけ、入口に鍵なしで聞く
+          # （鍵が無いので 401／403 が返るのがふつう＝入口は動いている。500 番台か返事なしで止まり）。
+          if odpt_data is not None:
+              fuda['odpt'] = odpt_data
+          else:
+              code, _, ms = kiku('https://api.odpt.org/api/v4/odpt:Calendar')
+              fuda['odpt'] = {'ugoku': 0 < code < 500, 'kotae': code, 'ms': ms, 'hakari': 'iriguchi'}
+              # ⚠️データが止まっている最中に中継まで止まったら、入口が返事をしただけで「戻った」とは言えない。
+              #   そのときは「分からない」にして、止まりはじめの時刻を引き継ぐ（下の「分からない」の扱い）。
+              m = mae.get('odpt') or {}
+              if fuda['odpt']['ugoku'] and (m.get('ugoku') is False or (m.get('ugoku') is None and m.get('ugoku_mae') is False)):
+                  fuda['odpt']['ugoku'] = None
 
           # engawaya.com：表紙そのもの。
-          fuda['engawaya'] = miru('https://engawaya.com/', lambda c: 200 <= c < 400)
+          code, _, ms = kiku('https://engawaya.com/')
+          fuda['engawaya'] = {'ugoku': 200 <= code < 400, 'kotae': code, 'ms': ms}
+
+          # いつから止まっているか（kara）と、止まった記録（kiroku）。
+          # 「分からない」（None）は、止まり・戻りのどちらにも数えない（前の状態をそのまま引き継ぐ）。
+          kiroku = list(mae.get('kiroku') or [])
+          for ki in ('odpt', 'chukei', 'engawaya'):
+              d, m = fuda[ki], (mae.get(ki) or {})
+              # 前の見回りで止まっていたか（「分からない」が続いているあいだも、その前の止まりを覚えておく）
+              mae_tomari = (m.get('ugoku') is False) or (m.get('ugoku') is None and m.get('ugoku_mae') is False)
+              if d['ugoku'] is None:
+                  if mae_tomari:
+                      d['ugoku_mae'] = False
+                      d['kara'] = m.get('kara')
+                  continue
+              if d['ugoku'] is False:
+                  d['kara'] = m.get('kara') if (mae_tomari and m.get('kara')) else ima
+              elif mae_tomari and m.get('kara'):
+                  kiroku.insert(0, {'ki': ki, 'kara': m['kara'], 'made': ima})
+          fuda['kiroku'] = kiroku[:10]
 
           os.makedirs('fuda', exist_ok=True)
           with open('fuda/jokyo.json', 'w', encoding='utf-8') as f:
               json.dump(fuda, f, ensure_ascii=False)
-          # 記録には、動いているかだけを出す（住所は出さない）
-          print({k: (v['ugoku'] if isinstance(v, dict) else v) for k, v in fuda.items()})
+          # 記録には、動いているかと記録の件数だけを出す（住所は出さない）
+          print({k: fuda[k]['ugoku'] for k in ('odpt', 'chukei', 'engawaya')}, 'kiroku', len(fuda['kiroku']))
           PY
 
       - name: 札を枝 jokyo に置く（一つだけの commit を上書き＝履歴を増やさない）

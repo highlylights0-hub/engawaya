@@ -219,6 +219,12 @@ html, body { overflow-x: hidden; }
 .jokyo-fuda[data-jotai="ugoku"] .jokyo-tama { background: #2f8f5b; }
 .jokyo-fuda[data-jotai="tomaru"] .jokyo-tama { background: #c0392b; }
 .jokyo-toki { margin-left: auto; }
+.jokyo-kiroku { width: 100%; }
+/* 開ける印（▸）を残すため、list-item のまま。押せる高さは上下の余白で取る */
+.jokyo-kiroku summary { display: list-item; padding: 9px 0; color: var(--sumi); cursor: pointer; }
+.jokyo-kiroku ol { margin: 0; padding-left: 1.4em; }
+.jokyo-kiroku li { margin: 2px 0; color: var(--sumi); }
+.jokyo-chui { margin: 6px 0 6px; font-size: 12px; line-height: 1.7; }
 
 @media (max-width: 760px) {
   .genkan { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 0 52px; }
@@ -915,7 +921,9 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
      下の script「稼働の様子」が読んで埋める。
      ⚠️中継の住所はここに書かない。表紙から直に見に行かないこと（理由は係の板書。住所を公開すると、
        無料の枠を叩き尽くされて、夜中に仲間の板もアプリの情報も止まりうる）。
-     ⚠️色だけで伝えない：玉の色に加えて、必ず言葉（動いています／返事がありません／分かりません）を出す。 -->
+     ⚠️色だけで伝えない：玉の色に加えて、必ず言葉（動いています／止まっています／分かりません）を出す。
+     【何のためか】博喜さん「ODPT がダウンした時の目印、申し送りのための機能です」。止まっていれば「いつから」を、
+       戻ったら「止まった記録」（いつから・いつまで）を出す＝交代のときの申し送りに、そのまま書ける。 -->
 <section class="jokyo" id="jokyo" aria-label="道具の裏方が動いているか">
   <div class="ie-in jokyo-in">
     <span class="jokyo-midashi">稼働の様子</span>
@@ -923,6 +931,11 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     <span class="jokyo-fuda" data-ki="chukei"><i class="jokyo-tama" aria-hidden="true"></i>Cloudflare の中継<b>確かめています</b></span>
     <span class="jokyo-fuda" data-ki="engawaya"><i class="jokyo-tama" aria-hidden="true"></i>engawaya.com<b>確かめています</b></span>
     <span class="jokyo-toki"></span>
+    <details class="jokyo-kiroku" id="jokyoKiroku" hidden>
+      <summary>止まった記録</summary>
+      <ol></ol>
+      <p class="jokyo-chui">時刻は、15分ごとの見回りで気づいた時刻です。実際は、それより最大15分早く止まったり戻ったりしていることがあります。記録は 2026年10月27日の夜から、新しい10件まで残します。</p>
+    </details>
   </div>
 </section>
 
@@ -2422,11 +2435,16 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   var obi = document.getElementById('jokyo');
   if (!obi) return;
   var FUDA = 'https://raw.githubusercontent.com/highlylights0-hub/engawaya/jokyo/jokyo.json';
-  var KOTOBA = { ugoku: '動いています', tomaru: '返事がありません', fumei: '分かりません' };
+  var KOTOBA = { ugoku: '動いています', tomaru: '止まっています', fumei: '分かりません' };
+  var NA = { odpt: 'ODPT', chukei: 'Cloudflare の中継', engawaya: 'engawaya.com' };
   var toki = obi.querySelector('.jokyo-toki');
-  function kaku(f, jotai) {
+  var kiroku = document.getElementById('jokyoKiroku');
+  /* 時刻は見る人の閲覧機の時計（日本なら日本時間）で出す。札には世界時で書いてある。 */
+  function jifun(iso) { var t = new Date(iso); return t.getHours() + '時' + ('0' + t.getMinutes()).slice(-2) + '分'; }
+  function hizuke(iso) { var t = new Date(iso); return (t.getMonth() + 1) + '月' + t.getDate() + '日 ' + jifun(iso); }
+  function kaku(f, jotai, soe) {
     f.setAttribute('data-jotai', jotai);
-    f.querySelector('b').textContent = KOTOBA[jotai];
+    f.querySelector('b').textContent = KOTOBA[jotai] + (soe || '');
   }
   function umeru(j) {
     var mita = new Date(j.mita);
@@ -2434,10 +2452,32 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     ['odpt', 'chukei', 'engawaya'].forEach(function (ki) {
       var d = j[ki];
       var jotai = (furui || !d || d.ugoku === null || d.ugoku === undefined) ? 'fumei' : (d.ugoku ? 'ugoku' : 'tomaru');
-      kaku(obi.querySelector('[data-ki="' + ki + '"]'), jotai);
+      /* 申し送りに書けるように、止まっているときは「いつから」を添える */
+      var soe = '';
+      if (jotai === 'tomaru' && d.kara) soe = '（' + jifun(d.kara) + 'から）';
+      else if (jotai === 'fumei' && !furui && d && d.kara) soe = '（止まりはじめ ' + jifun(d.kara) + '）';
+      else if (jotai === 'ugoku' && d.hakari === 'iriguchi') soe = '（入口だけ確かめました）';
+      kaku(obi.querySelector('[data-ki="' + ki + '"]'), jotai, soe);
     });
-    var jifun = mita.getHours() + '時' + ('0' + mita.getMinutes()).slice(-2) + '分';
-    toki.textContent = furui ? ('様子が古いです（' + jifun + '）') : (jifun + 'の様子・15分ごとに見ています');
+    toki.textContent = furui ? ('様子が古いです（' + jifun(j.mita) + '）') : (jifun(j.mita) + 'の様子・15分ごとに見ています');
+    /* 止まった記録（新しいものが上）。戻った見回りの時刻を「まで」にしている */
+    var ol = kiroku.querySelector('ol');
+    ol.textContent = '';
+    var r = j.kiroku || [];
+    if (!r.length) {
+      var nashi = document.createElement('li');
+      nashi.textContent = 'まだありません';
+      ol.appendChild(nashi);
+    }
+    r.forEach(function (k) {
+      var li = document.createElement('li');
+      var kara = new Date(k.kara), made = new Date(k.made);
+      var onaji = kara.toDateString() === made.toDateString();
+      var fun = Math.round((made - kara) / 60000);
+      li.textContent = hizuke(k.kara) + ' 〜 ' + (onaji ? jifun(k.made) : hizuke(k.made)) + '　' + (NA[k.ki] || k.ki) + '（約' + fun + '分）';
+      ol.appendChild(li);
+    });
+    kiroku.hidden = false;
   }
   function yomenai() {
     [].forEach.call(obi.querySelectorAll('.jokyo-fuda'), function (f) { kaku(f, 'fumei'); });
