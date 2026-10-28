@@ -161,7 +161,7 @@ CSSファイルを作って読み込ませてはいけません（憲法①が�
 
 | 表 | 棟 |
 |---|---|
-| 生成り | `asobi/` `osewa/` |
+| 生成り | `asobi/` `osewa/` `jokyo/` |
 | 母屋 | `index.html` `naze/` `nikki/` `koe/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `kad/` `kad/jisho/` `404.html` |
 | 選ばせる | `asobiba/narabe/` |
 | 遊び場 | `asobiba/` `asobiba/suikawari/` `asobiba/renga/` |

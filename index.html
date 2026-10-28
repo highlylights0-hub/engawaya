@@ -233,25 +233,6 @@ html, body { overflow-x: hidden; }
 .tsukurite p b { color: var(--sashi); }
 .tsukurite .btns { margin-top: 20px; }
 
-/* ---- 稼働の様子（2026-10-27）----
-   いちばん上の細い帯。TAXI PRO NAVI の情報の出どころ（ODPT）と中継（Cloudflare）、このサイトが動いているか。
-   玉の色の正は DESIGN.md「12.」。⚠️色だけで伝えない（言葉も必ず出す）。
-   ⚠️左右の余白は .ie-in が持つ。ここで padding をまとめて書かない（上下だけ）。 */
-.jokyo { background: var(--ji2); border-bottom: 1px solid var(--sen); font-size: 12.5px; color: var(--usu); }
-.jokyo-in { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; padding-top: 7px; padding-bottom: 7px; }
-.jokyo-midashi { font-weight: 500; letter-spacing: .06em; color: var(--sumi); }
-.jokyo-fuda { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.jokyo-fuda b { margin-left: 2px; font-weight: 500; color: var(--sumi); }
-.jokyo-tama { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #9a9186; }
-.jokyo-fuda[data-jotai="ugoku"] .jokyo-tama { background: #2f8f5b; }
-.jokyo-fuda[data-jotai="tomaru"] .jokyo-tama { background: #c0392b; }
-.jokyo-toki { margin-left: auto; }
-.jokyo-kiroku { width: 100%; }
-/* 開ける印（▸）を残すため、list-item のまま。押せる高さは上下の余白で取る */
-.jokyo-kiroku summary { display: list-item; padding: 9px 0; color: var(--sumi); cursor: pointer; }
-.jokyo-kiroku ol { margin: 0; padding-left: 1.4em; }
-.jokyo-kiroku li { margin: 2px 0; color: var(--sumi); }
-.jokyo-chui { margin: 6px 0 6px; font-size: 12px; line-height: 1.7; }
 
 @media (max-width: 760px) {
   .genkan { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 0 52px; }
@@ -259,8 +240,6 @@ html, body { overflow-x: hidden; }
   .mado { aspect-ratio: 16 / 10; }
   .genkan-lead { font-size: 15px; }
   .kiroku, .tsukurite { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  .jokyo-toki { margin-left: 0; width: 100%; }
-  .jokyo-hosoku { display: none; }   /* スマホでは補いをしまう＝帯を二、三行に収める */
 }
 
 /* ============================================================
@@ -943,28 +922,6 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
 
 <body>
 
-<!-- 稼働の様子（2026-10-27。博喜さんのご依頼「サイト、上部に ODPT のサーバーが稼働中か。Cloud Flare、engawaya が稼働中か」）。
-     中身は GitHub の係（.github/workflows/jokyo.yml）が 15 分ごとに見に行って書く札（枝 jokyo の jokyo.json）を、
-     下の script「稼働の様子」が読んで埋める。
-     ⚠️中継の住所はここに書かない。表紙から直に見に行かないこと（理由は係の板書。住所を公開すると、
-       無料の枠を叩き尽くされて、夜中に仲間の板もアプリの情報も止まりうる）。
-     ⚠️色だけで伝えない：玉の色に加えて、必ず言葉（動いています／止まっています／分かりません）を出す。
-     【何のためか】博喜さん「ODPT がダウンした時の目印、申し送りのための機能です」。止まっていれば「いつから」を、
-       戻ったら「止まった記録」（いつから・いつまで）を出す＝交代のときの申し送りに、そのまま書ける。 -->
-<section class="jokyo" id="jokyo" aria-label="道具の裏方が動いているか">
-  <div class="ie-in jokyo-in">
-    <span class="jokyo-midashi">稼働の様子</span>
-    <span class="jokyo-fuda" data-ki="odpt"><i class="jokyo-tama" aria-hidden="true"></i>ODPT<span class="jokyo-hosoku">（電車・飛行機の情報）</span><b>確かめています</b></span>
-    <span class="jokyo-fuda" data-ki="chukei"><i class="jokyo-tama" aria-hidden="true"></i>Cloudflare の中継<b>確かめています</b></span>
-    <span class="jokyo-fuda" data-ki="engawaya"><i class="jokyo-tama" aria-hidden="true"></i>engawaya.com<b>確かめています</b></span>
-    <span class="jokyo-toki"></span>
-    <details class="jokyo-kiroku" id="jokyoKiroku" hidden>
-      <summary>止まった記録</summary>
-      <ol></ol>
-      <p class="jokyo-chui">時刻は、15分ごとの見回りで気づいた時刻です。実際は、それより最大15分早く止まったり戻ったりしていることがあります。記録は 2026年10月27日の夜から、新しい10件まで残します。</p>
-    </details>
-  </div>
-</section>
 
 <!-- 上の行（2026-10-27）。屋号・このページの行き先・明るさの切り替え。
      屋号は明朝で、小さく ENGAWAYA を添える（前の看板の「縁側屋／ENGAWAYA」と同じ二段の名乗り）。
@@ -995,7 +952,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     <div>
       <p class="genkan-eyebrow">ソフトウェアの個人開発</p>
       <h1 id="genkan-midashi">図面の道具と、<br>乗務員のナビを<br>つくっています。</h1>
-      <p class="genkan-lead">建築・土木の 2D CAD「K'Ad蔵人」と、タクシー乗務員のための「TAXI PRO NAVI」。つくっているのは会社ではなく、ひとり（岡澤 博喜）と蔵人（AI）です。K'Ad蔵人は無料、TAXI PRO NAVI は無料で始められて、手をかけた一部の機能だけサブスクリプションです。</p>
+      <p class="genkan-lead">建築・土木の 2D CAD「K'Ad蔵人」と、タクシー乗務員のための「TAXI PRO NAVI」。つくっているのは、岡澤 博喜と蔵人（AI）です。K'Ad蔵人は無料、TAXI PRO NAVI は無料で始められて、手をかけた一部の機能だけサブスクリプションです。</p>
       <div class="btns">
         <a class="btn btn-p" href="#tsukutte">作っているものを見る</a>
         <a class="btn btn-s" href="nikki/">開発日記を読む</a>
@@ -1243,7 +1200,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
              alt="新宿の地図。新宿駅の札に、JA 大崎行 23時31分 あと6分、JS 籠原行 23時33分、JA 大宮行 0時00分と終電が並び、上の帯に京葉線の運転見合わせ。">
         <img src="navi/6-shutoko.jpg" width="480" height="1044" loading="lazy"
              alt="首都高速の上を走るナビ。上の緑の帯に「1.1km 右車線 浜崎橋JCT」、下の窓に浅草寺まで 10.8km・20分・高速代 750円・運賃の目安 約9,350円。通り過ぎた道は灰色。">
-        <figcaption>左：近くの駅の終電を地図に（無料）。右：首都高を走りながら、運賃の目安と高速代（サブスク）。</figcaption>
+        <figcaption>左：近くの駅の終電を地図に。右：首都高を走りながら、運賃の目安と高速代（サブスク）。</figcaption>
       </figure>
       <div>
         <p class="tag">乗務員のためのナビ</p>
@@ -1421,7 +1378,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
             </tr>
           </tbody>
         </table>
-        <p class="ban-ashi">このページの最終更新　2026年10月27日</p>
+        <p class="ban-ashi">このページの最終更新　2026年10月29日</p>
       </div>
       <div>
         <h3>最近の日記</h3>
@@ -2323,7 +2280,9 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
         <p class="ie-ft-h">決まりごと</p>
         <ul>
           <li><a href="ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
           <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
         </ul>
       </div>
     </div>
@@ -2336,6 +2295,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     <div class="ie-ft-men">
       <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
       <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
       <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
       <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
     </div>
@@ -2502,71 +2462,6 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   }).catch(function () { /* 読めなかった日は、戸だけ残す */ });
 })();
 
-/* ------------------------------------------------------------
-   稼働の様子（2026-10-27）。GitHub の係が 15 分ごとに書く札を読んで、いちばん上の帯を埋める。
-   【なぜ直に見に行かないか】中継の住所を公開のソースに書かないため（.github/workflows/jokyo.yml の板書）。
-     表紙を何人が開いても、中継へ行くのは係の 15 分に一度だけ。
-   【読めないとき】係がまだ一度も動いていない・回線が切れている → 「様子を読めませんでした」。
-   【古いとき】一時間より古い札は「分かりません」にして、時刻を出す＝係そのものが止まったことも分かる。
-   ------------------------------------------------------------ */
-(function () {
-  var obi = document.getElementById('jokyo');
-  if (!obi) return;
-  var FUDA = 'https://raw.githubusercontent.com/highlylights0-hub/engawaya/jokyo/jokyo.json';
-  var KOTOBA = { ugoku: '動いています', tomaru: '止まっています', fumei: '分かりません' };
-  var NA = { odpt: 'ODPT', chukei: 'Cloudflare の中継', engawaya: 'engawaya.com' };
-  var toki = obi.querySelector('.jokyo-toki');
-  var kiroku = document.getElementById('jokyoKiroku');
-  /* 時刻は見る人の閲覧機の時計（日本なら日本時間）で出す。札には世界時で書いてある。 */
-  function jifun(iso) { var t = new Date(iso); return t.getHours() + '時' + ('0' + t.getMinutes()).slice(-2) + '分'; }
-  function hizuke(iso) { var t = new Date(iso); return (t.getMonth() + 1) + '月' + t.getDate() + '日 ' + jifun(iso); }
-  function kaku(f, jotai, soe) {
-    f.setAttribute('data-jotai', jotai);
-    f.querySelector('b').textContent = KOTOBA[jotai] + (soe || '');
-  }
-  function umeru(j) {
-    var mita = new Date(j.mita);
-    var furui = !(mita.getTime() > 0) || (Date.now() - mita.getTime()) > 60 * 60 * 1000;
-    ['odpt', 'chukei', 'engawaya'].forEach(function (ki) {
-      var d = j[ki];
-      var jotai = (furui || !d || d.ugoku === null || d.ugoku === undefined) ? 'fumei' : (d.ugoku ? 'ugoku' : 'tomaru');
-      /* 申し送りに書けるように、止まっているときは「いつから」を添える */
-      var soe = '';
-      if (jotai === 'tomaru' && d.kara) soe = '（' + jifun(d.kara) + 'から）';
-      else if (jotai === 'fumei' && !furui && d && d.kara) soe = '（止まりはじめ ' + jifun(d.kara) + '）';
-      else if (jotai === 'ugoku' && d.hakari === 'iriguchi') soe = '（入口だけ確かめました）';
-      kaku(obi.querySelector('[data-ki="' + ki + '"]'), jotai, soe);
-    });
-    toki.textContent = furui ? ('様子が古いです（' + jifun(j.mita) + '）') : (jifun(j.mita) + 'の様子・15分ごとに見ています');
-    /* 止まった記録（新しいものが上）。戻った見回りの時刻を「まで」にしている */
-    var ol = kiroku.querySelector('ol');
-    ol.textContent = '';
-    var r = j.kiroku || [];
-    if (!r.length) {
-      var nashi = document.createElement('li');
-      nashi.textContent = 'まだありません';
-      ol.appendChild(nashi);
-    }
-    r.forEach(function (k) {
-      var li = document.createElement('li');
-      var kara = new Date(k.kara), made = new Date(k.made);
-      var onaji = kara.toDateString() === made.toDateString();
-      var fun = Math.round((made - kara) / 60000);
-      li.textContent = hizuke(k.kara) + ' 〜 ' + (onaji ? jifun(k.made) : hizuke(k.made)) + '　' + (NA[k.ki] || k.ki) + '（約' + fun + '分）';
-      ol.appendChild(li);
-    });
-    kiroku.hidden = false;
-  }
-  function yomenai() {
-    [].forEach.call(obi.querySelectorAll('.jokyo-fuda'), function (f) { kaku(f, 'fumei'); });
-    toki.textContent = '様子を読めませんでした';
-  }
-  if (!window.fetch) { yomenai(); return; }
-  fetch(FUDA, { cache: 'no-cache' }).then(function (r) {
-    if (!r.ok) throw new Error('jokyo ' + r.status);
-    return r.json();
-  }).then(umeru).catch(yomenai);
-})();
 
 /* ------------------------------------------------------------
    アイスを押したときの、ひとこと。
