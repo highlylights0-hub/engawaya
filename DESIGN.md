@@ -163,7 +163,7 @@ CSSファイルを作って読み込ませてはいけません（憲法①が�
 |---|---|
 | 生成り | `asobi/` `osewa/` |
 | 母屋 | `index.html` `naze/` `nikki/` `koe/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `kad/` `kad/jisho/` `404.html` |
-| 選ばせる | `oto/` `hanashiaite/` `asobiba/narabe/` `indexplayland.html` |
+| 選ばせる | `asobiba/narabe/` |
 | 遊び場 | `asobiba/` `asobiba/suikawari/` `asobiba/renga/` |
 | 手引き | `kad/tebiki/` とその全ページ（`prefers-color-scheme` で二枚） |
 
@@ -189,12 +189,6 @@ CSSファイルを作って読み込ませてはいけません（憲法①が�
 |---|---|---|---|---|---|
 | `meter/` | `--card`（素） | `#ffffffcc` | `#ffffffdd` | 計算の紙。数字を読ませる面なので、少し濃く | 2026-09-07 記録 |
 | `meter/` | `--card`（夜） | `#2b3446e6` | `#2b3446ee` | 同上 | 2026-09-07 記録 |
-| `oto/` | `--kami`（黒地） | `#0d1424` | `#10151f` | この棟だけ先に建った。揃えるかは施主の判断 | 2026-09-07 記録 |
-| `oto/` | `--ink`（黒地） | `#f2f4fa` | `#f5f7fb` | 同上 | 2026-09-07 記録 |
-| `oto/` | `--sen`（黒地） | `#435070` | `#4a5670` | 同上 | 2026-09-07 記録 |
-| `oto/` | `--botan`（黒地） | `#223050` | `#2a3855` | 同上 | 2026-09-07 記録 |
-| `oto/` | 変数の名 | `--ink-soft` | `--ink-yawaraka` | 同上。**名前だけの違い**。値は表と同じ役目 | 2026-09-07 記録 |
-| `indexplayland.html` | `--ink-soft`（白地） | `#444444` | `#3d3d3d` | 差はごく小さい。どちらも床の上 | 2026-09-07 記録 |
 | `asobiba/` | `--ink` | `#f2f4fa` | `#eceef5` | 親だけ古い。子（`renga/` `suikawari/`）が新しい | 2026-09-07 記録 |
 | `asobiba/` | `--ink-soft` | `#aab3c8` | `#9aa3b8` | 同上 | 2026-09-07 記録 |
 | `asobiba/` | 変数の名 | `--wakusen` | `--waku` | 同上。旧い名前 | 2026-09-07 記録 |

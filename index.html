@@ -141,6 +141,33 @@ html, body { overflow-x: hidden; }
 .mado canvas { display: block; image-rendering: pixelated; }
 .mado-cap { margin: 10px 0 0; font-size: 12px; color: var(--usu); text-align: right; }
 
+/* ---- TAXI PRO NAVI の段（2026-10-29）----
+   左に画面二枚・右に中身・下の帯に 10 枚（横に送る）。サブスクの箱は差し色の細い罫だけで区切る（影は付けない）。 */
+.navi-futatsu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: sticky; top: 24px; }
+@media (max-width: 760px) { .navi-futatsu { position: static; } }
+.navi-futatsu img, .navi-nagare img { border-radius: 10px; }
+.navi-futatsu figcaption { grid-column: 1 / -1; }
+.navi-iiten { margin: 18px 0 0; padding: 0; list-style: none; font-size: 14px; }
+.navi-iiten li { padding: 7px 0; border-top: 1px dotted var(--ten); }
+.navi-iiten li:first-child { border-top: 0; }
+.navi-iiten b { display: block; font-size: 14.5px; }
+.navi-sub { margin: 20px 0 0; padding: 14px 16px; border: 1px solid var(--sen2); border-left: 3px solid var(--sashi); background: var(--ji2); }
+.navi-sub-na { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-weight: 700; font-size: 15px; }
+.navi-sub-ne { margin-left: auto; font-family: var(--min); font-size: 17px; }
+.navi-sub ul { margin: 10px 0 0; padding-left: 1.2em; font-size: 13.5px; line-height: 1.8; }
+.navi-sub-note { margin: 10px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--usu); }
+.navi-fuda { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 11.5px; font-weight: 700; letter-spacing: .05em; white-space: nowrap;
+  background: var(--sashi); color: var(--sashi-moji); }
+.navi-gaku { grid-column: 1 / -1; min-width: 0; }
+.navi-gaku-midashi { display: flex; justify-content: space-between; margin: 0 0 10px; font-size: 13px; color: var(--usu); }
+.navi-nagare { display: flex; gap: 14px; margin: 0; padding: 0 0 12px; list-style: none;
+  overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.navi-nagare li { position: relative; flex: 0 0 168px; scroll-snap-align: start; }
+.navi-nagare img { display: block; width: 100%; height: auto; border: 1px solid var(--sen2); background: #1b1f24; }
+.navi-nagare .navi-fuda { position: absolute; top: 8px; left: 8px; }
+.navi-nagare p { margin: 8px 2px 0; font-size: 12.5px; line-height: 1.6; color: var(--usu); }
+@media (max-width: 720px) { .navi-nagare li { flex-basis: 38vw; } }  /* 三枚目が少し覗く＝横に送れると分かる */
+
 /* ---- 作っているもの ----
    道具の並べ方（.row・.spec・.tools・.hoka）は、遊びの部屋でも使うので kihon.css へ移した（2026-10-27）。 */
 /* スマホで来た人への案内（2026-10-27。博喜さんのご依頼
@@ -968,7 +995,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     <div>
       <p class="genkan-eyebrow">ソフトウェアの個人開発</p>
       <h1 id="genkan-midashi">図面の道具と、<br>乗務員のナビを<br>つくっています。</h1>
-      <p class="genkan-lead">建築・土木の 2D CAD「K'Ad蔵人」と、タクシー乗務員のための「TAXI PRO NAVI」。つくっているのは会社ではなく、ひとり（岡澤 博喜）と蔵人（AI）です。どれも無料で使えます。</p>
+      <p class="genkan-lead">建築・土木の 2D CAD「K'Ad蔵人」と、タクシー乗務員のための「TAXI PRO NAVI」。つくっているのは会社ではなく、ひとり（岡澤 博喜）と蔵人（AI）です。K'Ad蔵人は無料、TAXI PRO NAVI は無料で始められて、手をかけた一部の機能だけサブスクリプションです。</p>
       <div class="btns">
         <a class="btn btn-p" href="#tsukutte">作っているものを見る</a>
         <a class="btn btn-s" href="nikki/">開発日記を読む</a>
@@ -987,7 +1014,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   <div class="ie-in">
     <div class="sec-head">
       <h2 id="tsukutte-midashi">作っているもの</h2>
-      <p class="sec-sub">仕事で使う道具を中心に。どれも無料です。</p>
+      <p class="sec-sub">仕事で使う道具を中心に。無料で使えるものと、価値ある機能だけ有料のものがあります。</p>
     </div>
 
     <!-- K'Ad蔵人（2026-10-27 表紙の建て替えで、玄関の戸からここへ）。
@@ -1182,7 +1209,8 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     </article>
 
     <!-- TAXI PRO NAVI（2026-10-27 ここへ）。
-         ⚠️絵は新しく撮っていない。開発日記の中にある実物（nikki/2026-10-09-taxi-pro-navi.png）をそのまま指す
+         📌2026-10-29 から下の板書（日記の絵を指す）は古い。絵は navi/ に置いた（段の頭の板書を見ること）。
+         ⚠️（10-27 当時）絵は新しく撮っていない。開発日記の中にある実物（nikki/2026-10-09-taxi-pro-navi.png）をそのまま指す
            ＝同じ絵をもう一枚置くと、片方だけ古い画面が残る（K'Ad の玄関の絵と同じ作法）。
            画面が大きく変わった版を出した日は、日記の新しい絵へ指し替える。
          ---- ここから下は、前の表紙の板書（消さない）---- -->
@@ -1200,24 +1228,69 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     <!-- 入手の窓口（座布団＝App Store）と、中身を知る窓口（ここ）。
          押す前に「どんな道具か」を確かめたい人の行き先が無いと、
          看板だけあって中身へ行けない家になる。 -->
-    <article class="row">
-      <figure class="row-e">
-        <img src="nikki/2026-10-09-taxi-pro-navi.png" width="660" height="460" loading="lazy"
-             alt="TAXI PRO NAVI の画面を三枚並べたもの。左は、高速の入口と出口を選ぶ画面で、地図に入口と出口の緑の札と、その間の高速を示す緑の線、下に出口の一覧。真ん中は、首都高速の上を走っている画面で、上の帯に次の分かれ道の案内。右は、空港中央入口から湾岸習志野出口まで、東京湾ぞいに緑の線が伸びている画面。">
-        <figcaption>入口と出口を選ぶ・走る・道を確かめる（開発日記 2026年10月9日の絵）。</figcaption>
+    <!-- 2026-10-29 組み直し（博喜さんのご依頼「案内とスクショが古い。画像の枚数の制限はない。伝わったらOK。
+           アプリ内課金の表示。アプリのメリットをアピールしたい」）。
+         【絵】App Store に出している今の 10 枚（3.2 の時点）を、幅 480px の JPEG にして navi/ に置いた。
+           正は非公開の TaxyVoice の「リリース準備」の各版のスクショ。App Store の絵を差し替えた日は、ここも書き出し直す。
+           左の二枚は「走る」と「お金の目安」の代表。下の帯は横に送って全部見られる。
+         【サブスクの札】サブスクの中身が写っている絵にだけ付ける（字の「サブスク」を添える＝色だけに背負わせない）。
+         【有料の機能】App Store の説明文・スクショで既に見せている物（羽田の乗り場の波・国際線・カメラ・運賃の目安・高速代・運賃の地図）だけを書く。
+           明日の朝の便などの中身は書かない（有料の機能は公開の場で中身を出さない＝博喜さんの決まり 2026-10-19）。
+         【版の数字】ここには書かない。版の表（開発の記録）ひとつだけ（同じ数字を二か所に置かない）。 -->
+    <article class="row navi-row">
+      <figure class="row-e navi-futatsu">
+        <img src="navi/1-shuuden.jpg" width="480" height="1044" loading="lazy"
+             alt="新宿の地図。新宿駅の札に、JA 大崎行 23時31分 あと6分、JS 籠原行 23時33分、JA 大宮行 0時00分と終電が並び、上の帯に京葉線の運転見合わせ。">
+        <img src="navi/6-shutoko.jpg" width="480" height="1044" loading="lazy"
+             alt="首都高速の上を走るナビ。上の緑の帯に「1.1km 右車線 浜崎橋JCT」、下の窓に浅草寺まで 10.8km・20分・高速代 750円・運賃の目安 約9,350円。通り過ぎた道は灰色。">
+        <figcaption>左：近くの駅の終電を地図に（無料）。右：首都高を走りながら、運賃の目安と高速代（サブスク）。</figcaption>
       </figure>
       <div>
         <p class="tag">乗務員のためのナビ</p>
         <h3>TAXI PRO NAVI</h3>
-        <p class="desc">高速の入口・出口を自分で選べる、乗務員のためのナビです。全国の高速と、乗禁地区のお知らせに対応しています。</p>
+        <p class="desc">高速の入口・出口を自分で選べる、乗務員のためのナビです。走りながら、終電・電車の止まり・催しの終わり・乗禁地区まで、乗務に要る知らせを地図の上に出します。</p>
+        <ul class="navi-iiten">
+          <li><b>入口・出口を自分で選ぶ</b>全国の高速。首都高の規制も［交通情報］で見られます。</li>
+          <li><b>終電の札</b>近くの駅に、方面ごとの終電と「あと何分」。</li>
+          <li><b>電車が止まったら、すぐ分かる</b>JR・私鉄の運転見合わせと遅れ。</li>
+          <li><b>催しの終わり</b>球場・ホール・アリーナの終演の見込み。</li>
+          <li><b>二点の道順（A→B）</b>「蒲田駅から帝国ホテルまで」に、その場で道と時間を。</li>
+          <li><b>乗禁地区</b>銀座など、乗り場以外で乗せられない時間を赤く。</li>
+          <li><b>乗務の言い方で読む声</b>環七は「カンナナ」。</li>
+        </ul>
+        <div class="navi-sub">
+          <p class="navi-sub-na"><span class="navi-fuda">サブスク</span>乗り場の波・運賃の目安<span class="navi-sub-ne">月 200 円</span></p>
+          <ul>
+            <li>羽田空港の乗り場ごとの、これから 60 分・90 分のお客様の波</li>
+            <li>今夜の国際線の便と遅れ、待機所と乗り場のカメラ</li>
+            <li>タクシー運賃の目安（キロ数の概算＋高速代）と高速代</li>
+            <li>運賃の地図（1,000 円ごとに、どこまで行けるか）</li>
+          </ul>
+          <p class="navi-sub-note">月払いひとつだけ。缶コーヒー一本ほどの、同業の仲間への値段です。ほかの機能は、そのまま無料でお使いいただけます。解約は iPhone の設定（サブスクリプション）からいつでも。</p>
+        </div>
         <dl class="spec">
           <dt>動く場所</dt><dd>iPhone</dd>
-          <dt>料金</dt><dd>無料（App Store で配布）</dd>
+          <dt>料金</dt><dd>無料（App 内課金あり：月 200 円のサブスクリプション）</dd>
         </dl>
         <div class="btns">
           <a class="btn btn-p" href="https://apps.apple.com/jp/app/id6788990853">App Store で見る</a>
           <a class="btn btn-s btn-sm" href="https://highlylights0-hub.github.io/geomemory-help/">使い方ガイド</a>
         </div>
+      </div>
+      <div class="navi-gaku">
+        <p class="navi-gaku-midashi"><span>画面を見る（10 枚）</span><span aria-hidden="true">横に送れます →</span></p>
+        <ul class="navi-nagare">
+          <li><img src="navi/1-shuuden.jpg" width="480" height="1044" loading="lazy" alt="新宿の地図に、駅ごとの終電の札。"><p>地図に終電の札</p></li>
+          <li><img src="navi/2-joho.jpg" width="480" height="1044" loading="lazy" alt="［情報］の板。電車・催し・空港・運賃の地図の四枚。"><p>［情報］の板</p></li>
+          <li><img src="navi/3-densha.jpg" width="480" height="1044" loading="lazy" alt="電車の運行の一覧。京葉線の運転見合わせ、東西線の遅れ、近くの駅の終電。"><p>電車の運行と近くの駅の終電</p></li>
+          <li><img src="navi/4-moyooshi.jpg" width="480" height="1044" loading="lazy" alt="今日の催しの終わりの一覧。会場と終演の見込みの時刻。"><p>催しの終わり</p></li>
+          <li><img src="navi/5-nitten.jpg" width="480" height="1044" loading="lazy" alt="蒲田駅から帝国ホテルまでの二点の道順。14.7km・約38分・高速代480円・運賃の目安 約6,380円。"><span class="navi-fuda">運賃はサブスク</span><p>二点の道順（A→B）</p></li>
+          <li><img src="navi/6-shutoko.jpg" width="480" height="1044" loading="lazy" alt="首都高の上のナビ。運賃の目安と高速代。"><span class="navi-fuda">サブスク</span><p>首都高の上で運賃と高速代</p></li>
+          <li><img src="navi/7-ginza.jpg" width="480" height="1044" loading="lazy" alt="銀座の乗禁地区が赤い斜線で示され、下に「乗禁地区内（〜1:00）乗り場以外では、乗せられません」。"><p>乗禁地区のお知らせ</p></li>
+          <li><img src="navi/8-haneda.jpg" width="480" height="1044" loading="lazy" alt="羽田の乗り場の波。1号から国際までの、これから60分のお客様の流れと、90分の便の数。"><span class="navi-fuda">サブスク</span><p>羽田の乗り場の波</p></li>
+          <li><img src="navi/9-kokusai.jpg" width="480" height="1044" loading="lazy" alt="これからの国際線。便名・出発地・遅れの見込み。"><span class="navi-fuda">サブスク</span><p>今夜の国際線</p></li>
+          <li><img src="navi/10-camera.jpg" width="480" height="1044" loading="lazy" alt="羽田の待機所と乗り場のカメラへの入口。"><span class="navi-fuda">サブスク</span><p>待機所と乗り場のカメラ</p></li>
+        </ul>
       </div>
     </article>
 
@@ -1277,14 +1350,16 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
          母屋は日本語だけのページで、読む人はまず日本の App Store を使う人だから、
          断り書きは大多数にとって「自分は使えないかも」と一瞬思わせるだけの一行になる。
          GeoMemory の札にも書いていないので、二枚の調子も揃う。 -->
+    <!-- 2026-10-29 バリアフリー（indexplayland.html）・話し相手（hanashiaite/）・音の縁側（oto/）を下ろした。
+         博喜さんの裁定「必要以上に、個人への立ち入りを感じました。トラブルを避けるために消したい。
+         ハンデのある方にとって、少々煙たいのかもしれない」
+         「ハンデのある方は、普通に健常者のように振る舞って欲しい。そんな気持ちもあることをたまに目にします」。
+         ＝「あなたのための入り口」と分けて案内すること自体が、線を引くことになる。ファイルは git の履歴に残る。 -->
     <div class="hoka">
       <h3>そのほかに作ったもの</h3>
       <ul>
         <li><a href="ochigee/"><b>Ochi-Gee 星のおちもの</b><span>iPhone の落ちものパズル。広告なし・通信なし。</span></a></li>
         <li><a href="asobi/"><b>遊びの部屋</b><span>ガチ空戦・ゴテゴテ空戦・MIDI工房・遊び場。</span></a></li>
-        <li><a href="indexplayland.html"><b>縁側屋バリアフリー</b><span>大きな字と、大きな絵で遊べる入り口。</span></a></li>
-        <li><a href="oto/"><b>音の縁側</b><span>目をつかわなくても使える入り口。</span></a></li>
-        <li><a href="hanashiaite/"><b>話し相手がほしいとき</b><span>AI と話してみるための、個人の案内。</span></a></li>
       </ul>
     </div>
   </div>
@@ -1334,8 +1409,8 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
             </tr>
             <tr>
               <th scope="row">TAXI PRO NAVI</th>
-              <td>3.1</td>
-              <td>2026年10月27日</td>
+              <td>3.2</td>
+              <td>2026年10月28日</td>
             </tr>
         <!-- 座布団の札は「Ochi-Gee 星のおちもの」ですが、ここは短いほうだけ。
              表の一列目が長くなると、右の日付が画面の外へ押し出されます。 -->
@@ -1373,6 +1448,11 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
        「作った人を信じてもらう」ための一行が事実でないなら、いちばん壊れる。
        代わりに、確かに本当のこと——会社ではないこと、ひとりと蔵人で
        作っていること、直しも間違いも開発日記に出していること——を置いた。 -->
+    <!-- 2026-10-29：「ぜんぶ無料」の宣言を下ろした（博喜さんの裁定「全部無料はやめます。これからが、無料、
+           価値あるものは有料で、色々製作していきたい」）。前の文は下に控えとして残す：
+           「ここの道具は、ぜんぶ<b>無料</b>です。お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。
+             使ってみて、役に立ったなら、それでじゅうぶんです。」
+    -->
     <!-- 2026-10-27：無料の宣言を、縁側からここへ。作っている者の言葉として置く。
          ⚠️言い切って、説明しない（2026-09-17、理由を並べる戸を外したときの作者のお言葉
            「変な気を使わせても、仕方ない気がしたので」）。 -->
@@ -1380,7 +1460,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
       <p class="ichigen">会社ではありません。<br>ひとりと、蔵人（AI）で<br>作っています。</p>
       <div>
         <p>つくっているのは岡澤 博喜です。直したことも、間違えたことも、そのまま開発日記に書いています。</p>
-        <p>ここの道具は、ぜんぶ<b>無料</b>です。お金のあるなしで持てる道具が変わるのは、おかしいと思うからです。使ってみて、役に立ったなら、それでじゅうぶんです。</p>
+        <p>ここには、<b>無料</b>で使える道具と、手をかけた価値ある機能だけ<b>有料</b>の道具があります。有料のぶんは、次の道具をつくる力になります。使ってみて、役に立ったなら、それでじゅうぶんです。</p>
         <div class="btns">
           <a class="btn btn-s btn-sm" href="naze/">なぜ、こう作ったか</a>
           <a class="btn btn-s btn-sm" href="osewa/">お世話になっているところ</a>
