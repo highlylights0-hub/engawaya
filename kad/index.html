@@ -284,8 +284,10 @@ footer {
     </div>
     <div class="kama-row">
       <span class="kama-label">つくっているところ</span>
-      <span class="kama-val kama-wip">小窓の履歴の、長い行の読ませ方</span>
-      <span class="kama-date">次の版でお届けします</span>
+      <!-- 2026-11-13 直した。それまで「小窓の履歴の、長い行の読ませ方／次の版でお届けします」と
+           出ていたが、工事は 2026-10-29 から止まっている＝果たされていない予告になっていた。 -->
+      <span class="kama-val kama-wip">いまは、新しい工事をお休みしています</span>
+      <span class="kama-date">いま配っている版は、このままお使いいただけます</span>
     </div>
     <!-- 2026-09-07 足した。Windows に入れて使う版。
          🔑**行き先は /releases/latest**（版の番号を持たない住所）＝新しい版を出せば、
@@ -299,7 +301,7 @@ footer {
     <div class="kama-row">
       <span class="kama-label">Windows に入れて使う版</span>
       <span class="kama-val"><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">3.3.1（試用版）</a></span>
-      <span class="kama-date">2026年9月29日 ・ GitHub から ・ 初回に Windows の警告が出ることがあります</span>
+      <span class="kama-date">2026年10月29日 ・ GitHub から ・ 初回に Windows の警告が出ることがあります</span>
     </div>
     <!-- 2026-09-13 足した。Mac に入れて使う版（Apple の公証済み・中身は Windows版と同じ版）。
          行き先は Windows版と同じ /releases/latest（そのページに Windows と Mac の zip が並ぶ）。
@@ -307,7 +309,7 @@ footer {
     <div class="kama-row">
       <span class="kama-label">Mac に入れて使う版</span>
       <span class="kama-val"><a href="https://github.com/highlylights0-hub/gcad-web/releases/latest">3.3.1（試用版）</a></span>
-      <span class="kama-date">2026年9月29日 ・ GitHub から（名前に Mac の付いた zip）・ Apple の公証済み ・ <b>macOS 12（Monterey）以降</b> ・ Apple シリコンの Mac では Rosetta 2 を通して動きます</span>
+      <span class="kama-date">2026年10月29日 ・ GitHub から（名前に Mac の付いた zip）・ Apple の公証済み ・ <b>macOS 12（Monterey）以降</b> ・ Apple シリコンの Mac では Rosetta 2 を通して動きます</span>
     </div>
     <p class="kama-chu">
       <b>窯</b>（かま）は、この道具の版の数え方です。K'Ad蔵人を開くと、画面のいちばん下に
@@ -465,6 +467,21 @@ footer {
       それでも、まだ見つかっていない取りこぼしはあるはずです。
       <b>見つけたら直して、直したとここに書きます。</b>
       黙って直す道具より、そのほうが預ける気になれると思うからです。
+    </p>
+    <!-- 2026-11-13 足した。断面の見本の DXF を K'Ad で往復させて、前後を別の読み手（ezdxf）で比べた結果。
+         正は GCad の 調査/reports/K'Adの棚卸しとDiamondSimへの継ぎ目 2026-11-13.md の「六」。
+         ⚠️直した日は、この段を「直しました」に書き換える（消さない）。 -->
+    <p>
+      <b>2026年11月13日に見つけた取りこぼし（まだ直していません）</b><br>
+      よそのCADで作られた図面を開いて、別の名前で保存すると、次のものが写しに残りません。
+      折れ線（ポリライン）に付けた<b>幅</b>と線種のつなぎ方の指定、
+      図形ひとつずつに付けた<b>線の太さ</b>、
+      <b>フルカラー（24ビット）の色</b>、
+      図面がメートル系かインチ系かの名乗り。
+      保存した写しの形式の版は、ひとつ古いもの（R2007）になります。<br>
+      <b>線の位置・寸法・画層・図面の単位は変わりません。</b>
+      元のファイルには上書きしないので、元は無傷です。
+      上の「知らないまま預かって返します」は、この分だけ言い過ぎでした。
     </p>
   </section>
 
