@@ -369,6 +369,20 @@ html[data-time="night"] {
 .ice[data-kisetsu] { display: none; }
 html[data-season="summer"] .ice[data-kisetsu="natsu"] { display: inline-block; }
 html[data-season="autumn"] .ice[data-kisetsu="aki"]   { display: inline-block; }
+html[data-season="winter"] .ice[data-kisetsu="fuyu"]  { display: inline-block; }
+
+/* 冬の主役＝おでん（2026-11-18 施主のご裁定「おでんを作る」「おでん　いいですね☺️」。
+   ご指定は一年前の 2026-07-30「冬は、おでん」）。
+   ■ 席＝二人の「前」、板の上。秋に茶盆が居た場所（左右は二人の肩の中点＝.chabon と同じ式）。
+     焼き芋のように二人のあいだ（52px）へは入らない。土鍋は横に広いので、
+     肩のあいだに押しこむと、二人の腕に鍋の耳が刺さって見える。
+     冬は茶盆（団子・ススキ＝お月見）をしまうので、前の席が空く。
+   ■ 湯気は立てない（焼き芋と同じ掟）。湯気はストーブのやかんが一つ立てている。
+     二つ立てると、縁側の前で動くものが増えて目を引く。「熱い」は言葉のほうで言う。 */
+.oden { top: 0; left: calc(56% + 88px); }
+.oden svg { width: 82px; }   /* 34マス×2px＝68 では主役に見えなかった（茶盆の 84px に揃えた） */
+.oden:hover  { transform: translateX(-50%) translateY(-3px) rotate(-2deg); }
+.oden:active { transform: translateX(-50%) translateY(1px); }
 
 /* アイスを押したときに出るひとこと */
 .whisper {
@@ -391,7 +405,8 @@ html[data-season="autumn"] .ice[data-kisetsu="aki"]   { display: inline-block; }
   z-index: 5;
 }
 /* 秋は焼き芋が二人のあいだに座るので、ひとことも芋の真上へ（式は .imo と同じ） */
-html[data-season="autumn"] .whisper { left: calc(56% + 88px); }
+html[data-season="autumn"] .whisper,
+html[data-season="winter"] .whisper { left: calc(56% + 88px); }   /* 冬はおでんの真上（式は .oden と同じ） */
 .whisper.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ---- 夏の景物（縁側に置く点描） --------------------------------
@@ -566,6 +581,13 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
 /* 初冬（2026-11-18）。旬の札で出し入れする景物（いまはストーブだけ）。
    ⚠️秋の景物（二人・干し柿・茶盆）は、初冬もそのまま出ている＝季節の札は秋のまま。 */
 html[data-shun="shotou"] .natsu[data-kisetsu="shotou"]  { display: block; }
+/* 冬（2026-11-18）。二人とストーブは、冬も縁側に残る（おでんを囲む人が要る）。
+   ⚠️札は秋（aki）・初冬（shotou）のままにして、冬の行を一本足すだけ。
+   札を書き換えると、秋と初冬の出し入れまで巻きこむ。
+   干し柿・茶盆（お月見）・赤とんぼは、冬には出さない。 */
+html[data-season="winter"] .natsu.hito,
+html[data-season="winter"] .natsu.sutobu { display: block; }
+html[data-season="winter"] .natsu[data-kisetsu="fuyu"]  { display: block; }
 /* 初冬は、赤とんぼとコオロギに帰ってもらう。氷点下の朝に飛ぶトンボも、
    鳴くコオロギも居ない。⚠️絵は消さない（来年の秋にまた出る）。 */
 html[data-shun="shotou"] .natsu.tombo { display: none; }
@@ -821,11 +843,15 @@ html[data-time][data-season][data-shun="shotou"] .koorogi { display: none; }
   /* ストーブも人（50px）に合わせて一回り小さく。博喜さんの左肩に寄せる */
   .sutobu    { left: calc(54% - 40px); width: 36px; top: -57px; }
   .imo       { left: calc(54% + 85px); }   /* 肩のあいだ 70px に 46px の芋 */
+  .oden      { left: calc(54% + 85px); }   /* 茶盆と同じ席・同じ式 */
+  .oden svg  { width: 68px; }
   /* ひとことは芋の真上に置くと右端から 26px はみ出す（幅 241px・中心 296px）。
      狭い画面では右端に寄せて置く（transform は .show の側も上書きする——
      片方だけ変えると、出る瞬間に横へ滑る）。 */
-  html[data-season="autumn"] .whisper      { left: auto; right: 8px; transform: translateY(6px); }
-  html[data-season="autumn"] .whisper.show { transform: translateY(0); }
+  html[data-season="autumn"] .whisper,
+  html[data-season="winter"] .whisper      { left: auto; right: 8px; transform: translateY(6px); }
+  html[data-season="autumn"] .whisper.show,
+  html[data-season="winter"] .whisper.show { transform: translateY(0); }
   html[data-season="autumn"] .natsu[data-kisetsu="aki"].tombo  { display: none; }
   /* 吹き出しは、二人とも画面の右寄りに居るので、頭の中心から左右に
      広げると右端からはみ出す（横スクロールが生まれる）。狭い画面では
@@ -2320,6 +2346,90 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     </svg>
   </button>
 
+  <!-- 冬の主役＝おでん（2026-11-18 施主のご裁定「おでんを作る」）。
+       押すとひとこと言う。アイス・焼き芋と同じ仕掛け（.ice）。
+       土鍋を斜め上から。具は四つ＝大根・煮卵・こんにゃく・ちくわ。それに串が一本。
+       ⚠️具を全部、別の色と形にする。この大きさで同じ色が隣り合うと、
+       二つの具が一つの塊に溶けて、何が入っているか読めなくなる。
+       大根は白っぽい丸、卵は茶色の丸（光の点で卵に見せる）、こんにゃくは灰の三角、
+       ちくわは焦げ目のある筒、串は鍋から斜めに一本だけ出す。 -->
+  <button class="ice oden" id="oden" data-kisetsu="fuyu" aria-label="おでんをたべる">
+    <svg viewBox="0 0 34 22" shape-rendering="crispEdges" role="img" aria-hidden="true">
+      <!-- ⚠️一度目は、縁も胴も同じ茶色・出汁は明るい琥珀で描いた。すると
+           鍋は「茶色の箱」に見え、大根と卵が出汁に溶けて読めなかった（2026-11-18 iPhone の幅で）。
+           土鍋らしく、縁は釉薬の掛かっていない明るい土の色、胴は濃い飴色にして、
+           出汁は一段濃くした＝具が明るく浮く。胴の下をすぼめて、箱ではなく丸い鍋に。 -->
+      <!-- 鍋の耳（取っ手） -->
+      <g fill="#3f2b20">
+        <rect x="0"  y="8" width="3" height="2"/>
+        <rect x="31" y="8" width="3" height="2"/>
+      </g>
+      <!-- 鍋の縁（口）。上から見た楕円。明るい土の色 -->
+      <g fill="#d6c6a6">
+        <rect x="7" y="5"  width="20" height="1"/>
+        <rect x="4" y="6"  width="26" height="1"/>
+        <rect x="3" y="7"  width="28" height="4"/>
+        <rect x="4" y="11" width="26" height="1"/>
+        <rect x="7" y="12" width="20" height="1"/>
+      </g>
+      <rect x="27" y="11" width="3" height="1" fill="#a99878"/>
+      <rect x="24" y="12" width="3" height="1" fill="#a99878"/>
+      <!-- 出汁。濃い醤油色。縁を一マス残して内側に -->
+      <g fill="#8a5a2e">
+        <rect x="8" y="6"  width="18" height="1"/>
+        <rect x="5" y="7"  width="24" height="4"/>
+        <rect x="8" y="11" width="18" height="1"/>
+      </g>
+      <!-- 鍋の胴。濃い飴色。左に光、右に影、下をすぼめる -->
+      <rect x="4"  y="13" width="26" height="4" fill="#5a3826"/>
+      <rect x="5"  y="17" width="24" height="1" fill="#5a3826"/>
+      <rect x="7"  y="18" width="20" height="1" fill="#4a2d1f"/>
+      <rect x="6"  y="14" width="6"  height="1" fill="#7d5338"/>
+      <rect x="26" y="13" width="4"  height="4" fill="#45291c"/>
+      <!-- 鍋敷き（木）。板の上に置いてある、の印 -->
+      <rect x="4"  y="19" width="26" height="1" fill="#a8834f"/>
+      <rect x="6"  y="20" width="3"  height="2" fill="#8a6a45"/>
+      <rect x="25" y="20" width="3"  height="2" fill="#8a6a45"/>
+
+      <!-- 大根。白っぽい丸、右下に出汁の染みた影 -->
+      <g fill="#f3e8c8">
+        <rect x="6" y="7" width="4" height="1"/>
+        <rect x="5" y="8" width="6" height="2"/>
+        <rect x="6" y="10" width="4" height="1"/>
+      </g>
+      <rect x="10" y="8" width="1" height="2" fill="#d4b67a"/>
+      <rect x="7"  y="10" width="3" height="1" fill="#d8bd82"/>
+      <!-- 煮卵。茶色の丸に、光の点を一つ -->
+      <g fill="#d9a65e">
+        <rect x="13" y="7" width="3" height="1"/>
+        <rect x="12" y="8" width="5" height="2"/>
+        <rect x="13" y="10" width="3" height="1"/>
+      </g>
+      <rect x="13" y="8" width="1" height="1" fill="#fff3d6"/>
+      <rect x="16" y="9" width="1" height="1" fill="#9c6a34"/>
+      <!-- こんにゃく。灰の三角に、黒い粒を二つ -->
+      <g fill="#9a938a">
+        <rect x="20" y="7"  width="1" height="1"/>
+        <rect x="19" y="8"  width="3" height="1"/>
+        <rect x="18" y="9"  width="5" height="2"/>
+      </g>
+      <rect x="19" y="10" width="1" height="1" fill="#544e48"/>
+      <rect x="21" y="9"  width="1" height="1" fill="#544e48"/>
+      <!-- ちくわ。焦げ目の筒。左の端に穴 -->
+      <rect x="24" y="8" width="5" height="2" fill="#c98a48"/>
+      <rect x="26" y="8" width="2" height="1" fill="#8a5229"/>
+      <rect x="24" y="8" width="2" height="2" fill="#e8cfa0"/>
+      <rect x="24" y="9" width="1" height="1" fill="#6b4630"/>
+      <!-- 串。鍋から斜めに一本だけ。
+           ⚠️先に灰色のつみれを付けたら、大きく見ると旗が立っているように見えた。串だけにした。 -->
+      <g fill="#d8c49a">
+        <rect x="22" y="5" width="1" height="2"/>
+        <rect x="23" y="3" width="1" height="2"/>
+        <rect x="24" y="1" width="1" height="2"/>
+      </g>
+    </svg>
+  </button>
+
   <!-- 夜の虫の声。夜の秋だけ出る（CSS の「夜の虫の声」の項）。
        エンマコオロギを横から。黒っぽい体・長い触角・太い後ろ脚。
        ⚠️この大きさでは触角を細く長く描くのが要。触角が短いと、ただの黒い豆になる。 -->
@@ -2615,6 +2725,14 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
       '足、ぶらぶらしてもいいですよ。',
       'おかえりなさい。',
       '日が、短くなりましたね。'
+    ],
+    /* 冬（2026-11-18）。「熱い」は湯気ではなく、ここで言う */
+    fuyu: [
+      'どうぞ、座っていってください。',
+      '熱いので、ふうふうしてどうぞ。',
+      '大根、よく染みてますよ。',
+      'おかえりなさい。',
+      'からし、つけますか。'
     ]
   };
 
@@ -2788,6 +2906,20 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
       ['この芋、北海道のです。',             '道理で、甘い。'],
       ['干し柿も、そろそろ食べごろです。',   '白い粉が、ふいてきましたね。'],
       ['後ろの人、どうしましょう。',         'ストーブの前、空いてますよ。']
+    ];
+  }
+
+  /* 冬（2026-11-18）。おでんを囲む話。
+     「木が、ポツン、ポツン。」は施主の美瑛の記憶（2026-07-30「冬の豪雪、一面真っ白の大地に、
+     木がポツン、ポツン。」）から。景色の冬は、この言葉を描いたもの。 */
+  if (document.documentElement.getAttribute('data-season') === 'winter') {
+    KAIWA = [
+      ['雪、積もりましたね。',             '一面、真っ白です。'],
+      ['おでん、煮えましたよ。',           '大根から、いただきます。'],
+      ['卵は、半分こしましょう。',         'からしは、少しで。'],
+      ['木が、ポツン、ポツン。',           '冬の美瑛ですねえ。'],
+      ['ストーブ、もう少し強くしますか。', 'ちょうどいいです。'],
+      ['後ろの人、どうしましょう。',       'おでん、まだありますよ。']
     ];
   }
 
@@ -3331,6 +3463,8 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
         var x = tane(i) * W;
         var y = tane(i + 100) * Y(64);
         if (y > mtnY(x) - Y(3)) continue;           /* 山にかぶるものは置かない */
+        if (y < Y(TENJOU) + 1) continue;            /* 天井の板にかぶるものも置かない
+                                                       （2026-11-18 冬の夜の画面で、星が軒板の上に打たれていた） */
         px(x, y, 1, 1, (i % 5 === 0) ? '#ffffff' : '#c8d4e8');
       }
     }
