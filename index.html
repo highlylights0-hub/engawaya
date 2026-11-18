@@ -563,6 +563,15 @@ html[data-season="autumn"] .whisper { left: calc(56% + 88px); }
 .natsu[data-kisetsu] { display: none; }
 html[data-season="summer"] .natsu[data-kisetsu="natsu"] { display: block; }
 html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
+/* 初冬（2026-11-18）。旬の札で出し入れする景物（いまはストーブだけ）。
+   ⚠️秋の景物（二人・干し柿・茶盆）は、初冬もそのまま出ている＝季節の札は秋のまま。 */
+html[data-shun="shotou"] .natsu[data-kisetsu="shotou"]  { display: block; }
+/* 初冬は、赤とんぼとコオロギに帰ってもらう。氷点下の朝に飛ぶトンボも、
+   鳴くコオロギも居ない。⚠️絵は消さない（来年の秋にまた出る）。 */
+html[data-shun="shotou"] .natsu.tombo { display: none; }
+/* ⚠️コオロギを出す側（「夜の虫の声」の項）は札三つで書いてあり、しかもこの下にある。
+   同じ強さだと後に書いたほうが勝つので、こちらは札を四つにして勝たせる（2026-11-18 夜の画面で踏んだ）。 */
+html[data-time][data-season][data-shun="shotou"] .koorogi { display: none; }
 
 /* ---- 秋の景物 ---------------------------------------------------
    置く順（左→右）：干し柿（軒）／猫／アイス（中央・既存）／
@@ -676,6 +685,32 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
    ススキは団子より頭ひとつ高く立てる——本物の月見台でも、いちばん高いのはススキ。 */
 .chabon { left: calc(56% + 88px); top: 2px; width: 84px; transform: translateX(-50%); }
 
+/* 石油ストーブ（2026-11-18 施主「こたつや、ストーブの登場もありです」）。
+   博喜さんの左隣、板の上に置く。上にやかん、注ぎ口から湯気。
+   ■ なぜストーブで、こたつではないか：二人は丘のほうを向いて、縁に腰かけている。
+     こたつは座敷の真ん中に据えるもので、縁に腰かけた二人の足は入らない。
+     ストーブなら、縁側の端に一台置くだけで「あったかい場所」になる。
+   ■ 光らせない（縁側の景物の掟）。火の窓は色を置くだけで、まわりに光の輪を描かない。
+     夜にランプの色が回るのは、ほかの景物と同じ（「夜は、景物にランプの色が回る」の項）。
+   ■ 動くのは、やかんの湯気だけ。ゆっくり昇って消える。
+     ⚠️初冬は赤とんぼを帰したので、動くものの数は増えていない。
+   ■ 大きさ＝22×42マスを 44px（1マス2px の等倍。トンボの項の掟）。 */
+.sutobu { left: calc(56% - 52px); top: -70px; width: 44px; }
+.sutobu .yuge > g { opacity: 0; animation: yuge 5.6s ease-out infinite; }
+.sutobu .yuge > g:nth-child(2) { animation-delay: 1.9s; }
+.sutobu .yuge > g:nth-child(3) { animation-delay: 3.7s; }
+@keyframes yuge {
+  0%   { opacity: 0;   transform: translate(0, 0); }
+  15%  { opacity: .95; }
+  55%  { opacity: .8; }
+  100% { opacity: 0;   transform: translate(2px, -7px); }
+}
+/* 動きを止める設定の人には、湯気をひとすじ置いたままにする
+   （家じゅうの animation: none で止まると透明のまま＝湯気が消える。消えるより、居るほうがいい） */
+@media (prefers-reduced-motion: reduce) {
+  .sutobu .yuge > g:first-child { opacity: .7; }
+}
+
 /* 赤とんぼ。
    ■ 大きさ（2026-08-28 施主のご指摘「トンボは、スズメよりも小さいです」）
    62px → 22px。62px は人（.hito）とまったく同じ幅で、丘の上を飛ぶ虫が
@@ -783,6 +818,8 @@ html[data-season="autumn"] .natsu[data-kisetsu="aki"]   { display: block; }
      大きさだけ人（50px）に合わせて一回り小さく。左右の中心は
      二人の肩の中点＝54% + 50px + 35px。 */
   .chabon    { left: calc(54% + 85px); width: 70px; }
+  /* ストーブも人（50px）に合わせて一回り小さく。博喜さんの左肩に寄せる */
+  .sutobu    { left: calc(54% - 40px); width: 36px; top: -57px; }
   .imo       { left: calc(54% + 85px); }   /* 肩のあいだ 70px に 46px の芋 */
   /* ひとことは芋の真上に置くと右端から 26px はみ出す（幅 241px・中心 296px）。
      狭い画面では右端に寄せて置く（transform は .show の側も上書きする——
@@ -2052,6 +2089,77 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
                生えているので、水平に描くと絶対にトンボにならない。
                斜めの階段が、この大きさでは羽らしさの全部。
        すいっと滑って、ぴたりと止まる——鳥とは飛び方が違う。 -->
+  <!-- 石油ストーブ（2026-11-18 施主「こたつや、ストーブの登場もありです」）。
+       初冬だけ出る（data-kisetsu="shotou"。CSS の「石油ストーブ」の項）。
+       丸い筒の石油ストーブに、銅のやかん。湯気はやかんの注ぎ口から。
+       ⚠️火の窓は暗い枠の中に橙を二段置くだけ。光の輪は描かない（光らせない）。 -->
+  <div class="natsu sutobu" data-kisetsu="shotou"
+       role="img" aria-label="石油ストーブ。上にのせた銅のやかんから、湯気が立っている">
+    <svg viewBox="0 0 22 42" shape-rendering="crispEdges">
+      <!-- 湯気。注ぎ口の先から、三つ順に昇って消える（CSS の yuge）。
+           ⚠️一度、白い一マスで描いたら、うしろの道（淡い砂色）に溶けて見えなかった。
+           ひとかたまり三マスにして、下の端に灰を一マス添える＝空の雲と同じ描き方。 -->
+      <g class="yuge">
+        <g><rect x="18" y="5" width="3" height="2" fill="#ffffff"/><rect x="18" y="6" width="1" height="1" fill="#a9a397"/></g>
+        <g><rect x="17" y="4" width="3" height="2" fill="#ffffff"/><rect x="17" y="5" width="1" height="1" fill="#a9a397"/></g>
+        <g><rect x="18" y="3" width="3" height="2" fill="#ffffff"/><rect x="18" y="4" width="1" height="1" fill="#a9a397"/></g>
+      </g>
+      <g transform="translate(0,8)">
+        <!-- やかんの取っ手（つる） -->
+        <g fill="#5a3a24">
+          <rect x="6" y="0" width="8" height="1"/>
+          <rect x="5" y="1" width="1" height="2"/>
+          <rect x="14" y="1" width="1" height="2"/>
+        </g>
+        <!-- ふたと、つまみ -->
+        <rect x="9" y="2" width="2" height="1" fill="#4a2f1f"/>
+        <rect x="7" y="3" width="6" height="1" fill="#c98a5c"/>
+        <!-- やかんの胴（銅）。上下を一段すぼめて丸く -->
+        <g fill="#b8734a">
+          <rect x="5" y="4" width="10" height="1"/>
+          <rect x="4" y="5" width="12" height="3"/>
+          <rect x="5" y="8" width="10" height="1"/>
+          <!-- 注ぎ口。右上へ斜めに -->
+          <rect x="16" y="5" width="1" height="2"/>
+          <rect x="17" y="4" width="1" height="2"/>
+          <rect x="18" y="3" width="1" height="2"/>
+        </g>
+        <!-- 光の当たる側と、影の側。これで銅の丸みが出る -->
+        <rect x="5" y="5" width="2" height="2" fill="#e3ab7f"/>
+        <g fill="#8c5233">
+          <rect x="13" y="5" width="2" height="3"/>
+          <rect x="6"  y="8" width="8" height="1"/>
+        </g>
+
+        <!-- ストーブの天板 -->
+        <rect x="2" y="9"  width="16" height="1" fill="#3a3632"/>
+        <rect x="3" y="10" width="14" height="1" fill="#57514a"/>
+        <!-- 胴（生成りの琺瑯）。左に光、右に影＝筒に見せる -->
+        <rect x="3"  y="11" width="14" height="17" fill="#d8d0bd"/>
+        <rect x="4"  y="11" width="1"  height="17" fill="#efe9dc"/>
+        <rect x="15" y="11" width="2"  height="17" fill="#aaa190"/>
+        <!-- 火の窓。暗い枠の中に、橙の炎を二段。格子を四本 -->
+        <rect x="5" y="14" width="10" height="8" fill="#2b2522"/>
+        <rect x="6" y="15" width="8"  height="3" fill="#4a3328"/>
+        <rect x="7" y="18" width="6"  height="1" fill="#f0a64a"/>
+        <rect x="6" y="19" width="8"  height="2" fill="#d9772f"/>
+        <g fill="#3d3530">
+          <rect x="7"  y="15" width="1" height="6"/>
+          <rect x="9"  y="15" width="1" height="6"/>
+          <rect x="11" y="15" width="1" height="6"/>
+          <rect x="13" y="15" width="1" height="6"/>
+        </g>
+        <!-- 火加減のつまみと、油の量の目盛り -->
+        <rect x="12" y="24" width="2" height="2" fill="#3a3632"/>
+        <rect x="6"  y="24" width="3" height="1" fill="#8a8172"/>
+        <!-- 台。脚を左右に二つ -->
+        <rect x="2"  y="28" width="16" height="2" fill="#3a3632"/>
+        <rect x="3"  y="30" width="2"  height="2" fill="#2a2724"/>
+        <rect x="15" y="30" width="2"  height="2" fill="#2a2724"/>
+      </g>
+    </svg>
+  </div>
+
   <div class="natsu tombo" data-kisetsu="aki" aria-hidden="true">
     <svg viewBox="0 0 22 17" shape-rendering="crispEdges">
       <!-- 羽・四枚。体の付け根（x6あたり）から、前後へハの字に開く。
@@ -2386,8 +2494,20 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
      秋を二つに割ると、それを全部書き直すことになる＝必ずどこかで書き漏れる。
      晩秋は「秋の上に重ねる札」にしておけば、知らない仕掛けは今までどおりの秋で動く。
      ⚠️日付を見るのは、ここだけ（上の約束と同じ）。数字は毎年見直してよい。 */
-  var BANSHU = 1010;  /* 10月10日から 晩秋（冬の札が立つ 12月1日まで） */
-  if (k === 'autumn' && md >= BANSHU) {
+  var BANSHU = 1010;  /* 10月10日から 晩秋 */
+  /* 初冬（しょとう）＝秋の札のまま、雪が舞いはじめる頃（2026-11-18 施主のご依頼
+     「北海道は、雪が舞う季節。……縁側屋も模様替えの時期」）。
+     ⚠️なぜ 11月7日か：立冬（暦の冬の入り）。それだけでなく、美瑛でもこの年は
+     ちょうど 11月7日から雪がちらつきはじめた（Open-Meteo で過去二週を見た。
+     ただし積もってはすぐ溶ける＝根雪はまだ）。暦と土地の体感が、たまたま揃った日。
+     ⚠️冬の札（12月1日）は動かしていない。丘が真っ白になるのは根雪のあと。
+     初冬は「山は白い・畑はうっすら・雪はちらつく」の、あいだの景色。
+     ⚠️晩秋と同じく、季節の札は増やさずに旬の札だけ替える
+     （秋を読んでいる仕掛け＝二人・焼き芋・干し柿は、そのまま秋で動く）。 */
+  var SHOTOU = 1107;  /* 11月 7日から 初冬（冬の札が立つ 12月1日まで） */
+  if (k === 'autumn' && md >= SHOTOU) {
+    document.documentElement.setAttribute('data-shun', 'shotou');
+  } else if (k === 'autumn' && md >= BANSHU) {
     document.documentElement.setAttribute('data-shun', 'banshu');
   }
 })();
@@ -2656,6 +2776,21 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     ['後ろの人、どうしましょう。',   'ここ、空いてますよ。']
   ];
 
+  /* 初冬（2026-11-18）は話題を替える。「いい月が出そう」「まだ暖かい」は、
+     雪の舞う縁側には合わない。季節を答えるのは上の式だけ＝ここは札を読むだけ。
+     最後の一組（後ろの「あなた」へ）は、ストーブの前を空けておく言い方にした。 */
+  if (document.documentElement.getAttribute('data-shun') === 'shotou') {
+    KAIWA = [
+      ['雪が、舞ってきましたね。',           'ストーブ、つけておきました。'],
+      ['大雪山が、真っ白です。',             '根雪も、もうすぐですね。'],
+      ['やかんが、しゅんしゅん言ってます。', 'お茶、いれましょうか。'],
+      ['焼き芋、ストーブで温めなおしました。', 'これが冬の楽しみです。'],
+      ['この芋、北海道のです。',             '道理で、甘い。'],
+      ['干し柿も、そろそろ食べごろです。',   '白い粉が、ふいてきましたね。'],
+      ['後ろの人、どうしましょう。',         'ストーブの前、空いてますよ。']
+    ];
+  }
+
   /* 一言を出しておく長さ・間。読める長さより少し長め（急かさない） */
   var IU  = 3800;   /* 口を開けている時間 */
   var MA  = 900;    /* 相手が返すまでの間 */
@@ -2804,6 +2939,23 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
               road:'#d8cdb2', roadEdge:'#b2a487',
               tree:'#b4502c', trunk:'#4a3a28', flower:null,
               ochiba:['#c4552b','#d9892f','#a8402a','#e0a93a'] },
+    /* 初冬（2026-11-18）。秋の上に重ねる札 data-shun="shotou" のときだけ使う。
+       ・空は雪雲の灰を少し混ぜて低く。雲もまっ白ではなく、うすい灰。
+       ・大雪山は頂から肩まで白い（11月半ばの大雪山は、もう真っ白）。
+         ⚠️晩秋の項の「富士山の親戚」の病に注意。帽子を大きくするときは
+         山の地の色も淡くして、白との差を小さくする（冬の項と同じ考え）。
+       ・畑は刈ったあとの土の色。真ん中の帯（hills の二色目）を白にして、
+         畝に残った雪に見せる＝「積もっては溶ける」頃の美瑛の畑。
+       ・usuyuki＝稜線にうっすら雪。bare＝葉の落ちた木（冬と同じ描き方）。
+       ・yuki＝舞う雪の粒の数。風花（かざはな）くらいの少なさにとどめる。 */
+    shotou: { skyTop:'#88a5bd', skyBot:'#e2e6e9', cloud:'#eef1f4',
+              mtn:'#8e9bb0', snow:'#ffffff', mtnShade:'#717d90', snowLine:56,
+              hills:[['#8f7f60','#e6eaec','#7d6e52'],
+                     ['#6f5b43','#dde3e7','#604e39'],
+                     ['#877756','#edf0f2','#75664b']],
+              road:'#d6d0c3', roadEdge:'#aea697',
+              tree:'#4a423a', trunk:'#3d342b', flower:null,
+              usuyuki:true, bare:true, yuki:20 },
     /* 冬。山は淡く置く。地面が真っ白なので、夏と同じ濃さで山を
        置くと山が手前に飛び出して見えて、奥行きが壊れる。 */
     winter: { skyTop:'#9fb9cc', skyBot:'#e8eff4', cloud:'#f7fbfd',
@@ -2812,7 +2964,8 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
                      ['#eaf2f7','#dde8f0','#f5f9fc'],
                      ['#f6fafc','#e9f1f6','#ffffff']],
               road:'#dfe8ef', roadEdge:'#c3d2dd',
-              tree:'#41505e', trunk:'#3a4550', flower:null }
+              tree:'#41505e', trunk:'#3a4550', flower:null,
+              yuki:28 /* 冬の「散らすもの」＝雪（2026-08-28 施主「冬は、雪」）。初冬より少し多く */ }
   };
 
   /* 丘の稜線。正弦波を重ねただけ。山を「作る」のではなく、
@@ -2910,6 +3063,9 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
         px(x, y + Y(4),  1, Y(5), c[1]);
         px(x, y + Y(13), 1, Y(6), c[2]);
         px(x, y, 1, 1, lip);                       /* 光が乗る稜線 */
+        /* 初冬は稜線にうっすら雪。厚みを tane でまだらにする
+           （一本の白い線にすると、雪ではなく縁取りに見える）。 */
+        if (p.usuyuki) px(x, y, 1, 1 + Math.round(tane(x + i * 500) * 2.2), '#f3f5f7');
       }
       /* 冬は稜線の北側に青い影。真っ白のままだと起伏が読めない。 */
       if (p === PAL.winter){
@@ -3075,7 +3231,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   }
 
   function drawTrees(p, sil){
-    var bare = (p === PAL.winter);
+    var bare = (p === PAL.winter) || !!p.bare;   /* 初冬も葉は落ちている */
     tree(p, 0, 0.17, 0.7, -0.4, bare, 1,   sil);
     tree(p, 2, 0.89, 1.0,  0.4, bare, 1,   sil);
     tree(p, 2, 0.12, 0.8, -0.3, bare, 1,   sil);
@@ -3189,7 +3345,9 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   function seasonNow(){
     var s = document.documentElement.getAttribute('data-season') || 'summer';
     /* 晩秋の札が重なっていれば、晩秋の色で描く（札を立てるのは上の一箇所） */
-    if (s === 'autumn' && document.documentElement.getAttribute('data-shun') === 'banshu') return 'banshu';
+    var shun = document.documentElement.getAttribute('data-shun');
+    if (s === 'autumn' && shun === 'banshu') return 'banshu';
+    if (s === 'autumn' && shun === 'shotou') return 'shotou';
     return s;
   }
 
@@ -3224,6 +3382,34 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     }
   }
 
+  /* ------------------------------------------------------------
+     舞う雪（2026-11-18 施主「北海道は、雪が舞う季節」）。
+     申し送り「季節ごとに、縁側の景物を入れ替える」の、冬の「散らすもの」。
+
+     ・色の表に yuki（粒の数）を持っている季節だけ降る（初冬・冬）。
+     ・粒は一マス。ゆっくり落ちて、左右に少しゆれる。風は落ち葉と同じく右へ。
+       ⚠️速く降らせない。速い雪は吹雪＝縁側で座っていられる天気ではない。
+     ・ところどころ二マスの粒を混ぜる（手前を舞う大きいひとひら）。
+       全部同じ大きさだと、雪ではなく画面の傷に見える。
+     ・位置は tane で（落ち葉・星と同じ理由＝開くたびに違う雪にしない）。
+     ・景色の中だけに降らせる。母屋の文章の前では舞わせない
+       （申し送り「主役は上に居る人」）。
+     ・動きを止める設定の人には t が 0 のまま届く＝雪は宙で止まって見える。
+     ------------------------------------------------------------ */
+  function drawYuki(p, t){
+    if (!p.yuki) return;
+    var top = Y(TENJOU), fall = H - top + 4;
+    for (var i = 0; i < p.yuki; i++){
+      var v   = 3 + tane(i + 400) * 4;               /* 落ちる速さ（落ち葉よりさらに遅め） */
+      var y   = top + ((t * v + tane(i + 410) * fall) % fall) - 2;
+      var x   = tane(i + 420) * W
+              + Math.sin(t * (0.4 + tane(i + 430) * 0.5) + i * 1.7) * 4 + t * 1.0;
+      x = ((x % (W + 6)) + (W + 6)) % (W + 6) - 3;
+      var oo = (i % 6 === 0);                        /* 手前のひとひら */
+      px(x, y, oo ? 2 : 1, oo ? 2 : 1, '#ffffff');
+    }
+  }
+
   var moving = !(window.matchMedia &&
                  window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
@@ -3241,6 +3427,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
     drawJifubuki(p, t);
     drawTrees(p, sil);
     drawOchiba(p, t);      /* 木より手前、庇より奥 */
+    drawYuki(p, t);        /* 雪も同じ段（庇の下で舞う） */
     drawTenjou();          /* いちばん手前。景色の上に庇がかぶる */
     drawTint(time);
 
