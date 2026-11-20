@@ -52,80 +52,66 @@
 <title>お困りごと・ご要望 — 縁側屋</title>
 <meta name="description" content="縁側屋の道具（K'Ad蔵人・TAXI PRO NAVI・メーター引きなど）について、こうしてほしい・ここが不便、を送る場所。登録もアカウントも要りません。">
 
+<!-- 2026-11-20 この投書箱も「宵のスーツ」へ移した。色と字は kihon.css（正は DESIGN.md「1-0」）。
+     ⚠️この部屋の <style> に、色の値を書かない（写しが一枚でもあれば、食い違いが始まる）。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../kihon.css?v=20261120">
+<script src="../kihon.js?v=20261120c"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
 
-/* 色は母屋・naze・kad と同じ仕掛け。縁側は差す光で表情が変わる場所なので。 */
-:root {
-  --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
-  --ink: #2b2622; --ink-soft: #6b625a;
-  --rule: #ded3c4; --accent: #9c5f2d;
-  --paper: #fffdf8;
-}
-html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
-html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
-html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#9d5426; }
-html[data-time="night"]   {
-  --sky-top:#141c2b; --sky-bottom:#232c3d;
-  --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
-  --paper:#1c2434;
-}
+/* 色（2026-11-20〜）。kihon.css の変数を使う
+   （sumi＝字／usu＝補足の字／sen2＝ふち／sashi＝差し色／ji2＝押す物・書く所の面）。
+   それまでは母屋と同じ「時刻で光が変わる」仕掛けだった。表紙が 10/27 にやめたので、ここも揃えた。 */
 
-body {
-  min-height: 100dvh;
-  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%);
-  color: var(--ink);
-  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
-               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
-  line-height: 2;
-  -webkit-font-smoothing: antialiased;
-  transition: background 1.2s ease, color 1.2s ease;
-}
 .wrap {
   max-width: 680px;
   margin: 0 auto;
-  padding: clamp(44px, 10vw, 88px) 24px 72px;
+  padding: clamp(32px, 7vw, 56px) 24px 72px;   /* 上の行（屋号）が付いたので、頭の空きを詰めた */
+  line-height: 2;
 }
 
 .back {
   display: inline-block;
   margin-bottom: 34px;
   font-size: 14px;
-  color: var(--ink-soft);
+  color: var(--usu);
   text-decoration: none;
 }
-.back:hover, .back:focus-visible { color: var(--accent); }
+.back:hover, .back:focus-visible { color: var(--sashi); }
 
 h1 {
   margin: 0;
+  font-family: var(--min);          /* 見出しは明朝（家じゅうの決まり） */
   font-size: clamp(28px, 6.5vw, 38px);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1.5;
 }
 .lead {
   margin: 18px 0 0;
-  color: var(--ink-soft);
+  color: var(--usu);
   font-size: 15px;
 }
 
 hr.rule {
   border: 0;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--sen2);
   margin: 40px 0 34px;
 }
 
 h2 {
   margin: 0 0 14px;
-  font-size: 16px;
-  font-weight: 600;
+  font-family: var(--min);
+  font-size: 17px;
+  font-weight: 700;
   letter-spacing: 0.04em;
 }
 .hint {
   margin: 0 0 16px;
   font-size: 14px;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 
 /* ---- 道具えらび -------------------------------------------------
@@ -148,21 +134,21 @@ h2 {
   /* 押す場所は必要よりだいぶ大きく（憲法③）。指でも、手が震えても外さない。 */
   min-height: 52px;
   padding: 14px 20px;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--sen2);
   border-radius: 10px;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--ji2);
+  color: var(--sumi);
   cursor: pointer;
   transition: border-color .15s, background .15s, color .15s;
 }
 .tools button:hover, .tools button:focus-visible {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--sashi);
+  color: var(--sashi);
 }
 .tools button[aria-pressed="true"] {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--paper);
+  border-color: var(--sashi);
+  background: var(--sashi);
+  color: var(--sashi-moji);   /* 差し色の上の字（明るい顔では白・暗い顔では濃い藍） */
 }
 
 /* ---- 本文 ---- */
@@ -174,31 +160,31 @@ textarea {
   font: inherit;
   font-size: 16px;   /* iPhone は 16px 未満だと勝手に拡大する。それを防ぐ寸法。 */
   line-height: 1.9;
-  color: var(--ink);
-  background: var(--paper);
-  border: 1px solid var(--rule);
+  color: var(--sumi);
+  background: var(--ji2);
+  border: 1px solid var(--sen2);
   border-radius: 10px;
   resize: vertical;
 }
 textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--sashi);
 }
 /* ⚠️上の outline:none の代わりが「1px の縁の色替え」だけでは足りません。
    キーボードだけで回っている人に、いまどこにいるかが伝わらないからです。
    指で触った時は枠を出さず、キーで来た時だけ出す＝:focus-visible。
    （DESIGN.md「3. リンクの作法」三／DESIGN検算.py 五）） */
 textarea:focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--hikari);
   outline-offset: 2px;
 }
 .count {
   margin: 8px 0 0;
   font-size: 13px;
-  color: var(--ink-soft);
+  color: var(--usu);
   text-align: right;
 }
-.count.over { color: var(--accent); }
+.count.over { color: var(--sashi); }
 
 /* ---- 送る ---- */
 .send {
@@ -211,10 +197,12 @@ textarea:focus-visible {
   /* 一番大事な一手なので、一番大きく。 */
   min-height: 64px;
   padding: 18px;
-  border: 1px solid var(--accent);
+  /* 2026-11-20 三日月の色にした。家じゅうで「いちばん押してほしい物」だけが着る色
+     （DESIGN.md 1-0「裏地」）。この部屋でいちばん大事な一手は、ここ。 */
+  border: 1px solid transparent;
   border-radius: 10px;
-  background: var(--accent);
-  color: #fffdf8;
+  background: var(--tsuki);
+  color: var(--tsuki-moji);
   cursor: pointer;
   transition: opacity .15s;
 }
@@ -231,10 +219,10 @@ textarea:focus-visible {
   margin: 0 0 10px;          /* ボタンの「上」に置く。押す前に読める位置でなければ意味がない */
   font-size: 15px;           /* 13.5px では、キーボードが出ている画面で目に入らなかった */
   line-height: 1.7;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 .send-note.yobikake {        /* 空のまま押されたときだけ、色が付いて呼びかける */
-  color: var(--accent);
+  color: var(--sashi);
   font-weight: 600;
 }
 
@@ -246,13 +234,13 @@ textarea:focus-visible {
   font-size: 15px;
   min-height: 56px;
   padding: 15px;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--sen2);
   border-radius: 10px;
   background: transparent;
-  color: var(--ink-soft);
+  color: var(--usu);
   cursor: pointer;
 }
-.copy:hover, .copy:focus-visible { border-color: var(--accent); color: var(--accent); }
+.copy:hover, .copy:focus-visible { border-color: var(--sashi); color: var(--sashi); }
 
 /* ---- 断り書き ---- */
 .tadashi {
@@ -260,20 +248,21 @@ textarea:focus-visible {
   padding: 22px 20px;
   font-size: 14px;
   line-height: 1.95;
-  color: var(--ink-soft);
-  border: 1px solid var(--rule);
+  color: var(--usu);
+  border: 1px solid var(--sen2);
   border-radius: 10px;
 }
-.tadashi b { color: var(--ink); }
+.tadashi b { color: var(--sumi); }
 .tadashi p { margin: 0 0 12px; }
 .tadashi p:last-child { margin-bottom: 0; }
 
-footer {
+/* 締めの一言。⚠️タグの名（footer）で決めないこと——家の足元（footer.ie-ft）にも掛かってしまう。 */
+.hitokoto {
   margin-top: 48px;
   padding-top: 22px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--sen2);
   font-size: 13px;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 /* ---- リンクの色（総括）------------------------------------
    ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
@@ -281,9 +270,9 @@ footer {
    必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
    ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
    （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
-a { color: var(--accent); }
+a { color: var(--sashi); }
 
-footer a { color: var(--ink-soft); }
+.hitokoto a { color: var(--usu); }
 </style>
 <!-- サイトの印（2026-11-20 X の印と同じ絵に統一。正は icon/en-yoi-1024.png）。
      ?v= は、前の印を控えている閲覧機に取り直してもらうための札。 -->
@@ -292,6 +281,24 @@ footer a { color: var(--ink-soft); }
 </head>
 
 <body>
+
+<!-- 上の行（2026-11-20）。表紙・開発日記・K'Ad蔵人とは、と同じ物。 -->
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../#tsukutte">作っているもの</a>
+        <a href="../#kiroku">開発の記録</a>
+        <a href="../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+
+<main>
 <div class="wrap">
 
   <a class="back" href="../">縁側屋へもどる</a>
@@ -357,23 +364,56 @@ footer a { color: var(--ink-soft); }
     </p>
   </div>
 
-  <footer>
+  <p class="hitokoto">
     メールが使えない、うまく開かないときは
     <span class="renraku">info アットマーク engawaya.com</span>
     まで直接どうぞ。<br>
     <a href="../kad/">K'Ad蔵人とは</a>
-  </footer>
+  </p>
 
 </div>
+</main>
+
+<!-- 足元（2026-11-20）。表紙・開発日記・K'Ad蔵人とは、と同じ物。免責の文言は、全ページで揃える決まり。 -->
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
 
 <script>
-/* 母屋・naze・kad と同じ。縁側は、差す光で表情が変わる場所なので。 */
-(function () {
-  var h = new Date().getHours();
-  document.documentElement.setAttribute('data-time',
-    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
-    : (h >= 16 && h < 19) ? 'evening' : 'night');
-})();
+/* 2026-11-20 ここにあった「時刻で光を変える」仕掛け（data-time）は、やめた。
+   顔は上の行の「明るくする／暗くする」で選ぶ（kihon.js）。 */
 
 /* ------------------------------------------------------------
    投書箱の中身。
@@ -385,16 +425,7 @@ footer a { color: var(--ink-soft); }
   var na = 'info', ie = 'engawaya.com';   /* 生で書かない（母屋と同じ作法） */
   var atmark = na + '@' + ie;
 
-  /* --- 連絡先の字を、押せるリンクへ組み直す --- */
-  var list = document.querySelectorAll('.renraku');
-  for (var k = 0; k < list.length; k++) {
-    var a = document.createElement('a');
-    a.href = 'mailto:' + atmark
-           + '?subject=' + encodeURIComponent('縁側屋の道具のこと');
-    a.textContent = atmark;
-    list[k].textContent = '';
-    list[k].appendChild(a);
-  }
+  /* 連絡先の字を押せるリンクへ組み直す仕事は、kihon.js に任せた（2026-11-20。同じ仕掛けを二つ持たない）。 */
 
   var tools   = document.getElementById('tools');
   var honbun  = document.getElementById('honbun');
