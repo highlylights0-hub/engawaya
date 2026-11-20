@@ -1,7 +1,7 @@
 /* ============================================================
    kihon.js — 明るい顔と暗い顔（2026-10-27〜。kihon.css と対）
 
-   ・最初は、閲覧機の設定（ダークモード）に合わせる。何もしなければ、それだけ。
+   ・最初は、暗い顔（宵）で出す（2026-11-20〜。それまでは閲覧機の設定に合わせていた）。
    ・上の行の「明るくする／暗くする」を押した人には、その顔を覚えておく。
      覚える場所は、その人の閲覧機の中だけ（localStorage）。どこへも送らない。
    ・選んだ顔は <html data-iro="akarui|kurai"> の札で伝える。色そのものは kihon.css が持つ
@@ -22,6 +22,11 @@
     var oboe = localStorage.getItem(KAGI);
     if (oboe === 'akarui' || oboe === 'kurai') root.setAttribute('data-iro', oboe);
   } catch (e) { /* 覚えられない閲覧機。設定に合わせる */ }
+
+  /* 2026-11-20〜 選んでいない人には、まず暗い顔（宵）を見せる。
+     Xの印と背景が宵の色なので、そこから来た人が「同じ家だ」と分かるように。
+     「明るくする」を押した人には、いままでどおりその顔を覚えておく。 */
+  if (!root.getAttribute('data-iro')) root.setAttribute('data-iro', 'kurai');
 
   function settei() {
     return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

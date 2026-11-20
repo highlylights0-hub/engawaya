@@ -95,9 +95,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
 <!-- 家じゅうで一枚の見た目。正は DESIGN.md の「1-0」。 -->
-<link rel="stylesheet" href="kihon.css">
+<link rel="stylesheet" href="kihon.css?v=20261120">
 <!-- 明るい顔／暗い顔。本文より先に札を立てるため、ここ（head）で読む。 -->
-<script src="kihon.js"></script>
+<script src="kihon.js?v=20261120"></script>
 <style>
 /* ---- 土台のリセット（最小限だけ） ---- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -128,14 +128,26 @@ html, body { overflow-x: hidden; }
   font-family: var(--min); font-weight: 700;
   font-size: clamp(27px, 5.6vw, 44px); line-height: 1.55; letter-spacing: .04em;
 }
+/* 一行の下に、三日月の筆のひと刷け（2026-11-20。Xの背景の、あの一筆）。 */
+.genkan h1::after {
+  content: ""; display: block;
+  width: min(300px, 70%); height: 22px; margin-top: 14px;
+  background: url(icon/fude.svg) left center / 100% 100% no-repeat;
+}
+.genkan-eyebrow::before {
+  content: ""; display: inline-block;
+  width: 44px; height: 16px; margin-right: 10px; vertical-align: -3px;
+  background: url(icon/hikari.svg) center / contain no-repeat;
+}
 .genkan-lead { margin: 24px 0 0; font-size: 16px; color: var(--usu); }
 /* 空の窓。額縁で区切った一枚の絵。中身は下の script（空の窓）が描く。 */
 .mado {
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: 1px solid var(--sen2);
+  border: 1px solid var(--mado-fuchi);
   border-radius: 4px;
+  box-shadow: var(--mado-kage);   /* 暗い顔だけ、ふちが紅くにじむ（kihon.css） */
   background: #bcdcee;
 }
 .mado canvas { display: block; image-rendering: pixelated; }

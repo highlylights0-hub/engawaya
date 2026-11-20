@@ -18,7 +18,18 @@
      生成りと焼き色は、縁側屋がはじめから持っていた色。それを少し落ち着かせ、
      見出しを明朝にして、背筋を伸ばした。「はしゃぎ」から「真摯」へ。
 
+   【2026-11-20「宵のスーツ」へ着替えた】
+     博喜さんのご依頼：「この前、Xのアイコンやヘッダーを制作してもらい使っています。
+     これらのイメージでサイトも改造していこうと思います」。下絵を見ていただき「この方向で進める」。
+     Xの絵から拾ったもの＝宵の藍紫の地・麻の葉の柄・三日月の色（琥珀→朱→紅）・小さな光の点。
+     ⚠️「無地のスーツ、凝るのは裏地」は変えない。三日月の色を使うのは、いちばん押してほしい物
+       （.btn-p）と細い罫と筆のひと刷けだけ。字と地は、読むためのもの。
+     ⚠️間取り・字・寸法は生成りのスーツのまま。替えたのは色と、柄と、印だけ。
+     📌検算と棟割りの上では、この表の名は「生成り」のまま（札の名を替えると見張りごと直すことになる）。
+
    【明るい顔と暗い顔】
+     2026-11-20〜 まず出すのは暗い顔（宵）。Xから来た人が、同じ家だと分かるように。
+     札を立てるのは kihon.js。スクリプトを止めている閲覧機では、下の「設定に合わせる」で出る。
      閲覧機の設定（ダークモード）に合わせる。上の行のボタンで選び直せる
      （kihon.js が <html data-iro="akarui|kurai"> を立てる）。
      ⚠️時刻では変えない。時刻で変わるのは、空の窓と縁側の場面だけ。
@@ -31,21 +42,31 @@
 
 /* ---- 明るい顔（素） ---- */
 :root {
-  --ji:         #f6f2ea;   /* 地（生成り） */
-  --ji2:        #efe8dc;   /* 一段沈んだ地（押したとき・仮置きの面） */
-  --sumi:       #26221e;   /* 本文の字（墨） */
-  --usu:        #5e554b;   /* 補足の字 */
-  --sen:        #ddd3c4;   /* 罫 */
-  --sen2:       #cfc3b0;   /* 枠（絵や窓のふち） */
-  --futo:       #26221e;   /* 太い罫（節の頭）・押す物のふち */
-  --sashi:      #8f5528;   /* 差し色（焼き色）・リンク */
-  --sashi2:     #6f4019;   /* 差し色を押したとき */
+  --ji:         #f6f4fb;   /* 地（明るい顔＝白藤／暗い顔＝宵の藍紫） */
+  --ji2:        #ebe7f6;   /* 一段沈んだ地（押したとき・仮置きの面） */
+  --sumi:       #1b1540;   /* 本文の字（墨） */
+  --usu:        #575077;   /* 補足の字 */
+  --sen:        #dcd6ec;   /* 罫 */
+  --sen2:       #c9c1e0;   /* 枠（絵や窓のふち） */
+  --futo:       #1b1540;   /* 太い罫（節の頭）・押す物のふち */
+  --sashi:      #a8325f;   /* 差し色（明るい顔＝深い紅／暗い顔＝三日月の朱）・リンク */
+  --sashi2:     #86244a;   /* 差し色を押したとき */
   --sashi-moji: #ffffff;   /* 差し色の上の字 */
-  --ten:        #a99a84;   /* 点線・札のふち */
-  --ft:         #26221e;   /* 足元の地 */
-  --ft-moji:    #ede6da;   /* 足元の字 */
-  --ft-usu:     #c2b8a8;   /* 足元の補足 */
-  --ft-sen:     #45403a;   /* 足元の罫 */
+  --ten:        #a79fc4;   /* 点線・札のふち */
+  --ft:         #121032;   /* 足元の地 */
+  --ft-moji:    #ece8f8;   /* 足元の字 */
+  --ft-usu:     #b9b3d9;   /* 足元の補足 */
+  --ft-sen:     #2b2860;   /* 足元の罫 */
+
+  /* ---- 宵のスーツの裏地（2026-11-20）。DESIGN.md 1-0 の「裏地」の項が正 ----
+     ⚠️絵の住所は / から書く。変数の中の url() は、どのファイルから数えた住所かが
+       閲覧機によって違うことがあるため（engawaya.com は根に置いてある家なので、/ で足りる）。 */
+  --ji-e:       url(/icon/asanoha-hiru.svg);                 /* 地の柄（麻の葉） */
+  --tsuki:      linear-gradient(90deg, #ffc56b 0%, #ff7a63 52%, #de5fb4 100%);   /* 三日月の色 */
+  --tsuki-moji: #1a0f33;   /* 三日月の色の上の字（比 11.6／7.1／5.5） */
+  --hikari:     #a8325f;   /* 焦点の枠 */
+  --mado-fuchi: #c9c1e0;   /* 空の窓のふち */
+  --mado-kage:  none;      /* 空の窓のにじみ（暗い顔だけ） */
 
   /* 字。見出しは明朝（名刺や便箋の字）、本文はゴシック。
      Google Fonts から借りる。届かない日は、後ろに並べた機械の字で出る。 */
@@ -60,7 +81,12 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--ji);
+  background-color: var(--ji);
+  /* 地の柄。暗い顔では、麻の葉の下に宵の空のぼかしを敷く（Xの背景と同じ重ね方）。
+     柄は繰り返し、ぼかしはページの丈いっぱいに一枚。 */
+  background-image: var(--ji-e);
+  background-repeat: repeat, no-repeat;
+  background-size: auto, 100% 100%;
   color: var(--sumi);
   font-family: var(--goth);
   font-size: 16px;
@@ -75,7 +101,7 @@ a { color: var(--sashi); text-underline-offset: 3px; }
 a:hover { color: var(--sashi2); }
 
 /* 焦点の枠。キーボードで来た人が、いまどこにいるか分かるように。消さない。 */
-:focus-visible { outline: 3px solid var(--sashi); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--hikari); outline-offset: 2px; }
 
 .min { font-family: var(--min); }
 
@@ -90,12 +116,19 @@ a:hover { color: var(--sashi2); }
   border-bottom: 1px solid var(--sen);
 }
 .ie-mark {
-  display: flex; align-items: baseline; gap: 12px;
+  display: flex; align-items: center; gap: 12px;
   color: var(--sumi); text-decoration: none;
   font-family: var(--min); font-weight: 700; font-size: 22px; letter-spacing: .08em;
 }
 .ie-mark span { font-family: var(--goth); font-size: 11px; font-weight: 500; letter-spacing: .26em; color: var(--usu); }
 .ie-mark:hover { color: var(--sumi); }
+/* 屋号の左の印（2026-11-20）。Xのアイコンと同じ絵＝Xから来た人への目印。
+   飾りなので、読み上げには出さない（屋号の字がとなりにある）。 */
+.ie-mark::before {
+  content: ""; flex: none;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: url(icon/en-yoi.png) center / cover no-repeat;
+}
 .ie-hd-migi { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .ie-nav { display: flex; flex-wrap: wrap; gap: 4px; }
 .ie-nav a {
@@ -121,8 +154,9 @@ a:hover { color: var(--sashi2); }
   border: 1px solid var(--futo); border-radius: 2px;
   font-size: 15px; font-weight: 500; text-decoration: none;
 }
-.btn-p { background: var(--sashi); border-color: var(--sashi); color: var(--sashi-moji); }
-.btn-p:hover { background: var(--sashi2); border-color: var(--sashi2); color: var(--sashi-moji); }
+/* いちばん押してほしい物だけ、三日月の色（2026-11-20）。ふちは透かして、地の色だけで見せる。 */
+.btn-p { background: var(--tsuki); border-color: transparent; color: var(--tsuki-moji); font-weight: 700; }
+.btn-p:hover { background: var(--tsuki); border-color: transparent; color: var(--tsuki-moji); filter: brightness(1.08); }
 .btn-s { background: transparent; color: var(--sumi); }
 .btn-s:hover { background: var(--ji2); color: var(--sumi); }
 .btn-sm { min-height: 48px; padding: 0 18px; font-size: 14px; }
@@ -134,6 +168,13 @@ a:hover { color: var(--sashi2); }
   margin: 0;
   font-family: var(--min); font-weight: 700;
   font-size: clamp(24px, 4.5vw, 30px); line-height: 1.5; letter-spacing: .06em;
+}
+/* 節の見出しの頭に、小さな光の点三つ（印の左上の光）。
+   ⚠️道具の名（.sec-h＝遊びの部屋の一行ごとの名）には付けない。一行ごとに光ると、裏地が表に出すぎる。 */
+.sec h2:not(.sec-h)::before {
+  content: ""; display: inline-block;
+  width: 40px; height: 15px; margin-right: 12px; vertical-align: 1px;
+  background: url(icon/hikari.svg) center / contain no-repeat;
 }
 .sec-sub { margin: 0; font-size: 15px; color: var(--usu); }
 .tag  { margin: 0; font-size: 13px; letter-spacing: .1em; color: var(--usu); }
@@ -150,7 +191,7 @@ a:hover { color: var(--sashi2); }
   padding: 44px 0;
   border-bottom: 1px solid var(--sen);
 }
-.row-hajime { margin-top: 28px; border-top: 1px solid var(--futo); }
+.row-hajime { margin-top: 28px; border-top: 2px solid transparent; border-image: var(--tsuki) 1; }
 .row-e { margin: 0; }
 .row-e img, .row-e video {
   display: block; width: 100%; height: auto;
@@ -212,7 +253,8 @@ a:hover { color: var(--sashi2); }
 .heya-atama .lead { margin: 18px 0 0; max-width: 680px; font-size: 16px; color: var(--usu); }
 
 /* ---- 足元（連絡先・決まりごと・免責） ---- */
-.ie-ft { background: var(--ft); color: var(--ft-moji); padding: 52px 0 40px; font-size: 14px; }
+.ie-ft { background: var(--ft); color: var(--ft-moji); padding: 52px 0 40px; font-size: 14px;
+  border-top: 2px solid transparent; border-image: var(--tsuki) 1; }
 .ie-ft a { color: var(--ft-moji); }
 .ie-ft a:hover { color: #ffffff; }
 .ie-ft-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
@@ -261,39 +303,47 @@ a:hover { color: var(--sashi2); }
    ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-iro="akarui"]) {
-    --ji:         #1c1a17;
-    --ji2:        #26231f;
-    --sumi:       #ece5d8;
-    --usu:        #b5ab9b;
-    --sen:        #36312a;
-    --sen2:       #4a443b;
-    --futo:       #8c8273;
-    --sashi:      #d9a06a;
-    --sashi2:     #e8b583;
-    --sashi-moji: #1c1a17;
-    --ten:        #6e665a;
-    --ft:         #121110;
-    --ft-moji:    #ddd5c7;
-    --ft-usu:     #a89e8e;
-    --ft-sen:     #2e2a25;
+    --ji:         #121032;
+    --ji2:        #1d1947;
+    --sumi:       #f3f0fb;
+    --usu:        #b9b3d9;
+    --sen:        #2b2860;
+    --sen2:       #3d3980;
+    --futo:       #8a84c4;
+    --sashi:      #ffa877;
+    --sashi2:     #ffc7a6;
+    --sashi-moji: #1a0f33;
+    --ten:        #6f69a8;
+    --ft:         #090a20;
+    --ft-moji:    #dedaf0;
+    --ft-usu:     #a59fc8;
+    --ft-sen:     #23214d;
+    --ji-e:       url(/icon/asanoha-yoi.svg), linear-gradient(168deg, #0b0d27 0%, #15113a 40%, #22175a 100%);
+    --hikari:     #45d3eb;
+    --mado-fuchi: rgba(255, 150, 120, .55);
+    --mado-kage:  0 0 0 1px rgba(217, 87, 176, .25), 0 0 48px rgba(217, 87, 176, .22);
     color-scheme: dark;
   }
 }
 :root[data-iro="kurai"] {
-  --ji:         #1c1a17;
-  --ji2:        #26231f;
-  --sumi:       #ece5d8;
-  --usu:        #b5ab9b;
-  --sen:        #36312a;
-  --sen2:       #4a443b;
-  --futo:       #8c8273;
-  --sashi:      #d9a06a;
-  --sashi2:     #e8b583;
-  --sashi-moji: #1c1a17;
-  --ten:        #6e665a;
-  --ft:         #121110;
-  --ft-moji:    #ddd5c7;
-  --ft-usu:     #a89e8e;
-  --ft-sen:     #2e2a25;
+  --ji:         #121032;
+  --ji2:        #1d1947;
+  --sumi:       #f3f0fb;
+  --usu:        #b9b3d9;
+  --sen:        #2b2860;
+  --sen2:       #3d3980;
+  --futo:       #8a84c4;
+  --sashi:      #ffa877;
+  --sashi2:     #ffc7a6;
+  --sashi-moji: #1a0f33;
+  --ten:        #6f69a8;
+  --ft:         #090a20;
+  --ft-moji:    #dedaf0;
+  --ft-usu:     #a59fc8;
+  --ft-sen:     #23214d;
+  --ji-e:       url(/icon/asanoha-yoi.svg), linear-gradient(168deg, #0b0d27 0%, #15113a 40%, #22175a 100%);
+  --hikari:     #45d3eb;
+  --mado-fuchi: rgba(255, 150, 120, .55);
+  --mado-kage:  0 0 0 1px rgba(217, 87, 176, .25), 0 0 48px rgba(217, 87, 176, .22);
   color-scheme: dark;
 }

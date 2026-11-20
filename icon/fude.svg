@@ -1,0 +1,2 @@
+<!-- 三日月の筆のひと刷け（玄関の一行の下）。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 26" preserveAspectRatio="none"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ffc56b"/><stop offset=".52" stop-color="#ff7a63"/><stop offset="1" stop-color="#de5fb4"/></linearGradient></defs><path d="M0 24C90 20 200 10 300 1C210 16 100 25 0 24Z" fill="url(#g)"/></svg>
