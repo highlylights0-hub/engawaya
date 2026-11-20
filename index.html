@@ -2551,13 +2551,61 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
    縁側は、そこに差す光で表情が変わる場所なので、
    ページも同じように朝・昼・夕・夜で色を変えている。
    ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   2026-11-20 朝・昼・夕・夜の境目を、季節の日の出・日の入りから決めるようにした。
+
+   博喜さんのご指摘（11月20日 17時30分）：「日没を迎えたと思います。なので、明るいと少し
+   おかしい気もします」。それまでの境目は一年じゅう同じ（朝 5-9時／昼 9-16時／夕 16-19時／夜 19-5時）で、
+   夏には合うが、日の短い季節は、外が真っ暗なのに縁側が夕焼けのままだった。
+
+   【どこの日の出・日の入りか】
+     美瑛（北緯 43.59 度・東経 142.47 度）。窓の空も、縁側から見える丘も、美瑛の景色だから。
+     ⚠️東京とは、冬で 30 分ほど（美瑛が早く暮れる）、夏で 15 分ほど（美瑛が遅く暮れる）違う。
+       見る人の土地に合わせたくなったら、下の IDO・KEIDO の二つの数字だけ直す。
+     ⚠️時計は、見ている人の機械の時計（日本の時刻のつもりで読む）。
+
+   【式】
+     その日が一年の何日目かから、太陽の傾き（赤緯）と、時計と太陽のずれ（均時差）を出し、
+     日の出・日の入りの時刻を計算する。暦を名乗れる精度ではない（数分ずれる）。
+     「いま外が明るいか暗いか」が合えばよい、という程度の道具。
+
+   【境目】
+     朝＝日の出の 30 分前 〜 日の出の 3 時間後
+     夕＝日の入りの 1 時間半前 〜 日の入りの 30 分後
+     夜＝日の入りの 30 分後 〜 日の出の 30 分前（30 分は、日が沈んだあとの薄明かりのぶん）
+     昼＝そのあいだ
+     例：11月20日の美瑛は、日の出 6時34分・日の入り 16時00分 → 夜は 16時30分から。
+         6月21日は、日の出 3時49分・日の入り 19時15分 → 夜は 19時45分から。
+
+   ⚠️日の出・日の入りを計算するのは、ここだけ。空の窓の日と月も、ここで立てた札
+     （data-hinode・data-hinoiri）を読んで渡る＝「空は夜なのに、お日さまが出ている」が起きない。
+   ------------------------------------------------------------ */
 (function () {
-  var h = new Date().getHours();
-  var t = (h >= 5 && h < 9)  ? 'morning'
-        : (h >= 9 && h < 16) ? 'day'
-        : (h >= 16 && h < 19)? 'evening'
-        :                      'night';
-  document.documentElement.setAttribute('data-time', t);
+  var IDO = 43.59, KEIDO = 142.47;          /* 美瑛の緯度・経度 */
+  var d = new Date();
+  var nichime = Math.floor((d - new Date(d.getFullYear(), 0, 1)) / 86400000) + 1;   /* 一年の何日目か */
+  var rad = Math.PI / 180;
+  var b = 2 * Math.PI * (nichime - 81) / 364;
+  var kinjisa = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);    /* 均時差（分） */
+  var sekii = 23.44 * rad * Math.sin(2 * Math.PI * (284 + nichime) / 365);          /* 太陽の傾き */
+  /* 地平線の少し下（-0.833 度）で数える＝お日さまの上の縁が見え隠れする瞬間 */
+  var c = (Math.sin(-0.833 * rad) - Math.sin(IDO * rad) * Math.sin(sekii))
+        / (Math.cos(IDO * rad) * Math.cos(sekii));
+  c = Math.max(-1, Math.min(1, c));         /* 白夜・極夜の土地でも式が壊れないように */
+  var han = Math.acos(c) / rad / 15;        /* 南中から日の入りまでの時間 */
+  var nanchu = 12 + (135 - KEIDO) / 15 - kinjisa / 60;   /* 南中（日本の時計で） */
+  var hinode = nanchu - han, hinoiri = nanchu + han;
+
+  var h = d.getHours() + d.getMinutes() / 60;
+  var t = (h <  hinode - 0.5)   ? 'night'
+        : (h <  hinode + 3)     ? 'morning'
+        : (h <  hinoiri - 1.5)  ? 'day'
+        : (h <  hinoiri + 0.5)  ? 'evening'
+        :                         'night';
+  var root = document.documentElement;
+  root.setAttribute('data-time', t);
+  root.setAttribute('data-hinode',  hinode.toFixed(3));
+  root.setAttribute('data-hinoiri', hinoiri.toFixed(3));
 })();
 
 
@@ -3780,8 +3828,15 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
        残って、貼り付けた絵になる（鳥で一度やったしくじりと同じ）。
      ⚠️縁を一段だけ濃くしてある。平らな丸は紙を貼ったように見えるが、
        縁が一段濃いだけで球に見える。段は一段で足りる（看板の木目と同じ）。 */
+  /* その日の日の出・日の入り（上の「朝・昼・夕・夜の境目」が立てた札を読む。2026-11-20）。
+     ⚠️ここで計算し直さない。札が無い時だけ、前の決め打ち（5時・19時）で動く。 */
+  function hinode()  { return parseFloat(document.documentElement.getAttribute('data-hinode'))  || 5; }
+  function hinoiri() { return parseFloat(document.documentElement.getAttribute('data-hinoiri')) || 19; }
+
   function drawHi() {
-    var u = (ima() - 5) / 14;                  /* 5時に昇って19時に沈む＝札の朝・昼・夕 */
+    var de = hinode(), iri = hinoiri();
+    var u = (ima() - de) / (iri - de);         /* 日の出に昇って、日の入りに沈む（それまでは 5時〜19時の決め打ち） */
+    /* ⚠️朝の札のはじめ 30 分と、夕の札の終わり 30 分は、空は明るいが日は出ていない（薄明かり）。 */
     if (u < 0 || u > 1) return;
     var q = watari(u), r = ookisa();
     maru(q[0], q[1], r,     '#f8d980');
@@ -3806,8 +3861,13 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
        同じ形＝乱数ではないので「同じ家の同じ空」は壊れない（星と同じ考え方）。 */
   function drawTsuki() {
     var h = ima();
-    if (h >= 5 && h < 19) return;
-    var u = (h >= 19) ? (h - 19) / 10 : (h + 5) / 10;   /* 19時に昇って5時に沈む */
+    /* 夜の札のあいだ（日の入りの 30 分後 〜 次の日の出の 30 分前）を、端から端まで渡る。
+       それまでは 19時〜5時の決め打ちだった（2026-11-20 季節の夜の長さに合わせた）。 */
+    var hajime = hinoiri() + 0.5, owari = hinode() - 0.5;
+    var nagasa = 24 - hajime + owari;
+    var tatta = (h >= hajime) ? (h - hajime) : (h + 24 - hajime);
+    var u = tatta / nagasa;
+    if (u < 0 || u > 1) return;
     var q = watari(u), r = ookisa();
     var cx = Math.round(q[0]), cy = Math.round(q[1]);
     var rei = tsukirei();
