@@ -39,53 +39,41 @@
 <title>K'Ad蔵人とは — 縁側屋</title>
 <meta name="description" content="無料の2D CAD「K'Ad蔵人」の名前の由来と、59日でここまで来た記録。他所から預かった図面を壊さずに返すこと。K＝描く、Ad＝助ける。蔵人はClaude（くろうど）と読みます。">
 
+<!-- 2026-11-20 この部屋も「宵のスーツ」へ移した。色と字は kihon.css（正は DESIGN.md「1-0」）。
+     ⚠️この部屋の <style> に、色の値を書かない（写しが一枚でもあれば、食い違いが始まる）。 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../kihon.css?v=20261120">
+<script src="../kihon.js?v=20261120c"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
 
-/* 色は母屋・naze と同じ仕掛け。時刻で光が変わる。 */
-:root {
-  --sky-top: #eaf2f8; --sky-bottom: #fdfbf6;
-  --ink: #2b2622; --ink-soft: #6b625a;
-  --rule: #ded3c4; --accent: #9c5f2d;
-}
-html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
-html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
-html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#9d5426; }
-html[data-time="night"]   {
-  --sky-top:#141c2b; --sky-bottom:#232c3d;
-  --ink:#efe9e0; --ink-soft:#a9a49c; --rule:#3d4659; --accent:#e0a061;
-}
+/* 色（2026-11-20〜）。地・字・罫・差し色は kihon.css の変数を使う
+   （sumi＝字／usu＝補足の字／sen＝罫／sashi＝差し色／ji2＝一段沈んだ地）。
+   それまでは母屋と同じ「時刻で光が変わる」仕掛けだった。表紙が 10/27 にやめたので、ここも揃えた。 */
 
-body {
-  min-height: 100dvh;
-  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%);
-  color: var(--ink);
-  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium",
-               "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
-  line-height: 2;
-  -webkit-font-smoothing: antialiased;
-  transition: background 1.2s ease, color 1.2s ease;
-}
+/* 読み物の部屋。行の間だけ、家の決まり（1.85）より少し広くとる。 */
 .wrap {
   max-width: 680px;
   margin: 0 auto;
-  padding: clamp(44px, 10vw, 88px) 24px 72px;
+  padding: clamp(32px, 7vw, 56px) 24px 72px;   /* 上の行（屋号）が付いたので、頭の空きを詰めた */
+  line-height: 2;
 }
 
 .back {
   display: inline-block;
   margin-bottom: 34px;
   font-size: 14px;
-  color: var(--ink-soft);
+  color: var(--usu);
   text-decoration: none;
 }
-.back:hover { color: var(--accent); }
+.back:hover { color: var(--sashi); }
 
 h1 {
   margin: 0;
+  font-family: var(--min);          /* 見出しは明朝（家じゅうの決まり） */
   font-size: clamp(28px, 6.5vw, 38px);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .08em;
   line-height: 1.5;
 }
@@ -93,11 +81,11 @@ h1 {
   margin: 8px 0 0;
   font-size: 13px;
   letter-spacing: .22em;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 .lead {
   margin: 24px 0 0;
-  color: var(--ink-soft);
+  color: var(--usu);
   font-size: clamp(15px, 3.8vw, 16.5px);
 }
 
@@ -108,12 +96,11 @@ h1 {
 .kama {
   margin: 26px 0 0;
   padding: 16px 18px;
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--accent);
+  border: 1px solid var(--sen);
+  border-left: 3px solid var(--sashi);
   border-radius: 3px;
-  background: rgba(255,255,255,.28);
+  background: var(--ji2);
 }
-html[data-time="night"] .kama { background: rgba(255,255,255,.05); }
 .kama-row {
   display: grid;
   grid-template-columns: 8.5em 1fr;
@@ -122,17 +109,17 @@ html[data-time="night"] .kama { background: rgba(255,255,255,.05); }
   line-height: 1.7;
 }
 .kama-row + .kama-row { margin-top: 10px; }
-.kama-label { font-size: 13px; color: var(--ink-soft); letter-spacing: .04em; }
+.kama-label { font-size: 13px; color: var(--usu); letter-spacing: .04em; }
 .kama-val   { font-size: clamp(15px, 4vw, 17px); font-weight: 600; letter-spacing: .03em; }
-.kama-date  { grid-column: 2; font-size: 13px; color: var(--ink-soft); }
-.kama-wip   { color: var(--accent); }
+.kama-date  { grid-column: 2; font-size: 13px; color: var(--usu); }
+.kama-wip   { color: var(--sashi); }
 .kama-chu {
   margin: 14px 0 0;
   padding-top: 12px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--sen);
   font-size: 13.5px;
   line-height: 1.85;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 @media (max-width: 420px) {
   .kama-row { grid-template-columns: 1fr; }
@@ -142,12 +129,13 @@ html[data-time="night"] .kama { background: rgba(255,255,255,.05); }
 section {
   margin-top: 46px;
   padding-top: 30px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--sen);
 }
 h2 {
   margin: 0 0 10px;
+  font-family: var(--min);
   font-size: clamp(18px, 4.5vw, 21px);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .04em;
 }
 section p { margin: 0 0 12px; font-size: clamp(15px, 3.8vw, 16.5px); }
@@ -168,7 +156,7 @@ b { font-weight: 600; }
   font-size: clamp(26px, 7vw, 34px);
   font-weight: 600;
   letter-spacing: .04em;
-  color: var(--accent);
+  color: var(--sashi);
 }
 .namae .imi { font-size: clamp(15px, 3.8vw, 16.5px); }
 
@@ -181,21 +169,21 @@ b { font-weight: 600; }
 }
 .kazu th, .kazu td {
   padding: 9px 4px;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--sen);
   text-align: left;
   vertical-align: baseline;
 }
-.kazu th { font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.kazu th { font-weight: 400; color: var(--usu); white-space: nowrap; }
 .kazu td { font-weight: 600; }
 /* 二列にした日（十五期・2026-08-20）、三列にした日（十六期・2026-09-07）。
    左から 23日目・41日目・今日。伸びた分が目で見えるように、今日の列だけ色を変える。
    ⚠️列を足す日は、まずスマホ幅（375px）で開いて横あふれを見ること。見出しの日付は
    「8月2日」のように**年を落として**ある＝三列にしたら年つきでは入らなかった（実測）。
    年は表のすぐ上の一文が引き受けている。 */
-.kazu td.mukashi { font-weight: 400; color: var(--ink-soft); }
-.kazu td.ima { color: var(--accent); }
+.kazu td.mukashi { font-weight: 400; color: var(--usu); }
+.kazu td.ima { color: var(--sashi); }
 .kazu tr.midashi th, .kazu tr.midashi td {
-  font-weight: 400; font-size: 12.5px; color: var(--ink-soft); padding-bottom: 4px;
+  font-weight: 400; font-size: 12.5px; color: var(--usu); padding-bottom: 4px;
   white-space: nowrap;   /* 日付が「2026年8月2／日」と割れるのを防ぐ（スマホ幅で実測） */
 }
 .kazu tr:last-child th, .kazu tr:last-child td { border-bottom: none; }
@@ -218,25 +206,25 @@ b { font-weight: 600; }
      いまの姿＝375px（いまの iPhone の幅）で 0、320px（iPhone SE 第1世代）で 11px はみ出す。
      次の走者へ：直すなら二列組みをやめる側（狭い画面では上下に積む）で。折り方ではありません。 */
 }
-.chu { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
+.chu { margin-top: 10px; font-size: 13.5px; color: var(--usu); }
 
 .sign {
   margin-top: 56px;
   padding-top: 30px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--sen);
   font-size: 14.5px;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 .sign p { margin: 0 0 12px; }
-.sign .name { margin-top: 20px; color: var(--ink); }
+.sign .name { margin-top: 20px; color: var(--sumi); }
 
 .tsugi {
   margin-top: 40px;
   padding-top: 26px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--sen);
   font-size: 15px;
 }
-.tsugi a { color: var(--accent); }
+.tsugi a { color: var(--sashi); }
 
 /* 本文の中のリンク（2026-09-07）。既定の青（#0000EE）のままだと、**夜の顔**
    （地が #141c2b）でほとんど読めない。f.k 機械彫刻の名乗り（2026-09-02）から
@@ -247,12 +235,13 @@ b { font-weight: 600; }
    素の青（#0000EE）のまま残っていました。夜の地で比 1.49＝沈みます。
    「どこそこの a」で数え上げると、必ず数え落とします。総括で受けること。
    （DESIGN.md「3. リンクの作法」）*/
-a { color: var(--accent); }
+a { color: var(--sashi); }
 
-footer {
+/* 締めの一言。⚠️タグの名（footer）で決めないこと——家の足元（footer.ie-ft）にも掛かってしまう。 */
+.hitokoto {
   margin-top: 48px;
   font-size: 12.5px;
-  color: var(--ink-soft);
+  color: var(--usu);
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -262,6 +251,24 @@ footer {
 <link rel="icon" type="image/png" href="/favicon.png?v=20261120">
 </head>
 <body>
+
+<!-- 上の行（2026-11-20）。表紙・遊びの部屋・開発日記と同じ物。 -->
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../#tsukutte">作っているもの</a>
+        <a href="../#kiroku">開発の記録</a>
+        <a href="../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+
+<main>
 <div class="wrap">
 
   <a class="back" href="../">← 縁側屋にもどる</a>
@@ -668,21 +675,52 @@ footer {
 
   <!-- 投書箱への口。K'Ad の話を読み終えた直後＝一番「言いたいこと」が
        溜まっている場所なので、ここにも出す。メールの口はそのまま残す。 -->
-  <footer>
+  <p class="hitokoto">
     ご意見・ご要望・不具合は <a href="../koe/">投書箱</a> へどうぞ。
-    メールでも構いません（info@engawaya.com）。
-  </footer>
+    メールでも構いません（<span class="renraku">info アットマーク engawaya.com</span>）。
+  </p>
 
 </div>
+</main>
 
-<script>
-/* 母屋・naze と同じ。縁側は、差す光で表情が変わる場所なので。 */
-(function () {
-  var h = new Date().getHours();
-  document.documentElement.setAttribute('data-time',
-    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
-    : (h >= 16 && h < 19) ? 'evening' : 'night');
-})();
-</script>
+<!-- 足元（2026-11-20）。表紙・遊びの部屋・開発日記と同じ物。免責の文言は、全ページで揃える決まり。 -->
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+
+<!-- 2026-11-20 ここにあった「時刻で光を変える」仕掛け（data-time）は、やめた。
+     顔は上の行の「明るくする／暗くする」で選ぶ（kihon.js）。 -->
 </body>
 </html>

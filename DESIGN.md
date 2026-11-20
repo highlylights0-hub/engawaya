@@ -203,8 +203,8 @@ Xの印（`icon/en-yoi.png`）と背景から拾った飾り。**色の表（上
 
 | 表 | 棟 |
 |---|---|
-| 生成り | `asobi/` `osewa/` `jokyo/` `nikki/`（2026-11-20 母屋の表から移った） |
-| 母屋 | `index.html` `naze/` `koe/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `kad/` `kad/jisho/` `404.html` |
+| 生成り | `asobi/` `osewa/` `jokyo/` `nikki/` `kad/`（この二つは 2026-11-20 に母屋の表から移った。`kad/jisho/` は母屋のまま） |
+| 母屋 | `index.html` `naze/` `koe/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `kad/jisho/` `404.html` |
 | 選ばせる | `asobiba/narabe/` |
 | 遊び場 | `asobiba/` `asobiba/suikawari/` `asobiba/renga/` |
 | 手引き | `kad/tebiki/` とその全ページ（`prefers-color-scheme` で二枚） |
