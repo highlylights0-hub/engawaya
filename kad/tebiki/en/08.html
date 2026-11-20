@@ -1,85 +1,78 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8. Drawing: step by step — K'Ad Manual</title><style>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8. Drawing: step by step — K'Ad Manual</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261120">
+<link rel="icon" type="image/png" href="/favicon.png?v=20261120">
+<link rel="stylesheet" href="../../../kihon.css?v=20261120">
+<script src="../../../kihon.js?v=20261120c"></script>
+<style>
 *,*::before,*::after{box-sizing:border-box}
-html{font-size:18px}
-body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
-  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
-a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
-h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
-h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+main.tb{font-size:18px;line-height:1.9}
+.wrap{max-width:680px;margin:0 auto;padding:16px 18px 64px}
+a{color:var(--sashi);text-decoration:none}a:hover{text-decoration:underline}
+main.tb h1{font-family:var(--min);font-size:1.45rem;letter-spacing:.04em;margin:.4em 0 .2em;line-height:1.5}
+main.tb h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid var(--sashi);line-height:1.5}
 .lang{text-align:right;font-size:.9rem;padding:.3em 0}
-.lang b{color:#a95c2a}
-@media print{.lang{display:none}}
-.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.lang b{color:var(--sashi)}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid var(--sen)}
 .nav .sp{flex:1}
-.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid var(--sen);font-size:.95rem}
 .toc a{display:inline-block;margin:.15em .9em .15em 0}
-p{margin:.5em 0}
-ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+main.tb p{margin:.5em 0}
+main.tb ul{padding-left:1.3em;margin:.4em 0}main.tb li{margin:.2em 0}
 ol.steps{list-style:none;padding:0;margin:.6em 0}
 ol.steps li{display:flex;gap:.6em;margin:.5em 0}
-.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--sashi);color:var(--sashi-moji);
   display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
 ol.steps li>div{flex:1;min-width:0}
-figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure{margin:.6em 0 1em;padding:8px;background:var(--ji2);border:1px solid var(--sen2);border-radius:8px}
+figure a{display:block}
 figure img{display:block;max-width:100%;height:auto;border-radius:4px}
-figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
-.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
+.only-note{display:none;background:var(--ji2);border-left:5px solid var(--sashi);padding:.4em .8em;margin:1em 0;font-size:.95rem}
 .only-note.on{display:block}
-.chap-list{list-style:none;padding:0}
+.ban-note{background:var(--ji2);border:1px solid var(--sen2);border-radius:8px;padding:.6em .9em;margin:1em 0;font-size:.9rem;color:var(--usu)}
+.chap-list{list-style:none;padding:0!important}
 .chap-list>li{margin:1em 0}
 .chap-list b{display:block;font-size:1.05rem}
 .chap-list a{display:inline-block;margin:.15em .2em .15em 0}
-.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
-footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
-/* ---- 暗い側（閲覧機の設定にしたがう）--------------------------
-   ⚠️この塊は、必ず「明るい側の指定より あと」に置くこと。
-   2026-09-07 まで、ここは先頭（body のすぐ下）にありました。同じ強さの規則は
-   あとに書いたほうが勝つので、下の a{color:#a95c2a} や .nav{border-bottom:...}
-   に上書きされ、body の地と字をのぞいて**まるごと死んでいました**。
-   実測（暗い側で）：リンク 3.22／言語の札 3.22／足元 2.66／
-   用事の札 1.1（＝ほぼ見えない）。34枚ぜんぶ同じでした。
-   読めることの床は 4.5 です。（DESIGN.md「1-4」「2.」）
-   🩸2026-09-19（五便）＝**この直しは、焼いた後の HTML 34枚を手で直したものでした**
-   （焼き型のこちらは先頭のまま）。だから今日、教本を直して焼き直したとたん、
-   9/7 の直しが**まるごと巻き戻りかけました**。＝家訓「答えを出す係は一人」。
-   ⚠️次に手引きの見た目を直す人へ：**直すのは、この焼き型のほうです。**
-   焼いた HTML を手で直すと、次に誰かが焼いた日に、黙って消えます。
-   ---------------------------------------------------------------- */
-@media (prefers-color-scheme:dark){
-  body{background:#1c2230;color:#efe9e0}
-  a{color:#e0a061}
-  .lang b{color:#e0a061}
-  h2{border-left-color:#e0a061}
-  .nav,.toc{border-bottom-color:#3d4659}
-  footer{border-top-color:#3d4659}
-  .mark{background:#e0a061;color:#1c2230}
-  figure{background:#141a26;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-  figcaption,footer,.chap-list a+a::before{color:#a9a49c}
-  .only-note{background:#2a2118;border-left-color:#e0a061;color:#efe9e0}
-}
+.chap-list a+a::before{content:"・";color:var(--usu);margin-right:.2em}
+.tb-foot{margin-top:3em;padding-top:1em;border-top:1px solid var(--sen);font-size:.85rem;color:var(--usu);line-height:1.7}
 @media print{
-  html{font-size:12pt}body{background:#fff;color:#000}
-  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  html{font-size:12pt}body{background:#fff!important;color:#000}
+  .ie-hd,.ie-ft,.lang,.nav,.toc,.only-note,.ban-note,.noprint,canvas{display:none!important}
+  main.tb{font-size:12pt}
   section{display:block!important;break-inside:avoid}
-  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  figure{background:#fff;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><div class="lang"><a href="../08.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="07.html">← Key reference</a><a href="09.html">Dimensioning: step by step →</a></nav><h1>8. Drawing: step by step</h1><div class="toc"><a href="#線分">L / LINE</a><a href="#ポリライン">PL / PLINE (polyline)</a><a href="#閉じたポリラインにする】">閉じたポリラインにする】（3D の押し出しで立体になるのは、閉じた形です）</a><a href="#円">C / CIRCLE</a><a href="#3点円弧">A / ARC (three-point arc)</a><a href="#楕円">EL / ELLIPSE</a><a href="#スプライン">SPL / SPLINE — a free curve</a><a href="#四角">REC / rectangle</a><a href="#ポリゴン">POL / POLYGON (regular polygon)</a><a href="#通り芯">GRID / structural grid lines</a><a href="#壁">W / 壁</a><a href="#柱まわし">WW / 柱まわし＝柱を順にクリックすると、壁が回る</a><a href="#文字記入">DT (single-line text): placing one line of text with a box</a><a href="#文字の基準">The justification (the nine squares) can be changed at any time</a><a href="#文字の書体">Fonts: standard, light, bold, or the engraving typeface</a><a href="#段落文字">MT (multiline text): pouring a note with line breaks into a box</a><a href="#段落文字と、ふつうの文字">Choosing between multiline text and ordinary text (DT)</a><a href="#他所の図面から来た段落文字">Multiline text that came from another drawing</a><a href="#引出線">LE / leader</a><a href="#ハッチ">H / HATCH</a><a href="#建築記号">Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</a><a href="#それぞれの姿と、打つ欄">What each one looks like, and the fields you fill</a><a href="#分野を「機械」へ">分野を「機械」へ＝幾何公差と三角法の記号</a><a href="#分野を「電気」へ">分野を「電気」へ＝配線用の図記号（住宅の内装）</a><a href="#分野を「設備」へ">分野を「設備」へ＝給排水・衛生の図記号</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><main><section id="線分"><h2>L / LINE</h2>
+</style></head><body>
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../../../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../../../#tsukutte">作っているもの</a>
+        <a href="../../../#kiroku">開発の記録</a>
+        <a href="../../../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../08.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="07.html">← Key reference</a><a href="09.html">Dimensioning: step by step →</a></nav><h1>8. Drawing: step by step</h1><div class="toc"><a href="#線分">L / LINE</a><a href="#ポリライン">PL / PLINE (polyline)</a><a href="#閉じたポリラインにする】">閉じたポリラインにする】（3D の押し出しで立体になるのは、閉じた形です）</a><a href="#円">C / CIRCLE</a><a href="#3点円弧">A / ARC (three-point arc)</a><a href="#楕円">EL / ELLIPSE</a><a href="#スプライン">SPL / SPLINE — a free curve</a><a href="#四角">REC / rectangle</a><a href="#ポリゴン">POL / POLYGON (regular polygon)</a><a href="#通り芯">GRID / structural grid lines</a><a href="#壁">W / 壁</a><a href="#柱まわし">WW / 柱まわし＝柱を順にクリックすると、壁が回る</a><a href="#文字記入">DT (single-line text): placing one line of text with a box</a><a href="#文字の基準">The justification (the nine squares) can be changed at any time</a><a href="#文字の書体">Fonts: standard, light, bold, or the engraving typeface</a><a href="#段落文字">MT (multiline text): pouring a note with line breaks into a box</a><a href="#段落文字と、ふつうの文字">Choosing between multiline text and ordinary text (DT)</a><a href="#他所の図面から来た段落文字">Multiline text that came from another drawing</a><a href="#引出線">LE / leader</a><a href="#ハッチ">H / HATCH</a><a href="#建築記号">Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</a><a href="#それぞれの姿と、打つ欄">What each one looks like, and the fields you fill</a><a href="#分野を「機械」へ">分野を「機械」へ＝幾何公差と三角法の記号</a><a href="#分野を「電気」へ">分野を「電気」へ＝配線用の図記号（住宅の内装）</a><a href="#分野を「設備」へ">分野を「設備」へ＝給排水・衛生の図記号</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="線分"><h2>L / LINE</h2>
 <ol class="steps">
 <li><span class="mark">①</span><div>Press 線分 (Line) on the ribbon, or type L in the Command Line → Enter.
-<figure><img src="../e/08-線分-1.png" alt="①" loading="lazy"><figcaption>①</figcaption></figure>
+<figure><a href="../e/08-線分-1.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-線分-1.png" alt="①" loading="lazy"></a><figcaption>①</figcaption></figure>
 </div></li>
 <li><span class="mark">②</span><div>Click the first point (or give an absolute coordinate, 1000,500).
-<figure><img src="../e/08-線分-2.png" alt="②" loading="lazy"><figcaption>②</figcaption></figure>
+<figure><a href="../e/08-線分-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-線分-2.png" alt="②" loading="lazy"></a><figcaption>②</figcaption></figure>
 </div></li>
 <li><span class="mark">③</span><div>Click the second point (@1000,0, or a direction plus a number, work too).
-<figure><img src="../e/08-線分-3.png" alt="③" loading="lazy"><figcaption>③</figcaption></figure>
+<figure><a href="../e/08-線分-3.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-線分-3.png" alt="③" loading="lazy"></a><figcaption>③</figcaption></figure>
 </div></li>
 <li><span class="mark">④</span><div>It carries straight on. Press Esc when you are done.
-<figure><img src="../e/08-線分-4.png" alt="④" loading="lazy"><figcaption>④</figcaption></figure>
+<figure><a href="../e/08-線分-4.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-線分-4.png" alt="④" loading="lazy"></a><figcaption>④</figcaption></figure>
 </div></li>
 </ol>
 </section>
@@ -109,6 +102,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </ul>
 </section>
 <section id="円"><h2>C / CIRCLE</h2>
+<figure><a href="../e/08-円-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-円-0.png" alt="中心を打って、半径を決める所" loading="lazy"></a><figcaption>中心を打って、半径を決める所</figcaption></figure>
 <ol class="steps">
 <li><span class="mark">①</span><div>Type C → Enter. Click the centre.
 </div></li>
@@ -182,16 +176,16 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </ul>
 </section>
 <section id="通り芯"><h2>GRID / structural grid lines</h2>
-<figure><img src="../e/08-通り芯-0.png" alt="Overview" loading="lazy"><figcaption>Overview</figcaption></figure>
+<figure><a href="../e/08-通り芯-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-0.png" alt="全体の姿（格子が立った所）" loading="lazy"></a><figcaption>全体の姿（格子が立った所）</figcaption></figure>
 <ol class="steps">
 <li><span class="mark">①</span><div>Press 通り芯 (Grid) on the ribbon, or type GRID → Enter.
-<figure><img src="../e/08-通り芯-1.png" alt="①" loading="lazy"><figcaption>①</figcaption></figure>
+<figure><a href="../e/08-通り芯-1.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-1.png" alt="①" loading="lazy"></a><figcaption>①</figcaption></figure>
 </div></li>
 <li><span class="mark">②</span><div>下の帯で、ピッチと本数を決めます。Xピッチ 1820・X本数 6 ＝1820の間隔で、芯が6本（列の数）。Yピッチ・Y本数も同じ書き方です。ピッチ欄には「1820*4, 910」と並びも打てます（不等ピッチ）。＝910 や 455 が混じる実務の芯は、こちらで。
-<figure><img src="../e/08-通り芯-2.png" alt="②" loading="lazy"><figcaption>②</figcaption></figure>
+<figure><a href="../e/08-通り芯-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-2.png" alt="②" loading="lazy"></a><figcaption>②</figcaption></figure>
 </div></li>
 <li><span class="mark">③</span><div>置く場所をクリック。スナップが効くので、図枠の角にもぴたりと置けます。原点（0,0）に置くなら【原点に置く】を押します。
-<figure><img src="../e/08-通り芯-3.png" alt="③" loading="lazy"><figcaption>③</figcaption></figure>
+<figure><a href="../e/08-通り芯-3.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-3.png" alt="③" loading="lazy"></a><figcaption>③</figcaption></figure>
 </div></li>
 </ol>
 <p>打つそばから、格子のゴーストが育ちます（置く前に姿が見えます）。【符号 紙mm】＝符号の丸（X1・Y1）の直径。紙のmmで打ちます（JIS A 0150 は 9mm）。図面ではページ設定の縮尺の分母倍になります（1:100 なら直径 900）。※狭いピッチ（910 など）で符号が重なる日は、ここを小さくします。＝全部の符号が同じ大きさのまま、きれいに収まります。【延長】＝芯を建物の外へ伸ばす長さ（図面の単位）。0 か 空Enter で自動（丸の半径×4）に戻ります。</p>
@@ -230,7 +224,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </section>
 <section id="文字記入"><h2>DT (single-line text): placing one line of text with a box</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>Type DT → Enter (DT 5 = start at text height 5, DT 右下 = specify the justification). The 【文字】 (Text) button in the 作成 (Create) group does the same.
+<li><span class="mark">①</span><div>小窓に DT →Enter（DT 5＝はじめから字高5・DT 右下＝基準の指定）。タブ「注記」の【文字】ボタンでも同じです。
 </div></li>
 <li><span class="mark">②</span><div>Take the box the text will sit in with two opposite corners (<b>the height of the box becomes the text height</b>; the corners can be taken exactly with snap). 🔑 Draw a rectangle first, select it, then press DT = that rectangle becomes the box (and the rectangle stays). 🔑 Inside a table cell or a title block, use 【枠の中をクリック】 (click inside the box) on the bar = one press and it becomes the box.
 </div></li>
@@ -265,9 +259,11 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </section>
 <section id="段落文字"><h2>MT (multiline text): pouring a note with line breaks into a box</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>小窓に MT →Enter（MT 5＝はじめから字高5）。リボン「作成」の【段落】ボタンでも同じです。🔑<b>四角を先に描いてあるなら、それを選んでから MT</b>＝その四角が、そのまま枠になります。（`REC 590,300` と数字で描けば、枠を正確に決められます）※選んだ四角は<b>そのまま残ります</b>（枠として借りただけ）。図枠や表の罫線を枠に使っても、線は一本も消えません。🔑<b>表のセルや図枠の中に書くなら、帯の【枠の中をクリック】へ</b>（Tabでも）。その部屋を一回押すだけで、囲まれた範囲がそのまま枠になります。（表の罫線は通し線なので、セルは「図形」としては選べません。だから<b>部屋のほうを指します</b>）
+<li><span class="mark">①</span><div>小窓に MT →Enter（MT 5＝はじめから字高5）。タブ「注記」の【段落】ボタンでも同じです。🔑<b>四角を先に描いてあるなら、それを選んでから MT</b>＝その四角が、そのまま枠になります。（`REC 590,300` と数字で描けば、枠を正確に決められます）※選んだ四角は<b>そのまま残ります</b>（枠として借りただけ）。図枠や表の罫線を枠に使っても、線は一本も消えません。🔑<b>表のセルや図枠の中に書くなら、帯の【枠の中をクリック】へ</b>（Tabでも）。その部屋を一回押すだけで、囲まれた範囲がそのまま枠になります。（表の罫線は通し線なので、セルは「図形」としては選べません。だから<b>部屋のほうを指します</b>）
 </div></li>
-<li><span class="mark">②</span><div>文章の入る枠を、対角の2点でクリック。※枠から取るのは<b>幅</b>だけです（＝折り返しの幅）。縦は文章が増えれば下へ育ちます。字高は枠の高さでは決まりません。帯の【字高】の欄の値（はじめは 3.5）で打ち始めます。枠が決まると、帯に【幅】と【字高】の欄が並びます。どちらも押してその場で打ち替えられます。
+<li><span class="mark">②</span><div>文章の入る枠を、対角の2点でクリック。※枠から取るのは<b>幅</b>だけです（＝折り返しの幅）。縦は文章が増えれば下へ育ちます。
+</div></li>
+<li><span class="mark">②</span><div>'次に<b>字高</b>を聞きます。マウスを上下に動かすと、枠の上の端から指までが<b>1行目の高さ</b>になり、見本の字がその大きさで出ます。よければクリック。・そのまま Enter＝帯の【字高】の欄の値（はじめは 3.5）のまま・数字を打って Enter も可（帯の字高と同じ単位＝紙のmm の日は紙のmm）・右クリック／Esc＝字高を聞くのをやめて、枠の1点目から（枠が細すぎる高さを選ぶと、そう言って待ちます。小さい高さで選び直せます）枠が決まると、帯に【幅】と【字高】の欄が並びます。どちらも押してその場で打ち替えられます。🔑<b>打っている最中でも、枠の縁を掴んで引けば大きさが変わります</b>（右の縁＝幅・下の縁＝高さ）。縁に指を乗せると矢印に変わります。打った字はそのまま、折り返しがその場で付いてきます。
 </div></li>
 <li><span class="mark">③</span><div>Type your text into the box. · Enter = <b>a line break</b> (it means something different from Enter in single-line text) · Pressing ↓ on the very last line also breaks the line · Characters that run past the width wrap automatically as you type (you see them wrapping exactly as they will once placed)
 </div></li>
@@ -338,11 +334,11 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </section>
 <section id="建築記号"><h2>Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</h2>
 <p>The symbols familiar from construction drawings can be typed and placed on the spot.</p>
-<p>There are three ways in: 【記号】 (Symbol) in the 作成 (Create) group / 記号 in the Command Line / the flick shelf.</p>
+<p>入口は三つ＝タブ「注記」の【記号】／小窓に 記号／フリックの棚。</p>
 <ol class="steps">
 <li><span class="mark">①</span><div>A <b>bar</b> appears at the very bottom of the screen. From the left: beam tag, column tag, footing tag, mat-slab tag, level mark, section arrow, drawing-title box. Each shows a sample, so press to choose.
 </div></li>
-<li><span class="mark">②</span><div>【紙の字高】と【縮尺】を、帯の欄で決めます。縮尺の既定は【ページ設定】の縮尺です（自動なら紙に収まる縮尺・指名ならその値）。破線・寸法・ハッチと同じ一つの縮尺を読みます＝直す場所は一つ。道具に入ったとき、履歴が「ページ設定の縮尺に合わせました」と名乗ります。違えば、ページ設定の縮尺を直すと、破線も寸法もハッチも記号も一度に合います。この図面だけ別の縮尺で置きたいときは、帯の欄か 記号 1:50 で。紙の上（レイアウト）では常に 1:1 です。※PDFから取り込んだ図面（1単位＝紙の1mm）は、ページ設定で 1:1 を指名してください。・大きさが合わなければ、置いてから【拡大縮小（SC）】でも直せます。記号は楕円・線・文字なので、ふつうの図形と同じように扱えます。記号は「紙の上で何ミリか」で決まります（JISの常用は 3.5）。図面は実寸なので、1:50 の図面なら 50倍にして置きます。帯には掛け算の答え（＝図面で 175）も出ます。※ここが合っていないと、記号だけが極端に大きく／小さくなります。
+<li><span class="mark">②</span><div>【紙の字高】と【縮尺】を、帯の欄で決めます。縮尺の既定は【ページ設定】の縮尺です（図面ごとに一つ。新しい図面は 1:50）。破線・寸法・ハッチと同じ一つの縮尺を読みます＝直す場所は一つ。道具に入ったとき、履歴が「ページ設定の縮尺に合わせました」と名乗ります。違えば、ページ設定の縮尺を直すと、破線も寸法もハッチも記号も一度に合います。この図面だけ別の縮尺で置きたいときは、帯の欄か 記号 1:50 で。紙の上（レイアウト）では常に 1:1 です。※PDFから取り込んだ図面（1単位＝紙の1mm）は、ページ設定で 1:1 を指名してください。・大きさが合わなければ、置いてから【拡大縮小（SC）】でも直せます。記号は楕円・線・文字なので、ふつうの図形と同じように扱えます。記号は「紙の上で何ミリか」で決まります（JISの常用は 3.5）。図面は実寸なので、1:50 の図面なら 50倍にして置きます。帯には掛け算の答え（＝図面で 175）も出ます。※ここが合っていないと、記号だけが極端に大きく／小さくなります。
 </div></li>
 <li><span class="mark">③</span><div>Click where it goes. Snapping works, so it drops exactly onto a grid intersection.
 </div></li>
@@ -404,14 +400,50 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li>記号は単独で置きます。前後に伸びる管の線は含みません（置く場所には、もう管が引いてあるはずなので）。</li>
 <li>小窓からは 記号 仕切弁／記号 ため桝 のほか、図面で読んでいる符号のままGV・BV・SV・CV・BAV・CK・GT でも呼べます（日本語入力を切らずに打てます）。</li>
 </ul>
-</section></main><footer>The words in this manual are the same as the manual inside K'Ad itself (the book button in the 案内 group of the ribbon).<br>Correct the manual there and this one is corrected the same day.<span class="noprint"><br>十六期七十三号窯 ／ 2026-09-19<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a></span></footer></div><script>
+</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../../../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../../../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../../../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+<script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){
   var note=document.getElementById('only');
   function apply(){
     var id=decodeURIComponent(location.hash.replace(/^#/,''));
-    var secs=document.querySelectorAll('main section');
+    var secs=document.querySelectorAll('main.tb section');
     var hit=id&&document.getElementById(id);
     secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
     if(note) note.classList.toggle('on',!!hit);

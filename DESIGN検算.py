@@ -311,8 +311,11 @@ def main():
             k = 鍵.rstrip('/')
             if k in 棟割り:
                 return k, 棟割り[k]
+        # 手引き（kad/tebiki/ とその下）は、2026-11-20 に生成り（kihon.css を読む棟）へ移った。
+        #   棟割り表に `kad/tebiki/` `kad/tebiki/en/` と載っているので、ふつうは上で見つかる。
+        #   表から落ちた日にも黙って素通りさせないよう、ここでも生成りとして受ける。
         if み.startswith('kad/tebiki'):
-            return 'kad/tebiki', '手引き'
+            return 'kad/tebiki', '生成り'
         return None, None
 
     # ⚠️生成りの表（1-0）の名は、ここに入れない。あの表は「書き写す表」ではなく「kihon.css を読み込む表」。

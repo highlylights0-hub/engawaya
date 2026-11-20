@@ -1,73 +1,66 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>15. 立体（3DとSTL） — K'Ad蔵人 手引き</title><style>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>15. 立体（3DとSTL） — K'Ad蔵人 手引き</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261120">
+<link rel="icon" type="image/png" href="/favicon.png?v=20261120">
+<link rel="stylesheet" href="../../kihon.css?v=20261120">
+<script src="../../kihon.js?v=20261120c"></script>
+<style>
 *,*::before,*::after{box-sizing:border-box}
-html{font-size:18px}
-body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
-  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
-a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
-h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
-h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+main.tb{font-size:18px;line-height:1.9}
+.wrap{max-width:680px;margin:0 auto;padding:16px 18px 64px}
+a{color:var(--sashi);text-decoration:none}a:hover{text-decoration:underline}
+main.tb h1{font-family:var(--min);font-size:1.45rem;letter-spacing:.04em;margin:.4em 0 .2em;line-height:1.5}
+main.tb h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid var(--sashi);line-height:1.5}
 .lang{text-align:right;font-size:.9rem;padding:.3em 0}
-.lang b{color:#a95c2a}
-@media print{.lang{display:none}}
-.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.lang b{color:var(--sashi)}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid var(--sen)}
 .nav .sp{flex:1}
-.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid var(--sen);font-size:.95rem}
 .toc a{display:inline-block;margin:.15em .9em .15em 0}
-p{margin:.5em 0}
-ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+main.tb p{margin:.5em 0}
+main.tb ul{padding-left:1.3em;margin:.4em 0}main.tb li{margin:.2em 0}
 ol.steps{list-style:none;padding:0;margin:.6em 0}
 ol.steps li{display:flex;gap:.6em;margin:.5em 0}
-.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--sashi);color:var(--sashi-moji);
   display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
 ol.steps li>div{flex:1;min-width:0}
-figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure{margin:.6em 0 1em;padding:8px;background:var(--ji2);border:1px solid var(--sen2);border-radius:8px}
+figure a{display:block}
 figure img{display:block;max-width:100%;height:auto;border-radius:4px}
-figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
-.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
+.only-note{display:none;background:var(--ji2);border-left:5px solid var(--sashi);padding:.4em .8em;margin:1em 0;font-size:.95rem}
 .only-note.on{display:block}
-.chap-list{list-style:none;padding:0}
+.ban-note{background:var(--ji2);border:1px solid var(--sen2);border-radius:8px;padding:.6em .9em;margin:1em 0;font-size:.9rem;color:var(--usu)}
+.chap-list{list-style:none;padding:0!important}
 .chap-list>li{margin:1em 0}
 .chap-list b{display:block;font-size:1.05rem}
 .chap-list a{display:inline-block;margin:.15em .2em .15em 0}
-.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
-footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
-/* ---- 暗い側（閲覧機の設定にしたがう）--------------------------
-   ⚠️この塊は、必ず「明るい側の指定より あと」に置くこと。
-   2026-09-07 まで、ここは先頭（body のすぐ下）にありました。同じ強さの規則は
-   あとに書いたほうが勝つので、下の a{color:#a95c2a} や .nav{border-bottom:...}
-   に上書きされ、body の地と字をのぞいて**まるごと死んでいました**。
-   実測（暗い側で）：リンク 3.22／言語の札 3.22／足元 2.66／
-   用事の札 1.1（＝ほぼ見えない）。34枚ぜんぶ同じでした。
-   読めることの床は 4.5 です。（DESIGN.md「1-4」「2.」）
-   🩸2026-09-19（五便）＝**この直しは、焼いた後の HTML 34枚を手で直したものでした**
-   （焼き型のこちらは先頭のまま）。だから今日、教本を直して焼き直したとたん、
-   9/7 の直しが**まるごと巻き戻りかけました**。＝家訓「答えを出す係は一人」。
-   ⚠️次に手引きの見た目を直す人へ：**直すのは、この焼き型のほうです。**
-   焼いた HTML を手で直すと、次に誰かが焼いた日に、黙って消えます。
-   ---------------------------------------------------------------- */
-@media (prefers-color-scheme:dark){
-  body{background:#1c2230;color:#efe9e0}
-  a{color:#e0a061}
-  .lang b{color:#e0a061}
-  h2{border-left-color:#e0a061}
-  .nav,.toc{border-bottom-color:#3d4659}
-  footer{border-top-color:#3d4659}
-  .mark{background:#e0a061;color:#1c2230}
-  figure{background:#141a26;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-  figcaption,footer,.chap-list a+a::before{color:#a9a49c}
-  .only-note{background:#2a2118;border-left-color:#e0a061;color:#efe9e0}
-}
+.chap-list a+a::before{content:"・";color:var(--usu);margin-right:.2em}
+.tb-foot{margin-top:3em;padding-top:1em;border-top:1px solid var(--sen);font-size:.85rem;color:var(--usu);line-height:1.7}
 @media print{
-  html{font-size:12pt}body{background:#fff;color:#000}
-  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  html{font-size:12pt}body{background:#fff!important;color:#000}
+  .ie-hd,.ie-ft,.lang,.nav,.toc,.only-note,.ban-note,.noprint,canvas{display:none!important}
+  main.tb{font-size:12pt}
   section{display:block!important;break-inside:avoid}
-  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  figure{background:#fff;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/15.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="14.html">← 印刷（紙へ刷る）</a><a href="16.html">困ったとき →</a></nav><h1>15. 立体（3DとSTL）</h1><div class="toc"><a href="#立体表示">3D / 立体表示</a><a href="#押し出し">EXT / 押し出し＝形ごとに厚みを決める</a><a href="#平らにする">FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</a><a href="#組み立てる">組み立てる＝平面図を土台に、立面図を模型のように置く</a><a href="#積む">積む＝開いている図面を高さに積んで、立体で見る</a><a href="#立体は、3Dの一枚">立体は、3D の一枚（[3D]）で作ります</a><a href="#高さ">高さ＝平面図から、壁と柱を一括で立ち上げる</a><a href="#3Dで起こす">3Dで起こす＝囲まれた所を押して、マウスの上下か数字で高さを決める</a><a href="#ろくろ">ろくろ＝断面を軸で回して、お椀・皿・花瓶・脚などの形にする</a><a href="#立体書出">STL / 立体書出（3Dプリンタへ）</a><a href="#よそのSTLを見る">よそのSTLを見る</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="立体表示"><h2>3D / 立体表示</h2>
+</style></head><body>
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../../#tsukutte">作っているもの</a>
+        <a href="../../#kiroku">開発の記録</a>
+        <a href="../../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+<main class="tb"><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/15.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="14.html">← 印刷（紙へ刷る）</a><a href="16.html">困ったとき →</a></nav><h1>15. 立体（3DとSTL）</h1><div class="toc"><a href="#立体表示">3D / 立体表示</a><a href="#リボン［押し出し］">リボン［押し出し］＝2D の図面から、押し出して 3D へ</a><a href="#押し出し">EXT / 押し出し＝形ごとに厚みを決める</a><a href="#平らにする">FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</a><a href="#組み立てる">組み立てる＝平面図を土台に、立面図を模型のように置く</a><a href="#積む">積む＝開いている図面を高さに積んで、立体で見る</a><a href="#立体は、3Dの一枚">立体は、3D の一枚（[3D]）で作ります</a><a href="#高さ">高さ＝平面図から、壁と柱を一括で立ち上げる</a><a href="#3Dで起こす">3Dで起こす＝囲まれた所を押して、マウスの上下か数字で高さを決める</a><a href="#ろくろ">ろくろ＝断面を軸で回して、お椀・皿・花瓶・脚などの形にする</a><a href="#屋根">屋根＝建物の上に、切妻・寄棟・方形・片流れの屋根を載せる</a><a href="#ワイヤーソー">ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</a><a href="#立体書出">STL / 立体書出（3Dプリンタへ）</a><a href="#よそのSTLを見る">よそのSTLを見る</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><section id="立体表示"><h2>3D / 立体表示</h2>
 <p>小窓に 3D →Enter＝図面に高さを与えて、立体で見ます。</p>
 <ul>
 <li>左ドラッグか矢印キー＝回す。</li>
@@ -76,6 +69,15 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li>Esc＝図面へ戻る（図面は無傷のままです）。</li>
 <li>部屋の中でもリボンは押せます。線分・円など 2D の道具を押すと、そのまま図面へ戻って始まります（「◀ 図面へ戻る」を押さなくてよい）。保存・別名・立体・書出・一覧・教本・ヘルプは、部屋に居たまま効きます。戻す・起こすは、図面から建てた部屋でだけ効きます（STL や焼いた立体の部屋には戻す歴史も起こす下敷きも無いので、押すと図面へ戻ります）。</li>
 <li>部屋の中で ⌘S（Windows は Ctrl+S）＝保存。⌘⇧S＝別名。⌘Z＝一つ戻す。保存しても部屋に居たまま、見ている向きも動きません。（積むの台から入った部屋では、リボンと保存は止まります＝台へ戻ってから）</li>
+</ul>
+</section>
+<section id="リボン［押し出し］"><h2>リボン［押し出し］＝2D の図面から、押し出して 3D へ</h2>
+<p>2D の図面で、タブ「立体」の［押し出し］を押します。</p>
+<ul>
+<li>初めての図面では「立体は 3D の一枚で作ります」と聞かれます。答えると、その図面を下敷きにした 3D の部屋へ、［起こす］を持ったまま入ります（元の 2D の図面には何も書きません）。</li>
+<li>囲まれた所（四角・閉じたポリライン・円など）をクリック→マウスの上下か数字で高さ→クリックで立体になります。</li>
+<li>［立体］との違い＝［立体］は手ぶらで部屋に入り、［押し出し］は押し出す道具を持って入ります。</li>
+<li>何も描いていない図面では押し出せません（先に形を描いてから）。</li>
 </ul>
 </section>
 <section id="押し出し"><h2>EXT / 押し出し＝形ごとに厚みを決める</h2>
@@ -90,7 +92,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <p>例：壁2400・床の板12・柱3000 を一枚の図面に混ぜて、まとめて立ち上げる。厚みを持たない形だけが、PageUp / PageDown の一律の高さで動きます。</p>
 </section>
 <section id="平らにする"><h2>FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</h2>
-<p>リボンの［修正］の［平らに］（小窓なら FLATTEN）。</p>
+<p>タブ「直す」の［平らに］（小窓なら FLATTEN）。</p>
 <p>よそのCADから来た図面で、交点が取れない・線が浮いている時に。</p>
 <ul>
 <li>選んでいれば、その形だけ。何も選んでいなければ「図面ぜんぶを、平らにしますか？」と、数を言ってから聞きます。</li>
@@ -105,7 +107,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <p>平面図と各方位の立面図から、家の形を組むときの道です。</p>
 <p>何の図かは道具が推し量りません＝どこに・どう置くかは、指で決めます。</p>
 <ul>
-<li>入口は二つ（どちらも同じ［組み立てる］の絵です）。2D の図面のタブで、リボンの［立体］→ 絵札［組み立てる］＝その図面のどこを持つかを、2D のまま指せます（下の①②）。3D の部屋のリボンの［組み立てる］＝DXF を選んで一枚足す（紙の左下を持って部屋へ入ります＝③から）。</li>
+<li>入口は二つ（どちらも同じ［組み立てる］の絵です）。2D の図面で、タブ「立体」→ 絵札［組み立てる］＝その図面のどこを持つかを、2D のまま指せます（下の①②）。3D の部屋のリボンの［組み立てる］＝DXF を選んで一枚足す（紙の左下を持って部屋へ入ります＝③から）。</li>
 <li>① 持つ点＝図面の端点・中点・交点などを指します（Enter＝紙の左下）。</li>
 <li>② 指のそばに「ここから、相対座標でずらしますか？」［このまま］か Enter で進みます。@0,-400 のように打つと、持つ点がその分ずれ、丸い印が動いて見えます。</li>
 <li>部屋の左上の絵札で、［立てる］（立面図・詳細図）か［寝かせる］（2 階の平面図など）を選びます。</li>
@@ -168,7 +170,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li>数字でも打てます＝引いている最中に 2400 と打つと、指のそばの札が「高さ 2400」に替わり、Enter でその高さの立体が生まれます。打ち始めたら、打った数が勝ちます（マウスを動かしても変わりません）。2400+150 のような式も効きます。BackSpace で全部消すと、マウスへ戻ります。（引いている最中の数字は高さの字です＝視点の 1〜5・0 は効きません）</li>
 <li>中に囲いがある所（壁の帯など）は、穴のまま起きます。</li>
 <li>部材の名札は、2D の「高さ」の帯でいま選んでいるもの（柱など）。</li>
-<li>起こしたら、道具は棚へ戻ります（選ぶ＝待機）。続けるなら、もう一度［起こす］。3D の道具はみな同じです（使い終えたら棚へ・置けなかった時だけ持ったまま）。※複写だけは続けて置けます（2D の複写と同じ）。終わりは Esc か右クリック。</li>
+<li>起こしたら、道具は棚へ戻ります（選ぶ＝待機）。続けるなら、もう一度［起こす］。3D の道具はみな同じです（使い終えたら棚へ・置けなかった時だけ持ったまま）。※複製だけは続けて置けます（2D の複製と同じ）。終わりは Esc か右クリック。</li>
 <li>Esc か右クリック＝一段ずつ戻ります（引くのをやめる→道具を手放す）。U＝一つ戻す（起こした立体を消せます）。リボンの［戻す］・⌘Z も同じです。</li>
 <li>真上から見ていると、マウスでは高さを引けません。右ドラッグで少し傾けてください（数字を打って Enter なら、真上のままでも起こせます）。</li>
 <li>カーソルは、押すと決まる面の上に寝た十字です（X・Y・Z の字は、原点に立つ矢印の標と同じ色）。色・大きさ・太さは 2D の十字の設定のまま。</li>
@@ -187,6 +189,41 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li>Esc か右クリック＝一段ずつ戻ります（軸を選び直す→断面を選び直す→道具を手放す）。U も同じです。</li>
 </ul>
 </section>
+<section id="屋根"><h2>屋根＝建物の上に、切妻・寄棟・方形・片流れの屋根を載せる</h2>
+<p>3D の部屋（[3D] の一枚＝器の部屋）で、リボン「作成」の［屋根］を持ちます。</p>
+<p>（小窓に ROOF と打っても同じ。2D の図面のタブで打つと、[3D] の一枚を立ち上げる問いが出ます）</p>
+<ul>
+<li>屋根を載せる建物（壁や箱）を一回クリック＝建物の外面が琥珀の太枠で光り、載る屋根が薄い琥珀で見えます。そのまま空いた所をクリックすると屋根が置かれます。建物に指を乗せると、脇に「ここを押す」の札が出ます。</li>
+<li>帯の一段目＝種類の札［切妻｜寄棟｜方形｜片流れ］・［妻の壁 つける｜つけない］・勾配の単位［寸｜度｜％］。寄棟と方形に妻はありません（妻の壁の札は暗くなり、押すと理由を言います）。方形は縦と横が同じ長さの建物向けです（長い建物には寄棟を選びます）。</li>
+<li>帯の二段目＝数字の欄六つ。高さ（軒先）・壁の厚み・屋根の厚み・短辺のせり出し・長辺のせり出し・勾配。高さと壁の厚みは押した建物から読みます（読めた欄に緑の札）。打った数が勝ちます（次に建物を押しても上書きしません）。クリックで欄を選び、打って Enter で確定して次の欄へ。式（300+150）も打てます。</li>
+<li>切妻は、棟に直角な辺が「妻」です。既定は長い辺と平行に棟が走ります。妻を変えたいときは、指を外面の別の辺へ近づけて（辺が赤く光ります）クリック。片流れは、同じ操作で「高い側」の辺を指し直せます。</li>
+<li>置いた屋根は、図面の上では軒先の輪郭のポリラインと荷札だけです。面・棟・妻壁は部屋を建てるたびに焼き直します。元の図面には一文字も書きません。</li>
+<li>Esc か U＝押した建物を外します（もう一度で道具を手放す）。置いた屋根は［戻す］か U で消せます。</li>
+</ul>
+</section>
+<section id="ワイヤーソー"><h2>ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</h2>
+<p>3D の部屋（[3D] の一枚＝器の部屋）で、箱や柱を切る段取りを、機械ごと見る道具です。</p>
+<p>いまできるのは「据える」まで（切る動きは、次の版から）。数字は全部【試算】＝仮置きです。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>切りたい立体を選び、リボン「修正」の［ワイヤーソー］（小窓に WS でも同じ）
+</div></li>
+<li><span class="mark">②</span><div>立体の面の上で、二点をクリック＝刃（［スライス］と同じ手）・側面に水平な二点＝輪切り　・天端に二点＝縦に割る・斜めの刃は、理由を言って断ります
+</div></li>
+<li><span class="mark">③</span><div>その切断面にワイヤーソーが現れ、セッティングの板が開きます・① 切る所＝切断面の幅 × 奥行き・面積・機械の能力（6 m²）に対する割合・② 機械＝［汎用機］［弓張］（押すと、その場で機械が替わります）・③ 据える側＝切断面の四つの辺（東西南北・上下の名前で並びます）最初は、据えられる辺のうち、いちばん短い辺です。辺が機械の横バー（2,000）より長い時は［端に揃える］［真ん中］［反対の端に揃える］長い辺の真ん中は角が 4 つになり、負荷が 100% を超えると赤で名乗ります（端に揃えると減ります）・据える向き（床に寝かせる・縦・横）は、刃と辺から道具が決めて名乗ります・下の辺（機械が床の側になる）には据えられません。押すと理由を言います
+</div></li>
+</ol>
+<ul>
+<li>床から 650 より低い輪切りは、機械を裏返して据えます（金物とモーターが上・ワイヤーの面が下）。道具が刃の高さから決めて、板と履歴で名乗ります。裏返した時の現場の決まりも、板が言います：・ベースの四隅のレベルボルトで角度を付ける（尻上げ）ので、刃は若干斜めになります（傾きは、まだ計算していません）・防護カバーを外します → 防弾ネット（ベクトランシートなど）と遠隔の操作が必須です・ベースと補助のアンカーは、切断面より上の、躯体の前面に打ちます床から 70 より低い刃は、裏返しても金物が床に当たるので、理由を言って断ります（70 は【仮】）。</li>
+<li>機械は、レールの根元のベース（アンカー M16・切る線から 250 前後）で躯体に付きます。赤い丸＝そのアンカー。縦バーのある機械（汎用機）は、縦バーの根元を補助のアンカー（M12 か W1/2）で同じ面に止めます。琥珀の丸＝補助。横バー（前面のバー）にアンカーは付けません（プーリーを並べる場所です）。丸に指を乗せると、切断面からの離れが出ます。レールの後ろの突っ張り棒は、絵だけです（無くてもよい物）。締め付けは度々点検します。機材は 170〜200 kg あります。アンカーが完全に効いている事が前提です（躯体が悪い時はケミカルアンカー・厳しければ別の面で）。</li>
+<li>［巻きを増やすプーリー：あり／なし］＝メインプーリーの隣の横バーにガイドを一つ足して、巻きを半周（180°）にします。既定は「あり」です。「なし」にすると巻きが浅くなり、グリップの余裕が落ちます。板に「メインプーリーの巻き ○°」が出ます。余裕が 1 を切ると滑ります：空転が増えて切る速さが落ち、ゴムが焼けて、替えのラバーが無ければ工事が止まります（数字は試算）。横バーが短くてプーリーが入らない幅では、道具が自動で外して、そう名乗ります。</li>
+<li>縦の刃で、切断面の下の辺が床に着いている時は、コアボーリング（φ50）の穴を水色の点線で見せます。</li>
+<li>［刃を決め直す］＝糸を張り直します。［外す］＝ワイヤーソーを外します（立体はそのまま）。</li>
+<li>板は×で閉じても、機械は据えたままです。もう一度開くには、立体を選んで［ワイヤーソー］。</li>
+<li>設定は [3D] の一枚に保存されます（開き直すと、同じ機械が現れます）。U・［戻す］で一手ずつ戻ります。</li>
+<li>立体を動かす・回すと、機械も一緒についてきます。</li>
+<li>切る（数字はどれも試算です）・④ 切る相手＝RC（主筋 D32・200 間隔・かぶり 70 の仮定）か、無筋・⑤ ワイヤーの長さ＝［お任せ］は、行き止まらず、掛け替えが一番少ない長さを道具が選びます（同じなら短い方）。［− 0.5 m］［＋ 0.5 m］で手でも決められます。掛け替えの回数の見込みが、すぐ出ます。・回転の向き＝既定は［逆転（左回り）］＝縦バーの側が引きになる向き（現場の決まり）。［正転（右回り）］は縦バーの側が送りになり、たるむ・外れる・干渉しやすい向きです（板が名乗ります）。・［切る］＝メインプーリーがバックして、切断面の琥珀の面（まだ切れていない所）が縮んでいきます。行き止まりで掛け替えます（履歴が名乗ります）。［止める］［最初から］と、速さ（60・600・1800 倍）。・切り終わると、立体が二つに分かれます（U で、据えた姿ごと戻せます）。・切っている途中の姿は、図面には保存しません（開き直すと、切り始めの姿からです）。</li>
+</ul>
+</section>
 <section id="立体書出"><h2>STL / 立体書出（3Dプリンタへ）</h2>
 <p>小窓に STL →Enter。</p>
 <ul>
@@ -198,14 +235,50 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </section>
 <section id="よそのSTLを見る"><h2>よそのSTLを見る</h2>
 <p>⌘O で .stl を開くと、立体の部屋で回して見られます。</p>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期九十八号窯 ／ 2026-09-29<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a>　<a href="../jisho/">コマンド辞書</a></span></div></div></main>
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+<script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){
   var note=document.getElementById('only');
   function apply(){
     var id=decodeURIComponent(location.hash.replace(/^#/,''));
-    var secs=document.querySelectorAll('main section');
+    var secs=document.querySelectorAll('main.tb section');
     var hit=id&&document.getElementById(id);
     secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
     if(note) note.classList.toggle('on',!!hit);

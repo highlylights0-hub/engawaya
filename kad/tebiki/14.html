@@ -1,73 +1,71 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>14. 印刷（紙へ刷る） — K'Ad蔵人 手引き</title><style>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>14. 印刷（紙へ刷る） — K'Ad蔵人 手引き</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261120">
+<link rel="icon" type="image/png" href="/favicon.png?v=20261120">
+<link rel="stylesheet" href="../../kihon.css?v=20261120">
+<script src="../../kihon.js?v=20261120c"></script>
+<style>
 *,*::before,*::after{box-sizing:border-box}
-html{font-size:18px}
-body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
-  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
-a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
-h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
-h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+main.tb{font-size:18px;line-height:1.9}
+.wrap{max-width:680px;margin:0 auto;padding:16px 18px 64px}
+a{color:var(--sashi);text-decoration:none}a:hover{text-decoration:underline}
+main.tb h1{font-family:var(--min);font-size:1.45rem;letter-spacing:.04em;margin:.4em 0 .2em;line-height:1.5}
+main.tb h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid var(--sashi);line-height:1.5}
 .lang{text-align:right;font-size:.9rem;padding:.3em 0}
-.lang b{color:#a95c2a}
-@media print{.lang{display:none}}
-.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.lang b{color:var(--sashi)}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid var(--sen)}
 .nav .sp{flex:1}
-.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid var(--sen);font-size:.95rem}
 .toc a{display:inline-block;margin:.15em .9em .15em 0}
-p{margin:.5em 0}
-ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+main.tb p{margin:.5em 0}
+main.tb ul{padding-left:1.3em;margin:.4em 0}main.tb li{margin:.2em 0}
 ol.steps{list-style:none;padding:0;margin:.6em 0}
 ol.steps li{display:flex;gap:.6em;margin:.5em 0}
-.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--sashi);color:var(--sashi-moji);
   display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
 ol.steps li>div{flex:1;min-width:0}
-figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure{margin:.6em 0 1em;padding:8px;background:var(--ji2);border:1px solid var(--sen2);border-radius:8px}
+figure a{display:block}
 figure img{display:block;max-width:100%;height:auto;border-radius:4px}
-figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
-.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
+.only-note{display:none;background:var(--ji2);border-left:5px solid var(--sashi);padding:.4em .8em;margin:1em 0;font-size:.95rem}
 .only-note.on{display:block}
-.chap-list{list-style:none;padding:0}
+.ban-note{background:var(--ji2);border:1px solid var(--sen2);border-radius:8px;padding:.6em .9em;margin:1em 0;font-size:.9rem;color:var(--usu)}
+.chap-list{list-style:none;padding:0!important}
 .chap-list>li{margin:1em 0}
 .chap-list b{display:block;font-size:1.05rem}
 .chap-list a{display:inline-block;margin:.15em .2em .15em 0}
-.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
-footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
-/* ---- 暗い側（閲覧機の設定にしたがう）--------------------------
-   ⚠️この塊は、必ず「明るい側の指定より あと」に置くこと。
-   2026-09-07 まで、ここは先頭（body のすぐ下）にありました。同じ強さの規則は
-   あとに書いたほうが勝つので、下の a{color:#a95c2a} や .nav{border-bottom:...}
-   に上書きされ、body の地と字をのぞいて**まるごと死んでいました**。
-   実測（暗い側で）：リンク 3.22／言語の札 3.22／足元 2.66／
-   用事の札 1.1（＝ほぼ見えない）。34枚ぜんぶ同じでした。
-   読めることの床は 4.5 です。（DESIGN.md「1-4」「2.」）
-   🩸2026-09-19（五便）＝**この直しは、焼いた後の HTML 34枚を手で直したものでした**
-   （焼き型のこちらは先頭のまま）。だから今日、教本を直して焼き直したとたん、
-   9/7 の直しが**まるごと巻き戻りかけました**。＝家訓「答えを出す係は一人」。
-   ⚠️次に手引きの見た目を直す人へ：**直すのは、この焼き型のほうです。**
-   焼いた HTML を手で直すと、次に誰かが焼いた日に、黙って消えます。
-   ---------------------------------------------------------------- */
-@media (prefers-color-scheme:dark){
-  body{background:#1c2230;color:#efe9e0}
-  a{color:#e0a061}
-  .lang b{color:#e0a061}
-  h2{border-left-color:#e0a061}
-  .nav,.toc{border-bottom-color:#3d4659}
-  footer{border-top-color:#3d4659}
-  .mark{background:#e0a061;color:#1c2230}
-  figure{background:#141a26;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-  figcaption,footer,.chap-list a+a::before{color:#a9a49c}
-  .only-note{background:#2a2118;border-left-color:#e0a061;color:#efe9e0}
-}
+.chap-list a+a::before{content:"・";color:var(--usu);margin-right:.2em}
+.tb-foot{margin-top:3em;padding-top:1em;border-top:1px solid var(--sen);font-size:.85rem;color:var(--usu);line-height:1.7}
 @media print{
-  html{font-size:12pt}body{background:#fff;color:#000}
-  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  html{font-size:12pt}body{background:#fff!important;color:#000}
+  .ie-hd,.ie-ft,.lang,.nav,.toc,.only-note,.ban-note,.noprint,canvas{display:none!important}
+  main.tb{font-size:12pt}
   section{display:block!important;break-inside:avoid}
-  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  figure{background:#fff;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/14.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="13.html">← 開く・保存・実寸</a><a href="15.html">立体（3DとSTL） →</a></nav><h1>14. 印刷（紙へ刷る）</h1><div class="toc"><a href="#レイアウト">レイアウト（紙の空間）</a><a href="#紙の上では、道具が一手ずつ案内します">紙の上では、道具が一手ずつ案内します（追従するUI）</a><a href="#ビューポート">ビューポート（MV）＝紙の上に置く、図面を映すカメラ</a><a href="#窓の中の注記は、大筋が自動です">窓の中の注記は、大筋が自動です</a><a href="#さらに、窓ごとに微調整できる">さらに、窓ごとに微調整できる＝ビューポートの板（VP）</a><a href="#映す範囲を絞る">映す範囲を絞る＝X1〜X2・Y1〜Y2 の通りだけ</a><a href="#窓の中の破線のきざみ">窓の中の破線のきざみ</a><a href="#モデルの図面を、紙へ切り出して貼る">モデルの図面を、紙へ切り出して貼る</a><a href="#手元の三角スケールに合わせる">手元の三角スケールに合わせる</a><a href="#窓とのちがい">窓とのちがい</a><a href="#貼った注記が、大きすぎる">貼った注記が、大きすぎる／小さすぎる時</a><a href="#図枠">図枠（ずわく）＝棚から呼んで、用紙に合わせる</a><a href="#紙を何枚でも">紙を何枚でも</a><a href="#プレビューを開く">プレビューを開く</a><a href="#用紙と縮尺">用紙と縮尺</a><a href="#範囲">範囲（窓で刷る）</a><a href="#紙の上の身だしなみ">紙の上の身だしなみ</a><a href="#紙になるとき">紙になるとき</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="レイアウト"><h2>レイアウト（紙の空間）</h2>
+</style></head><body>
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../../#tsukutte">作っているもの</a>
+        <a href="../../#kiroku">開発の記録</a>
+        <a href="../../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+<main class="tb"><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/14.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="13.html">← 開く・保存・実寸</a><a href="15.html">立体（3DとSTL） →</a></nav><h1>14. 印刷（紙へ刷る）</h1><div class="toc"><a href="#K'Adの印刷">K'Ad の印刷＝PDF にしてから刷る</a><a href="#レイアウト">レイアウト（紙の空間）</a><a href="#紙の上では、道具が一手ずつ案内します">紙の上では、道具が一手ずつ案内します（追従するUI）</a><a href="#ビューポート">ビューポート（MV）＝紙の上に置く、図面を映すカメラ</a><a href="#窓の中の注記は、大筋が自動です">窓の中の注記は、大筋が自動です</a><a href="#さらに、窓ごとに微調整できる">さらに、窓ごとに微調整できる＝ビューポートの板（VP）</a><a href="#映す範囲を絞る">映す範囲を絞る＝X1〜X2・Y1〜Y2 の通りだけ</a><a href="#窓の中の破線のきざみ">窓の中の破線のきざみ</a><a href="#モデルの図面を、紙へ切り出して貼る">モデルの図面を、紙へ切り出して貼る</a><a href="#手元の三角スケールに合わせる">手元の三角スケールに合わせる</a><a href="#窓とのちがい">窓とのちがい</a><a href="#貼った注記が、大きすぎる">貼った注記が、大きすぎる／小さすぎる時</a><a href="#図枠">図枠（ずわく）＝棚から呼んで、用紙に合わせる</a><a href="#紙を何枚でも">紙を何枚でも</a><a href="#プレビューを開く">プレビューを開く</a><a href="#用紙と縮尺">用紙と縮尺</a><a href="#範囲">範囲（窓で刷る）</a><a href="#紙の上の身だしなみ">紙の上の身だしなみ</a><a href="#紙になるとき">紙になるとき</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><section id="K'Adの印刷"><h2>K'Ad の印刷＝PDF にしてから刷る</h2>
+<p>K'Ad はプリンタへ直には送りません。リボンの［印刷］で</p>
+<p>紙を見ながら用紙・縮尺・色を決めて［PDF に書き出す］。</p>
+<p>その PDF を開いて、家のプリンタやコンビニで刷ります。</p>
+</section>
+<section id="レイアウト"><h2>レイアウト（紙の空間）</h2>
 <p>製図台の下に、もう一段タブがあります＝モデル｜レイアウト1。</p>
 <ul>
 <li>モデル＝実物大で図面を描く所。一つだけです。（図面の現物は、いつでもここにあります）</li>
@@ -77,7 +75,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <p>この紙の上は 1:1＝打った 10 は、紙の上でそのまま 10 です。</p>
 <p>紙の左下が原点(0,0)。図枠・表題欄・注記は、ここに描きます。</p>
 <p>※ほかのCADで「ペーパー空間」と呼ばれている所です。</p>
-<p>レイアウトを開いている時にPDFを押すと、プレビューは出ません。</p>
+<p>レイアウトを開いている時に［印刷］を押すと、プレビューは出ません。</p>
 <p>——この画面がもうプレビューだからです。押せばそのまま紙になります。</p>
 <p>（モデルから刷る時は、今までどおりプレビューが開きます）</p>
 <p>紙に描いたものも、窓も、DXFに一緒に保存されます。</p>
@@ -102,7 +100,7 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </section>
 <section id="ビューポート"><h2>ビューポート（MV）＝紙の上に置く、図面を映すカメラ</h2>
 <p>レイアウトのタブへ移って、リボン「窓」か、小窓に MV →Enter。</p>
-<p>（紙の道具＝窓・フィット・PDF は、リボンの「レイアウト」の棚に並んでいます）</p>
+<p>（紙の道具＝窓・フィット・印刷 は、リボンの「レイアウト」の棚に並んでいます）</p>
 <p>紙の上で対角2点をクリックすると、そこに窓が開きます。</p>
 <p>置いた瞬間、モデル空間の図面ぜんぶが、その窓に収まる縮尺で映ります。</p>
 <p>置いた窓はそのまま選ばれていて、「ビューポート」の板が自動で開きます</p>
@@ -233,43 +231,83 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <p>（どの紙の住人かは、図面自身が書いています。書いていない古い図面では、いちばん手前の紙へ入れて、そうしたことを画面が言います）</p>
 </section>
 <section id="プレビューを開く"><h2>プレビューを開く</h2>
-<p>小窓に PDF か PLOT →Enter（リボンからも）。</p>
+<figure><a href="e/14-プレビューを開く-0.png" target="_blank" rel="noopener" title="押すと、大きく開きます"><img src="e/14-プレビューを開く-0.png" alt="印刷プレビュー（紙に図面を当てた姿）" loading="lazy"></a><figcaption>印刷プレビュー（紙に図面を当てた姿）</figcaption></figure>
+<p>リボンの［印刷］か、小窓に PDF か PLOT →Enter。</p>
 <p>画面が「紙に図面を当てた姿」になります。Esc＝図面へ戻る。</p>
 </section>
 <section id="用紙と縮尺"><h2>用紙と縮尺</h2>
+<figure><a href="e/14-用紙と縮尺-0.png" target="_blank" rel="noopener" title="押すと、大きく開きます"><img src="e/14-用紙と縮尺-0.png" alt="プレビューの足元の帯" loading="lazy"></a><figcaption>プレビューの足元の帯</figcaption></figure>
 <ul>
 <li>用紙のボタン＝A4・A3…と紙を選びます。</li>
 <li>向き（横／縦）＝「ページ設定」の板で選びます。横＝長辺が幅（A4なら297×210）／縦＝短辺が幅（210×297）。※足元の「用紙」の札は、いつも向きまで名乗ります（用紙 A4縦）。※レイアウトに居るときは、その札もページ設定の板も、いま見ている紙の用紙を替えます（モデルの紙とは別々に持てます）。</li>
 <li>縮尺のボタン＝1:50 など、キリのいい縮尺を選びます。</li>
-<li>「自動」＝紙に収まる、いちばん大きいキリのいい縮尺。</li>
+<li>［合わせる］＝紙に収まる、いちばん大きいキリのいい縮尺を、その場で一度だけ選びます。縮尺は図面ごとに一つ。新しい図面は 1:50、開いた図面は開いた時の大きさから決まり、そのあとは、替えるまで動きません（これから置く字・寸法の大きさが、勝手に変わらないように）。</li>
 <li>「中央へ」＝図面を紙の真ん中へ戻します。</li>
 <li>紙の上の図面は、作図と同じ手（パン・ズーム）で動かせます。</li>
 </ul>
 </section>
 <section id="範囲"><h2>範囲（窓で刷る）</h2>
 <p>「範囲」を押す→刷りたいところの1つ目の角→対角の角。</p>
-<p>＝その窓のなかだけが紙に載ります。縮尺「自動」は窓に</p>
+<p>＝その窓のなかだけが紙に載ります。［合わせる］は窓に</p>
 <p>合うキリを選びます。もう一度「範囲」→「図面ぜんぶ」で</p>
 <p>戻せます。</p>
 </section>
 <section id="紙の上の身だしなみ"><h2>紙の上の身だしなみ</h2>
 <ul>
 <li>寸法・文字の大きさ＝倍率で整えます（原図は不変）。</li>
-<li>小数の桁の始末＝見た目だけ整えます（図面の数字は不変）。</li>
+<li>小数の桁・丸め方式＝寸法スタイルそのものを替えます。作図の画面の寸法も同じ数字になります（寸法の測った値は不変）。</li>
 <li>表題欄＝小窓に TITLE か 表題。作成者→図番→図名→日付の順に聞かれます（空Enter＝そのまま・-＝自動に戻す）。</li>
 </ul>
 </section>
 <section id="紙になるとき"><h2>紙になるとき</h2>
-<p>「PDFへ」＝Macは保存ウインドウ、Webはダウンロードへ。</p>
-<p>出てくるPDFは日本語もそのまま。コンビニ印刷もできます。</p>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期九十八号窯 ／ 2026-09-29<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+<p>［PDF に書き出す］＝保存ウインドウで置き場所を決めます</p>
+<p>（Webは保存の窓、窓の無いブラウザはダウンロードへ）。</p>
+<p>出てくるPDFは日本語もそのまま。家のプリンタでも、</p>
+<p>コンビニ印刷でも刷れます。</p>
+</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a>　<a href="../jisho/">コマンド辞書</a></span></div></div></main>
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+<script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){
   var note=document.getElementById('only');
   function apply(){
     var id=decodeURIComponent(location.hash.replace(/^#/,''));
-    var secs=document.querySelectorAll('main section');
+    var secs=document.querySelectorAll('main.tb section');
     var hit=id&&document.getElementById(id);
     secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
     if(note) note.classList.toggle('on',!!hit);

@@ -153,7 +153,9 @@ def main():
 
         # ── 五）札の章名が、その章の題と合っているか ────────
         # 「手引き　8. 作図の手順 →」の、真ん中だけを見る
-        fuda_dai = fuda.replace('手引き', '').replace('→', '').strip()
+        # ⚠️頭の「手引き」だけを落とす（2026-11-20）。全部落とすと、題そのものに「手引き」が入る章
+        #   （2. カーソルの手引き）へ戸を付けた日に、正しい札が食い違いと数えられる。
+        fuda_dai = re.sub(r'^手引き\s*', '', fuda.replace('→', '').strip()).strip()
         if sho_dai and fuda_dai and fuda_dai != sho_dai:
             dame('五）章の題', f'{mishirushi}：札は「{fuda_dai}」'
                                f'／実物は「{sho_dai}」。食い違っています')

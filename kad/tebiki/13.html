@@ -1,78 +1,71 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>13. 開く・保存・実寸 — K'Ad蔵人 手引き</title><style>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>13. 開く・保存・実寸 — K'Ad蔵人 手引き</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261120">
+<link rel="icon" type="image/png" href="/favicon.png?v=20261120">
+<link rel="stylesheet" href="../../kihon.css?v=20261120">
+<script src="../../kihon.js?v=20261120c"></script>
+<style>
 *,*::before,*::after{box-sizing:border-box}
-html{font-size:18px}
-body{margin:0;background:#fbf8f1;color:#2b2622;line-height:1.9;
-  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:640px;margin:0 auto;padding:16px 18px 64px}
-a{color:#a95c2a;text-decoration:none}a:hover{text-decoration:underline}
-h1{font-size:1.35rem;margin:.4em 0 .2em;line-height:1.5}
-h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid #a95c2a;line-height:1.5}
+main.tb{font-size:18px;line-height:1.9}
+.wrap{max-width:680px;margin:0 auto;padding:16px 18px 64px}
+a{color:var(--sashi);text-decoration:none}a:hover{text-decoration:underline}
+main.tb h1{font-family:var(--min);font-size:1.45rem;letter-spacing:.04em;margin:.4em 0 .2em;line-height:1.5}
+main.tb h2{font-size:1.15rem;margin:1.6em 0 .4em;padding-left:.5em;border-left:5px solid var(--sashi);line-height:1.5}
 .lang{text-align:right;font-size:.9rem;padding:.3em 0}
-.lang b{color:#a95c2a}
-@media print{.lang{display:none}}
-.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid #ded3c4}
+.lang b{color:var(--sashi)}
+.nav{display:flex;flex-wrap:wrap;gap:.6em 1.2em;font-size:.9rem;padding:.4em 0;border-bottom:1px solid var(--sen)}
 .nav .sp{flex:1}
-.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid #ded3c4;font-size:.95rem}
+.toc{margin:1em 0;padding:.6em 0;border-bottom:1px solid var(--sen);font-size:.95rem}
 .toc a{display:inline-block;margin:.15em .9em .15em 0}
-p{margin:.5em 0}
-ul{padding-left:1.3em;margin:.4em 0}li{margin:.2em 0}
+main.tb p{margin:.5em 0}
+main.tb ul{padding-left:1.3em;margin:.4em 0}main.tb li{margin:.2em 0}
 ol.steps{list-style:none;padding:0;margin:.6em 0}
 ol.steps li{display:flex;gap:.6em;margin:.5em 0}
-.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:#a95c2a;color:#fff;
+.mark{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--sashi);color:var(--sashi-moji);
   display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-top:.15em}
 ol.steps li>div{flex:1;min-width:0}
-figure{margin:.6em 0 1em;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+figure{margin:.6em 0 1em;padding:8px;background:var(--ji2);border:1px solid var(--sen2);border-radius:8px}
+figure a{display:block}
 figure img{display:block;max-width:100%;height:auto;border-radius:4px}
-figcaption{font-size:.85rem;color:#6b625a;margin-top:.3em}
-.only-note{display:none;background:#fff3e0;border-left:5px solid #e0a061;padding:.4em .8em;margin:1em 0;font-size:.95rem}
+figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
+.only-note{display:none;background:var(--ji2);border-left:5px solid var(--sashi);padding:.4em .8em;margin:1em 0;font-size:.95rem}
 .only-note.on{display:block}
-.chap-list{list-style:none;padding:0}
+.ban-note{background:var(--ji2);border:1px solid var(--sen2);border-radius:8px;padding:.6em .9em;margin:1em 0;font-size:.9rem;color:var(--usu)}
+.chap-list{list-style:none;padding:0!important}
 .chap-list>li{margin:1em 0}
 .chap-list b{display:block;font-size:1.05rem}
 .chap-list a{display:inline-block;margin:.15em .2em .15em 0}
-.chap-list a+a::before{content:"・";color:#6b625a;margin-right:.2em}
-footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85rem;color:#6b625a;line-height:1.7}
-/* ---- 暗い側（閲覧機の設定にしたがう）--------------------------
-   ⚠️この塊は、必ず「明るい側の指定より あと」に置くこと。
-   2026-09-07 まで、ここは先頭（body のすぐ下）にありました。同じ強さの規則は
-   あとに書いたほうが勝つので、下の a{color:#a95c2a} や .nav{border-bottom:...}
-   に上書きされ、body の地と字をのぞいて**まるごと死んでいました**。
-   実測（暗い側で）：リンク 3.22／言語の札 3.22／足元 2.66／
-   用事の札 1.1（＝ほぼ見えない）。34枚ぜんぶ同じでした。
-   読めることの床は 4.5 です。（DESIGN.md「1-4」「2.」）
-   🩸2026-09-19（五便）＝**この直しは、焼いた後の HTML 34枚を手で直したものでした**
-   （焼き型のこちらは先頭のまま）。だから今日、教本を直して焼き直したとたん、
-   9/7 の直しが**まるごと巻き戻りかけました**。＝家訓「答えを出す係は一人」。
-   ⚠️次に手引きの見た目を直す人へ：**直すのは、この焼き型のほうです。**
-   焼いた HTML を手で直すと、次に誰かが焼いた日に、黙って消えます。
-   ---------------------------------------------------------------- */
-@media (prefers-color-scheme:dark){
-  body{background:#1c2230;color:#efe9e0}
-  a{color:#e0a061}
-  .lang b{color:#e0a061}
-  h2{border-left-color:#e0a061}
-  .nav,.toc{border-bottom-color:#3d4659}
-  footer{border-top-color:#3d4659}
-  .mark{background:#e0a061;color:#1c2230}
-  figure{background:#141a26;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-  figcaption,footer,.chap-list a+a::before{color:#a9a49c}
-  .only-note{background:#2a2118;border-left-color:#e0a061;color:#efe9e0}
-}
+.chap-list a+a::before{content:"・";color:var(--usu);margin-right:.2em}
+.tb-foot{margin-top:3em;padding-top:1em;border-top:1px solid var(--sen);font-size:.85rem;color:var(--usu);line-height:1.7}
 @media print{
-  html{font-size:12pt}body{background:#fff;color:#000}
-  .nav,.toc,.only-note,footer .noprint{display:none!important}
+  html{font-size:12pt}body{background:#fff!important;color:#000}
+  .ie-hd,.ie-ft,.lang,.nav,.toc,.only-note,.ban-note,.noprint,canvas{display:none!important}
+  main.tb{font-size:12pt}
   section{display:block!important;break-inside:avoid}
-  figure{box-shadow:none;border:1px solid #999;page-break-inside:avoid}
+  figure{background:#fff;border:1px solid #999;page-break-inside:avoid}
   a{color:#000}
 }
-</style></head><body><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/13.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="12.html">← 部品と部品箱</a><a href="14.html">印刷（紙へ刷る） →</a></nav><h1>13. 開く・保存・実寸</h1><div class="toc"><a href="#プロジェクト">プロジェクト（PROJ）＝図面の目録</a><a href="#開くと、まずどこから始めるかを聞きます">開くと、まずどこから始めるかを聞きます</a><a href="#図面を目録へ入れる">図面を目録へ入れる（足元に四つ）</a><a href="#目録を整える">目録を整える（行の右に四つ）</a><a href="#開き方">開き方</a><a href="#大事なこと">大事なこと</a><a href="#開く">開く（⌘O）</a><a href="#保存">保存（⌘S）</a><a href="#実寸合わせ">CAL / 実寸合わせ</a><a href="#単位">単位（物差しの取り替え）</a><a href="#控え">控え（自動保存）</a><a href="#前回、正しく終われなかったとき">前回、正しく終われなかったとき</a><a href="#保存しないで閉じるとき">保存しないで閉じるとき＝二度聞きます</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><main><section id="プロジェクト"><h2>プロジェクト（PROJ）＝図面の目録</h2>
+</style></head><body>
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../../#tsukutte">作っているもの</a>
+        <a href="../../#kiroku">開発の記録</a>
+        <a href="../../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+<main class="tb"><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/13.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="12.html">← 部品と部品箱</a><a href="14.html">印刷（紙へ刷る） →</a></nav><h1>13. 開く・保存・実寸</h1><div class="toc"><a href="#プロジェクト">プロジェクト（PROJ）＝図面の目録</a><a href="#開くと、まずどこから始めるかを聞きます">開くと、まずどこから始めるかを聞きます</a><a href="#図面を目録へ入れる">図面を目録へ入れる（足元に四つ）</a><a href="#目録を整える">目録を整える（行の右に四つ）</a><a href="#開き方">開き方</a><a href="#大事なこと">大事なこと</a><a href="#開く">開く（⌘O）</a><a href="#保存">保存（⌘S）</a><a href="#実寸合わせ">CAL / 実寸合わせ</a><a href="#断面を拾う">断面を拾う（DANMEN）</a><a href="#図面の比較">図面の比較（COMPARE）</a><a href="#下絵">下絵（画像を敷いて、上からなぞる）</a><a href="#単位">単位（物差しの取り替え）</a><a href="#控え">控え（自動保存）</a><a href="#前回、正しく終われなかったとき">前回、正しく終われなかったとき</a><a href="#保存しないで閉じるとき">保存しないで閉じるとき＝二度聞きます</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><section id="プロジェクト"><h2>プロジェクト（PROJ）＝図面の目録</h2>
 <p>大きな仕事では、図面が何十枚にもなります。フォルダを眺めても</p>
 <p>「これは何だっけ？」がファイル名からは分かりません。</p>
 <p>プロジェクトは、その一枚一枚が「どこに在って、何なのか」を</p>
 <p>覚えておく目録です。</p>
-<p>開き方は二つ。リボン「ファイル」のいちばん左の「プロジェクト」ボタンか、</p>
+<p>開き方は二つ。メニューバー「ファイル」の「プロジェクト」か、</p>
 <p>小窓に PROJ →Enter。</p>
 </section>
 <section id="開くと、まずどこから始めるかを聞きます"><h2>開くと、まずどこから始めるかを聞きます</h2>
@@ -120,24 +113,33 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 </ul>
 </section>
 <section id="開く"><h2>開く（⌘O）</h2>
-<p>DXF・DWG・PDF・JWW・STL が開けます。</p>
+<p>DXF・DWG・PDF・JWW・STL と、画像（PNG・JPG）が開けます。</p>
 <ul>
 <li>DXF＝この家の母国語。そのまま開いて、そのまま保存。</li>
 <li>DWG＝Mac版のみ、翻訳係（LibreDWG）が居れば開けます。開けないときは、送り主に「DXFで」と頼むのが一番の早道（どのCADにもDXF書き出しは付いています）。</li>
 <li>PDF＝線の入ったPDFなら、図面として取り込めます。束のPDFは「線がいちばん多いページ」を自動で選びます。外れたら小窓に PAGE 4（＝4ページ目に入れ替え）。</li>
 <li>JWW＝Jw_cadの図面。縮尺は実寸へ翻訳して迎えます。</li>
 <li>STL＝立体の部屋で開いて、回して見られます。</li>
+<li>PNG・JPG＝「下絵」として新しいタブに敷きます（下の【下絵】）。</li>
 </ul>
 </section>
 <section id="保存"><h2>保存（⌘S）</h2>
+<figure><a href="e/13-保存-0.png" target="_blank" rel="noopener" title="押すと、大きく開きます"><img src="e/13-保存-0.png" alt="初めての保存は、形を選ぶ板から" loading="lazy"></a><figcaption>初めての保存は、形を選ぶ板から</figcaption></figure>
 <p>保存はDXFそのもの＝どのCADでも読める形です。</p>
+<p>初めての保存と別名（⌘⇧S）では、形を選ぶ板が出ます。</p>
+<ul>
+<li>DXF で保存＝ふだんの形。K'Ad でまた開いて直せます。</li>
+<li>PDF に書き出す＝紙の形。印刷プレビューと同じ紙と縮尺。書き出しは図面の保存ではありません（続きは DXF で）。</li>
+<li>JWW＝いま作っているところです（それまでは DXF で）。</li>
+</ul>
+<p>二度目からの ⌘S は同じ DXF へ上書き（先にひと言聞きます）。</p>
 <p>よその形式（DWG・PDF・JWW）から来た図面は、元を守る</p>
 <p>ため必ず別名で聞きます。元のファイルは無傷です。</p>
 </section>
 <section id="実寸合わせ"><h2>CAL / 実寸合わせ</h2>
 <p>PDFなどから来た図面は、大きさが実寸とは限りません。</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>小窓に CAL →Enter（「実寸」でも呼べます）。
+<li><span class="mark">①</span><div>タブ「直す」の［実寸合わせ］を押すか、小窓に CAL →Enter（「実寸」でも呼べます）。
 </div></li>
 <li><span class="mark">②</span><div>図面に書いてある寸法（例「1208」）の両端を、スナップでピタリと2点指します。
 </div></li>
@@ -148,6 +150,84 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <li><span class="mark">⑤</span><div>空Enter＝実行。図面全体が実寸になります。
 </div></li>
 </ol>
+</section>
+<section id="断面を拾う"><h2>断面を拾う（DANMEN）</h2>
+<p>受け取った図面（DXF・JWW・PDF・下絵）から、切る相手の</p>
+<p>躯体（柱・壁など）の輪郭を拾って、新しい一枚にします。</p>
+<p>元の図面は読むだけ＝一文字も書きません。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>タブ「工程」の［断面を拾う］か、小窓に DANMEN（「断面」でも）→Enter。図面の上に板が浮きます。
+</div></li>
+<li><span class="mark">②</span><div>輪郭の内側を一回クリック。囲いが琥珀で光り、「幅 × 高さ」を名乗ります。
+</div></li>
+<li><span class="mark">③</span><div>それでよければ、中をもう一度クリックか Enter で採ります。新しいタブ「断面：元の名前」の画層「躯体」に、閉じたポリライン一本で書かれます（単位は mm）。
+</div></li>
+<li><span class="mark">④</span><div>板の［断面のタブへ］で移って ⌘S で保存します。
+</div></li>
+</ol>
+<ul>
+<li>線が切れている図面・通り芯が横切る柱・下絵（画像）の上は、板の［2点で四角］で、向かい合う角を 2 点指します。</li>
+<li>幅の数字が本当の寸法と違う時（PDF・縮尺のかかった図面）は、板の［正しい幅］に本当の幅を打って Enter＝掛け直します。輪郭を指した後なら、そのまま数字を打ち始めても欄が開きます。</li>
+<li>U・Esc・右クリックは一段ずつ戻ります。採った後の U は、断面の一枚の方を一手戻します（元の図面は変わりません）。</li>
+<li>囲いの中の穴や、中に描かれた形（島）は採りません。</li>
+<li>鉄筋・鉄骨を拾う道は、まだありません（躯体の輪郭だけ）。</li>
+</ul>
+</section>
+<section id="図面の比較"><h2>図面の比較（COMPARE）</h2>
+<p>改訂版の図面が届いた時、前の版とどこが変わったかを探します。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>前の版と新しい版を ⌘O で開いておく（PDF・DXF・JWW）。
+</div></li>
+<li><span class="mark">②</span><div>メニューバー「ファイル」の［比較］か、小窓に COMPARE（「比較」でも）→Enter。右クリックにも。
+</div></li>
+<li><span class="mark">③</span><div>板の［前の版］［新しい版］を ‹ › でタブから選び、［比べる］。
+</div></li>
+<li><span class="mark">④</span><div>新しいタブに結果が出ます。元の二枚は一文字も変えません。赤＝前の版だけ（消えた）・緑＝新しい版だけ（増えた）・灰＝同じ・琥珀の雲と番号＝変わった所の囲い。
+</div></li>
+<li><span class="mark">⑤</span><div>板の［次 ›］で、変わった所へ一か所ずつ寄ります。雲の番号は、板の「変更 i／n か所」と同じ番号です。
+</div></li>
+</ol>
+<ul>
+<li>画層「比較_同じ」の電球を消すと、変わった所だけが残ります。</li>
+<li>増えた線は、クイック選択の［画層］で選んで複製できます。</li>
+<li>線が細切れでも、同じ所に線があれば「同じ」と見ます。紙の上で 0.2mm より小さいずれは「同じ」です。</li>
+<li>文字は中身と場所で比べます（寸法の数字の書き換えも出ます）。</li>
+<li>ハッチは模様の線まで比べます（模様だけ替えた改訂も出ます）。</li>
+<li>画像だけの PDF（スキャン）は線が無いので比べられません。</li>
+</ul>
+<p>〔置き方＝縮尺や余白が違う二枚〕</p>
+<p>実寸の DXF と紙の mm の PDF、余白を変えて刷り直した PDF など、</p>
+<p>大きさや置き場所が違う二枚も比べられます。板の［置き方］の札：</p>
+<ul>
+<li>自動で合わせる（いつもはこれ）＝両方にある同じ文字（部屋名・寸法の数字など）と線の端で、新しい版の写しを前の版に重ねます。そのままで重なる二枚は動かしません。</li>
+<li>そのまま＝動かさずに比べます。</li>
+<li>2点で合わせる＝自動で合わない時（回って刷られた図面など）。前の版で1点→新しい版で同じ点→前の版で2点目→新しい版で同じ2点目、の四つのクリックで重ね、そのまま比べます。角や交点に吸い付きます。離れた二点ほど正確です。U・Esc・右クリック＝一つ前の点へ（最初の点ならやめる）。</li>
+<li>結果は前の版の座標に出ます（前の版から起こした自分の図面へ、増えた線をそのまま写せます）。元の二枚は動かしません。</li>
+</ul>
+<p>〔変更の一覧を刷る〕</p>
+<p>結果のタブの図面の上に、表題・色の約束・置き方と、</p>
+<p>番号ごとの数（「3　消えた 1・増えた 2」）が並びます。</p>
+<p>このタブをそのまま印刷すれば、一覧つきの紙になります。</p>
+<p>画層「比較_一覧」の電球を消せば、一覧は隠れます。</p>
+</section>
+<section id="下絵"><h2>下絵（画像を敷いて、上からなぞる）</h2>
+<p>紙の図面の写真やスキャン（PNG・JPG）を、図面のいちばん下に</p>
+<p>「下絵」として敷き、上から線でなぞって図面にします。</p>
+<p>※画像が自動で線になることはありません。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>⌘O（メニューバー「ファイル」の［開く］）で画像を選ぶ→新しいタブに敷かれます。画層「下絵」に住み、印刷されません（PDF にも出ません）。
+</div></li>
+<li><span class="mark">②</span><div>敷いた直後は1画素＝1mmの仮の大きさです。下の帯の［実寸合わせ］を押し、図面に書いてある寸法の両端を2点指して、実際の長さを打つ→Enter→Enter。下絵が実寸になります。
+</div></li>
+<li><span class="mark">③</span><div>帯の濃さ［100］［70］［50］［30］で、なぞる線と見分けやすい濃さに（U で戻せます・ファイルの画像は変えません）。
+</div></li>
+<li><span class="mark">④</span><div>上から線分・ポリラインでなぞります。吸い付くのは描いた線と下絵の枠の角だけ（絵の中の線には吸い付きません）。
+</div></li>
+</ol>
+<ul>
+<li>右下の札「下絵 1」を押すと、下絵を選び直して帯が出ます（見失ったとき・画層を隠したときの帰り道）。</li>
+<li>大きな画像は、画面には長辺 4,096 画素に縮めて見せます（元のファイルはそのまま）。</li>
+</ul>
 </section>
 <section id="単位"><h2>単位（物差しの取り替え）</h2>
 <p>他所の図面が違う物差しで描かれていたとき、図面全体に倍率を</p>
@@ -193,14 +273,50 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #ded3c4;font-size:.85
 <p>一緒に片付きます）。〈いいえ〉なら、何も起きません。</p>
 <p>うっかりは、控えで救うのではなく、この二度目の問いで</p>
 <p>止める作りです。</p>
-</section></main><footer>この手引きの文は、K'Ad蔵人の中の教本（リボン「案内」の本のボタン）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<span class="noprint"><br>十六期九十八号窯 ／ 2026-09-29<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a></span></footer></div><script>
+</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>教本を直せば、この手引きも同じ日に直ります。<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">K'Ad蔵人 を開く</a>　<a href="../../">縁側屋</a>　<a href="../">K'Ad蔵人のこと</a>　<a href="../jisho/">コマンド辞書</a></span></div></div></main>
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+<script>
 // 用事の絞り込み＝URL の # がある節の名前なら、その節だけ出す（父ちゃんの「一つの用事に一ページ」）。
 // 印刷のときは CSS が全部の節を出す。
 (function(){
   var note=document.getElementById('only');
   function apply(){
     var id=decodeURIComponent(location.hash.replace(/^#/,''));
-    var secs=document.querySelectorAll('main section');
+    var secs=document.querySelectorAll('main.tb section');
     var hit=id&&document.getElementById(id);
     secs.forEach(function(s){ s.style.display=(hit&&s!==hit)?'none':''; });
     if(note) note.classList.toggle('on',!!hit);

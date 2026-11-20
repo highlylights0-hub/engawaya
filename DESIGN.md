@@ -203,11 +203,11 @@ Xの印（`icon/en-yoi.png`）と背景から拾った飾り。**色の表（上
 
 | 表 | 棟 |
 |---|---|
-| 生成り | `asobi/` `osewa/` `jokyo/` `nikki/` `kad/` `kad/jisho/` `koe/`（この四つは 2026-11-20 に母屋の表から移った） |
+| 生成り | `asobi/` `osewa/` `jokyo/` `nikki/` `kad/` `kad/jisho/` `koe/`（この四つは 2026-11-20 に母屋の表から移った） `kad/tebiki/` `kad/tebiki/en/`（同じ日に、手引きの表から移った） |
 | 母屋 | `index.html` `naze/` `meter/` `michi/` `akapen/` `ochigee/` `ochigee/privacy/` `404.html` |
 | 選ばせる | `asobiba/narabe/` |
 | 遊び場 | `asobiba/` `asobiba/suikawari/` `asobiba/renga/` |
-| 手引き | `kad/tebiki/` とその全ページ（`prefers-color-scheme` で二枚） |
+| 手引き | （いまは空き。2026-11-20 まで、手引きの全ページが `prefers-color-scheme` の二枚でここに居た。焼き型＝非公開の `GCad` の `手引き/焼く.py` が kihon.css を読む形に替わり、生成りへ移った） |
 
 📌**`index.html` は二つの表を持つ**（2026-10-27）。地と字は `kihon.css`（生成り）を読み込み、
 **縁側の場面だけ**が母屋の表（時刻の四つの顔）を持ち続ける——場面の絵（板・ランプ・吹き出し）が
