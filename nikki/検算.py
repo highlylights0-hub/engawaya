@@ -93,7 +93,10 @@ miru("「つくっている途中」が、まだ出ていない号数を名乗�
 # miru("画面に絵文字を出していない（憲法②）", not emoji, f"見つかった絵: {emoji}")
 
 # ⑧ リンクの行き先が、この家に本当にあるか
-saki = [h for h in re.findall(r'href="(/[^"#]*)"', s)]
+#    📌2026-11-20 住所のうしろの「?v=…」は落としてから探す。あれはファイルの名前ではなく、
+#      閲覧機に取り直してもらうための札（サイトの印に付けた日に、ここが鳴った＝ファイルは在るのに）。
+#      ⚠️落とすのは札だけ。札の前の名前が間違っていれば、いままでどおり鳴る（壊して確かめた）。
+saki = [h.split("?")[0] for h in re.findall(r'href="(/[^"#]*)"', s)]
 nai = [h for h in saki if not (HERE.parent / h.lstrip("/") / "index.html").exists()
                        and not (HERE.parent / h.lstrip("/")).exists()
                        and h != "/"]
