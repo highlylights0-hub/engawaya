@@ -47,39 +47,23 @@
      回線が細い場所でも、開いた瞬間に出ます。絵文字も使いません（憲法②）。
      ============================================================ -->
 
+<!-- 2026-11-20 この辞書も「宵のスーツ」へ移した。色は kihon.css（正は DESIGN.md「1-0」）。
+     ⚠️この部屋の <style> に、色の値を書かない（写しが一枚でもあれば、食い違いが始まる）。
+     ⚠️外の書体（Google Fonts）は、ここでは読み込まない。用があって開く道具のページは、
+       回線の細い場所でもすぐ出る作りのままにする（CLAUDE.md の心がけ／検算の七）。
+       見出しの明朝は、その機械に入っている明朝で出る（kihon.css が後ろに並べてある）。 -->
+<link rel="stylesheet" href="../../kihon.css?v=20261120">
+<script src="../../kihon.js?v=20261120c"></script>
 <style>
-:root {
-  --sky-top:    #eaf2f8;
-  --sky-bottom: #fdfbf6;
-  --ink:        #2b2622;
-  --ink-soft:   #6b625a;
-  --card:       #ffffffcc;
-  --card-line:  #d9cfc2;
-  --wood-1:     #c69a6d;
-  --accent:     #9c5f2d;
-}
-/* ---- 時間帯ごとの色（母屋・kad/ と同じ表）---------------------
-   ⚠️2026-09-07 まで、この辞書だけ夜の顔を持っていませんでした。
-   家じゅうが暗くなる時刻に、ここを開いた人の目にだけ真っ白（#fdfbf6）が
-   飛び込む——夜に図面を引いていて手が止まった人が、いちばん来る場所なのに。
-   建てた翌日に見つかりました。**新しい棟を建てた日は、夜も開いて見ること。**
-   （DESIGN.md「1-1. 母屋の色」「1-4. どの棟が、どの表を使うか」）
-   ---------------------------------------------------------------- */
-html[data-time="morning"] { --sky-top:#dbe9f4; --sky-bottom:#fdfcf7; }
-html[data-time="day"]     { --sky-top:#f2efe6; --sky-bottom:#fbf8f1; }
-html[data-time="evening"] { --sky-top:#f3cfa2; --sky-bottom:#fae7cd; --accent:#9d5426; }
-html[data-time="night"]   {
-  --sky-top:#141c2b; --sky-bottom:#232c3d;
-  --ink:#efe9e0; --ink-soft:#a9a49c;
-  --card:#2b3446e6; --card-line:#45506a;
-  --wood-1:#6b5236; --accent:#e0a061;
-}
+/* 色（2026-11-20〜）。kihon.css の変数を使う
+   （sumi＝字／usu＝補足の字／ji＝地／ji2＝札の面／sen2＝札のふち／sashi＝差し色）。
+   それまでは母屋と同じ「時刻で光が変わる」仕掛けだった。
+   📌2026-09-07 の教訓は、いまも生きている：**新しい棟を建てた日は、暗い顔も開いて見ること。**
+     この辞書は建てた日に夜の顔が無く、夜に図面を引いていて手が止まった人——いちばん来る人——の
+     目にだけ、真っ白が飛び込んでいた。 */
 * { box-sizing: border-box; }
 body {
-  margin: 0;
-  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 38%) no-repeat;
-  background-color: var(--sky-bottom);
-  color: var(--ink);
+  /* 地と字の色は kihon.css。字の形だけ、この辞書の並び（読み違えにくい BIZ UDPGothic を候補に）を残す。 */
   font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic",
                "Yu Gothic", Meiryo, system-ui, sans-serif;
   line-height: 1.9;
@@ -87,18 +71,18 @@ body {
 }
 .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 80px; }
 
-.kaeri { font-size: 14px; color: var(--ink-soft); }
+.kaeri { font-size: 14px; color: var(--usu); }
 /* ---- リンクの色（総括）------------------------------------
    ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
    夜の地に沈みます（比 1.5 前後）。「どこそこの a」で数え上げると、
    必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
    ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
    （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
-a { color: var(--accent); }
+a { color: var(--sashi); }
 
-.kaeri a { color: var(--accent); }
-h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
-.soe { margin: 0; color: var(--ink-soft); font-size: clamp(14px, 3.8vw, 16px); }
+.kaeri a { color: var(--sashi); }
+h1 { margin: 18px 0 6px; font-family: var(--min); font-size: clamp(22px, 6vw, 32px); line-height: 1.5; letter-spacing: .06em; }
+.soe { margin: 0; color: var(--usu); font-size: clamp(14px, 3.8vw, 16px); }
 
 /* ---- 引くところ ----------------------------------------------
    窓もチップも、必要よりだいぶ大きくしてあります（憲法③）。
@@ -107,53 +91,50 @@ h1 { margin: 18px 0 6px; font-size: clamp(22px, 6vw, 32px); line-height: 1.5; }
 .hikidashi {
   position: sticky; top: 0; z-index: 5;
   margin: 22px 0 0; padding: 16px 0 12px;
-  background: var(--sky-bottom);
-  border-bottom: 1px solid var(--card-line);
+  background: var(--ji);          /* 送っても上に残る帯。透けると、下を流れる項目と字が重なる */
+  border-bottom: 1px solid var(--sen2);
 }
 .mado {
   width: 100%; padding: 16px 18px;
-  font-size: 18px; font-family: inherit; color: var(--ink);
-  background: #fff; border: 2px solid var(--card-line); border-radius: 12px;
+  font-size: 18px; font-family: inherit; color: var(--sumi);
+  background: var(--ji); border: 2px solid var(--sen2); border-radius: 12px;
 }
-/* ⚠️小窓の地だけは変数ではなく #fff で決め打ちしてあった（打つところは
-   いちばん白いほうが見やすい、という昼の理屈）。夜はその白が凶器になるので、
-   夜だけ差し替える。字は --ink が受け持つので、ここは地と縁だけ。 */
-html[data-time="night"] .mado { background: #1c2333; }
-.mado:focus { outline: 3px solid var(--accent); outline-offset: 1px; }
+/* 小窓の地は、前は #fff の決め打ちで、夜だけ差し替えていた。いまは地の変数ひとつ
+   （明るい顔ではほぼ白、暗い顔では宵）。夜に白が凶器になる穴は、変数に任せて塞いだ。 */
+.mado:focus { outline: 3px solid var(--hikari); outline-offset: 1px; }
 .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
 .chip {
   padding: 12px 18px; min-height: 48px;
-  font-size: 16px; font-family: inherit; color: var(--ink);
-  background: var(--card); border: 2px solid var(--card-line);
+  font-size: 16px; font-family: inherit; color: var(--sumi);
+  background: var(--ji2); border: 2px solid var(--sen2);
   border-radius: 999px; cursor: pointer;
 }
-.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-/* ⚠️夜の差し色（#e0a061）は明るい橙。その上に白を置くと比 1.8 で沈む。
-   夜だけ、字を暗いほうへ裏返す（比 9.4）。 */
-html[data-time="night"] .chip[aria-pressed="true"] { color: #1c2230; }
-.kazu { margin: 10px 0 0; font-size: 14px; color: var(--ink-soft); }
+/* 選んでいる札。差し色の上の字は、家の変数（明るい顔では白・暗い顔では濃い藍）に任せる
+   ＝前は夜だけ字を裏返す一行を別に書いていた（白のままだと比 1.8 で沈んだため）。 */
+.chip[aria-pressed="true"] { background: var(--sashi); border-color: var(--sashi); color: var(--sashi-moji); }
+.kazu { margin: 10px 0 0; font-size: 14px; color: var(--usu); }
 
 /* ---- 項目 ---------------------------------------------------- */
 .ko-list { list-style: none; margin: 22px 0 0; padding: 0;
            display: grid; grid-template-columns: 1fr; gap: 14px; }
 .ko {
   padding: 18px 20px;
-  background: var(--card); border: 1px solid var(--card-line); border-radius: 14px;
+  background: var(--ji2); border: 1px solid var(--sen2); border-radius: 14px;
 }
 .ko-na { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
 .ko-tan {
   font-size: clamp(20px, 5.2vw, 24px); font-weight: 700; letter-spacing: .04em;
-  color: var(--ink);
+  color: var(--sumi);
 }
-.ko-sei { font-size: 15px; color: var(--ink-soft); letter-spacing: .08em; }
+.ko-sei { font-size: 15px; color: var(--usu); letter-spacing: .08em; }
 .ko-setu { margin: 8px 0 0; font-size: clamp(15px, 3.9vw, 16px); }
 .ko-to { margin: 10px 0 0; font-size: 14px; }
-.ko-to a { color: var(--accent); }
-.karappo { margin: 30px 0; font-size: 16px; color: var(--ink-soft); }
+.ko-to a { color: var(--sashi); }
+.karappo { margin: 30px 0; font-size: 16px; color: var(--usu); }
 
-.ashi { margin: 46px 0 0; padding-top: 20px; border-top: 1px solid var(--card-line);
-        font-size: 13px; color: var(--ink-soft); }
-.ashi a { color: var(--accent); }
+.ashi { margin: 46px 0 0; padding-top: 20px; border-top: 1px solid var(--sen2);
+        font-size: 13px; color: var(--usu); }
+.ashi a { color: var(--sashi); }
 
 @media (min-width: 760px) {
   .ko-list { grid-template-columns: 1fr 1fr; }
@@ -161,6 +142,24 @@ html[data-time="night"] .chip[aria-pressed="true"] { color: #1c2230; }
 </style>
 
 <body>
+
+<!-- 上の行（2026-11-20）。表紙・開発日記・K'Ad蔵人とは、と同じ物。 -->
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../../#tsukutte">作っているもの</a>
+        <a href="../../#kiroku">開発の記録</a>
+        <a href="../../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+
+<main>
 <div class="wrap">
 
   <p class="kaeri"><a href="../../">縁側屋</a>　／　<a href="../">K'Ad蔵人のこと</a>　／　<a href="../tebiki/">手引き</a></p>
@@ -569,6 +568,44 @@ html[data-time="night"] .chip[aria-pressed="true"] { color: #1c2230; }
   </p>
 
 </div>
+</main>
+
+<!-- 足元（2026-11-20）。表紙・開発日記・K'Ad蔵人とは、と同じ物。免責の文言は、全ページで揃える決まり。 -->
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
 
 <script>
 /* しぼり込み。外から何も読み込まないので、ここに全部書いてあります。
@@ -610,14 +647,5 @@ html[data-time="night"] .chip[aria-pressed="true"] { color: #1c2230; }
 })();
 </script>
 
-<script>
-/* 母屋・naze・kad と同じ判定。縁側は、差す光で表情が変わる場所なので。
-   ⚠️この家で「いま何時の顔か」を答える式は、棟ごとに一つずつ。
-   値そのものの正は DESIGN.md「1-1」にあります。 */
-(function () {
-  var h = new Date().getHours();
-  document.documentElement.setAttribute('data-time',
-    (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day'
-    : (h >= 16 && h < 19) ? 'evening' : 'night');
-})();
-</script>
+<!-- 2026-11-20 ここにあった「時刻で光を変える」仕掛け（data-time）は、やめた。
+     顔は上の行の「明るくする／暗くする」で選ぶ（kihon.js）。 -->
