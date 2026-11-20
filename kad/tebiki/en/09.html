@@ -60,7 +60,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../09.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="08.html">← Drawing: step by step</a><a href="10.html">Editing: step by step →</a></nav><h1>9. Dimensioning: step by step</h1><div class="toc"><a href="#寸法の列">D / DIM (a run of dimensions)</a><a href="#平行寸法">DAL (aligned dimension)</a><a href="#直径">DDI (diameter) / DRA (radius)</a><a href="#弧長">DAR (arc length)</a><a href="#計測">DI / DIST (measure): measuring without leaving anything on the drawing</a><a href="#面積">AREA: one click inside an enclosure</a><a href="#測った答えを、メモや図面へ">Sending the answer to your notes, or to the drawing</a><a href="#寸法の身なり">The dress of a dimension (the style)</a><a href="#寸法の字が、物に対して大きく見える時">寸法の字が、物に対して大きく見える時</a><a href="#字高">字高 (changing the size of text)</a><a href="#大きさの意味">What the size means (paper mm or drawing units)</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="寸法の列"><h2>D / DIM (a run of dimensions)</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../09.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="08.html">← Drawing: step by step</a><a href="10.html">Editing: step by step →</a></nav><h1>9. Dimensioning: step by step</h1><div class="toc"><a href="#寸法の列">D / DIM (a run of dimensions)</a><a href="#平行寸法">DAL (aligned dimension)</a><a href="#直径">DDI (diameter) / DRA (radius)</a><a href="#弧長">DAR (arc length)</a><a href="#計測">DI / DIST (measure): measuring without leaving anything on the drawing</a><a href="#面積">AREA: one click inside an enclosure</a><a href="#測った答えを、メモや図面へ">Sending the answer to your notes, or to the drawing</a><a href="#寸法の身なり">The dress of a dimension (the style)</a><a href="#寸法の字が、物に対して大きく見える時">When dimension text looks large against the object</a><a href="#字高">字高 (changing the size of text)</a><a href="#大きさの意味">What the size means (paper mm or drawing units)</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="寸法の列"><h2>D / DIM (a run of dimensions)</h2>
 <ol class="steps">
 <li><span class="mark">①</span><div>Type D → Enter (DIM and DLI do the same).
 <figure><a href="../e/09-寸法の列-1.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/09-寸法の列-1.png" alt="①" loading="lazy"></a><figcaption>①</figcaption></figure>
@@ -130,7 +130,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </ol>
 <ul>
 <li><b>Islands are subtracted.</b> If shapes float inside it, they are taken off and it announces “島n か所を引きました” (n islands subtracted).</li>
-<li>閉じた図形（四角・円・ポリゴン…）を<b>先に選んでから</b>計測に入っても測れます（複数選んでも構いません）。※円をひとつ選んだ時だけは、πr² で厳密に出します。</li>
+<li>You can also measure by selecting closed shapes (rectangle, circle, polygon…) <b>first</b> and then starting the measurement (several at once is fine). * Only when a single circle is selected, the answer is exact, by πr².</li>
 <li>An enclosure containing arcs (a circle, a rounded corner) is measured by opening the arcs into fine straight segments, so the answer comes out a shade small (about 0.007% at radius 1000, about 0.07% at radius 100). <b>The smaller the shape, the larger this difference becomes.</b></li>
 <li>Press somewhere not enclosed and it tells you why (there is a gap in the lines, or they do not close).</li>
 </ul>
@@ -138,7 +138,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <section id="測った答えを、メモや図面へ"><h2>Sending the answer to your notes, or to the drawing</h2>
 <p>Two more buttons at the right of the bar (before you measure they are pale: “measure something and you can press them”).</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>［図面に書き込む］…押して、置く場所をクリック。いまの字高・現在画層で文字が一つ置かれます。※<b>この一打だけが図面を変えます</b>（U ひと押しで消せます）。
+<li><span class="mark">①</span><div>[Write into the drawing]… press it, then click where to put it. One text is placed at the current text height on the current layer. * <b>Only this one action changes the drawing</b> (one U removes it).
 </div></li>
 <li><span class="mark">②</span><div>［コピー］ (Copy) … to the computer's clipboard. Paste it straight into a text editor or a spreadsheet.
 </div></li>
@@ -152,18 +152,18 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>寸法スタイル (dimension style) = list the styles in the table and switch between them. 寸法スタイル 新規 詳細図 = copy the current settings into one more style.</li>
 <li>文字高 3.5 = the height of the dimension text. 矢の大きさ 2.5 = the size of the arrowhead.</li>
 <li>丸め 1 = rounding of the dimension value (1066.8 → 1067). 桁 0 = the number of decimal places (0 = whole numbers only, as is usual on Japanese drawings).</li>
-<li>丸め方式 切り上げ＝落とす端の始末。四捨五入・切り捨て・切り上げの三つ（3638.4→丸め1で 3638／3638／3639）。</li>
-<li>丸め・桁・丸め方式は、画面にも印刷にも同じに効きます。ページ設定の板の「寸法スタイル」の段でも直せます。リボンの寸法の欄の「1刻み・切り捨て」を押すと開きます。</li>
+<li>Rounding mode: round up = what to do with the dropped end. Three choices: round half up, round down, round up (3638.4 → with rounding 1: 3638 / 3638 / 3639).</li>
+<li>Rounding, digits and rounding mode act the same on screen and in print. They can also be changed in the "Dimension style" row of the Page Setup board. Press "step 1 · round down" in the dimension field of the ribbon to open it.</li>
 <li>矢じり = which terminator to use: filled arrow, open arrow, oblique stroke, filled dot, open dot, none. The oblique stroke is the classic choice on architectural drawings.</li>
-<li>狭い所を測ると、矢は外へ出ます（寸法線が矢の3倍に満たない時）。塗り矢と開き矢だけ。画面にも紙にも同じに出ます。</li>
+<li>When you measure a narrow place, the arrows go outside (when the dimension line is less than three times the arrow). Filled arrows and open arrows only. It looks the same on screen and on paper.</li>
 </ul>
 </section>
-<section id="寸法の字が、物に対して大きく見える時"><h2>寸法の字が、物に対して大きく見える時</h2>
+<section id="寸法の字が、物に対して大きく見える時"><h2>When dimension text looks large against the object</h2>
 <ul>
-<li>字と寸法は「紙で何ミリ」で置かれます（1:50 なら、紙の 3mm＝図面の 150）。小さな物を 1:50 のまま描くと、字が物と同じくらいに見えます。間違いではありません。その縮尺の紙が、そう刷れます。</li>
-<li>製図台の点線の四角が、いまの用紙と縮尺の「紙」です。刷ると、紙はそこに来ます。描き足しても、紙は動きません。（紙を頼りに、余白を残して割り付けられます）図が紙の枠を超えると、超えた側の線が琥珀になり、製図台の右上の札が、どうするかを聞きます（紙をずらす／用紙を大きく／縮尺を替える／このまま描く）。紙は、答えるまで動きません。仕上がって真ん中へ寄せたい時は、印刷の板の［中央へ］。要らなければ、設定の板の「紙の枠」で消せます。</li>
-<li>物を大きく刷りたい時は、小窓に 縮尺 5（＝1:5）。字と寸法は、紙での大きさのまま付いて来ます。ページ設定・印刷の板の縮尺と、同じ一つを替えています。</li>
-<li>引いて見て字が読めない時は、その字に指を乗せると、そばに読める大きさで写します（図面にも紙にも書きません）。</li>
+<li>Text and dimensions are placed "in millimetres on paper" (at 1:50, 3 mm on paper = 150 in the drawing). If you draw a small thing at 1:50, the text looks about as big as the thing. It is not a mistake. That is how the paper at that scale prints.</li>
+<li>The dotted rectangle on the drawing board is the "paper" at the current sheet size and scale. When printed, the paper comes there. The paper does not move when you draw more. (You can lay things out against the paper, leaving margins.) When the drawing goes beyond the paper frame, the line on that side turns amber and a card at the top right of the drawing board asks what to do (shift the paper / larger sheet / change the scale / keep drawing). The paper does not move until you answer. When the drawing is finished and you want it centred, use [Centre] on the Print board. If you do not need it, turn it off with "Paper frame" on the Settings board.</li>
+<li>To print things larger, type 縮尺 5 in the command box (= 1:5). Text and dimensions follow at their size on paper. This changes the same single value as the scale on the Page Setup and Print boards.</li>
+<li>When you are zoomed out and cannot read some text, rest the pointer on it and it is shown beside it at a readable size (nothing is written to the drawing or the paper).</li>
 </ul>
 </section>
 <section id="字高"><h2>字高 (changing the size of text)</h2>
@@ -174,7 +174,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <p>Select text and open Properties (PR) and there is a 大きさ (size) row.</p>
 <p>“図面の単位 175” (drawing units 175) = this is what placed text is by default (it does not move when you change the scale). Press it and you get “紙で 3.5mm（図面では 175）” (3.5 mm on paper, 175 on the drawing) = the text is redeclared in paper mm (the number does not change, only its meaning). Text declared in paper mm grows on the drawing, when you change the scale, so that it stays the same size on paper.</p>
 <p>Text from someone else's drawing reads “不明” (unknown) = its size is estimated and sent to paper on that basis. Press it and you can declare it.</p>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

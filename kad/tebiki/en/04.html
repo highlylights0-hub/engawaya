@@ -60,7 +60,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../04.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="03.html">← Moving around the screen</a><a href="05.html">Points and division points →</a></nav><h1>4. Typing numbers (coordinates and distances)</h1><div class="toc"><a href="#二つの打ち場">Two places to type</a><a href="#絶対座標と相対座標">Absolute and relative coordinates</a><a href="#距離入力">Distance input (beside the cursor)</a><a href="#線分・ポリラインは、線のそばに二つの欄">線分・ポリラインは、線のそばに二つの欄</a><a href="#線分の1点目は、スナップ点からずらして置けます">線分の1点目は、スナップ点からずらして置けます</a><a href="#1点目を絶対座標で置きたいとき">1点目を絶対座標で置きたいとき（円・四角など）</a><a href="#円・四角・ポリゴンの欄は三段">円・四角・ポリゴンの欄は三段（↑↓で選びます）</a><a href="#基点そのものをずらす">Shifting the base point itself (@)</a><a href="#計算しながら打てます">You can do the arithmetic as you type (the calculator)</a><a href="#小窓のもうひとつの顔">Another face of the Command Line</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="二つの打ち場"><h2>Two places to type</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../04.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="03.html">← Moving around the screen</a><a href="05.html">Points and division points →</a></nav><h1>4. Typing numbers (coordinates and distances)</h1><div class="toc"><a href="#二つの打ち場">Two places to type</a><a href="#絶対座標と相対座標">Absolute and relative coordinates</a><a href="#距離入力">Distance input (beside the cursor)</a><a href="#線分・ポリラインは、線のそばに二つの欄">Line and Polyline: two fields beside the line</a><a href="#線分の1点目は、スナップ点からずらして置けます">The first point of a line can be placed offset from a snap point</a><a href="#1点目を絶対座標で置きたいとき">When you want the first point at absolute coordinates (circle, rectangle…)</a><a href="#円・四角・ポリゴンの欄は三段">Circle, Rectangle and Polygon have three fields (choose with ↑↓)</a><a href="#基点そのものをずらす">Shifting the base point itself (@)</a><a href="#計算しながら打てます">You can do the arithmetic as you type (the calculator)</a><a href="#小窓のもうひとつの顔">Another face of the Command Line</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="二つの打ち場"><h2>Two places to type</h2>
 <ul>
 <li>The Command Line (at the bottom, name plate 小窓：CommandLine) = where words and numbers are received.</li>
 <li>The field beside the cursor = where distances are received (when dynamic distance input is on).</li>
@@ -76,40 +76,40 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <p>The comma is a half-width comma.</p>
 </section>
 <section id="距離入力"><h2>Distance input (beside the cursor)</h2>
-<figure><a href="../e/04-距離入力-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-距離入力-0.png" alt="向きはカーソル、長さは数字（1000 と打った所）" loading="lazy"></a><figcaption>向きはカーソル、長さは数字（1000 と打った所）</figcaption></figure>
+<figure><a href="../e/04-距離入力-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-距離入力-0.png" alt="The cursor gives the direction, the number gives the length (after typing 1000)" loading="lazy"></a><figcaption>The cursor gives the direction, the number gives the length (after typing 1000)</figcaption></figure>
 <p>Once you have picked a base point, aim the cursor the way you want to go and type a number → Enter = it travels that distance in that direction.</p>
 <p>The cursor gives the direction, the number gives the length. They divide the work between them.</p>
 <p>For a rectangle (REC) you can also give 700,700 — that is width,height.</p>
 </section>
-<section id="線分・ポリラインは、線のそばに二つの欄"><h2>線分・ポリラインは、線のそばに二つの欄</h2>
-<figure><a href="../e/04-線分・ポリラインは、線のそばに二つの欄-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-線分・ポリラインは、線のそばに二つの欄-0.png" alt="線の上に［長さ］、弧のそばに［角度］" loading="lazy"></a><figcaption>線の上に［長さ］、弧のそばに［角度］</figcaption></figure>
-<p>1点目を打つと、線の上に［長さ］、角の弧のそばに［角度］が立ちます。</p>
-<p>光っている欄（青い枠）が打つ所です。Tab で長さ ⇄ 角度を移ります。</p>
-<p>Tab で移ると、打った値に錠がかかります（琥珀の錠前）。例）2000 → Tab → 30 → Enter ＝ 長さ2000・30°の線例）30 を角度に打って Tab ＝ 30°の道に沿って、長さだけマウスで</p>
-<p>角度は 0°＝右・反時計回り（90°＝上）。Esc で錠を外します。</p>
-<p>打った字の形でも決まります（欄はどちらでも同じ）：・1000,500 ＝ 原点からの座標（絶対座標）・@500,0 ＝ 1点目から右へ500（相対座標）・&lt;45,100 ＝ 1点目から 45°の向きへ 100（角度が先・長さが後）</p>
+<section id="線分・ポリラインは、線のそばに二つの欄"><h2>Line and Polyline: two fields beside the line</h2>
+<figure><a href="../e/04-線分・ポリラインは、線のそばに二つの欄-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-線分・ポリラインは、線のそばに二つの欄-0.png" alt="[Length] on the line, [Angle] beside the arc" loading="lazy"></a><figcaption>[Length] on the line, [Angle] beside the arc</figcaption></figure>
+<p>After the first point, [Length] appears on the line and [Angle] beside the arc at the corner.</p>
+<p>The lit field (blue frame) is where you type. Tab moves between length ⇄ angle.</p>
+<p>Moving with Tab locks the value you typed (amber padlock). Example: 2000 → Tab → 30 → Enter = a line 2000 long at 30°. Example: type 30 in the angle and press Tab = along the 30° path, set only the length with the mouse.</p>
+<p>Angles: 0° = right, counter-clockwise (90° = up). Esc releases the lock.</p>
+<p>The shape of what you type also decides it (either field works the same): · 1000,500 = coordinates from the origin (absolute) · @500,0 = 500 to the right of the first point (relative) · &lt;45,100 = 100 in the 45° direction from the first point (angle first, length after)</p>
 </section>
-<section id="線分の1点目は、スナップ点からずらして置けます"><h2>線分の1点目は、スナップ点からずらして置けます</h2>
-<p>線分・ポリラインで1点目を待つ間、スナップ点（端点・交点など）にカーソルを 0.5 秒乗せると、緑の輪が満ちて、そこが「基点」になります。</p>
-<p>そこで @1000,0 と打って Enter ＝ 基点から右へ1000が1点目。</p>
-<p>&lt;45,100 と打てば、基点から 45°の向きへ 100 が1点目です。</p>
-<p>1000,500 と打てば、原点からの座標が1点目です。</p>
-<p>同じ点にもう一度乗せて待つか、Esc で基点を外します。</p>
+<section id="線分の1点目は、スナップ点からずらして置けます"><h2>The first point of a line can be placed offset from a snap point</h2>
+<p>While Line or Polyline is waiting for the first point, rest the cursor on a snap point (endpoint, intersection…) for 0.5 seconds: a green ring fills up, and that point becomes the "base point".</p>
+<p>Then type @1000,0 and press Enter = the first point is 1000 to the right of the base point.</p>
+<p>Type &lt;45,100 and the first point is 100 in the 45° direction from the base point.</p>
+<p>Type 1000,500 and the first point is at those coordinates from the origin.</p>
+<p>Rest on the same point once more, or press Esc, to release the base point.</p>
 </section>
-<section id="1点目を絶対座標で置きたいとき"><h2>1点目を絶対座標で置きたいとき（円・四角など）</h2>
+<section id="1点目を絶対座標で置きたいとき"><h2>When you want the first point at absolute coordinates (circle, rectangle…)</h2>
 <p>Type the first point into the Command Line below (for example 0,0 = the origin of the drawing).</p>
 <p>If you type a number while the first point is awaited, the Command Line lights up by itself and takes the number. Just carry on and press Enter.</p>
-<p>※線分・ポリラインは、カーソル脇の欄がそのまま受けます（上の節）。</p>
+<p>* Line and Polyline take it directly in the field beside the cursor (see the section above).</p>
 </section>
-<section id="円・四角・ポリゴンの欄は三段"><h2>円・四角・ポリゴンの欄は三段（↑↓で選びます）</h2>
-<figure><a href="../e/04-円・四角・ポリゴンの欄は三段-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-円・四角・ポリゴンの欄は三段-0.png" alt="円の欄（上から 半径／基点をずらす／絶対座標）" loading="lazy"></a><figcaption>円の欄（上から 半径／基点をずらす／絶対座標）</figcaption></figure>
+<section id="円・四角・ポリゴンの欄は三段"><h2>Circle, Rectangle and Polygon have three fields (choose with ↑↓)</h2>
+<figure><a href="../e/04-円・四角・ポリゴンの欄は三段-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-円・四角・ポリゴンの欄は三段-0.png" alt="The circle fields (from the top: radius / offset the base point / absolute coordinates)" loading="lazy"></a><figcaption>The circle fields (from the top: radius / offset the base point / absolute coordinates)</figcaption></figure>
 <p>From the top: length / shift the base point / absolute coordinate.</p>
 <p>↑↓ move between the rows, and Tab cycles through them as well. Enter accepts.</p>
 <p>The third row, absolute coordinate, takes the coordinate measured from the drawing origin (0,0) exactly as it is (0,0 or 1000,500, say). The base point is not used.</p>
 <p>It is also useful when you want to confirm where the origin actually was.</p>
 </section>
 <section id="基点そのものをずらす"><h2>Shifting the base point itself (@)</h2>
-<figure><a href="../e/04-基点そのものをずらす-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-基点そのものをずらす-0.png" alt="角から右へ 910 ずらした所（@910,0）" loading="lazy"></a><figcaption>角から右へ 910 ずらした所（@910,0）</figcaption></figure>
+<figure><a href="../e/04-基点そのものをずらす-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/04-基点そのものをずらす-0.png" alt="Offset 910 to the right of the corner (@910,0)" loading="lazy"></a><figcaption>Offset 910 to the right of the corner (@910,0)</figcaption></figure>
 <p>While a point is awaited, type @ and a green square stands on the point you have caught; type something like @910,0 and the base point itself moves.</p>
 <p>Enter accepts, Esc cancels.</p>
 <p>This is the hand for “I want to start drawing 910 to the right of the corner of that column”.</p>
@@ -126,7 +126,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <section id="小窓のもうひとつの顔"><h2>Another face of the Command Line</h2>
 <p>The radius of a circle can also be typed as 4000, R2000 or D8000 (diameter).</p>
 <p>The destination of a move or a copy can be typed as @1000,0 as well.</p>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

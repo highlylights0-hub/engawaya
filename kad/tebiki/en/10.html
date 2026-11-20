@@ -60,7 +60,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../10.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="09.html">← Dimensioning: step by step</a><a href="11.html">Layers and linetypes →</a></nav><h1>10. Editing: step by step</h1><div class="toc"><a href="#トリム">TR / TRIM</a><a href="#Tab】囲いの中を、一手で消す">TR → Tab: erasing everything inside an enclosure, in one move</a><a href="#いちばん確実な手順">The surest way</a><a href="#もう一本の道">Another way in: click inside</a><a href="#分割点">DIV / DIVIDE (division points)</a><a href="#延長">EX / EXTEND</a><a href="#複線">O / OFFSET</a><a href="#フィレット">F / FILLET / CHA (chamfer)</a><a href="#複製">CO / COPY / M / MOVE</a><a href="#ストレッチ">S / STRETCH</a><a href="#いちばん多いつまずき">The commonest stumble: the line “bends”</a><a href="#回転">RO / ROTATE</a><a href="#拡大縮小">SC / SCALE</a><a href="#鏡像">MI / MIRROR</a><a href="#配列">AR (array) / PAR (polar array)</a><a href="#拾い">Take-off (ひろい / HIROI / BOM)</a><a href="#拾い表">拾い 表 (take-off table) / 拾い CSV</a><a href="#表">Tables (ひょう / TABLE)</a><a href="#よけ">Excluding things (ヨケ / YOKE)</a><a href="#アイソメ">ISO / isometric</a><a href="#仮想交点">APPINT / apparent intersection</a><a href="#端点に乗せて待つ">端点に乗せて待つ＝仮想交点（線分・ポリライン）</a><a href="#結合">J / JOIN</a><a href="#名札">LIST</a><a href="#プロパティ">PR / Properties (retyping the numbers)</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="トリム"><h2>TR / TRIM</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../10.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="09.html">← Dimensioning: step by step</a><a href="11.html">Layers and linetypes →</a></nav><h1>10. Editing: step by step</h1><div class="toc"><a href="#トリム">TR / TRIM</a><a href="#Tab】囲いの中を、一手で消す">TR → Tab: erasing everything inside an enclosure, in one move</a><a href="#いちばん確実な手順">The surest way</a><a href="#もう一本の道">Another way in: click inside</a><a href="#分割点">DIV / DIVIDE (division points)</a><a href="#延長">EX / EXTEND</a><a href="#複線">O / OFFSET</a><a href="#フィレット">F / FILLET / CHA (chamfer)</a><a href="#複製">CO / COPY / M / MOVE</a><a href="#ストレッチ">S / STRETCH</a><a href="#いちばん多いつまずき">The commonest stumble: the line “bends”</a><a href="#回転">RO / ROTATE</a><a href="#拡大縮小">SC / SCALE</a><a href="#鏡像">MI / MIRROR</a><a href="#配列">AR (array) / PAR (polar array)</a><a href="#拾い">Take-off (ひろい / HIROI / BOM)</a><a href="#拾い表">拾い 表 (take-off table) / 拾い CSV</a><a href="#表">Tables (ひょう / TABLE)</a><a href="#よけ">Excluding things (ヨケ / YOKE)</a><a href="#アイソメ">ISO / isometric</a><a href="#仮想交点">APPINT / apparent intersection</a><a href="#端点に乗せて待つ">Rest on an endpoint and wait = apparent intersection (Line, Polyline)</a><a href="#結合">J / JOIN</a><a href="#台本">Script (SCRIPT) = draw a drawing in one go from a text file</a><a href="#名札">LIST</a><a href="#プロパティ">PR / Properties (retyping the numbers)</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="トリム"><h2>TR / TRIM</h2>
 <ol class="steps">
 <li><span class="mark">①</span><div>Type TR → Enter.
 </div></li>
@@ -75,7 +75,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>Select objects first and then press TR = “trim them all”. Whatever sticks out beyond the lines you selected is trimmed off together, with one Enter. (We call this laying siege = driving out whatever has strayed outside.)</li>
 <li>Things that can be a cutting edge: lines, circles, arcs, polylines, ellipses and splines. Even curves cut exactly (dimensions and text cannot be cutting edges).</li>
 <li>Things that can be trimmed: lines, circles, arcs, ellipses, polylines and splines. Trim an ellipse and you get an elliptical arc; trim a closed polyline and you get one open polyline.</li>
-<li>ポリラインが<b>自分と交わった所</b>も切れ目になります。（交わりを探す時だけ辺を一本ずつの線として見て、切った後は一本のまま。角の継ぎ目では切れません）。基準線を選ぶ前でも、指を置けば赤く出ます。行き過ぎた尻尾と頭を落として両端が出会うと、閉じたポリラインになります。</li>
+<li>A place where a polyline <b>crosses itself</b> also becomes a cut point. (Only while looking for crossings is each side treated as a separate line; after cutting it is still one object. It does not cut at the corner joints.) Even before choosing a cutting edge, resting the pointer shows it in red. If you drop an overshooting tail and head so that both ends meet, it becomes a closed polyline.</li>
 <li>Splines can be cut too. Cutting <b>does not move the shape by a hair</b> (the skeleton of the curve is rebuilt so that it follows exactly the same path). The piece you cut off does, however, let go of its record of fit points = after cutting, that piece no longer snaps to them (the two ends can still be caught, as before). A closed spline cannot be cut yet (you will be told why).</li>
 </ul>
 </section>
@@ -102,7 +102,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <section id="もう一本の道"><h2>Another way in: click inside</h2>
 <p>Type 中を消す (erase inside) → Enter (it is on the flick shelf too).</p>
 <p>Called with nothing selected, it looks for the enclosure from a single click inside.</p>
-<p>※ただし、線が囲いを横切っていると、その区切りごとの小さな部屋になります（横切った線が仕切りになるため）。中の線をまとめて消したい時は、上の【いちばん確実な手順】へ。</p>
+<p>* However, when lines cross the enclosure, each partition becomes a small room of its own (the crossing lines act as partitions). To erase the lines inside all at once, see "The surest way" above.</p>
 <ul>
 <li>Lines that straddle the enclosure are cut at the enclosure, and only the part inside vanishes (there is no need to trim them first).</li>
 <li>Circles, rectangles, rounded shapes, shapes built up from several lines — any of them can be the enclosure.</li>
@@ -138,25 +138,27 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li><span class="mark">①</span><div>Type O 150 → Enter (= a parallel line 150 away).
 </div></li>
 <li><span class="mark">②</span><div>When the line appears on the side you want it, click. You can go on producing them. A number → Enter changes the spacing. Right-click = finish.
+<figure><a href="../e/10-複線-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/10-複線-2.png" alt="The rectangle offset 150 to the outside" loading="lazy"></a><figcaption>The rectangle offset 150 to the outside</figcaption></figure>
 </div></li>
 </ol>
 <p>Circles and arcs become concentric.</p>
 <ul>
-<li><b>ポリライン（四角も）は、丸ごと平行に太ります／細ります</b>。角の始末は自動です＝壁の下書きが一手でできます。角が丸い四角も、Rが育って（縮んで）ついてきます。※内側へ入りきらない間隔は、理由を言って断ります。※円弧が角をなしている形だけは、まだ複線できません。</li>
+<li><b>A polyline (a rectangle too) grows or shrinks in parallel as a whole.</b> The corners are handled automatically = a wall draft in one move. A rectangle with rounded corners follows too, its radius growing (or shrinking). * A distance that cannot fit inward is refused with the reason. * Only shapes where arcs form the corner cannot be offset yet.</li>
 </ul>
 </section>
 <section id="フィレット"><h2>F / FILLET / CHA (chamfer)</h2>
-<p>タブ「直す」の［フィレット］［面取り］からも始められます。</p>
+<p>You can also start from [Fillet] and [Chamfer] on the Modify tab.</p>
 <ol class="steps">
 <li><span class="mark">①</span><div>F 15 → Enter (radius 15) / CHA 10 → Enter (cut back 10).
 </div></li>
 <li><span class="mark">②</span><div>Click the first line.
 </div></li>
 <li><span class="mark">③</span><div>Click the second line, on the side you want to keep.
+<figure><a href="../e/10-フィレット-3.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/10-フィレット-3.png" alt="Bring the pointer to the second side and the rounded corner is shown first (R200)" loading="lazy"></a><figcaption>Bring the pointer to the second side and the rounded corner is shown first (R200)</figcaption></figure>
 </div></li>
 </ol>
 <ul>
-<li><b>ポリライン（四角も）の角</b>も、同じ手で丸められます。②③で、同じポリラインの<b>隣り合う二つの辺</b>をクリック。※図形は一本のまま増えません（弧はポリラインの中に入ります）。半径0（角つなぎ）は線どうし専用です——ポリラインの角はもう繋がっているので、R か 面取りの寸法を先に決めてください。隣が円弧の角は、まだ作れません（画面が理由を言います）。</li>
+<li><b>The corners of a polyline (a rectangle too)</b> can be rounded in the same way. In steps ② and ③, click <b>two adjacent sides</b> of the same polyline. * The object stays one (the arc goes inside the polyline). Radius 0 (corner join) is for line-to-line only — a polyline's corner is already joined, so decide R or the chamfer size first. A corner next to an arc cannot be made yet (the screen says why).</li>
 </ul>
 </section>
 <section id="複製"><h2>CO / COPY / M / MOVE</h2>
@@ -212,7 +214,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <ol class="steps">
 <li><span class="mark">①</span><div>Select the objects → SC → Enter (拡大縮小 (Scale) on the ribbon does the same).
 </div></li>
-<li><span class="mark">②</span><div>基点をクリック。※この点だけが動きません。どこを押さえるかで、伸びる向きが変わります（部材の左下を押さえれば、右上へ育ちます）。
+<li><span class="mark">②</span><div>Click the base point. * Only this point does not move. Where you hold it decides which way it grows (hold the lower-left of a part and it grows to the upper-right).
 </div></li>
 <li><span class="mark">③</span><div>Drag to set the factor and click, or type a number + Enter (2, or 0.5). The faint ring marks “×1.00”. Outside the ring is bigger, inside it is smaller. The factor is shown beside the cursor. Expressions work too (3640/2 does not mean a factor of 1820 — it means 1820).
 </div></li>
@@ -266,29 +268,41 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </section>
 <section id="アイソメ"><h2>ISO / isometric</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>図形を選ぶ→タブ「直す」の［アイソメ］（小窓なら ISO →Enter）。
+<li><span class="mark">①</span><div>Select objects → [Isometric] on the Modify tab (ISO → Enter in the command box).
 </div></li>
-<li><span class="mark">②</span><div>図の基点をクリック。
+<li><span class="mark">②</span><div>Click the base point of the figure.
 </div></li>
 <li><span class="mark">③</span><div>Click where it goes = a copy leaning to the isometric angles is placed (the original stays). F5 turns the face (left, top, right).
 </div></li>
 </ol>
-<p>※運べるのは線・点・直線のポリライン（四角も）・スプライン・ハッチ。円・弧・文字・寸法は、傾けると嘘になるので、そのまま残します。</p>
+<p>* What can be carried: lines, points, straight polylines (rectangles too), splines and hatches. Circles, arcs, text and dimensions would become false if tilted, so they are left as they are.</p>
 </section>
 <section id="仮想交点"><h2>APPINT / apparent intersection</h2>
 <p>Select two or more lines, right-click → 仮想交点 (Apparent intersection) (APPINT does the same).</p>
 <p>It puts a point where the lines would meet if they were extended.</p>
 <p>⌥-click adds and removes references one at a time. Esc = stop.</p>
 </section>
-<section id="端点に乗せて待つ"><h2>端点に乗せて待つ＝仮想交点（線分・ポリライン）</h2>
-<p>線を引いている間、他の線の端点に 0.5 秒ほど乗せて待つと緑の「＋」が立ち、その線の延長が破線で出ます（控える）。</p>
-<p>自分の線（直交・極トラ・自由）が、その延長か「端点を通る直角の道」と交わる所に黄色い×が出ます＝クリックでそこへ（名札が「延長 × 直交」などと名乗ります）。</p>
-<p>控えを二つ置けば、二本の延長の交わる所にも×が出ます。</p>
-<p>控えた線と平行・直角に近い向きへ引くと、その向きに吸い付きます。</p>
-<p>同じ端点にもう一度乗せて待つと外れます。点を打つと外れます。</p>
+<section id="端点に乗せて待つ"><h2>Rest on an endpoint and wait = apparent intersection (Line, Polyline)</h2>
+<p>While drawing a line, rest on the endpoint of another line for about 0.5 seconds: a green "+" appears and the extension of that line is shown dashed (it is held).</p>
+<p>A yellow × appears where your own line (ortho, polar or free) meets that extension or "the perpendicular path through the endpoint" = click to go there (the label says, for example, "extension × ortho").</p>
+<p>Hold two and a × also appears where the two extensions cross.</p>
+<p>Draw in a direction nearly parallel or perpendicular to a held line and it snaps to that direction.</p>
+<p>Rest on the same endpoint once more and it is released. Placing a point releases it.</p>
 </section>
 <section id="結合"><h2>J / JOIN</h2>
 <p>Select lines that lie in a straight line and touch end to end, press J → Enter = they become one.</p>
+</section>
+<section id="台本"><h2>Script (SCRIPT) = draw a drawing in one go from a text file</h2>
+<p>A script is a text file (.txt) with K'Ad's words written one line at a time.</p>
+<p>Written by hand, by a spreadsheet or by an AI, it is the same single sheet.</p>
+<ul>
+<li>Run = [Run script] on the Process tab, or SCRIPT in the command box ("台本" also works). Choose a file and it is drawn into the drawing in one go.</li>
+<li>If it stops partway, nothing is drawn (all or nothing). The history says which line stopped and why.</li>
+<li>After drawing, a single U takes it all back.</li>
+<li>Write = [Script desk] on the Process tab, or SCRIPTEDIT in the command box. On a floating panel you can write, run and fix. Press the vocabulary shelf and an example sentence goes into the line you are writing (you can write without memorising the words). A line that stopped turns red. Open / Save use .txt.</li>
+</ul>
+<p>An example (one command per line):</p>
+<p>K'Ad台本 1 ／ 画層 壁 色=黄 ／ 壁 厚=150 0,0 8000,0 8000,6000 0,6000 閉じる (three lines; the commands themselves are written in Japanese)</p>
 </section>
 <section id="名札"><h2>LIST</h2>
 <p>Select an object and type LIST → Enter = its contents (type, layer, colour, linetype, coordinates, length) are read out into the history.</p>
@@ -301,7 +315,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>A grey field = read-only (the length or angle of a line, and so on: a number that cannot decide which end should move is not accepted).</li>
 <li>Press 内容 (Contents) on text and the on-the-spot retyping (DDEDIT) opens.</li>
 </ul>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

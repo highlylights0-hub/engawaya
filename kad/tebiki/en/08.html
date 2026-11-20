@@ -60,7 +60,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../08.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="07.html">← Key reference</a><a href="09.html">Dimensioning: step by step →</a></nav><h1>8. Drawing: step by step</h1><div class="toc"><a href="#線分">L / LINE</a><a href="#ポリライン">PL / PLINE (polyline)</a><a href="#閉じたポリラインにする】">閉じたポリラインにする】（3D の押し出しで立体になるのは、閉じた形です）</a><a href="#円">C / CIRCLE</a><a href="#3点円弧">A / ARC (three-point arc)</a><a href="#楕円">EL / ELLIPSE</a><a href="#スプライン">SPL / SPLINE — a free curve</a><a href="#四角">REC / rectangle</a><a href="#ポリゴン">POL / POLYGON (regular polygon)</a><a href="#通り芯">GRID / structural grid lines</a><a href="#壁">W / 壁</a><a href="#柱まわし">WW / 柱まわし＝柱を順にクリックすると、壁が回る</a><a href="#文字記入">DT (single-line text): placing one line of text with a box</a><a href="#文字の基準">The justification (the nine squares) can be changed at any time</a><a href="#文字の書体">Fonts: standard, light, bold, or the engraving typeface</a><a href="#段落文字">MT (multiline text): pouring a note with line breaks into a box</a><a href="#段落文字と、ふつうの文字">Choosing between multiline text and ordinary text (DT)</a><a href="#他所の図面から来た段落文字">Multiline text that came from another drawing</a><a href="#引出線">LE / leader</a><a href="#ハッチ">H / HATCH</a><a href="#建築記号">Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</a><a href="#それぞれの姿と、打つ欄">What each one looks like, and the fields you fill</a><a href="#分野を「機械」へ">分野を「機械」へ＝幾何公差と三角法の記号</a><a href="#分野を「電気」へ">分野を「電気」へ＝配線用の図記号（住宅の内装）</a><a href="#分野を「設備」へ">分野を「設備」へ＝給排水・衛生の図記号</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="線分"><h2>L / LINE</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../08.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="07.html">← Key reference</a><a href="09.html">Dimensioning: step by step →</a></nav><h1>8. Drawing: step by step</h1><div class="toc"><a href="#線分">L / LINE</a><a href="#ポリライン">PL / PLINE (polyline)</a><a href="#閉じたポリラインにする】">Making a closed polyline (a closed shape is what becomes a solid in 3D extrusion)</a><a href="#円">C / CIRCLE</a><a href="#3点円弧">A / ARC (three-point arc)</a><a href="#楕円">EL / ELLIPSE</a><a href="#スプライン">SPL / SPLINE — a free curve</a><a href="#四角">REC / rectangle</a><a href="#ポリゴン">POL / POLYGON (regular polygon)</a><a href="#通り芯">GRID / structural grid lines</a><a href="#壁">W / Wall</a><a href="#柱まわし">WW / Wall walk = click columns in order and the wall goes around</a><a href="#文字記入">DT (single-line text): placing one line of text with a box</a><a href="#文字の基準">The justification (the nine squares) can be changed at any time</a><a href="#文字の書体">Fonts: standard, light, bold, or the engraving typeface</a><a href="#段落文字">MT (multiline text): pouring a note with line breaks into a box</a><a href="#段落文字と、ふつうの文字">Choosing between multiline text and ordinary text (DT)</a><a href="#他所の図面から来た段落文字">Multiline text that came from another drawing</a><a href="#引出線">LE / leader</a><a href="#ハッチ">H / HATCH</a><a href="#建築記号">Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</a><a href="#それぞれの姿と、打つ欄">What each one looks like, and the fields you fill</a><a href="#分野を「機械」へ">Discipline "Mechanical" = geometric tolerances and projection symbols</a><a href="#分野を「電気」へ">Discipline "Electrical" = wiring symbols (house interiors)</a><a href="#分野を「設備」へ">Discipline "Plumbing" = water supply, drainage and sanitary symbols</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="線分"><h2>L / LINE</h2>
 <ol class="steps">
 <li><span class="mark">①</span><div>Press 線分 (Line) on the ribbon, or type L in the Command Line → Enter.
 <figure><a href="../e/08-線分-1.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-線分-1.png" alt="①" loading="lazy"></a><figcaption>①</figcaption></figure>
@@ -81,28 +81,29 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li><span class="mark">①</span><div>Press ポリライン (Polyline) on the ribbon, or type PL → Enter.
 </div></li>
 <li><span class="mark">②</span><div>Click the first point → the next → the next… (numbers work just as they do for a line).
+<figure><a href="../e/08-ポリライン-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-ポリライン-2.png" alt="Clicking the points in order" loading="lazy"></a><figcaption>Clicking the points in order</figcaption></figure>
 </div></li>
 <li><span class="mark">③</span><div>Right-click or Enter finishes it = at that moment it becomes one single object. U takes back one vertex at a time. Esc throws away what you were drawing.
 </div></li>
 </ol>
 </section>
-<section id="閉じたポリラインにする】"><h2>閉じたポリラインにする】（3D の押し出しで立体になるのは、閉じた形です）</h2>
+<section id="閉じたポリラインにする】"><h2>Making a closed polyline (a closed shape is what becomes a solid in 3D extrusion)</h2>
 <ul>
-<li>描いている途中で <b>C</b> を押す＝最後の点から始点へ辺を足して閉じます。小窓に C（または 閉じる）と打っても同じです。</li>
-<li><b>始点をクリックしても閉じます</b>。描いている途中の点にも吸い付くので、始点に「端点」の印が出たらクリック＝そのまま閉じた形になります。</li>
-<li>閉じるには頂点が3つ以上要ります（2つでは往復の線にしかなりません）。</li>
+<li>Press <b>C</b> while drawing = a side is added from the last point to the start point and it closes. Typing C (or 閉じる) in the command box does the same.</li>
+<li><b>Clicking the start point also closes it.</b> It snaps to the points of the polyline being drawn, so when the "endpoint" mark appears on the start point, click = it becomes a closed shape.</li>
+<li>Closing needs three or more vertices (with two it would only be a line going there and back).</li>
 <li>The only difference from a line is whether it is one object. Lines are born separately, one per stroke; a polyline gathers into one when you finish.</li>
 <li>Use it for outlines, site boundaries, pipe runs — anything you will later want to select whole.</li>
 <li>Polylines from other CAD programs open as one object and are saved back as one object.</li>
-<li>トリムでは、ポリラインを<b>そのまま切れます</b>（一本のまま）。閉じたポリラインを切ると、開いた一本になります。ふくらみ（円弧の辺）も、途中で切れば正しく分かれます。<b>自分と交わった所でも切れます</b>（行き過ぎた尻尾を落とせます）。切った両端がぴったり出会ったら、閉じたポリラインになります。</li>
+<li>Trim can cut a polyline <b>as it is</b> (it stays one object). Cutting a closed polyline makes it an open one. A bulge (arc side) cut partway divides correctly. <b>It can also be cut where it crosses itself</b> (you can drop an overshooting tail). When the two cut ends meet exactly, it becomes a closed polyline.</li>
 <li>It can also be chosen as a cutting edge (the thing you trim back to, or extend up to).</li>
-<li>フィレット・面取りは、<b>ポリラインの角に効きます</b>（十五期百三十九号）。隣り合う二つの辺をクリックすると、その間の角が丸く（斜めに）なります。※弧を別に産まないので、<b>一本のまま</b>です。他所のCADでも一体で開きます。</li>
+<li>Fillet and Chamfer <b>work on polyline corners</b>. Click two adjacent sides and the corner between them becomes round (or bevelled). * No separate arc is created, so it <b>stays one object</b>. Other CADs open it as one piece too.</li>
 <li>Offset (O) fattens a polyline <b>whole, in parallel</b>.</li>
 <li>Divide (DIV) spaces points <b>by equal arc length along the whole run</b>. A closed shape gets exactly count points; an open one gets count-1, with none at the two ends.</li>
 </ul>
 </section>
 <section id="円"><h2>C / CIRCLE</h2>
-<figure><a href="../e/08-円-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-円-0.png" alt="中心を打って、半径を決める所" loading="lazy"></a><figcaption>中心を打って、半径を決める所</figcaption></figure>
+<figure><a href="../e/08-円-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-円-0.png" alt="Click the centre, then decide the radius" loading="lazy"></a><figcaption>Click the centre, then decide the radius</figcaption></figure>
 <ol class="steps">
 <li><span class="mark">①</span><div>Type C → Enter. Click the centre.
 </div></li>
@@ -151,6 +152,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </ul>
 </section>
 <section id="四角"><h2>REC / rectangle</h2>
+<figure><a href="../e/08-四角-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-四角-0.png" alt="After the first point, typing width,height as numbers (3640,2730)" loading="lazy"></a><figcaption>After the first point, typing width,height as numbers (3640,2730)</figcaption></figure>
 <ol class="steps">
 <li><span class="mark">①</span><div>Type REC → Enter. First point → click the opposite corner. To set it by size, give 700,700 (width,height) instead of the second point.
 </div></li>
@@ -170,63 +172,65 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <ul>
 <li>While you draw, a <b>bar</b> appears at the bottom of the screen. You can choose the number of sides there (3 4 5 6 8 10 12) and whether it is inscribed or circumscribed. ← → also step the number of sides up and down.</li>
 <li><b>Inscribed</b> = the corners sit on the circle (the radius runs from the centre to a corner).</li>
-<li><b>外接</b>＝辺が円に接する（半径は中心から辺まで）。※六角ボルト・ナットの「二面幅」は外接です。二面幅24のナットなら、外接で半径12。内接で12を打つと、ひと回り小さい別の部品になります。</li>
+<li><b>Circumscribed</b> = the sides touch the circle (the radius runs from the centre to a side). * The "width across flats" of a hex bolt or nut is circumscribed. For a nut 24 across flats, use circumscribed with radius 12. Typing 12 with inscribed gives a different, slightly smaller part.</li>
 <li>What is born is <b>one closed polyline</b> (the same as a rectangle). It selects in one click, and hatch and offset work on it as they are.</li>
 <li>Its orientation is decided by where you take the radius point (aim straight up and a vertex points up, and so on).</li>
 </ul>
 </section>
 <section id="通り芯"><h2>GRID / structural grid lines</h2>
-<figure><a href="../e/08-通り芯-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-0.png" alt="全体の姿（格子が立った所）" loading="lazy"></a><figcaption>全体の姿（格子が立った所）</figcaption></figure>
+<figure><a href="../e/08-通り芯-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-0.png" alt="The finished look (the grid in place)" loading="lazy"></a><figcaption>The finished look (the grid in place)</figcaption></figure>
 <ol class="steps">
 <li><span class="mark">①</span><div>Press 通り芯 (Grid) on the ribbon, or type GRID → Enter.
 <figure><a href="../e/08-通り芯-1.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-1.png" alt="①" loading="lazy"></a><figcaption>①</figcaption></figure>
 </div></li>
-<li><span class="mark">②</span><div>下の帯で、ピッチと本数を決めます。Xピッチ 1820・X本数 6 ＝1820の間隔で、芯が6本（列の数）。Yピッチ・Y本数も同じ書き方です。ピッチ欄には「1820*4, 910」と並びも打てます（不等ピッチ）。＝910 や 455 が混じる実務の芯は、こちらで。
+<li><span class="mark">②</span><div>Decide the pitch and the count on the bar below. X pitch 1820, X count 6 = six grid lines (columns) at 1820 spacing. Y pitch and Y count are written the same way. A sequence such as "1820*4, 910" can also be typed in the pitch field (uneven pitch). = Use this for real-world grids where 910 or 455 are mixed in.
 <figure><a href="../e/08-通り芯-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-2.png" alt="②" loading="lazy"></a><figcaption>②</figcaption></figure>
 </div></li>
-<li><span class="mark">③</span><div>置く場所をクリック。スナップが効くので、図枠の角にもぴたりと置けます。原点（0,0）に置くなら【原点に置く】を押します。
+<li><span class="mark">③</span><div>Click where to place it. Snaps work, so it sits exactly on a title-block corner too. To place it at the origin (0,0), press [Place at origin].
 <figure><a href="../e/08-通り芯-3.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-通り芯-3.png" alt="③" loading="lazy"></a><figcaption>③</figcaption></figure>
 </div></li>
 </ol>
-<p>打つそばから、格子のゴーストが育ちます（置く前に姿が見えます）。【符号 紙mm】＝符号の丸（X1・Y1）の直径。紙のmmで打ちます（JIS A 0150 は 9mm）。図面ではページ設定の縮尺の分母倍になります（1:100 なら直径 900）。※狭いピッチ（910 など）で符号が重なる日は、ここを小さくします。＝全部の符号が同じ大きさのまま、きれいに収まります。【延長】＝芯を建物の外へ伸ばす長さ（図面の単位）。0 か 空Enter で自動（丸の半径×4）に戻ります。</p>
+<p>As you type, the ghost of the grid grows (you see it before placing). [Bubble paper mm] = the diameter of the bubble (X1, Y1). Type it in paper mm (JIS A 0150 says 9 mm). In the drawing it is multiplied by the denominator of the Page Setup scale (diameter 900 at 1:100). * On days when bubbles overlap at a narrow pitch (910 and so on), make this smaller. = All bubbles stay the same size and fit neatly. [Extension] = how far the grid lines extend outside the building (drawing units). 0 or an empty Enter returns to automatic (bubble radius × 4).</p>
 </section>
-<section id="壁"><h2>W / 壁</h2>
+<section id="壁"><h2>W / Wall</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>リボン「壁」か、小窓に W →Enter。距離は小窓に W 100,100（＝厚200）。W 0,150 ＝クリックした線の位置に一本＋150（0＝スナップ点そのもの）。
+<li><span class="mark">①</span><div>"Wall" on the ribbon, or W → Enter in the command box. Distances: W 100,100 in the command box (= thickness 200). W 0,150 = one line at the clicked position plus one at 150 (0 = the snap point itself).
 </div></li>
-<li><span class="mark">②</span><div>点を順にクリックします（線分やポリラインと同じ呼吸です）。二点で終わりにするなら、そこで右クリックか Enter＝一本の壁になります。三点、四点と続ければ、<b>曲がり角は自動で継がれます</b>（面がつながります）。
+<li><span class="mark">②</span><div>Click points in order (the same rhythm as Line and Polyline). To finish with two points, right-click or press Enter there = one wall. Continue with three, four points and <b>the corners are joined automatically</b> (the faces connect).
+<figure><a href="../e/08-壁-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-壁-2.png" alt="With the distances on the bar (75 and 75 = thickness 150), clicking the points in order" loading="lazy"></a><figcaption>With the distances on the bar (75 and 75 = thickness 150), clicking the points in order</figcaption></figure>
 </div></li>
-<li><span class="mark">③</span><div>右クリックか Enter で置く。Esc＝打ちかけを捨てる／U＝置いた壁を戻す。
+<li><span class="mark">③</span><div>Right-click or Enter to place. Esc = discard what you have clicked / U = undo the placed wall.
 </div></li>
 </ol>
 <ul>
-<li>F8＝直交（水平・垂直だけ）。極トラも効きます。</li>
-<li>数字＋Enter でも打てます（「通り芯から2000」がそのまま言えます）。</li>
-<li>柱（閉じたポリライン・円）を貫くと、柱の中で切れます（柱残しの術）。</li>
-<li>鋭すぎる角は、継がずに角を落とします（細い針が伸びるのを避けるため）。</li>
+<li>F8 = ortho (horizontal and vertical only). Polar tracking works too.</li>
+<li>You can also type a number + Enter ("2000 from the grid line" can be said as it is).</li>
+<li>Where it passes through a column (closed polyline or circle), it is cut inside the column (the column is kept).</li>
+<li>Corners that are too sharp are not joined; the corner is dropped (to avoid a thin needle sticking out).</li>
 </ul>
 </section>
-<section id="柱まわし"><h2>WW / 柱まわし＝柱を順にクリックすると、壁が回る</h2>
+<section id="柱まわし"><h2>WW / Wall walk = click columns in order and the wall goes around</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>リボン「柱まわし」か、小窓に WW →Enter。
+<li><span class="mark">①</span><div>"Wall walk" on the ribbon, or WW → Enter in the command box.
 </div></li>
-<li><span class="mark">②</span><div>下の帯で決めます。【厚】150 のように打ちます（式も打てます）。【外面合わせ／センター／内面合わせ】＝壁をどこに置くか。外周の壁は柱の外面にツラ、内部の壁は芯のセンター、が現場の普通です。【一体化／柱残し】＝柱の輪郭も溶かして一本の外形にするか、柱を残すか。
+<li><span class="mark">②</span><div>Decide on the bar below. [Thickness] type something like 150 (formulas work too). [Outer face / Centre / Inner face] = where the wall sits. Outer walls flush with the outer face of the columns, inner walls on the centre line — that is normal on site. [Merge / Keep columns] = whether to melt the column outlines into one outline, or keep the columns.
 </div></li>
-<li><span class="mark">③</span><div>柱を順にクリック。柱の中ならどこでも構いません（角を狙わなくてよい）。柱でない所を押すと、吸着した点が芯の角になります（柱の無い角はそこで曲がる）。
+<li><span class="mark">③</span><div>Click the columns in order. Anywhere inside a column will do (no need to aim at a corner). Click somewhere that is not a column and the snapped point becomes a corner of the centre line (a corner without a column bends there).
 </div></li>
-<li><span class="mark">④</span><div>最初の柱へ戻ると、一周して置きます。途中で終えるなら右クリックか Enter。開いたまま置くときは「進む向きの左」を内側と見ます。逆なら逆順に。
+<li><span class="mark">④</span><div>Return to the first column and it goes all the way round and is placed. To end partway, right-click or press Enter. When placed open, "the left of the direction of travel" is taken as the inside. If that is wrong, click in the reverse order.
 </div></li>
 </ol>
 <ul>
-<li>角も丁字も自動で繋ぎます。開口部は、そこだけ避けて打ってください。</li>
-<li>U＝打った柱を一つ戻す／Esc＝打ちかけを捨てる。置いた後は U ひと押しで丸ごと戻ります。</li>
+<li>Corners and T-junctions are joined automatically. For openings, just skip them as you click.</li>
+<li>U = take back one clicked column / Esc = discard what you have clicked. After placing, one U takes the whole thing back.</li>
 </ul>
 </section>
 <section id="文字記入"><h2>DT (single-line text): placing one line of text with a box</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>小窓に DT →Enter（DT 5＝はじめから字高5・DT 右下＝基準の指定）。タブ「注記」の【文字】ボタンでも同じです。
+<li><span class="mark">①</span><div>DT → Enter in the command box (DT 5 = text height 5 from the start; DT 右下 = specify the justification). The [Text] button on the Annotate tab does the same.
 </div></li>
 <li><span class="mark">②</span><div>Take the box the text will sit in with two opposite corners (<b>the height of the box becomes the text height</b>; the corners can be taken exactly with snap). 🔑 Draw a rectangle first, select it, then press DT = that rectangle becomes the box (and the rectangle stays). 🔑 Inside a table cell or a title block, use 【枠の中をクリック】 (click inside the box) on the bar = one press and it becomes the box.
+<figure><a href="../e/08-文字記入-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-文字記入-2.png" alt="Taking the frame for the text with two diagonal points" loading="lazy"></a><figcaption>Taking the frame for the text with two diagonal points</figcaption></figure>
 </div></li>
 <li><span class="mark">③</span><div>Type your line on the spot and press <b>Enter to accept</b> (the ✓ button, or a click outside the box, do the same). Esc = cancel. There is no line break here (for notes with line breaks, use MT).
 </div></li>
@@ -259,27 +263,27 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </section>
 <section id="段落文字"><h2>MT (multiline text): pouring a note with line breaks into a box</h2>
 <ol class="steps">
-<li><span class="mark">①</span><div>小窓に MT →Enter（MT 5＝はじめから字高5）。タブ「注記」の【段落】ボタンでも同じです。🔑<b>四角を先に描いてあるなら、それを選んでから MT</b>＝その四角が、そのまま枠になります。（`REC 590,300` と数字で描けば、枠を正確に決められます）※選んだ四角は<b>そのまま残ります</b>（枠として借りただけ）。図枠や表の罫線を枠に使っても、線は一本も消えません。🔑<b>表のセルや図枠の中に書くなら、帯の【枠の中をクリック】へ</b>（Tabでも）。その部屋を一回押すだけで、囲まれた範囲がそのまま枠になります。（表の罫線は通し線なので、セルは「図形」としては選べません。だから<b>部屋のほうを指します</b>）
+<li><span class="mark">①</span><div>MT → Enter in the command box (MT 5 = text height 5 from the start). The [Paragraph] button on the Annotate tab does the same. 🔑<b>If you have already drawn a rectangle, select it and then MT</b> = that rectangle becomes the frame as it is. (Draw it with numbers, as in `REC 590,300`, and the frame is exact.) * The selected rectangle <b>stays as it is</b> (it was only borrowed as a frame). Even if you use a title block or table rules as the frame, not one line is erased. 🔑<b>To write inside a table cell or a title block, go to [Click inside a frame] on the bar</b> (Tab also works). One press in that room and the enclosed area becomes the frame. (Table rules are through lines, so a cell cannot be selected as an "object". That is why <b>you point at the room</b>.)
 </div></li>
-<li><span class="mark">②</span><div>文章の入る枠を、対角の2点でクリック。※枠から取るのは<b>幅</b>だけです（＝折り返しの幅）。縦は文章が増えれば下へ育ちます。
+<li><span class="mark">②</span><div>Click two diagonal points for the frame the text goes into. * Only the <b>width</b> is taken from the frame (= the wrap width). The height grows downward as the text increases.
 </div></li>
-<li><span class="mark">②</span><div>'次に<b>字高</b>を聞きます。マウスを上下に動かすと、枠の上の端から指までが<b>1行目の高さ</b>になり、見本の字がその大きさで出ます。よければクリック。・そのまま Enter＝帯の【字高】の欄の値（はじめは 3.5）のまま・数字を打って Enter も可（帯の字高と同じ単位＝紙のmm の日は紙のmm）・右クリック／Esc＝字高を聞くのをやめて、枠の1点目から（枠が細すぎる高さを選ぶと、そう言って待ちます。小さい高さで選び直せます）枠が決まると、帯に【幅】と【字高】の欄が並びます。どちらも押してその場で打ち替えられます。🔑<b>打っている最中でも、枠の縁を掴んで引けば大きさが変わります</b>（右の縁＝幅・下の縁＝高さ）。縁に指を乗せると矢印に変わります。打った字はそのまま、折り返しがその場で付いてきます。
+<li><span class="mark">②</span><div>Next it asks the <b>text height</b>. Move the mouse up and down: from the top edge of the frame to the pointer becomes <b>the height of the first line</b>, and sample text appears at that size. Click when it is right. · Just Enter = the value in the bar's [Text height] field (3.5 at first) · typing a number and Enter also works (same unit as the bar's text height = paper mm on a paper-mm day) · right-click / Esc = stop asking for the height and go back to the first point of the frame (if you choose a height the frame is too narrow for, it says so and waits; choose again with a smaller height). Once the frame is decided, the [Width] and [Text height] fields line up on the bar. Press either to retype it on the spot. 🔑<b>Even while typing, drag the edge of the frame and the size changes</b> (right edge = width, bottom edge = height). The pointer turns into an arrow on the edge. The typed text stays, and the wrapping follows on the spot.
 </div></li>
 <li><span class="mark">③</span><div>Type your text into the box. · Enter = <b>a line break</b> (it means something different from Enter in single-line text) · Pressing ↓ on the very last line also breaks the line · Characters that run past the width wrap automatically as you type (you see them wrapping exactly as they will once placed)
 </div></li>
-<li><span class="mark">④</span><div>直したい所は、ワードと同じように選べます。・枠の中をクリック＝そこにカーソルが移ります・押したまま引く＝<b>反転</b>（青くなった分が「選んだ分」）・Shift＋矢印・Home・End でも、反転を伸ばせます・Ctrl+A（Macは⌘A）＝本文をぜんぶ反転・反転したまま打てば<b>置き換え</b>、BackSpace／Delete で<b>その分だけ消えます</b>※引いている途中で枠の外へ出ても、反転は続きます（戻ってくれば繋がります）。
+<li><span class="mark">④</span><div>The part you want to fix can be selected as in a word processor. · Click inside the frame = the caret moves there · press and drag = <b>highlight</b> (what turns blue is "the selection") · Shift + arrows, Home and End also extend the highlight · Ctrl+A (⌘A on Mac) = highlight the whole text · type with a highlight to <b>replace</b> it; BackSpace / Delete <b>erase just that part</b> * If you leave the frame while dragging, the highlight continues (it joins up when you come back).
 </div></li>
-<li><span class="mark">⑤</span><div>選んだ字は、コピー・切り取り・貼り付けができます（ワードと同じ指）。・Ctrl+C（Macは⌘C）＝コピー／Ctrl+X＝切り取り／Ctrl+V＝貼り付け・メモ帳・表計算・他所のCADからも、そのまま貼れます・反転したまま貼れば<b>置き換え</b>、何も選んでいなければカーソルの所へ入ります※一行の文字（DT）に、改行の入った文章を貼ると、<b>改行は空白ひとつに</b>なります（一行の器なので。落として詰めると、次の行が前の行の尻に生えます）。※貼った字は、いま帯で灯っている飾りを着ます（打った字と同じ扱い）。飾りそのものは持ち回りません＝クリップボードは、素の字だけを運びます。
+<li><span class="mark">⑤</span><div>Selected text can be copied, cut and pasted (the same fingers as a word processor). · Ctrl+C (⌘C on Mac) = copy / Ctrl+X = cut / Ctrl+V = paste · You can paste straight from a notepad, a spreadsheet or another CAD · paste with a highlight to <b>replace</b>; with nothing selected it goes in at the caret * If you paste text with line breaks into single-line text (DT), <b>each line break becomes one space</b> (it is a one-line vessel; if they were simply dropped, the next line would grow out of the tail of the previous one). * Pasted text wears the decorations lit on the bar at that moment (treated the same as typed text). Decorations themselves are not carried = the clipboard carries plain text only.
 </div></li>
-<li><span class="mark">⑥</span><div>飾り（太字・斜体・下線・上線・取り消し線）は、枠の下の帯で。・反転してから押す＝<b>その分</b>に掛かります（もう一度押すと外れます）・何も選ばずに押す＝<b>これから打つ字</b>に掛かります（ワードと同じ）・太字は Ctrl+B、斜体は Ctrl+I、下線は Ctrl+U（Macは⌘B・⌘I・⌘U）でも。灯っているのが、いまの状態です※太字は、他所のCADでは太くならないことがあります（DXFは書体の名前で太字を表す決まりで、うちは<b>書体名を勝手に足さない</b>ことを選びました）。・斜体は、字を15度たおして描きます（字送りは変わりません）・取り消し線は、訂正・削除の印に使います※飾りはDXFの決まりどおりに保存されるので、他所のCADでもそのまま出ます。
+<li><span class="mark">⑥</span><div>Decorations (bold, italic, underline, overline, strikethrough) are on the bar under the frame. · Highlight, then press = applied to <b>that part</b> (press again to remove) · press with nothing selected = applied to <b>what you type from now on</b> (as in a word processor) · Bold is Ctrl+B, italic Ctrl+I, underline Ctrl+U (⌘B, ⌘I, ⌘U on Mac) too. What is lit is the current state. * Bold may not appear bold in other CADs (DXF expresses bold by the typeface name, and we chose <b>not to add typeface names on our own</b>). · Italic draws the text slanted 15 degrees (the advance does not change) · strikethrough is used as a mark of correction or deletion * Decorations are saved according to the DXF rules, so they appear as they are in other CADs.
 </div></li>
-<li><span class="mark">⑦</span><div>字の大きさは、帯の右の【字高】の欄で、その場で変えられます。・欄の単位は既定で【紙のmm】（DTと同じ・帯の二択で【図面の単位】にも）。・押すと今の値が入って開きます（続きから直せます）・式も打てます（例：40/2 → 20）。Enter で決定、Esc で中止※変えると折り返しも一緒に変わります（枠の横幅は変わりません）。
+<li><span class="mark">⑦</span><div>The text size can be changed on the spot in the [Text height] field at the right of the bar. · The field's unit is [paper mm] by default (same as DT; the two-way switch on the bar also gives [drawing units]). · Press it and it opens with the current value (you can edit from there) · formulas work (example: 40/2 → 20). Enter decides, Esc cancels * Changing it changes the wrapping too (the frame width does not change).
 </div></li>
-<li><span class="mark">⑧</span><div>文章を、枠の<b>どの隅に合わせるか</b>は、帯の右の【基準】の九マスで。・押した点に、文章のその隅が来ます（左上・中央・右下…の九通り）・中央を選べば、表のマスのど真ん中に収まります・下を選べば、文章は<b>上へ</b>育ちます（上なら下へ、中なら上下へ）※既定は【左上】です。打っている最中に、いつでも変えられます。※打ち直しのときは出ません（そのときの隅を、そのまま守ります）。
+<li><span class="mark">⑧</span><div><b>Which corner of the frame the text is fitted to</b> is set with the nine squares of [Justify] at the right of the bar. · That corner of the text comes to the point you clicked (nine ways: top-left, centre, bottom-right…) · choose the centre and it sits right in the middle of a table cell · choose the bottom and the text grows <b>upward</b> (top grows down, middle grows both ways) * The default is [top-left]. You can change it any time while typing. * It is not shown when re-editing (the corner of that time is kept as it is).
 </div></li>
 <li><span class="mark">⑨</span><div>There are three ways to finish. They all do the same thing. · Press 【✓ 確定】 (accept) below the box · Ctrl+Enter (⌘+Enter on Mac) · Click outside the box To give up, press Esc (right-click does the same).
 </div></li>
-<li><span class="mark">⑩</span><div>置いたあとでも、<b>打ち直せます</b>。・段落を<b>ダブルクリック</b>＝そのまま枠が開いて、続きから直せます・選んで小窓に DDEDIT（または ED）でも同じです・右クリックの献立の【文字を編集】でも開きます・直したら、新しく打つときと同じ終わり方（✓・Ctrl+Enter・枠の外）・Esc なら、元のままで閉じます※空にして確定はできません（元のまま残ります）。消すときは選んで Delete。※傾いている段落は、まだ開けません（Xで分解すると行ごとの文字になります）。
+<li><span class="mark">⑩</span><div>Even after placing, <b>you can retype it</b>. · <b>Double-click</b> the paragraph = the frame opens and you can continue editing · selecting it and typing DDEDIT (or ED) in the command box does the same · [Edit text] in the right-click menu also opens it · when done, finish the same way as when typing new text (✓, Ctrl+Enter, or outside the frame) · Esc closes it unchanged * You cannot confirm it empty (it stays as it was). To erase, select it and press Delete. * A tilted paragraph cannot be opened yet (explode with X and it becomes text line by line).
 </div></li>
 </ol>
 </section>
@@ -295,7 +299,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>The wrapping width is held too, so it <b>wraps in the same places as it did in the other program</b>.</li>
 <li>Touch it and it announces itself as “段落文字 3行” (multiline text, 3 lines). Touch any line and the whole is caught (move, copy and rotate all work as they are).</li>
 <li>The text size can be changed (select it, right-click → text height).</li>
-<li><b>打ち直せます</b>（ダブルクリック）。書体の指定など、うちが使わない飾りもそのままお返しするので、直しても図面は痩せません。※ただし、うちがまだ扱えない飾り（色・字高の倍率など）が入っている段落は、<b>開かずに、その場で理由を言います</b>——直すとその飾りが失われるからです。その場合は X（分解）で行ごとの文字に分ければ、一行ずつ打ち直せます（※分解すると、書体・字高の指定は失われます）。※傾いている段落と、貼り付ける隅が左上でない段落も、まだ開けません。</li>
+<li><b>It can be retyped</b> (double-click). Decorations we do not use, such as typeface settings, are handed back as they are, so the drawing does not lose anything when you edit. * However, a paragraph containing decorations we cannot handle yet (colour, height factor and so on) is <b>not opened, and the reason is given on the spot</b> — because editing would lose them. In that case, split it into line-by-line text with X (explode) and you can retype one line at a time (* exploding loses typeface and height settings). * Tilted paragraphs, and paragraphs whose attachment corner is not top-left, cannot be opened yet either.</li>
 </ul>
 </section>
 <section id="引出線"><h2>LE / leader</h2>
@@ -317,6 +321,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li><span class="mark">①</span><div>Type H → Enter (the ハッチ (Hatch) button on the ribbon does the same).
 </div></li>
 <li><span class="mark">②</span><div><b>Click once inside</b> the area you want filled. That alone sets the machine looking for the shape that encloses that place, and fills it. If circles or rectangles float inside it, they are left out as islands.
+<figure><a href="../e/08-ハッチ-2.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/08-ハッチ-2.png" alt="After one click inside the rectangle (choose the pattern on the bar below)" loading="lazy"></a><figcaption>After one click inside the rectangle (choose the pattern on the bar below)</figcaption></figure>
 </div></li>
 </ol>
 <ul>
@@ -334,11 +339,11 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </section>
 <section id="建築記号"><h2>Construction symbols: beam, column, footing, mat slab, level, section arrow, drawing title</h2>
 <p>The symbols familiar from construction drawings can be typed and placed on the spot.</p>
-<p>入口は三つ＝タブ「注記」の【記号】／小窓に 記号／フリックの棚。</p>
+<p>Three entrances = [Symbol] on the Annotate tab / 記号 in the command box / the flick shelf.</p>
 <ol class="steps">
 <li><span class="mark">①</span><div>A <b>bar</b> appears at the very bottom of the screen. From the left: beam tag, column tag, footing tag, mat-slab tag, level mark, section arrow, drawing-title box. Each shows a sample, so press to choose.
 </div></li>
-<li><span class="mark">②</span><div>【紙の字高】と【縮尺】を、帯の欄で決めます。縮尺の既定は【ページ設定】の縮尺です（図面ごとに一つ。新しい図面は 1:50）。破線・寸法・ハッチと同じ一つの縮尺を読みます＝直す場所は一つ。道具に入ったとき、履歴が「ページ設定の縮尺に合わせました」と名乗ります。違えば、ページ設定の縮尺を直すと、破線も寸法もハッチも記号も一度に合います。この図面だけ別の縮尺で置きたいときは、帯の欄か 記号 1:50 で。紙の上（レイアウト）では常に 1:1 です。※PDFから取り込んだ図面（1単位＝紙の1mm）は、ページ設定で 1:1 を指名してください。・大きさが合わなければ、置いてから【拡大縮小（SC）】でも直せます。記号は楕円・線・文字なので、ふつうの図形と同じように扱えます。記号は「紙の上で何ミリか」で決まります（JISの常用は 3.5）。図面は実寸なので、1:50 の図面なら 50倍にして置きます。帯には掛け算の答え（＝図面で 175）も出ます。※ここが合っていないと、記号だけが極端に大きく／小さくなります。
+<li><span class="mark">②</span><div>Decide [Paper text height] and [Scale] in the fields on the bar. The default scale is the [Page Setup] scale (one per drawing; a new drawing is 1:50). It reads the same single scale as dashes, dimensions and hatches = there is one place to fix. When you enter the tool, the history says "matched to the Page Setup scale". If it is wrong, fix the Page Setup scale and dashes, dimensions, hatches and symbols all fit at once. To place at a different scale in this drawing only, use the field on the bar or 記号 1:50. On paper (layout) it is always 1:1. * For a drawing imported from PDF (1 unit = 1 mm on paper), name 1:1 in Page Setup. · If the size does not fit, you can also fix it after placing with [Scale (SC)]. Symbols are ellipses, lines and text, so they can be handled like ordinary objects. A symbol is decided by "how many millimetres on paper" (the JIS common value is 3.5). The drawing is full size, so in a 1:50 drawing it is placed 50 times larger. The bar also shows the product (= 175 in the drawing). * If this does not match, only the symbols come out extremely large or small.
 </div></li>
 <li><span class="mark">③</span><div>Click where it goes. Snapping works, so it drops exactly onto a grid intersection.
 </div></li>
@@ -369,38 +374,38 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>The grid bubbles (the circles marked X1, Y1) are not placed from this bar; the grid command (GRID) raises them together with the lines (the circles are 9 mm across on paper = decided by the Page Setup scale).</li>
 </ul>
 </section>
-<section id="分野を「機械」へ"><h2>分野を「機械」へ＝幾何公差と三角法の記号</h2>
-<p>帯の左端【分野】の ▲ ▼（または ↑ ↓）で、建築／機械／電気／設備を行き来します。</p>
-<p>その分野の中の記号は、【記号】の ◀ ▶（または ← →）で前後へ送れます。※縦が分野・横が記号＝頭の中にツリーが描けるように、指の向きを揃えてあります。（もちろん、記号のカードを直接押しても選べます）</p>
-<p>機械の棚には、いま二つの家族が住んでいます。</p>
+<section id="分野を「機械」へ"><h2>Discipline "Mechanical" = geometric tolerances and projection symbols</h2>
+<p>Move between Architecture / Mechanical / Electrical / Plumbing with ▲ ▼ (or ↑ ↓) of [Discipline] at the left end of the bar.</p>
+<p>Within that discipline, step through the symbols with ◀ ▶ (or ← →) of [Symbol]. * Vertical is discipline, horizontal is symbol = the finger directions are aligned so that you can picture a tree in your head. (Of course you can also press a symbol card directly.)</p>
+<p>Two families now live on the Mechanical shelf.</p>
 <ul>
-<li>幾何公差の記入枠（JIS B 0021）＝14種。真直度・平面度・真円度・円筒度・線の輪郭度・面の輪郭度・平行度・直角度・傾斜度・位置度・同軸度・対称度・円周振れ・全振れ。枠は共通（記号｜公差値｜データム）で、違うのは記号の絵だけ。形状公差の四つ（真直・平面・真円・円筒）はデータムを持たないので、その升は出ません。枠の高さ＝字高の2倍・記号の升は正方形（規格の作法）。記号の絵は線と円で描くので書体に頼らず、どの机でも同じ顔で出ます。</li>
-<li>三角法の投影記号（JIS Z 8316／ISO 5456-2）＝第三角法と第一角法の二つ。円錐台を正面から見た台形と、小さい端から見た二重円の絵です。・第三角法（日本の主流）＝左に二重円、右に台形（短い辺が円の側）・第一角法（欧州の主流）＝左に台形（短い辺が外側）、右に二重円大きさは【紙の字高】＝小さい円の直径（3.5 なら大円 7mm・記号の高さ 7mm）。打つ欄はありません＝置く場所をクリックして、✓ か Enter で置きます。表題欄の所定の位置に置く記号です（矢示法で描いた図面では要りません）。</li>
-<li>小窓からは 記号 第三／記号 第一／記号 三角法／記号 真直度 のように名指しできます。</li>
+<li>Geometric tolerance frames (JIS B 0021) = 14 kinds. Straightness, flatness, roundness, cylindricity, profile of a line, profile of a surface, parallelism, perpendicularity, angularity, position, concentricity, symmetry, circular run-out, total run-out. The frame is common (symbol | tolerance value | datum); only the picture of the symbol differs. The four form tolerances (straightness, flatness, roundness, cylindricity) have no datum, so that compartment is not shown. Frame height = twice the text height; the symbol compartment is square (as the standard says). The symbols are drawn with lines and circles, so they do not depend on a typeface and look the same on any desk.</li>
+<li>Projection symbols (JIS Z 8316 / ISO 5456-2) = two: third-angle and first-angle. The picture is a trapezoid — a truncated cone seen from the front — and a double circle seen from the small end. · Third-angle (mainstream in Japan) = double circle on the left, trapezoid on the right (short side toward the circles) · First-angle (mainstream in Europe) = trapezoid on the left (short side outward), double circle on the right. The size is [Paper text height] = the diameter of the small circle (at 3.5: large circle 7 mm, symbol height 7 mm). There is no field to type = click where to place it and place with ✓ or Enter. It is a symbol placed at its set position in the title block (not needed in drawings drawn by the arrow method).</li>
+<li>From the command box you can name them, as in 記号 第三 / 記号 第一 / 記号 三角法 / 記号 真直度.</li>
 </ul>
 </section>
-<section id="分野を「電気」へ"><h2>分野を「電気」へ＝配線用の図記号（住宅の内装）</h2>
-<p>間取りに描く電気の記号です（JIS C 0303 構内電気設備の配線用図記号）。</p>
-<p>※回路図の記号（JIS C 0617）とは別の規格です。あちらは制御盤の中身の図です。</p>
-<p>いま九種が住んでいます：コンセント／点滅器（スイッチ）／照明（白熱灯）／シーリング／ダウンライト／蛍光灯／換気扇／分電盤／ルームエアコン。</p>
+<section id="分野を「電気」へ"><h2>Discipline "Electrical" = wiring symbols (house interiors)</h2>
+<p>These are the electrical symbols drawn on floor plans (JIS C 0303, graphical symbols for wiring in buildings).</p>
+<p>* It is a different standard from circuit-diagram symbols (JIS C 0617). Those are for drawings of what is inside a control panel.</p>
+<p>Nine kinds now live here: receptacle / switch / light (incandescent) / ceiling light / downlight / fluorescent light / ventilation fan / distribution board / room air conditioner.</p>
 <ul>
-<li>大きさは【紙の字高】＝丸の直径（3.5 なら紙で 3.5mm の丸）。三角法の記号と同じ物差しです＝家の中で二度覚えなくて済みます。</li>
-<li>傍記（記号の右に書く小さな字）は、要るときだけ打ちます。空のままでも置けます——規格が「15A 125V は傍記しない」と決めているからです。コンセント … 2（2口）／E（接地極付）／ET（接地端子付）／WP（防雨形）／20A点滅器　　 … 3（3路）／4（4路）／2P（2極）／P（プル）／L（確認表示灯）照明　　　 … 100（ワット）／蛍光灯なら F40 のように</li>
-<li>塗りつぶし（コンセントの上半分・点滅器の丸・分電盤の三角）は、ハッチの「塗りつぶし」として置かれます＝拡大しても縁は本物の円のままです。※コンセントを上半分だけ塗るのは、規格が「壁側を塗る」と決めているためです。</li>
-<li>小窓からは 記号 コンセント／記号 点滅器／記号 分電盤 のように名指しできます。</li>
+<li>The size is [Paper text height] = the diameter of the circle (at 3.5, a 3.5 mm circle on paper). The same yardstick as the projection symbols = nothing to learn twice in this house.</li>
+<li>Side notes (the small letters written to the right of a symbol) are typed only when needed. It can be placed empty — because the standard says "15A 125V is not noted". Receptacle … 2 (duplex) / E (with earth pole) / ET (with earth terminal) / WP (rainproof) / 20A. Switch … 3 (3-way) / 4 (4-way) / 2P (2-pole) / P (pull) / L (pilot lamp). Light … 100 (watts) / for fluorescent, as in F40.</li>
+<li>Solid fills (the upper half of a receptacle, the dot of a switch, the triangle of a distribution board) are placed as a "solid" hatch = the edge stays a true circle however far you zoom in. * Only the upper half of a receptacle is filled because the standard says "fill the wall side".</li>
+<li>From the command box you can name them, as in 記号 コンセント / 記号 点滅器 / 記号 分電盤.</li>
 </ul>
 </section>
-<section id="分野を「設備」へ"><h2>分野を「設備」へ＝給排水・衛生の図記号</h2>
-<p>配管の弁と、排水の桝です（国土交通省の公共建築設備工事標準図に合わせています）。</p>
-<p>※設備には、電気の JIS C 0303 に当たる一つの規格がありません。実務ではこの標準図と、空気調和・衛生工学会の図記号が共通語として使われています。</p>
-<p>いま十二種が住んでいます：弁　… 仕切弁（GV）／バタフライ弁（BV）／玉形弁（SV）／逆止弁（CV）／ボール弁（BAV）／コック（CK）／埋設弁桝　… トラップ桝（T）／インバート桝／ため桝／公共桝（公）／グリース阻集器（GT）</p>
+<section id="分野を「設備」へ"><h2>Discipline "Plumbing" = water supply, drainage and sanitary symbols</h2>
+<p>These are pipe valves and drainage basins (matched to the Standard Drawings for Public Building Equipment Works of the Ministry of Land, Infrastructure, Transport and Tourism).</p>
+<p>* Plumbing has no single standard corresponding to JIS C 0303 for electrical. In practice these standard drawings and the symbols of the Society of Heating, Air-Conditioning and Sanitary Engineers of Japan are used as the common language.</p>
+<p>Twelve kinds now live here: Valves … gate valve (GV) / butterfly valve (BV) / globe valve (SV) / check valve (CV) / ball valve (BAV) / cock (CK) / buried valve. Basins … trap basin (T) / invert basin / catch basin / public basin (公) / grease interceptor (GT).</p>
 <ul>
-<li>弁の四つ（GV・BV・SV・BAV）は、形がまったく同じ蝶（ちょう）です。見分けるのは右上の符号だけ——これは標準図がそう決めているからで、符号は記号の一部として最初から入っています（打つ必要はありません）。</li>
-<li>傍記（呼び径など。例 20A や 50×25）は、要るときだけ打ちます。空でも置けます。</li>
-<li>記号は単独で置きます。前後に伸びる管の線は含みません（置く場所には、もう管が引いてあるはずなので）。</li>
-<li>小窓からは 記号 仕切弁／記号 ため桝 のほか、図面で読んでいる符号のままGV・BV・SV・CV・BAV・CK・GT でも呼べます（日本語入力を切らずに打てます）。</li>
+<li>Four of the valves (GV, BV, SV, BAV) are exactly the same bow-tie shape. Only the code at the upper right tells them apart — the standard drawings decide it so, and the code is included from the start as part of the symbol (no need to type it).</li>
+<li>Side notes (nominal size and so on; e.g. 20A or 50×25) are typed only when needed. It can be placed empty.</li>
+<li>The symbol is placed alone. It does not include the pipe lines running before and after (the pipe should already be drawn where you place it).</li>
+<li>From the command box, besides 記号 仕切弁 / 記号 ため桝, you can call them by the codes you read on drawings: GV, BV, SV, CV, BAV, CK, GT (typed without switching off Japanese input).</li>
 </ul>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

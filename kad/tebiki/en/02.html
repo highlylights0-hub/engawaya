@@ -60,7 +60,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../02.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="01.html">← Getting Started (the layout of the screen)</a><a href="03.html">Moving around the screen →</a></nav><h1>2. Using the Cursor</h1><div class="toc"><a href="#ひとつを選ぶ">Selecting one object</a><a href="#つながっている線を、まとめて選ぶ">Selecting a whole connected run at once</a><a href="#窓で選ぶ">Selecting with a window</a><a href="#似たものを選ぶ">似たものを選ぶ</a><a href="#クイック選択">クイック選択（条件で選ぶ）</a><a href="#重なっている図形">Overlapping objects</a><a href="#つまみ">Grips</a><a href="#ポリライン">Grips on a polyline (rectangles and polygons)</a><a href="#右クリック">Right-click = the place to remember things</a><a href="#コピーと貼り付け">Copy and paste</a><a href="#ホバー">Hover (just touching)</a><a href="#十字の色を変える">Changing the colour of the crosshairs</a><a href="#十字の大きさ・太さを変える">Changing the size and weight of the crosshairs</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="ひとつを選ぶ"><h2>Selecting one object</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../02.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="01.html">← Getting Started (the layout of the screen)</a><a href="03.html">Moving around the screen →</a></nav><h1>2. Using the Cursor</h1><div class="toc"><a href="#ひとつを選ぶ">Selecting one object</a><a href="#つながっている線を、まとめて選ぶ">Selecting a whole connected run at once</a><a href="#窓で選ぶ">Selecting with a window</a><a href="#似たものを選ぶ">Select Similar</a><a href="#クイック選択">Quick Select (select by condition)</a><a href="#重なっている図形">Overlapping objects</a><a href="#つまみ">Grips</a><a href="#ポリライン">Grips on a polyline (rectangles and polygons)</a><a href="#右クリック">Right-click = the place to remember things</a><a href="#コピーと貼り付け">Copy and paste</a><a href="#ホバー">Hover (just touching)</a><a href="#十字の色を変える">Changing the colour of the crosshairs</a><a href="#十字の大きさ・太さを変える">Changing the size and weight of the crosshairs</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="ひとつを選ぶ"><h2>Selecting one object</h2>
 <p>When no command is running, the cursor is your selection tool.</p>
 <p>Click an object = it is selected. Click another = it joins the selection.</p>
 <p>Click empty space = everything is deselected.</p>
@@ -82,37 +82,37 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </ul>
 <p>This is the same convention as most CAD programs. Window selection adds to the selection, so you can gather things in several passes.</p>
 </section>
-<section id="似たものを選ぶ"><h2>似たものを選ぶ</h2>
-<p>図形を一本選んで右クリック→［似たものを選ぶ］。</p>
-<p>（タブ「直す」の［似たものを選ぶ］でも同じです）</p>
-<p>選んだ図形と<b>種類・画層・名前</b>が同じものを、図面ぜんぶから選びます（小窓なら SELECTSIMILAR）。</p>
+<section id="似たものを選ぶ"><h2>Select Similar</h2>
+<p>Select one object, right-click → [Select Similar].</p>
+<p>([Select Similar] on the Modify tab does the same.)</p>
+<p>It selects, from the whole drawing, everything whose <b>type, layer and name</b> match the selected object (SELECTSIMILAR in the command box).</p>
 <ul>
-<li>名前＝部品なら部品の名前、寸法なら寸法スタイル、文字なら書体スタイル、ハッチなら模様の名前。</li>
-<li>「この画層の文字を全部」「この柱と同じ部品を全部」の最短手です。</li>
-<li>選択に加わる作法なので、前の選択は消えません。</li>
+<li>Name = the block name for a block, the dimension style for a dimension, the text style for text, the pattern name for a hatch.</li>
+<li>It is the shortest way to "all the text on this layer" or "every block the same as this column".</li>
+<li>It adds to the selection, so the previous selection is not lost.</li>
 </ul>
 </section>
-<section id="クイック選択"><h2>クイック選択（条件で選ぶ）</h2>
-<p>右クリック→［クイック選択…］（小窓なら QSELECT）。</p>
-<p>（タブ「直す」の［クイック選択］でも開きます）</p>
-<p>図面にある<b>種類・画層・色・線種・太さ</b>が札で並び、何本あるかが出ます。札を押すと、その条件に合う図形だけが数に残ります。</p>
+<section id="クイック選択"><h2>Quick Select (select by condition)</h2>
+<p>Right-click → [Quick Select…] (QSELECT in the command box).</p>
+<p>([Quick Select] on the Modify tab also opens it.)</p>
+<p>The <b>types, layers, colours, linetypes and lineweights</b> found in the drawing line up as chips, each with its count. Press a chip and only the objects matching that condition remain in the count.</p>
 <ul>
-<li>押していない欄は「問わない」。同じ欄で二枚押すと「どちらか」。</li>
-<li>札の数は、ほかの欄の条件のもとでの本数です（0 の札は薄く）。</li>
-<li>色は見えている色で数えます（画層の色に従う線は、その画層の色）。</li>
-<li>線種の札の頭には、その線種の見本の線が出ます（名前を知らなくても、線の姿で選べます）。太さは画層が持つ太さです。</li>
-<li>［探す］の欄に言葉を打つと、その言葉を含む文字・段落文字・引出線だけが数に残ります（打つたびに数え直します・英字の大小は区別しません）。Enter・Esc で打つのをやめ、×で言葉を消します。</li>
-<li>部品が置いてある図面では［部品］の欄に部品の名前が並びます。</li>
-<li>色・線種・太さの欄の最後の［全部から選ぶ ▼］で、図面に無い値も選べます（色＝基本色と 255 色の表／線種＝持参の全部を見本つきで、ホイールで送る／太さ＝ペンの一覧を実際の太さの線で）。図面に無い値を押すと 0本と出ます（「この図面に一点鎖線は無い」）。</li>
-<li>値が一つしか無い欄は、札にせず「すべて 実線（37本）」と言います。</li>
-<li>選んでから開くと「いま選んでいる中から」絞れます。</li>
-<li>［この n本を選ぶ］＝選び直す／［今の選択に足す］＝足す。</li>
-<li>［今の選択から外す］＝条件に合う図形を、選んでいる中から抜きます。</li>
-<li>足元の「選ぶのは」で［合わないもの（以外）］を押すと、押した札のどれかに外れる図形を数えます。例：線種［中心］を押して［以外］＝一点鎖線でない図形ぜんぶ。</li>
-<li>板は<b>浮く板</b>です。帯を掴んで好きな所へ動かせます。窓の大きさを変えても、同じ側・同じ割合の所へついてきます。</li>
-<li>開いたまま、図面を動かす・拡大する・選ぶ・消す、ができます。選んでも板は閉じません（選ばれた様子を見ながら条件を直せる）。閉じるのは右上の×です（Esc は図面の側に効きます）。</li>
-<li>画層が多い図面は、画層の札を［次 ›］で送ります。押した札は、頁を送っても「押した札：…」の一行に出ます。</li>
-<li>非表示・ロックの画層は選びません（全選択と同じ守り）。</li>
+<li>A field with nothing pressed means "any". Two chips pressed in the same field mean "either".</li>
+<li>The number on a chip is the count under the conditions of the other fields (chips with 0 are dimmed).</li>
+<li>Colours are counted by the colour you see (a line that follows its layer counts as the layer's colour).</li>
+<li>Each linetype chip starts with a sample of that linetype (you can choose by the look of the line without knowing its name). Lineweight is the weight the layer holds.</li>
+<li>Type a word in the [Find] field and only the text, paragraph text and leaders containing that word remain in the count (recounted on every keystroke; upper and lower case are not distinguished). Enter or Esc stops typing; × clears the word.</li>
+<li>In a drawing where blocks are placed, the block names line up in the [Block] field.</li>
+<li>[Choose from all ▼] at the end of the colour, linetype and lineweight fields lets you choose values that are not in the drawing (colour = the basic colours and the 255-colour table / linetype = everything loaded, with samples, scrolled with the wheel / lineweight = the pen list drawn at real thickness). Pressing a value not in the drawing shows 0 (as in "this drawing has no centre lines").</li>
+<li>A field that has only one value is not shown as chips; it says "All Continuous (37)".</li>
+<li>Open it with objects already selected and you can narrow down "from the current selection".</li>
+<li>[Select these n] = replace the selection / [Add to the selection] = add.</li>
+<li>[Remove from the selection] = takes the matching objects out of the current selection.</li>
+<li>Press [Non-matching (all but)] in "Select" at the foot and it counts the objects that fail any of the pressed chips. Example: press linetype [Center], then [all but] = every object that is not a centre line.</li>
+<li>The board is a <b>floating panel</b>. Drag its band to move it anywhere. When the window is resized it follows to the same side and the same proportion.</li>
+<li>While it is open you can pan, zoom, select and erase in the drawing. Selecting does not close the board (you can adjust the conditions while watching what got selected). The × at the top right closes it (Esc acts on the drawing side).</li>
+<li>In a drawing with many layers, [Next ›] pages through the layer chips. Pressed chips stay listed on the "Pressed:" line even when you turn the page.</li>
+<li>Hidden and locked layers are not selected (the same guard as Select All).</li>
 </ul>
 </section>
 <section id="重なっている図形"><h2>Overlapping objects</h2>
@@ -141,13 +141,13 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </ul>
 </section>
 <section id="右クリック"><h2>Right-click = the place to remember things</h2>
-<figure><a href="../e/02-右クリック-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/02-右クリック-0.png" alt="何も選んでいない時の右クリック" loading="lazy"></a><figcaption>何も選んでいない時の右クリック</figcaption></figure>
+<figure><a href="../e/02-右クリック-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/02-右クリック-0.png" alt="Right-click with nothing selected" loading="lazy"></a><figcaption>Right-click with nothing selected</figcaption></figure>
 <p>“Now, what was that command called?” — right-click.</p>
 <p>You can get there without remembering any shortcut.</p>
 <ul>
-<li><b>図形を選んで</b>右クリック＝その図形にする用事が並びます。切り取り・コピー・基点を指定してコピー・貼り付け／移動・複製・回転・鏡像・削除／現在画層へ・この画層を現在に・画層に従わせる／字高…・文字を編集・仮想交点／部品化・プロパティ。</li>
+<li>Right-click <b>with objects selected</b> = the things you can do to them line up. Cut, Copy, Copy with Base Point, Paste / Move, Copy, Rotate, Mirror, Erase / To Current Layer, Make This Layer Current, Set ByLayer / Text Height…, Edit Text, Apparent Intersection / Make Block, Properties.</li>
 <li><b>With nothing selected</b>, right-click and you get the jobs for the whole drawing: Paste, Paste to original coordinates / Select all, Undo / Alias board (opens the list of shortcuts).</li>
-<li>各行の右端の字は、<b>その一行を呼ぶ手の早道</b>です。鍵のあるものは鍵（⌘C など）、無いものは小窓の言葉（M・CO）。※鍵をエイリアスボードで替えると、ここの字も一緒に変わります。</li>
+<li>The letters at the right end of each row are <b>the shortcut that calls that row</b>. Where there is a key, the key (⌘C and so on); where there is none, the command-box word (M, CO). * If you change a key on the alias board, the letters here change with it.</li>
 <li>Right-click in the middle of drawing or placing = cancel / finish. (Ending a run of copies, taking back one hatch point, and so on.)</li>
 </ul>
 </section>
@@ -161,13 +161,13 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </div></li>
 </ol>
 <ul>
-<li>⌘⇧V＝控えた時と<b>同じ座標</b>へ、そのまま置きます。※同じ図面で、<b>控えた元の図形が残っている間は使えません</b>（元の絵にぴったり重なるだけになるため）。献立でも薄くなります。＝<b>別のタブへ、同じ座標で持っていく</b>ときの道具です。⌘X（切り取り）の後なら、同じ図面でも元の場所へ戻せます。</li>
-<li>⌘C の持ち手は<b>形の左下</b>です。原点を基準にした図面を別のタブへ運び、⌘V で原点をクリックすると、左下が原点に来ます。</li>
-<li>⌘⇧C（基点を指定してコピー）＝持ち手の点を<b>クリックで指して</b>控えます。原点を指して控えれば、⌘V で原点をクリックして<b>同じ座標</b>に置けます。</li>
-<li>複製（CO）でも別のタブへ運べます＝基点をクリック→タブを替えて→貼り付け先をクリック（基点と同じ点なら、同じ座標に置かれます）。</li>
+<li>⌘⇧V = places it at <b>the same coordinates</b> as when it was copied. * In the same drawing it <b>cannot be used while the copied originals remain</b> (it would only land exactly on top of them). It is dimmed in the menu too. = It is the tool for <b>taking something to another tab at the same coordinates</b>. After ⌘X (cut) you can put it back in the original place even in the same drawing.</li>
+<li>The grip of ⌘C is the <b>lower-left of the shape</b>. Carry a drawing based on the origin to another tab, click the origin with ⌘V, and the lower-left lands on the origin.</li>
+<li>⌘⇧C (Copy with Base Point) = copies with the grip point <b>you click</b>. Copy with the origin as the grip and you can place it at <b>the same coordinates</b> by clicking the origin with ⌘V.</li>
+<li>Copy (CO) can also carry things to another tab = click the base point → switch tabs → click the destination (if it is the same point as the base point, it lands at the same coordinates).</li>
 <li><b>You can paste into another tab.</b> Layers that do not exist there travel with their colour and linetype (and the block definitions travel too).</li>
-<li>小窓の言葉でも呼べます＝COPYCLIP・COPYBASE・CUTCLIP・PASTECLIP・PASTEORIG・SELALL（本家と同じ名前です）。</li>
-<li>移動・回転・拡大縮小などの途中でタブを替えると、道具はやめます（見ていない図面の図形を書き換えないため）。</li>
+<li>The command-box words work too = COPYCLIP, COPYBASE, CUTCLIP, PASTECLIP, PASTEORIG, SELALL (the same names as the original).</li>
+<li>If you switch tabs in the middle of Move, Rotate, Scale and the like, the tool stops (so that objects in a drawing you are not looking at are never rewritten).</li>
 </ul>
 </section>
 <section id="ホバー"><h2>Hover (just touching)</h2>
@@ -189,7 +189,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>Crosshair weight = pixels. 1 is the starting thinness. 2 makes them distinct. When you want them easier to see, weight helps more than length.</li>
 </ul>
 <p>Press either one and the field becomes ready on the spot. Type a number and press Enter to accept, Esc to cancel (every number in the Settings panel works this way).</p>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

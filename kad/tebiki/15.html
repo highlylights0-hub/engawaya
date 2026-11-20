@@ -60,10 +60,12 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/15.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="14.html">← 印刷（紙へ刷る）</a><a href="16.html">困ったとき →</a></nav><h1>15. 立体（3DとSTL）</h1><div class="toc"><a href="#立体表示">3D / 立体表示</a><a href="#リボン［押し出し］">リボン［押し出し］＝2D の図面から、押し出して 3D へ</a><a href="#押し出し">EXT / 押し出し＝形ごとに厚みを決める</a><a href="#平らにする">FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</a><a href="#組み立てる">組み立てる＝平面図を土台に、立面図を模型のように置く</a><a href="#積む">積む＝開いている図面を高さに積んで、立体で見る</a><a href="#立体は、3Dの一枚">立体は、3D の一枚（[3D]）で作ります</a><a href="#高さ">高さ＝平面図から、壁と柱を一括で立ち上げる</a><a href="#3Dで起こす">3Dで起こす＝囲まれた所を押して、マウスの上下か数字で高さを決める</a><a href="#ろくろ">ろくろ＝断面を軸で回して、お椀・皿・花瓶・脚などの形にする</a><a href="#屋根">屋根＝建物の上に、切妻・寄棟・方形・片流れの屋根を載せる</a><a href="#ワイヤーソー">ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</a><a href="#立体書出">STL / 立体書出（3Dプリンタへ）</a><a href="#よそのSTLを見る">よそのSTLを見る</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><section id="立体表示"><h2>3D / 立体表示</h2>
+<main class="tb"><div class="wrap"><div class="lang"><b>日本語</b>　<a href="en/15.html">English</a></div><nav class="nav"><a href="index.html">目次</a><span class="sp"></span><a href="14.html">← 印刷（紙へ刷る）</a><a href="16.html">困ったとき →</a></nav><h1>15. 立体（3DとSTL）</h1><div class="toc"><a href="#立体表示">3D / 立体表示</a><a href="#リボン［押し出し］">リボン［押し出し］＝2D の図面から、押し出して 3D へ</a><a href="#押し出し">EXT / 押し出し＝形ごとに厚みを決める</a><a href="#平らにする">FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</a><a href="#組み立てる">組み立てる＝平面図を土台に、立面図を模型のように置く</a><a href="#積む">積む＝開いている図面を高さに積んで、立体で見る</a><a href="#立体は、3Dの一枚">立体は、3D の一枚（[3D]）で作ります</a><a href="#高さ">高さ＝平面図から、壁と柱を一括で立ち上げる</a><a href="#3Dで起こす">3Dで起こす＝囲まれた所を押して、マウスの上下か数字で高さを決める</a><a href="#ろくろ">ろくろ＝断面を軸で回して、お椀・皿・花瓶・脚などの形にする</a><a href="#屋根">屋根＝建物の上に、切妻・寄棟・方形・片流れの屋根を載せる</a><a href="#スライス">スライス＝立体を、糸で切り分ける（SL）</a><a href="#ワイヤーソー">ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</a><a href="#立体書出">STL / 立体書出（3Dプリンタへ）</a><a href="#よそのSTLを見る">よそのSTLを見る</a></div><div class="only-note" id="only">いまは、この用事だけを出しています。 <a href="#">この章をぜんぶ見る</a></div><section id="立体表示"><h2>3D / 立体表示</h2>
+<figure><a href="e/15-立体表示-0.png" target="_blank" rel="noopener" title="押すと、大きく開きます"><img src="e/15-立体表示-0.png" alt="タブ「立体」の［立体］を押すと、まず入り方を聞きます" loading="lazy"></a><figcaption>タブ「立体」の［立体］を押すと、まず入り方を聞きます</figcaption></figure>
 <p>小窓に 3D →Enter＝図面に高さを与えて、立体で見ます。</p>
 <ul>
 <li>左ドラッグか矢印キー＝回す。</li>
+<figure><a href="e/15-立体表示-1.png" target="_blank" rel="noopener" title="押すと、大きく開きます"><img src="e/15-立体表示-1.png" alt="3D の部屋（箱を一つ置いた所）" loading="lazy"></a><figcaption>3D の部屋（箱を一つ置いた所）</figcaption></figure>
 <li>1〜5＝平面・正面・右・左・背面。0＝アイソメ。</li>
 <li>PageUp / PageDown＝立ち上げる高さの増減。</li>
 <li>Esc＝図面へ戻る（図面は無傷のままです）。</li>
@@ -201,9 +203,24 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>Esc か U＝押した建物を外します（もう一度で道具を手放す）。置いた屋根は［戻す］か U で消せます。</li>
 </ul>
 </section>
+<section id="スライス"><h2>スライス＝立体を、糸で切り分ける（SL）</h2>
+<p>3D の部屋で、粘土を糸で切るように、立体を切り分けます。</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>切りたい立体を選び、リボン「修正」の［スライス］（小窓に SL か SLICE でも）。
+</div></li>
+<li><span class="mark">②</span><div>立体の面の上で、二点をクリック＝糸（3D スナップ点に吸い付きます）。
+</div></li>
+<li><span class="mark">③</span><div>残す側をクリック（薄く見えている側が消えます）。両方残すなら Enter か右クリック。
+</div></li>
+</ol>
+<ul>
+<li>U・Esc＝一点目から打ち直し。切ったあとは U で戻せます。</li>
+<li>切れない時は、理由を言って断ります（器は変わりません）。</li>
+</ul>
+</section>
 <section id="ワイヤーソー"><h2>ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</h2>
 <p>3D の部屋（[3D] の一枚＝器の部屋）で、箱や柱を切る段取りを、機械ごと見る道具です。</p>
-<p>いまできるのは「据える」まで（切る動きは、次の版から）。数字は全部【試算】＝仮置きです。</p>
+<p>据える所から、切り終わりまでを見られます。数字は全部【試算】＝仮置きです。</p>
 <ol class="steps">
 <li><span class="mark">①</span><div>切りたい立体を選び、リボン「修正」の［ワイヤーソー］（小窓に WS でも同じ）
 </div></li>

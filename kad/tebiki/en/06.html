@@ -61,13 +61,13 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
   </div>
 </header>
 <main class="tb"><div class="wrap"><div class="lang"><a href="../06.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="05.html">← Points and division points</a><a href="07.html">Key reference →</a></nav><h1>6. Object snap and drawing constraints</h1><div class="toc"><a href="#スナップ">Object snap</a><a href="#規律チップ">The constraint toggle (free / ortho / polar)</a><a href="#どこで効くか">Where it takes effect</a><a href="#レーザー">The laser (⌥ Option)</a><a href="#二点間中点">Midpoint between two points (M2P)</a><a href="#案内と距離欄の入切">Turning the prompt and the distance field on and off</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="スナップ"><h2>Object snap</h2>
-<figure><a href="../e/06-スナップ-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/06-スナップ-0.png" alt="四角の角に吸い付いた所（端点）" loading="lazy"></a><figcaption>四角の角に吸い付いた所（端点）</figcaption></figure>
+<figure><a href="../e/06-スナップ-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/06-スナップ-0.png" alt="Snapped to a corner of the rectangle (endpoint)" loading="lazy"></a><figcaption>Snapped to a corner of the rectangle (endpoint)</figcaption></figure>
 <p>The cursor sticks exactly to the important points of an object.</p>
-<p>吸い付く点＝端点・中点・円と弧の中心・点・交点・かたちの中心・文字（挿入基点・枠の四隅・中央）・<b>原点</b>。</p>
+<p>Points it snaps to = endpoint, midpoint, centre of circles and arcs, point, intersection, centre of a shape, text (insertion point, four corners of the frame, centre), and the <b>origin</b>.</p>
 <ul>
-<li><b>原点</b>＝図面の (0,0) そのもの（淡い水色の□に十字）。図形が一つも無くても名乗ります——画面の X→／Y↑ の標が立っている、まさにあの場所です。別の図面と座標を揃えたいとき、3Dの器で共通の基点を取るときに、クリックひとつで掴めます。※原点に図形の角があるときは「端点」が先に名乗ります（本物の点が先）。</li>
-<li><b>かたちの中心</b>＝閉じた形の真ん中（藤色の□に点）。四角・ポリゴン（正多角形）・閉じたポリラインで名乗ります。例：六角ボルトの芯にネジ穴を描く——中心に吸い付けます。※空中の点なので、本物の点（端点など）が近くにあるとそちらが先に名乗ります。Tab で送れば手が届きます。</li>
-<li><b>対角の交点</b>＝四角形の対角線が交わる点（水色の□に×）。※かたちの中心（重心）とは<b>別の点</b>です。長方形なら同じ所に来ますが、台形や不等辺の四角では、はっきり違う所に来ます。現場で「対角を引いて、交わった所」を取る、あの一手です。三角には対角線がないので出ません（三角は<b>かたちの中心</b>が重心を名乗ります）。五角以上は対角線が何本もあり、どれか一つに決められないので出ません。</li>
+<li><b>Origin</b> = (0,0) of the drawing itself (a pale blue □ with a cross). It answers even when there is not a single object — exactly where the X→ / Y↑ marker stands on the screen. Use it to line up coordinates with another drawing, or to take the common base point in the 3D vessel, with one click. * When an object's corner sits on the origin, "endpoint" answers first (real points come first).</li>
+<li><b>Centre of a shape</b> = the middle of a closed shape (a wisteria-coloured □ with a dot). It answers for rectangles, polygons (regular) and closed polylines. Example: drawing a threaded hole at the core of a hex bolt — you can snap to the centre. * It is a point in the air, so when a real point (an endpoint, say) is nearby, that one answers first. Tab cycles to reach it.</li>
+<li><b>Diagonal intersection</b> = the point where the diagonals of a quadrilateral cross (a light-blue □ with ×). * It is a <b>different point</b> from the centre of the shape (centroid). In a rectangle they fall on the same place, but in a trapezoid or an irregular quadrilateral they are clearly apart. It is that move from the site: "draw the diagonals and take where they cross". Triangles have no diagonals, so it does not appear (for a triangle, the <b>centre of a shape</b> gives the centroid). With five or more corners there are many diagonals and no single one can be chosen, so it does not appear.</li>
 <li>Besides its two ends, a spline also snaps to <b>the fit points you clicked yourself</b> (the very points you made when you drew the curve). It does not snap to the control points: those are weights floating off the curve, so catching them would mean nothing.</li>
 </ul>
 <p>Where candidates overlap, Tab switches between them.</p>
@@ -77,7 +77,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <p>Each press of the constraint toggle on the bottom bar moves to the next one.</p>
 <ul>
 <li>Free = no constraint. Draw as you please.</li>
-<li>Ortho = right angles only. Horizontal and vertical. F8 switches it too. Hold Shift and it is reversed for as long as you hold.</li>
+<li>Ortho = 90 degrees only. Horizontal and vertical only. F8 also toggles it. While you hold Shift it is temporarily reversed. Typing ORTHO in the command box also toggles it.</li>
 <li>Polar tracking = a guide line every so many degrees. Right-click the toggle = change the step (45, say). You can also type POLAR 30 in the Command Line.</li>
 </ul>
 </section>
@@ -95,7 +95,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </section>
 <section id="二点間中点"><h2>Midpoint between two points (M2P)</h2>
 <p>An interruption that takes the middle of two points you indicate and hands it to the tool you are using.</p>
-<p>道具が点を聞いている最中（基点・挿入点・1点目…）にタブ「描く」の［2点間中点］を押すか、小窓で M2P（MTP・真ん中 でも可）と打ち、二点を指すと、その真ん中がそのまま道具に渡ります。</p>
+<p>While a tool is asking for a point (base point, insertion point, first point…) press [Mid Between 2 Points] on the Draw tab, or type M2P in the command box (MTP or 真ん中 also work), and pick two points: their middle is handed straight to the tool.</p>
 <p>For example, text in the middle of a box in the title block: catch the text by the centre of its shape and move it → M2P → the two opposite corners of the box → it lands in the middle.</p>
 <p>Snapping works on each of the two points, so you can use intersections and endpoints exactly.</p>
 <p>To stop: right-click or Esc (the tool itself carries on).</p>
@@ -106,7 +106,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <li>The 距離DYN toggle = turns the distance field beside the cursor on and off.</li>
 </ul>
 <p>Turning them off loses you nothing. Choose whichever suits you.</p>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

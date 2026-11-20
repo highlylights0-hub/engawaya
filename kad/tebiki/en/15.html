@@ -60,182 +60,199 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../15.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="14.html">← Printing (putting it on paper)</a><a href="16.html">If you get stuck →</a></nav><h1>15. Solids (3D and STL)</h1><div class="toc"><a href="#立体表示">3D view</a><a href="#リボン［押し出し］">リボン［押し出し］＝2D の図面から、押し出して 3D へ</a><a href="#押し出し">EXT / 押し出し＝形ごとに厚みを決める</a><a href="#平らにする">FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</a><a href="#組み立てる">組み立てる＝平面図を土台に、立面図を模型のように置く</a><a href="#積む">積む＝開いている図面を高さに積んで、立体で見る</a><a href="#立体は、3Dの一枚">立体は、3D の一枚（[3D]）で作ります</a><a href="#高さ">高さ＝平面図から、壁と柱を一括で立ち上げる</a><a href="#3Dで起こす">3Dで起こす＝囲まれた所を押して、マウスの上下か数字で高さを決める</a><a href="#ろくろ">ろくろ＝断面を軸で回して、お椀・皿・花瓶・脚などの形にする</a><a href="#屋根">屋根＝建物の上に、切妻・寄棟・方形・片流れの屋根を載せる</a><a href="#ワイヤーソー">ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</a><a href="#立体書出">STL: exporting a solid (for a 3D printer)</a><a href="#よそのSTLを見る">Looking at somebody else's STL</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="立体表示"><h2>3D view</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../15.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="14.html">← Printing (putting it on paper)</a><a href="16.html">If you get stuck →</a></nav><h1>15. Solids (3D and STL)</h1><div class="toc"><a href="#立体表示">3D view</a><a href="#リボン［押し出し］">Ribbon [Extrude] = from a 2D drawing, extrude into 3D</a><a href="#押し出し">EXT / Extrude = decide the thickness per shape</a><a href="#平らにする">FLATTEN = set Z, elevation and thickness to 0</a><a href="#組み立てる">Assemble = with the plan as the base, place elevations like a model</a><a href="#積む">Stack = stack the open drawings by height and see them as a solid</a><a href="#立体は、3Dの一枚">Solids are made on a 3D sheet ([3D])</a><a href="#高さ">Height = raise walls and columns from a plan all at once</a><a href="#3Dで起こす">Raise in 3D = press an enclosed area and set the height with the mouse up/down or a number</a><a href="#ろくろ">Lathe = revolve a section around an axis into the shape of a bowl, plate, vase, leg and so on</a><a href="#屋根">Roof = put a gable, hip, pyramid or shed roof on a building</a><a href="#スライス">Slice = cut a solid apart with a thread (SL)</a><a href="#ワイヤーソー">Wire saw = set a wire saw on a solid (WS)</a><a href="#立体書出">STL: exporting a solid (for a 3D printer)</a><a href="#よそのSTLを見る">Looking at somebody else's STL</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="立体表示"><h2>3D view</h2>
+<figure><a href="../e/15-立体表示-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/15-立体表示-0.png" alt="Press [3D] on the 3D tab and it first asks how to enter" loading="lazy"></a><figcaption>Press [3D] on the 3D tab and it first asks how to enter</figcaption></figure>
 <p>Type 3D → Enter = the drawing is given a height and shown as a solid.</p>
 <ul>
 <li>Drag with the left button, or the arrow keys = rotate.</li>
+<figure><a href="../e/15-立体表示-1.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/15-立体表示-1.png" alt="The 3D room (with one box placed)" loading="lazy"></a><figcaption>The 3D room (with one box placed)</figcaption></figure>
 <li>1–5 = top, front, right, left, back. 0 = isometric.</li>
 <li>PageUp / PageDown = raise or lower the extrusion height.</li>
 <li>Esc = back to the drawing (which is untouched).</li>
-<li>部屋の中でもリボンは押せます。線分・円など 2D の道具を押すと、そのまま図面へ戻って始まります（「◀ 図面へ戻る」を押さなくてよい）。保存・別名・立体・書出・一覧・教本・ヘルプは、部屋に居たまま効きます。戻す・起こすは、図面から建てた部屋でだけ効きます（STL や焼いた立体の部屋には戻す歴史も起こす下敷きも無いので、押すと図面へ戻ります）。</li>
-<li>部屋の中で ⌘S（Windows は Ctrl+S）＝保存。⌘⇧S＝別名。⌘Z＝一つ戻す。保存しても部屋に居たまま、見ている向きも動きません。（積むの台から入った部屋では、リボンと保存は止まります＝台へ戻ってから）</li>
+<li>The ribbon can be pressed inside the room too. Press a 2D tool such as Line or Circle and it goes straight back to the drawing and starts (no need to press "◀ Back to the drawing"). Save, Save As, 3D, Export, Command list, Manual and Help work while you stay in the room. Undo and Raise work only in a room built from a drawing (a room of an STL or of baked solids has neither an undo history nor an underlay to raise from, so pressing them goes back to the drawing).</li>
+<li>In the room, ⌘S (Ctrl+S on Windows) = save. ⌘⇧S = save as. ⌘Z = undo one step. After saving you stay in the room and the view direction does not move. (In a room entered from the Stack stage, the ribbon and saving are stopped = go back to the stage first.)</li>
 </ul>
 </section>
-<section id="リボン［押し出し］"><h2>リボン［押し出し］＝2D の図面から、押し出して 3D へ</h2>
-<p>2D の図面で、タブ「立体」の［押し出し］を押します。</p>
+<section id="リボン［押し出し］"><h2>Ribbon [Extrude] = from a 2D drawing, extrude into 3D</h2>
+<p>In a 2D drawing, press [Extrude] on the 3D tab.</p>
 <ul>
-<li>初めての図面では「立体は 3D の一枚で作ります」と聞かれます。答えると、その図面を下敷きにした 3D の部屋へ、［起こす］を持ったまま入ります（元の 2D の図面には何も書きません）。</li>
-<li>囲まれた所（四角・閉じたポリライン・円など）をクリック→マウスの上下か数字で高さ→クリックで立体になります。</li>
-<li>［立体］との違い＝［立体］は手ぶらで部屋に入り、［押し出し］は押し出す道具を持って入ります。</li>
-<li>何も描いていない図面では押し出せません（先に形を描いてから）。</li>
+<li>In a drawing for the first time, you are asked "Solids are made on a 3D sheet". Answer, and you enter the 3D room with that drawing as the underlay, holding [Raise] (nothing is written to the original 2D drawing).</li>
+<li>Click an enclosed area (rectangle, closed polyline, circle…) → set the height with the mouse up/down or a number → click and it becomes a solid.</li>
+<li>The difference from [3D] = [3D] enters the room empty-handed; [Extrude] enters holding the extrude tool.</li>
+<li>A drawing with nothing drawn cannot be extruded (draw a shape first).</li>
 </ul>
 </section>
-<section id="押し出し"><h2>EXT / 押し出し＝形ごとに厚みを決める</h2>
-<p>図形を選んで、小窓に EXT 1200 →Enter。</p>
+<section id="押し出し"><h2>EXT / Extrude = decide the thickness per shape</h2>
+<p>Select objects and type EXT 1200 → Enter in the command box.</p>
 <ul>
-<li>その形だけが、高さ1200で立ち上がります。</li>
-<li>EXT 0 ＝厚みを外す（部屋の一律の高さに戻ります）。</li>
-<li>効くのは 線・円・弧・ポリライン・楕円・スプライン・ハッチ。</li>
-<li>プロパティ（PR）の【厚み】の行でも打ち替えられます。厚みは平面図に現れないので、確かめる場所はここと立体の部屋です。</li>
-<li>厚みは図面（DXF）に保存されます。よそのCADでも立体として開けます（規格の 39＝2.5D）。</li>
+<li>Only those shapes rise, to a height of 1200.</li>
+<li>EXT 0 = remove the thickness (back to the room's uniform height).</li>
+<li>It works on lines, circles, arcs, polylines, ellipses, splines and hatches.</li>
+<li>It can also be retyped in the [Thickness] row of Properties (PR). Thickness does not show in plan, so the places to check it are here and the 3D room.</li>
+<li>Thickness is saved in the drawing (DXF). Other CADs can open it as solids too (code 39 of the standard = 2.5D).</li>
 </ul>
-<p>例：壁2400・床の板12・柱3000 を一枚の図面に混ぜて、まとめて立ち上げる。厚みを持たない形だけが、PageUp / PageDown の一律の高さで動きます。</p>
+<p>Example: mix walls 2400, floor boards 12 and columns 3000 in one drawing and raise them together. Only shapes without a thickness move with the uniform height of PageUp / PageDown.</p>
 </section>
-<section id="平らにする"><h2>FLATTEN / 平らにする＝Z・高さ・厚みを 0 に</h2>
-<p>タブ「直す」の［平らに］（小窓なら FLATTEN）。</p>
-<p>よそのCADから来た図面で、交点が取れない・線が浮いている時に。</p>
+<section id="平らにする"><h2>FLATTEN = set Z, elevation and thickness to 0</h2>
+<p>[Flatten] on the Modify tab (FLATTEN in the command box).</p>
+<p>For drawings from other CADs when intersections cannot be picked or lines are floating.</p>
 <ul>
-<li>選んでいれば、その形だけ。何も選んでいなければ「図面ぜんぶを、平らにしますか？」と、数を言ってから聞きます。</li>
-<li>0 にするもの＝線・円・文字・点・配置の Z／ポリラインの高さ／厚み。</li>
-<li>真下を向いた円・円弧・ポリライン・配置（鏡写しの跡）は、上から見た形はそのままで、上向きに直します。</li>
-<li>触らないもの＝斜めを向いた形（平らにすると形が変わるため）・立体（見せずに預かっているもの）・ブロックの定義・部材の名札。</li>
-<li>ファイルは保存するまで変わりません。U ひと押しで戻せます。</li>
-<li>3D の一枚（[3D]）では使いません（立体が壊れるだけのため）。</li>
+<li>With a selection, only those shapes. With nothing selected it asks "Flatten the whole drawing?" after stating the count.</li>
+<li>Set to 0 = the Z of lines, circles, text, points and inserts / the elevation of polylines / thickness.</li>
+<li>Circles, arcs, polylines and inserts facing straight down (traces of mirroring) keep their shape as seen from above and are turned to face up.</li>
+<li>Not touched = shapes facing obliquely (flattening would change their shape), solids (things kept without being shown), block definitions, member tags.</li>
+<li>The file does not change until you save. One U takes it back.</li>
+<li>Not used on a 3D sheet ([3D]) (it would only break the solids).</li>
 </ul>
 </section>
-<section id="組み立てる"><h2>組み立てる＝平面図を土台に、立面図を模型のように置く</h2>
-<p>平面図と各方位の立面図から、家の形を組むときの道です。</p>
-<p>何の図かは道具が推し量りません＝どこに・どう置くかは、指で決めます。</p>
+<section id="組み立てる"><h2>Assemble = with the plan as the base, place elevations like a model</h2>
+<p>The way to put together the shape of a house from the plan and the elevations of each side.</p>
+<p>The tool does not guess which drawing is what = you decide where and how to place it with your finger.</p>
 <ul>
-<li>入口は二つ（どちらも同じ［組み立てる］の絵です）。2D の図面で、タブ「立体」→ 絵札［組み立てる］＝その図面のどこを持つかを、2D のまま指せます（下の①②）。3D の部屋のリボンの［組み立てる］＝DXF を選んで一枚足す（紙の左下を持って部屋へ入ります＝③から）。</li>
-<li>① 持つ点＝図面の端点・中点・交点などを指します（Enter＝紙の左下）。</li>
-<li>② 指のそばに「ここから、相対座標でずらしますか？」［このまま］か Enter で進みます。@0,-400 のように打つと、持つ点がその分ずれ、丸い印が動いて見えます。</li>
-<li>部屋の左上の絵札で、［立てる］（立面図・詳細図）か［寝かせる］（2 階の平面図など）を選びます。</li>
-<li>③ 置く点＝敷いた平面図の角や、立てた紙の角を指します（Enter＝原点）。立てた紙のてっぺんの角に吸い付けば、そこが 2 階の床の高さ（FL）です。</li>
-<li>④ もう一度「ここから、相対座標でずらしますか？」数が二つなら床の上だけ（@500,0）、三つなら高さも（@0,0,3000）。寝かせる紙は、ここで置かれます。</li>
-<li>⑤ 立てる紙は、マウスを動かした向きに立ちます（東西南北に吸い付きます）。クリックか Enter で立てます。札が「南立面（外から見た向き）」のように名乗ります。</li>
-<li>Esc・右クリック・U＝一段ずつ戻ります（⑤→④→③→紙を手放す）。</li>
-<li>置いた紙は、右の「置いた図面」の板に並びます（「寝かせた（平面）FL 0」「立てた（南立面）」のように）。U で外せます（REDO で戻ります）。元の図面には一文字も書きません。</li>
-<li>四角い家なら、板の［箱に組む］が一押しの近道です。</li>
+<li>There are two entrances (both show the same [Assemble] picture). In a 2D drawing, the 3D tab → picture card [Assemble] = you can point, still in 2D, at where to hold that drawing (① ② below). [Assemble] on the ribbon of the 3D room = choose a DXF and add one sheet (you enter the room holding the lower-left of the sheet = from ③).</li>
+<li>① Holding point = point at an endpoint, midpoint, intersection and so on of the drawing (Enter = lower-left of the sheet).</li>
+<li>② Beside the pointer: "Offset from here by relative coordinates?" Continue with [As is] or Enter. Type something like @0,-400 and the holding point shifts by that much; the round mark is seen to move.</li>
+<li>With the picture cards at the top left of the room, choose [Stand] (elevations, details) or [Lay] (a second-floor plan and the like).</li>
+<li>③ Placing point = point at a corner of the laid plan or of a standing sheet (Enter = origin). Snap to the top corner of a standing sheet and that is the second-floor level (FL).</li>
+<li>④ Once more: "Offset from here by relative coordinates?" Two numbers = on the floor only (@500,0); three = height too (@0,0,3000). A sheet to be laid is placed here.</li>
+<li>⑤ A standing sheet stands in the direction you move the mouse (it snaps to north, south, east, west). Click or Enter to stand it. The card states, for example, "South elevation (seen from outside)".</li>
+<li>Esc, right-click, U = back one step at a time (⑤ → ④ → ③ → let go of the sheet).</li>
+<li>Placed sheets line up on the "Placed drawings" board on the right (as "Laid (plan) FL 0", "Standing (south elevation)"). U removes one (REDO brings it back). Not a character is written to the original drawing.</li>
+<li>For a rectangular house, [Assemble into a box] on the board is a one-press shortcut.</li>
 </ul>
 </section>
-<section id="積む"><h2>積む＝開いている図面を高さに積んで、立体で見る</h2>
-<p>小窓に 積む（または STACK）→Enter で開きます。</p>
-<p>（リボンの札は置いていません＝平面図と立面図から形を組むのは、上の［組み立てる］が本筋です。2 階の平面図も［寝かせる］で積めます）</p>
+<section id="積む"><h2>Stack = stack the open drawings by height and see them as a solid</h2>
+<p>Type 積む (or STACK) → Enter in the command box to open it.</p>
+<p>(There is no ribbon button = putting a shape together from plans and elevations is the job of [Assemble] above. A second-floor plan can also be stacked with [Lay].)</p>
 <ul>
-<li>開いている図面（タブ）が、回せる塔に並びます。箱＝平面図（FL から上端まで）。板＝立面図（南・東・北・西）。</li>
-<li>右上の「ファイルマネージャー」を押すと、開いている図面の一覧（名前・図形の数・置き方・どこから開いたか）になります。行を押して選びます（↑↓でも）。「塔で見る」で塔に戻ります。</li>
-<li>箱（または一覧の行）を押して選び、下の帯で FL（その図面が置かれる高さ）を打ちます。上端は空でも構いません（自分の高さから見当をつけます）。</li>
-<li>立面図なら、帯の「南・東・北・西」で向きを選びます。立面は線だけで立ちます（厚みは付けません）。</li>
-<li>「立体で見る」＝全部の図面を、その置き方で重ねて立体にします。1階の平面図を FL 0、2階を FL 3000 に置けば、二階建てが立ちます。</li>
-<li>【上端】を決めた図面は、帯の「高さ ○○」を押すと、その場で立ち上がります（与える高さ＝上端 − FL）。台を出て、上のタブで図面を切り替えて…という往復が要りません。例：天端を 5960 で揃え、梁のレベル 5460 を FL にすると、5960 − 5460 ＝ 500 が、そのまま梁せいになります。上端がまだ空の図面と、立面図では、この札は薄いままです（見当の数字で、勝手に立ち上げないため）。U ひと押しで戻せます（その図面のタブで）。</li>
-<li>床・壁に蓋は、いままでどおり図面を見ながら（リボンの「高さ」）。</li>
-<li>置き方は図面（DXF）に一緒に保存されます。（何も打っていない図面は、今までどおり何も書きません）</li>
-<li>Esc か「◀ 図面へ戻る」＝台を閉じます。</li>
+<li>The open drawings (tabs) line up in a tower you can turn. Box = plan (from FL to its top). Board = elevation (south, east, north, west).</li>
+<li>Press "File manager" at the top right for a list of the open drawings (name, object count, placement, where it was opened from). Press a row to select it (↑↓ too). "View as tower" returns to the tower.</li>
+<li>Press a box (or a row in the list) to select it, and type the FL (the height at which that drawing sits) on the bar below. The top may be left empty (it is estimated from the drawing's own height).</li>
+<li>For an elevation, choose the direction with "S / E / N / W" on the bar. Elevations stand as lines only (no thickness is given).</li>
+<li>"View as solid" = all the drawings are overlaid in that placement and made solid. Put the first-floor plan at FL 0 and the second at FL 3000 and a two-storey building stands.</li>
+<li>For a drawing whose [Top] is decided, press "Height ○○" on the bar and it rises on the spot (height given = top − FL). No going back and forth — leaving the stage, switching drawings with the tabs above… Example: align the tops at 5960 and make the beam level 5460 the FL, and 5960 − 5460 = 500 becomes the beam depth as it is. For drawings whose top is still empty, and for elevations, this chip stays dimmed (so that nothing rises on an estimated number). One U takes it back (on that drawing's tab).</li>
+<li>Floors and wall caps are done, as before, while looking at the drawing ("Height" on the ribbon).</li>
+<li>The placement is saved together in the drawing (DXF). (A drawing where nothing was typed gets nothing written, as before.)</li>
+<li>Esc or "◀ Back to the drawing" = closes the stage.</li>
 </ul>
 </section>
-<section id="立体は、3Dの一枚"><h2>立体は、3D の一枚（[3D]）で作ります</h2>
+<section id="立体は、3Dの一枚"><h2>Solids are made on a 3D sheet ([3D])</h2>
 <ul>
-<li>厚み・下端・部材の名札を書く道具（高さ・部材にする・壁に蓋・部材の板・EXT・プロパティの高さ／下端）は、[3D] の一枚の中でだけ効きます。2D の図面（設計図）には、一文字も書きません。</li>
-<li>2D の図面のタブでそれらを押すと、一押しの問いが出ます＝「3D の一枚を立ち上げる」を押すと、[3D]○○.dxf の一枚が生まれ（無ければ）、その図面が平面・FL 0 のテンプレート（参照）として置かれ、［起こす］を持ったまま 3D の部屋へ入ります。まだ保存していない図面は、先に保存します。</li>
-<li>立体の保存は [3D] の一枚のタブで ⌘S（元の図面は、そのままです）。</li>
-<li>3D の部屋で、起こした立体の天端を押すと、その面が作業平面になります。もう一度その上の囲まれた所を押すと、その高さの階の図面から囲いを探して起こします。</li>
+<li>The tools that write thickness, base level and member tags (Height, Make member, Wall cap, the Members board, EXT, height / base in Properties) work only inside a [3D] sheet. Not a character is written to the 2D drawing (the design drawing).</li>
+<li>Press them on a 2D drawing's tab and a one-press question appears = press "Start a 3D sheet" and a [3D]○○.dxf sheet is born (if there is none), that drawing is placed as a template (reference) as a plan at FL 0, and you enter the 3D room holding [Raise]. A drawing not yet saved is saved first.</li>
+<li>Save the solids with ⌘S on the [3D] sheet's tab (the original drawing stays as it is).</li>
+<li>In the 3D room, press the top of a raised solid and that face becomes the work plane. Press an enclosed area on it once more and it looks for the enclosure in the drawing of the floor at that height and raises it.</li>
 </ul>
 </section>
-<section id="高さ"><h2>高さ＝平面図から、壁と柱を一括で立ち上げる</h2>
-<p>リボン「立体」の「高さ」を押すと、下に帯が出ます（[3D] の一枚のタブで）。（3D の部屋の［起こす］＝押した所を引いて立体にする道具とは、別のものです）</p>
+<section id="高さ"><h2>Height = raise walls and columns from a plan all at once</h2>
+<p>Press "Height" on the 3D ribbon and a bar appears below (on a [3D] sheet's tab). (It is a different thing from [Raise] in the 3D room = the tool that pulls up the place you press into a solid.)</p>
 <ul>
-<li>【高さ】に 2400 のように打ち、「図面ぜんぶ」を押します。</li>
-<li>実線で描いた壁と柱（線・ポリライン・円・弧・ハッチ）にまとめて高さが付き、そのまま立体で見えます。</li>
-<li>通り芯などの補助線（一点鎖線・破線）と、符号の丸（中に字がある円）は見送ります＝画層名は見ません。</li>
-<li>立体では、見送ったものは床に平らに寝ています。右上の「補助線：表示／非表示」で、見せる・消すを選べます。</li>
-<li>起こした壁と柱は、陰影つきの面で見えます（手前の壁が奥を隠します）。柱や一体化した壁の輪郭のように、ぐるりと閉じた形には天端も付きます。二本線で描いた壁は、そのままでは二枚の衝立に見えます（上が開いたまま）＝次の「壁に蓋」。</li>
-<li>「壁に蓋」＝二本線の壁の帯（二本の実線が 100〜600 の間隔で並び、両端が柱や別の壁で閉じている所）を認識して、閉じたポリライン＋【高さ】の厚みにします。厚みのある壁として立ち、天端が乗ります。認識した壁厚（150＝4・200＝3 のように）を履歴で名乗ります。柱や一体化した壁は作り直しません。U ひと押しで戻せます。</li>
-<li>一部だけなら、選んでから「選んだもの」。</li>
-<li>「部材にする」＝一つずつ立ち上げる道（自動で判定しません）。帯の【部材 ▶】を押して 柱・壁・梁・床・その他 を選び、欄を打ってから押します。欄の顔は部材で変わります＝柱・壁は【下端】【高さ】、梁は【天端】【せい】（下端＝天端−せい は道具が計算）、床は【床厚】。閉じた形を選んでから押すと、その形がそのまま部材に。何も選んでいなければ、形の内側を一回クリック（ハッチと同じ作法）＝その輪郭が閉じたポリライン＋下端＋高さ＋名札になります。通り芯や符号は壁に数えません。中の島（柱）は輪郭に入れません。U ひと押しで戻せます。名札・下端・高さは、プロパティの板（PR）でも一つずつ直せます。小窓で「部材 梁」と打つと、帯を開いて部材を梁にします。</li>
-<li>「部材の板」＝この図面の部材の一覧（リボンの「部材の板」／小窓 MEMBERS）。柱・壁・梁・床…が何個あるか、どれがまだ名札なしかが一目で分かります。行を押すと図面でその形が光り、図面で選ぶと行が光ります。選んだものは板の中で【部材 ▶】（押すたび次へ）、【下端】【高さ】をその場で打ち替え、「解除」で名札・下端・高さを一つずつ外せます（「高さを外す」は図面ぜんぶ）。「立体で見る」で、そのまま部材だけが起きた姿を確かめられます。</li>
-<li>「高さを外す」＝ぜんぶ平面図へ戻します（U でも戻ります）。</li>
-<li>小窓で、何も選ばずに EXT 2400 と打っても同じです。</li>
-<li>部品配置（ブロック）は、帯の「ブロックにも高さ」で立ちます（定義に高さを与えます＝その定義を使う配置ぜんぶが立ちます＝同じ部材は同じ形）。一回きりの部材なら、X で分解してからでも。</li>
+<li>Type something like 2400 in [Height] and press "Whole drawing".</li>
+<li>Walls and columns drawn with continuous lines (lines, polylines, circles, arcs, hatches) all get the height and are shown as solids right away.</li>
+<li>Auxiliary lines such as grid lines (chain lines, dashed lines) and bubble circles (circles with text inside) are skipped = layer names are not looked at.</li>
+<li>In the solid view, the skipped items lie flat on the floor. "Auxiliary lines: show / hide" at the top right chooses whether to show them.</li>
+<li>Raised walls and columns are seen as shaded faces (the near wall hides what is behind). Shapes closed all the way round, such as the outlines of columns and merged walls, get a top as well. Walls drawn as two lines look like two screens as they are (open at the top) = see "Wall cap" next.</li>
+<li>"Wall cap" = recognises two-line wall bands (two continuous lines 100–600 apart whose ends are closed by columns or other walls) and makes them closed polylines with the [Height] as thickness. They stand as walls with thickness, with a top on them. The recognised wall thicknesses are stated in the history (as in 150 = 4, 200 = 3). Columns and merged walls are not remade. One U takes it back.</li>
+<li>For only a part, select first and press "Selected".</li>
+<li>"Make member" = the way to raise one at a time (nothing is judged automatically). Press [Member ▶] on the bar to choose column, wall, beam, floor or other, type the fields, then press. The fields change with the member = column and wall have [Base] and [Height]; beam has [Top] and [Depth] (base = top − depth is calculated by the tool); floor has [Slab thickness]. Select a closed shape and press, and that shape becomes the member. With nothing selected, click once inside a shape (the same manner as hatch) = that outline becomes a closed polyline + base + height + tag. Grid lines and bubbles are not counted as walls. Islands inside (columns) are not included in the outline. One U takes it back. Tag, base and height can also be fixed one by one on the Properties board (PR). Typing "部材 梁" in the command box opens the bar and sets the member to beam.</li>
+<li>"Members board" = the list of members in this drawing ("Members board" on the ribbon / MEMBERS in the command box). You see at a glance how many columns, walls, beams, floors… there are and which still have no tag. Press a row and that shape lights up in the drawing; select in the drawing and the row lights up. For the selected ones, on the board you can use [Member ▶] (next on each press), retype [Base] and [Height] on the spot, and remove tag, base and height one by one with "Release" ("Remove height" is for the whole drawing). "View as solid" lets you check how it looks with only the members raised.</li>
+<li>"Remove height" = returns everything to a plan (U also takes it back).</li>
+<li>Typing EXT 2400 in the command box with nothing selected does the same.</li>
+<li>Block inserts stand with "Height for blocks too" on the bar (the height is given to the definition = every insert using that definition stands = the same member has the same shape). For a one-off member, you can also explode it with X first.</li>
 </ul>
 </section>
-<section id="3Dで起こす"><h2>3Dで起こす＝囲まれた所を押して、マウスの上下か数字で高さを決める</h2>
-<p>3D の部屋で、リボンの［起こす］（上向きの矢印の絵）を持ちます。</p>
-<p>（道具を選ぶのはリボン＝下の帯は、いま持っている道具の欄と案内を出します）</p>
+<section id="3Dで起こす"><h2>Raise in 3D = press an enclosed area and set the height with the mouse up/down or a number</h2>
+<p>In the 3D room, pick up [Raise] on the ribbon (the picture of an upward arrow).</p>
+<p>(Tools are chosen on the ribbon = the bar below shows the fields and guidance of the tool you are holding.)</p>
 <ul>
-<li>図面が床に寝た姿になります。下敷きの、囲まれた所（柱の四角・壁の帯・部屋の内側など）を一回クリックすると、その形が琥珀に光ります。</li>
-<li>そのままマウスを上下すると、琥珀の立体が伸び縮みします。指のそばに「高さ 2400」と、部材・下端〜天端・刻みが出ます。</li>
-<li>もう一度クリックすると、その高さで立体が生まれます（閉じたポリライン＋下端＋高さ＋名札＝2D の「部材にする」と同じ形）。</li>
-<li>刻み＝画面の細かさに合わせたキリのいい数（寄れば細かく）。出ている数字が、そのまま高さになります。</li>
-<li>数字でも打てます＝引いている最中に 2400 と打つと、指のそばの札が「高さ 2400」に替わり、Enter でその高さの立体が生まれます。打ち始めたら、打った数が勝ちます（マウスを動かしても変わりません）。2400+150 のような式も効きます。BackSpace で全部消すと、マウスへ戻ります。（引いている最中の数字は高さの字です＝視点の 1〜5・0 は効きません）</li>
-<li>中に囲いがある所（壁の帯など）は、穴のまま起きます。</li>
-<li>部材の名札は、2D の「高さ」の帯でいま選んでいるもの（柱など）。</li>
-<li>起こしたら、道具は棚へ戻ります（選ぶ＝待機）。続けるなら、もう一度［起こす］。3D の道具はみな同じです（使い終えたら棚へ・置けなかった時だけ持ったまま）。※複製だけは続けて置けます（2D の複製と同じ）。終わりは Esc か右クリック。</li>
-<li>Esc か右クリック＝一段ずつ戻ります（引くのをやめる→道具を手放す）。U＝一つ戻す（起こした立体を消せます）。リボンの［戻す］・⌘Z も同じです。</li>
-<li>真上から見ていると、マウスでは高さを引けません。右ドラッグで少し傾けてください（数字を打って Enter なら、真上のままでも起こせます）。</li>
-<li>カーソルは、押すと決まる面の上に寝た十字です（X・Y・Z の字は、原点に立つ矢印の標と同じ色）。色・大きさ・太さは 2D の十字の設定のまま。</li>
+<li>The drawing is shown lying on the floor. Click once on an enclosed area of the underlay (the square of a column, a wall band, the inside of a room…) and that shape lights up in amber.</li>
+<li>Move the mouse up and down and the amber solid stretches and shrinks. Beside the pointer you see "Height 2400" with the member, base–top and the step.</li>
+<li>Click once more and the solid is born at that height (closed polyline + base + height + tag = the same form as "Make member" in 2D).</li>
+<li>Step = a round number matched to how fine the screen is (finer as you zoom in). The number shown becomes the height as it is.</li>
+<li>You can also type a number = type 2400 while pulling and the card beside the pointer changes to "Height 2400"; Enter gives birth to a solid of that height. Once you start typing, the typed number wins (moving the mouse does not change it). Formulas such as 2400+150 work too. Erase everything with BackSpace and it returns to the mouse. (Digits typed while pulling are the height = the view keys 1–5 and 0 do not act.)</li>
+<li>An area with an enclosure inside (a wall band, for example) is raised with the hole kept.</li>
+<li>The member tag is whatever is selected on the "Height" bar in 2D (column and so on).</li>
+<li>After raising, the tool goes back to the shelf (select = standby). To continue, pick up [Raise] again. All 3D tools are the same (back to the shelf when used; kept in hand only when nothing could be placed). * Only Copy can keep placing (the same as Copy in 2D). End with Esc or right-click.</li>
+<li>Esc or right-click = back one step at a time (stop pulling → let go of the tool). U = undo one (it can erase the raised solid). [Undo] on the ribbon and ⌘Z are the same.</li>
+<li>Looking straight down, you cannot pull the height with the mouse. Tilt a little with a right-drag (typing a number and Enter raises it even from straight above).</li>
+<li>The cursor is a cross lying on the face that a press would choose (the letters X, Y, Z have the same colours as the arrow marker standing at the origin). Colour, size and thickness follow the 2D crosshair settings.</li>
 </ul>
 </section>
-<section id="ろくろ"><h2>ろくろ＝断面を軸で回して、お椀・皿・花瓶・脚などの形にする</h2>
-<p>3D の部屋で、リボンの［ろくろ］（軸のまわりを矢が回る絵）を持ちます。</p>
-<p>（小窓に REVOLVE と打っても同じ。2D の図面のタブで打つと、[3D] の一枚を立ち上げる問いが出ます）</p>
+<section id="ろくろ"><h2>Lathe = revolve a section around an axis into the shape of a bowl, plate, vase, leg and so on</h2>
+<p>In the 3D room, pick up [Lathe] on the ribbon (the picture of an arrow going round an axis).</p>
+<p>(Typing REVOLVE in the command box does the same. Typed on a 2D drawing's tab, the question to start a [3D] sheet appears.)</p>
 <ul>
-<li>2D で、回したい形の断面（お椀なら、その片側の断面）を閉じた形で描いておきます。円弧のあるポリラインでも、バラバラの線でも構いません。軸にする線（中心線）も一本引いておきます。</li>
-<li>部屋で、断面の内側を一回クリック＝断面が琥珀に光ります。</li>
-<li>次に、軸にする線をクリック＝回った形が薄い琥珀で見えます。立体は、断面のいちばん下が z=0・軸の線の上に立ちます（軸をどこから引いても同じです）。</li>
-<li>分割（回転の細かさ）は帯の札［粗い 12］［ふつう 36］［なめらか 72］か、数字を打って Enter。細かいほど滑らかで、三角形が増えます（枚数は帯が言います）。</li>
-<li>クリックか Enter で置きます。図面に住むのは断面のポリラインと軸の線だけ（荷札で結んでいます）＝断面を直せば形も変わります。回した形はリボンの［書出］でそのまま焼けます。</li>
-<li>断面が軸をまたいでいると回せません（断面は軸の片側に置いてください）。</li>
-<li>Esc か右クリック＝一段ずつ戻ります（軸を選び直す→断面を選び直す→道具を手放す）。U も同じです。</li>
+<li>In 2D, draw the section of the shape to revolve (for a bowl, the section of one side) as a closed shape. A polyline with arcs or separate lines are both fine. Also draw one line to be the axis (the centre line).</li>
+<li>In the room, click once inside the section = the section lights up in amber.</li>
+<li>Next, click the line to be the axis = the revolved shape appears in pale amber. The solid stands with the lowest point of the section at z = 0, on the axis line (the same wherever the axis is drawn from).</li>
+<li>Segments (fineness of the revolution) are set with the chips [Coarse 12] [Normal 36] [Smooth 72] on the bar, or by typing a number and Enter. Finer is smoother, with more triangles (the bar tells the count).</li>
+<li>Place with a click or Enter. What lives in the drawing is only the section polyline and the axis line (tied with a tag) = fix the section and the shape changes too. The revolved shape can be baked as it is with [Export] on the ribbon.</li>
+<li>If the section straddles the axis it cannot be revolved (put the section on one side of the axis).</li>
+<li>Esc or right-click = back one step at a time (re-pick the axis → re-pick the section → let go of the tool). U is the same.</li>
 </ul>
 </section>
-<section id="屋根"><h2>屋根＝建物の上に、切妻・寄棟・方形・片流れの屋根を載せる</h2>
-<p>3D の部屋（[3D] の一枚＝器の部屋）で、リボン「作成」の［屋根］を持ちます。</p>
-<p>（小窓に ROOF と打っても同じ。2D の図面のタブで打つと、[3D] の一枚を立ち上げる問いが出ます）</p>
+<section id="屋根"><h2>Roof = put a gable, hip, pyramid or shed roof on a building</h2>
+<p>In the 3D room (a [3D] sheet = the vessel room), pick up [Roof] in "Create" on the ribbon.</p>
+<p>(Typing ROOF in the command box does the same. Typed on a 2D drawing's tab, the question to start a [3D] sheet appears.)</p>
 <ul>
-<li>屋根を載せる建物（壁や箱）を一回クリック＝建物の外面が琥珀の太枠で光り、載る屋根が薄い琥珀で見えます。そのまま空いた所をクリックすると屋根が置かれます。建物に指を乗せると、脇に「ここを押す」の札が出ます。</li>
-<li>帯の一段目＝種類の札［切妻｜寄棟｜方形｜片流れ］・［妻の壁 つける｜つけない］・勾配の単位［寸｜度｜％］。寄棟と方形に妻はありません（妻の壁の札は暗くなり、押すと理由を言います）。方形は縦と横が同じ長さの建物向けです（長い建物には寄棟を選びます）。</li>
-<li>帯の二段目＝数字の欄六つ。高さ（軒先）・壁の厚み・屋根の厚み・短辺のせり出し・長辺のせり出し・勾配。高さと壁の厚みは押した建物から読みます（読めた欄に緑の札）。打った数が勝ちます（次に建物を押しても上書きしません）。クリックで欄を選び、打って Enter で確定して次の欄へ。式（300+150）も打てます。</li>
-<li>切妻は、棟に直角な辺が「妻」です。既定は長い辺と平行に棟が走ります。妻を変えたいときは、指を外面の別の辺へ近づけて（辺が赤く光ります）クリック。片流れは、同じ操作で「高い側」の辺を指し直せます。</li>
-<li>置いた屋根は、図面の上では軒先の輪郭のポリラインと荷札だけです。面・棟・妻壁は部屋を建てるたびに焼き直します。元の図面には一文字も書きません。</li>
-<li>Esc か U＝押した建物を外します（もう一度で道具を手放す）。置いた屋根は［戻す］か U で消せます。</li>
+<li>Click once on the building (walls or a box) to put the roof on = the outer face of the building lights up with a thick amber frame and the roof that will sit there appears in pale amber. Click on an empty place and the roof is placed. Rest the pointer on a building and a "press here" card appears beside it.</li>
+<li>First row of the bar = the type chips [Gable | Hip | Pyramid | Shed], [Gable wall: with | without], and the pitch unit [sun | degrees | %]. Hip and pyramid have no gable (the gable-wall chips go dark and say why when pressed). Pyramid is for buildings whose length and width are equal (choose hip for a long building).</li>
+<li>Second row of the bar = six number fields. Height (eaves), wall thickness, roof thickness, overhang on the short side, overhang on the long side, pitch. Height and wall thickness are read from the building you pressed (a green tag on the fields that were read). A typed number wins (pressing a building next does not overwrite it). Click to choose a field, type, and Enter confirms and moves to the next. Formulas (300+150) work too.</li>
+<li>For a gable roof, the sides at right angles to the ridge are the "gables". By default the ridge runs parallel to the long side. To change the gable, bring the pointer near another side of the outer face (the side lights up red) and click. For a shed roof, the same move re-points the "high side".</li>
+<li>A placed roof is, in the drawing, only the eaves outline polyline and a tag. Faces, ridge and gable walls are baked again each time the room is built. Not a character is written to the original drawing.</li>
+<li>Esc or U = releases the pressed building (once more lets go of the tool). A placed roof can be removed with [Undo] or U.</li>
 </ul>
 </section>
-<section id="ワイヤーソー"><h2>ワイヤーソー＝立体に、ワイヤーソーを据える（WS）</h2>
-<p>3D の部屋（[3D] の一枚＝器の部屋）で、箱や柱を切る段取りを、機械ごと見る道具です。</p>
-<p>いまできるのは「据える」まで（切る動きは、次の版から）。数字は全部【試算】＝仮置きです。</p>
+<section id="スライス"><h2>Slice = cut a solid apart with a thread (SL)</h2>
+<p>In the 3D room, cut a solid apart as you would cut clay with a thread.</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>切りたい立体を選び、リボン「修正」の［ワイヤーソー］（小窓に WS でも同じ）
+<li><span class="mark">①</span><div>Select the solid to cut, then [Slice] in "Modify" on the ribbon (SL or SLICE in the command box too).
 </div></li>
-<li><span class="mark">②</span><div>立体の面の上で、二点をクリック＝刃（［スライス］と同じ手）・側面に水平な二点＝輪切り　・天端に二点＝縦に割る・斜めの刃は、理由を言って断ります
+<li><span class="mark">②</span><div>Click two points on a face of the solid = the thread (it snaps to 3D snap points).
 </div></li>
-<li><span class="mark">③</span><div>その切断面にワイヤーソーが現れ、セッティングの板が開きます・① 切る所＝切断面の幅 × 奥行き・面積・機械の能力（6 m²）に対する割合・② 機械＝［汎用機］［弓張］（押すと、その場で機械が替わります）・③ 据える側＝切断面の四つの辺（東西南北・上下の名前で並びます）最初は、据えられる辺のうち、いちばん短い辺です。辺が機械の横バー（2,000）より長い時は［端に揃える］［真ん中］［反対の端に揃える］長い辺の真ん中は角が 4 つになり、負荷が 100% を超えると赤で名乗ります（端に揃えると減ります）・据える向き（床に寝かせる・縦・横）は、刃と辺から道具が決めて名乗ります・下の辺（機械が床の側になる）には据えられません。押すと理由を言います
+<li><span class="mark">③</span><div>Click the side to keep (the side shown faint disappears). To keep both, press Enter or right-click.
 </div></li>
 </ol>
 <ul>
-<li>床から 650 より低い輪切りは、機械を裏返して据えます（金物とモーターが上・ワイヤーの面が下）。道具が刃の高さから決めて、板と履歴で名乗ります。裏返した時の現場の決まりも、板が言います：・ベースの四隅のレベルボルトで角度を付ける（尻上げ）ので、刃は若干斜めになります（傾きは、まだ計算していません）・防護カバーを外します → 防弾ネット（ベクトランシートなど）と遠隔の操作が必須です・ベースと補助のアンカーは、切断面より上の、躯体の前面に打ちます床から 70 より低い刃は、裏返しても金物が床に当たるので、理由を言って断ります（70 は【仮】）。</li>
-<li>機械は、レールの根元のベース（アンカー M16・切る線から 250 前後）で躯体に付きます。赤い丸＝そのアンカー。縦バーのある機械（汎用機）は、縦バーの根元を補助のアンカー（M12 か W1/2）で同じ面に止めます。琥珀の丸＝補助。横バー（前面のバー）にアンカーは付けません（プーリーを並べる場所です）。丸に指を乗せると、切断面からの離れが出ます。レールの後ろの突っ張り棒は、絵だけです（無くてもよい物）。締め付けは度々点検します。機材は 170〜200 kg あります。アンカーが完全に効いている事が前提です（躯体が悪い時はケミカルアンカー・厳しければ別の面で）。</li>
-<li>［巻きを増やすプーリー：あり／なし］＝メインプーリーの隣の横バーにガイドを一つ足して、巻きを半周（180°）にします。既定は「あり」です。「なし」にすると巻きが浅くなり、グリップの余裕が落ちます。板に「メインプーリーの巻き ○°」が出ます。余裕が 1 を切ると滑ります：空転が増えて切る速さが落ち、ゴムが焼けて、替えのラバーが無ければ工事が止まります（数字は試算）。横バーが短くてプーリーが入らない幅では、道具が自動で外して、そう名乗ります。</li>
-<li>縦の刃で、切断面の下の辺が床に着いている時は、コアボーリング（φ50）の穴を水色の点線で見せます。</li>
-<li>［刃を決め直す］＝糸を張り直します。［外す］＝ワイヤーソーを外します（立体はそのまま）。</li>
-<li>板は×で閉じても、機械は据えたままです。もう一度開くには、立体を選んで［ワイヤーソー］。</li>
-<li>設定は [3D] の一枚に保存されます（開き直すと、同じ機械が現れます）。U・［戻す］で一手ずつ戻ります。</li>
-<li>立体を動かす・回すと、機械も一緒についてきます。</li>
-<li>切る（数字はどれも試算です）・④ 切る相手＝RC（主筋 D32・200 間隔・かぶり 70 の仮定）か、無筋・⑤ ワイヤーの長さ＝［お任せ］は、行き止まらず、掛け替えが一番少ない長さを道具が選びます（同じなら短い方）。［− 0.5 m］［＋ 0.5 m］で手でも決められます。掛け替えの回数の見込みが、すぐ出ます。・回転の向き＝既定は［逆転（左回り）］＝縦バーの側が引きになる向き（現場の決まり）。［正転（右回り）］は縦バーの側が送りになり、たるむ・外れる・干渉しやすい向きです（板が名乗ります）。・［切る］＝メインプーリーがバックして、切断面の琥珀の面（まだ切れていない所）が縮んでいきます。行き止まりで掛け替えます（履歴が名乗ります）。［止める］［最初から］と、速さ（60・600・1800 倍）。・切り終わると、立体が二つに分かれます（U で、据えた姿ごと戻せます）。・切っている途中の姿は、図面には保存しません（開き直すと、切り始めの姿からです）。</li>
+<li>U, Esc = start again from the first point. After cutting, U takes it back.</li>
+<li>When it cannot cut, it refuses with the reason (the vessel does not change).</li>
+</ul>
+</section>
+<section id="ワイヤーソー"><h2>Wire saw = set a wire saw on a solid (WS)</h2>
+<p>In the 3D room (a [3D] sheet = the vessel room), a tool for seeing the setup for cutting a box or a column, machine and all.</p>
+<p>You can watch from setting the machine to the end of the cut. All numbers are [estimates] = provisional.</p>
+<ol class="steps">
+<li><span class="mark">①</span><div>Select the solid to cut, then [Wire saw] in "Modify" on the ribbon (WS in the command box does the same)
+</div></li>
+<li><span class="mark">②</span><div>Click two points on a face of the solid = the blade (the same move as [Slice]) · two horizontal points on a side face = a horizontal cut · two points on the top = split vertically · an oblique blade is refused with the reason
+</div></li>
+<li><span class="mark">③</span><div>The wire saw appears on that cutting plane and the setting board opens · ① Where to cut = width × depth of the cutting plane, area, and the ratio to the machine's capacity (6 m²) · ② Machine = [General-purpose] [Bow type] (press and the machine changes on the spot) · ③ Side to set on = the four sides of the cutting plane (listed by the names east, west, south, north, top, bottom). At first it is the shortest of the sides it can be set on. When the side is longer than the machine's cross bar (2,000): [Align to end] [Middle] [Align to the other end]. In the middle of a long side there are 4 corners, and when the load exceeds 100% it says so in red (aligning to an end reduces it) · the mounting direction (lying on the floor, vertical, horizontal) is decided from the blade and the side by the tool, which states it · it cannot be set on the bottom side (where the machine would be on the floor side). Press it and it says why
+</div></li>
+</ol>
+<ul>
+<li>A horizontal cut lower than 650 from the floor is made with the machine set upside down (hardware and motor on top, wire plane below). The tool decides this from the blade height and states it on the board and in the history. The board also states the site rules for the inverted setup: · the angle is set with the levelling bolts at the four corners of the base (tail-up), so the blade is slightly inclined (the inclination is not calculated yet) · the guard cover is removed → a ballistic net (Vectran sheet or the like) and remote operation are mandatory · the base and auxiliary anchors go into the front face of the structure, above the cutting plane. A blade lower than 70 from the floor is refused with the reason, because the hardware hits the floor even inverted (70 is [provisional]).</li>
+<li>The machine is fixed to the structure by the base at the foot of the rail (anchor M16, about 250 from the cutting line). Red circle = that anchor. A machine with a vertical bar (general-purpose) fixes the foot of the vertical bar to the same face with an auxiliary anchor (M12 or W1/2). Amber circle = auxiliary. No anchor goes on the cross bar (the front bar) (it is where the pulleys line up). Rest the pointer on a circle to see its distance from the cutting plane. The prop behind the rail is picture only (it can be omitted). Check the tightening frequently. The equipment weighs 170–200 kg. It assumes the anchors hold completely (chemical anchors when the structure is poor; another face if that is too hard).</li>
+<li>[Wrap-increasing pulley: with / without] = adds one guide on the cross bar next to the main pulley to make the wrap half a turn (180°). The default is "with". "Without" makes the wrap shallower and reduces the grip margin. The board shows "Main pulley wrap ○°". When the margin drops below 1 it slips: idling increases and the cutting speed falls, the rubber burns, and without a spare rubber the work stops (the numbers are estimates). At widths where the cross bar is too short for the pulley, the tool removes it automatically and says so.</li>
+<li>With a vertical blade, when the bottom side of the cutting plane sits on the floor, the core-drilling (φ50) hole is shown as a light-blue dotted line.</li>
+<li>[Re-set the blade] = stretch the thread again. [Remove] = removes the wire saw (the solid stays).</li>
+<li>Closing the board with × leaves the machine set. To open it again, select the solid and press [Wire saw].</li>
+<li>The settings are saved in the [3D] sheet (reopen it and the same machine appears). U and [Undo] go back one step at a time.</li>
+<li>Move or rotate the solid and the machine follows with it.</li>
+<li>Cutting (all numbers are estimates) · ④ What is cut = RC (assuming main bars D32 at 200 spacing, cover 70) or plain concrete · ⑤ Wire length = with [Auto], the tool chooses the length that does not dead-end and needs the fewest re-riggings (the shorter one if equal). [− 0.5 m] [+ 0.5 m] set it by hand. The expected number of re-riggings is shown at once. · Direction of rotation = the default is [Reverse (counter-clockwise)] = the direction in which the vertical-bar side pulls (the site rule). [Forward (clockwise)] makes the vertical-bar side the feed side, the direction prone to slack, coming off and interference (the board says so). · [Cut] = the main pulley backs away and the amber area of the cutting plane (what is not yet cut) shrinks. At the dead end it is re-rigged (the history says so). [Stop], [From the start], and speed (60×, 600×, 1800×). · When the cut is finished, the solid separates into two (U takes it back, setup and all). · The state partway through a cut is not saved in the drawing (reopening starts from the beginning of the cut).</li>
 </ul>
 </section>
 <section id="立体書出"><h2>STL: exporting a solid (for a 3D printer)</h2>
 <p>Type STL → Enter.</p>
 <ul>
 <li>Only outlines that close all the way round become solids (rectangles, circles, hatch boundaries and so on).</li>
-<li>厚みは PageUp / PageDown で決めて、姿を見てからリボンの［書出］をもう一度（部屋の中では、その場で保存先を聞きます）。</li>
-<li>EXT で形ごとに厚みを与えてあれば、その厚みで焼かれます（厚みを持たない形だけが、一律の高さになります）。</li>
+<li>Decide the thickness with PageUp / PageDown, look at the result, then press [Export] on the ribbon once more (inside the room it asks where to save on the spot).</li>
+<li>If thickness was given per shape with EXT, it is baked at that thickness (only shapes without a thickness get the uniform height).</li>
 <li>The STL that comes out opens as it is in Bambu Studio, Cura, PrusaSlicer and the rest.</li>
 </ul>
 </section>
 <section id="よそのSTLを見る"><h2>Looking at somebody else's STL</h2>
 <p>Open a .stl with ⌘O and you can turn it and look at it in the 3D room.</p>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">

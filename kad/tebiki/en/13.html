@@ -60,13 +60,13 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
     </div>
   </div>
 </header>
-<main class="tb"><div class="wrap"><div class="lang"><a href="../13.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="12.html">← Blocks and the Blocks box</a><a href="14.html">Printing (putting it on paper) →</a></nav><h1>13. Opening, saving, and setting the true size</h1><div class="toc"><a href="#プロジェクト">Projects (PROJ): a catalogue of your drawings</a><a href="#開くと、まずどこから始めるかを聞きます">開くと、まずどこから始めるかを聞きます</a><a href="#図面を目録へ入れる">Putting drawings into the catalogue (four buttons along the foot)</a><a href="#目録を整える">Tidying the catalogue (four buttons at the right of each row)</a><a href="#開き方">Opening</a><a href="#大事なこと">The important part</a><a href="#開く">Opening (⌘O)</a><a href="#保存">Saving (⌘S)</a><a href="#実寸合わせ">CAL: setting the true size</a><a href="#断面を拾う">断面を拾う（DANMEN）</a><a href="#図面の比較">図面の比較（COMPARE）</a><a href="#下絵">下絵（画像を敷いて、上からなぞる）</a><a href="#単位">Units (changing the measure)</a><a href="#控え">The safety copy (automatic saving)</a><a href="#前回、正しく終われなかったとき">When the program did not close properly last time</a><a href="#保存しないで閉じるとき">Closing without saving: you are asked twice</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="プロジェクト"><h2>Projects (PROJ): a catalogue of your drawings</h2>
+<main class="tb"><div class="wrap"><div class="lang"><a href="../13.html">日本語</a>　<b>English</b></div><nav class="nav"><a href="index.html">Contents</a><span class="sp"></span><a href="12.html">← Blocks and the Blocks box</a><a href="14.html">Printing (putting it on paper) →</a></nav><h1>13. Opening, saving, and setting the true size</h1><div class="toc"><a href="#プロジェクト">Projects (PROJ): a catalogue of your drawings</a><a href="#開くと、まずどこから始めるかを聞きます">When it opens, it first asks where to start</a><a href="#図面を目録へ入れる">Putting drawings into the catalogue (four buttons along the foot)</a><a href="#目録を整える">Tidying the catalogue (four buttons at the right of each row)</a><a href="#開き方">Opening</a><a href="#大事なこと">The important part</a><a href="#開く">Opening (⌘O)</a><a href="#保存">Saving (⌘S)</a><a href="#実寸合わせ">CAL: setting the true size</a><a href="#断面を拾う">Pick a section (DANMEN)</a><a href="#図面の比較">Compare drawings (COMPARE)</a><a href="#下絵">Underlay (lay an image and trace over it)</a><a href="#単位">Units (changing the measure)</a><a href="#控え">The safety copy (automatic saving)</a><a href="#前回、正しく終われなかったとき">When the program did not close properly last time</a><a href="#保存しないで閉じるとき">Closing without saving: you are asked twice</a></div><div class="only-note" id="only">Showing this one task only. <a href="#">Show the whole chapter</a></div><section id="プロジェクト"><h2>Projects (PROJ): a catalogue of your drawings</h2>
 <p>On a large job the drawings run into dozens. Staring at a folder does not tell you “now which one was this?” from the file name.</p>
 <p>A project is a catalogue that remembers, for each sheet, where it is and what it is.</p>
-<p>開き方は二つ。メニューバー「ファイル」の「プロジェクト」か、小窓に PROJ →Enter。</p>
+<p>There are two ways to open it: "Project" in the File menu on the menu bar, or PROJ → Enter in the command box.</p>
 </section>
-<section id="開くと、まずどこから始めるかを聞きます"><h2>開くと、まずどこから始めるかを聞きます</h2>
-<p>三つで聞きます。</p>
+<section id="開くと、まずどこから始めるかを聞きます"><h2>When it opens, it first asks where to start</h2>
+<p>It asks with three choices.</p>
 <ol class="steps">
 <li><span class="mark">①</span><div>Open a project = carry on from a catalogue you made before.
 </div></li>
@@ -76,7 +76,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </div></li>
 </ol>
 <p>※ If you had a catalogue open before, it comes up already showing where you left off.</p>
-<p>※起動したら毎回この板を出したい人は、設定の板の「起動時にプロジェクトの板」を入に（既定は切）。</p>
+<p>* If you want this board every time K'Ad starts, turn on "Project board at startup" on the Settings board (default is off).</p>
 </section>
 <section id="図面を目録へ入れる"><h2>Putting drawings into the catalogue (four buttons along the foot)</h2>
 <ul>
@@ -108,32 +108,34 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </ul>
 </section>
 <section id="開く"><h2>Opening (⌘O)</h2>
-<p>DXF・DWG・PDF・JWW・STL と、画像（PNG・JPG）が開けます。</p>
+<p>DXF, DWG, PDF, JWW, STL and images (PNG, JPG) can be opened.</p>
+<p>[Open] in the File menu on the menu bar, or OPEN in the command box, does the same.</p>
 <ul>
 <li>DXF = our mother tongue. It opens as it is and saves as it is.</li>
 <li>DWG = on the Mac version only, and only if the translator (LibreDWG) is present. When it will not open, asking the sender for a DXF is the quickest road by far (every CAD program can write DXF).</li>
 <li>PDF = a PDF containing lines can be brought in as a drawing. From a bundle of pages it chooses the one with the most lines. If it chose wrongly, type PAGE 4 in the Command Line (= swap to page 4).</li>
 <li>JWW = a Jw_cad drawing. The scale is translated to full size as it comes in.</li>
 <li>STL = opens in the 3D room, where you can turn it and look.</li>
-<li>PNG・JPG＝「下絵」として新しいタブに敷きます（下の【下絵】）。</li>
+<li>PNG / JPG = laid in a new tab as an "underlay" (see "Underlay" below).</li>
 </ul>
 </section>
 <section id="保存"><h2>Saving (⌘S)</h2>
-<figure><a href="../e/13-保存-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/13-保存-0.png" alt="初めての保存は、形を選ぶ板から" loading="lazy"></a><figcaption>初めての保存は、形を選ぶ板から</figcaption></figure>
+<figure><a href="../e/13-保存-0.png" target="_blank" rel="noopener" title="Click to open full size"><img src="../e/13-保存-0.png" alt="The first save starts from a board that asks the format" loading="lazy"></a><figcaption>The first save starts from a board that asks the format</figcaption></figure>
 <p>Saving is DXF itself = a form every CAD program can read.</p>
-<p>初めての保存と別名（⌘⇧S）では、形を選ぶ板が出ます。</p>
+<p>On the first save and on Save As (⌘⇧S), a board asks the format.</p>
+<p>In the command box: SAVE (save) and SAVEAS (save as).</p>
 <ul>
-<li>DXF で保存＝ふだんの形。K'Ad でまた開いて直せます。</li>
-<li>PDF に書き出す＝紙の形。印刷プレビューと同じ紙と縮尺。書き出しは図面の保存ではありません（続きは DXF で）。</li>
-<li>JWW＝いま作っているところです（それまでは DXF で）。</li>
+<li>Save as DXF = the everyday format. You can open it again in K'Ad and continue.</li>
+<li>Export to PDF = the paper format. Same paper and scale as the print preview. Exporting is not saving the drawing (continue in DXF).</li>
+<li>JWW = being built now (use DXF until then).</li>
 </ul>
-<p>二度目からの ⌘S は同じ DXF へ上書き（先にひと言聞きます）。</p>
+<p>From the second time, ⌘S overwrites the same DXF (it asks once first).</p>
 <p>A drawing that came from another format (DWG, PDF, JWW) always asks for a new name, to protect the original. The original file is untouched.</p>
 </section>
 <section id="実寸合わせ"><h2>CAL: setting the true size</h2>
 <p>A drawing that came from a PDF or the like is not necessarily at true size.</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>タブ「直す」の［実寸合わせ］を押すか、小窓に CAL →Enter（「実寸」でも呼べます）。
+<li><span class="mark">①</span><div>Press [Calibrate] on the Modify tab, or CAL → Enter in the command box ("実寸" also works).
 </div></li>
 <li><span class="mark">②</span><div>With snap, indicate exactly the two ends of a dimension written on the drawing (“1208”, say).
 </div></li>
@@ -145,77 +147,77 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 </div></li>
 </ol>
 </section>
-<section id="断面を拾う"><h2>断面を拾う（DANMEN）</h2>
-<p>受け取った図面（DXF・JWW・PDF・下絵）から、切る相手の躯体（柱・壁など）の輪郭を拾って、新しい一枚にします。</p>
-<p>元の図面は読むだけ＝一文字も書きません。</p>
+<section id="断面を拾う"><h2>Pick a section (DANMEN)</h2>
+<p>From a drawing you received (DXF, JWW, PDF, underlay), pick the outline of the structure to be cut (columns, walls…) and make it a new sheet.</p>
+<p>The original drawing is only read = not a single character is written to it.</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>タブ「工程」の［断面を拾う］か、小窓に DANMEN（「断面」でも）→Enter。図面の上に板が浮きます。
+<li><span class="mark">①</span><div>[Pick section] on the Process tab, or DANMEN in the command box ("断面" also works) → Enter. A board floats over the drawing.
 </div></li>
-<li><span class="mark">②</span><div>輪郭の内側を一回クリック。囲いが琥珀で光り、「幅 × 高さ」を名乗ります。
+<li><span class="mark">②</span><div>Click once inside the outline. The enclosure lights up in amber and states "width × height".
 </div></li>
-<li><span class="mark">③</span><div>それでよければ、中をもう一度クリックか Enter で採ります。新しいタブ「断面：元の名前」の画層「躯体」に、閉じたポリライン一本で書かれます（単位は mm）。
+<li><span class="mark">③</span><div>If that is right, click inside once more or press Enter to take it. It is written as one closed polyline on layer "躯体" in a new tab "断面：original name" (units are mm).
 </div></li>
-<li><span class="mark">④</span><div>板の［断面のタブへ］で移って ⌘S で保存します。
+<li><span class="mark">④</span><div>Move there with [To the section tab] on the board and save with ⌘S.
 </div></li>
 </ol>
 <ul>
-<li>線が切れている図面・通り芯が横切る柱・下絵（画像）の上は、板の［2点で四角］で、向かい合う角を 2 点指します。</li>
-<li>幅の数字が本当の寸法と違う時（PDF・縮尺のかかった図面）は、板の［正しい幅］に本当の幅を打って Enter＝掛け直します。輪郭を指した後なら、そのまま数字を打ち始めても欄が開きます。</li>
-<li>U・Esc・右クリックは一段ずつ戻ります。採った後の U は、断面の一枚の方を一手戻します（元の図面は変わりません）。</li>
-<li>囲いの中の穴や、中に描かれた形（島）は採りません。</li>
-<li>鉄筋・鉄骨を拾う道は、まだありません（躯体の輪郭だけ）。</li>
+<li>For drawings with broken lines, columns crossed by grid lines, or on an underlay (image), use [Rectangle by 2 points] on the board and pick two opposite corners.</li>
+<li>When the width shown differs from the true size (PDF, scaled drawings), type the true width into [True width] on the board and press Enter = it is rescaled. After picking the outline you can simply start typing numbers and the field opens.</li>
+<li>U, Esc and right-click go back one step at a time. U after taking undoes one step on the section sheet (the original drawing does not change).</li>
+<li>Holes inside the enclosure and shapes drawn inside it (islands) are not taken.</li>
+<li>There is no way yet to pick rebar or steel (structure outlines only).</li>
 </ul>
 </section>
-<section id="図面の比較"><h2>図面の比較（COMPARE）</h2>
-<p>改訂版の図面が届いた時、前の版とどこが変わったかを探します。</p>
+<section id="図面の比較"><h2>Compare drawings (COMPARE)</h2>
+<p>When a revised drawing arrives, find what changed from the previous version.</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>前の版と新しい版を ⌘O で開いておく（PDF・DXF・JWW）。
+<li><span class="mark">①</span><div>Open the previous and the new version with ⌘O (PDF, DXF, JWW).
 </div></li>
-<li><span class="mark">②</span><div>メニューバー「ファイル」の［比較］か、小窓に COMPARE（「比較」でも）→Enter。右クリックにも。
+<li><span class="mark">②</span><div>[Compare] in the File menu on the menu bar, or COMPARE in the command box ("比較" also works) → Enter. It is in the right-click menu too.
 </div></li>
-<li><span class="mark">③</span><div>板の［前の版］［新しい版］を ‹ › でタブから選び、［比べる］。
+<li><span class="mark">③</span><div>On the board, choose [Previous] and [New] from the tabs with ‹ ›, then [Compare].
 </div></li>
-<li><span class="mark">④</span><div>新しいタブに結果が出ます。元の二枚は一文字も変えません。赤＝前の版だけ（消えた）・緑＝新しい版だけ（増えた）・灰＝同じ・琥珀の雲と番号＝変わった所の囲い。
+<li><span class="mark">④</span><div>The result appears in a new tab. Not a character of the two originals is changed. Red = only in the previous version (removed) · green = only in the new version (added) · grey = the same · amber cloud and number = an enclosure around a change.
 </div></li>
-<li><span class="mark">⑤</span><div>板の［次 ›］で、変わった所へ一か所ずつ寄ります。雲の番号は、板の「変更 i／n か所」と同じ番号です。
+<li><span class="mark">⑤</span><div>[Next ›] on the board goes to the changes one by one. The cloud numbers are the same as "change i / n" on the board.
 </div></li>
 </ol>
 <ul>
-<li>画層「比較_同じ」の電球を消すと、変わった所だけが残ります。</li>
-<li>増えた線は、クイック選択の［画層］で選んで複製できます。</li>
-<li>線が細切れでも、同じ所に線があれば「同じ」と見ます。紙の上で 0.2mm より小さいずれは「同じ」です。</li>
-<li>文字は中身と場所で比べます（寸法の数字の書き換えも出ます）。</li>
-<li>ハッチは模様の線まで比べます（模様だけ替えた改訂も出ます）。</li>
-<li>画像だけの PDF（スキャン）は線が無いので比べられません。</li>
+<li>Turn off the bulb of layer "比較_同じ" and only the changes remain.</li>
+<li>Added lines can be selected by [Layer] in Quick Select and copied.</li>
+<li>Even when lines are chopped into pieces, a line in the same place counts as "the same". A shift smaller than 0.2 mm on paper is "the same".</li>
+<li>Text is compared by content and position (rewritten dimension figures show up too).</li>
+<li>Hatches are compared down to the pattern lines (a revision that changes only the pattern shows up too).</li>
+<li>Image-only PDFs (scans) have no lines and cannot be compared.</li>
 </ul>
-<p>〔置き方＝縮尺や余白が違う二枚〕実寸の DXF と紙の mm の PDF、余白を変えて刷り直した PDF など、大きさや置き場所が違う二枚も比べられます。板の［置き方］の札：</p>
+<p>[Placement = two sheets with different scale or margins] Two sheets that differ in size or position — a full-size DXF and a PDF in paper mm, or a PDF reprinted with different margins — can also be compared. The [Placement] chips on the board:</p>
 <ul>
-<li>自動で合わせる（いつもはこれ）＝両方にある同じ文字（部屋名・寸法の数字など）と線の端で、新しい版の写しを前の版に重ねます。そのままで重なる二枚は動かしません。</li>
-<li>そのまま＝動かさずに比べます。</li>
-<li>2点で合わせる＝自動で合わない時（回って刷られた図面など）。前の版で1点→新しい版で同じ点→前の版で2点目→新しい版で同じ2点目、の四つのクリックで重ね、そのまま比べます。角や交点に吸い付きます。離れた二点ほど正確です。U・Esc・右クリック＝一つ前の点へ（最初の点ならやめる）。</li>
-<li>結果は前の版の座標に出ます（前の版から起こした自分の図面へ、増えた線をそのまま写せます）。元の二枚は動かしません。</li>
+<li>Fit automatically (the usual choice) = lays the copy of the new version over the previous one using the same text found in both (room names, dimension figures…) and line ends. Two sheets that already overlap are not moved.</li>
+<li>As is = compares without moving.</li>
+<li>Fit by 2 points = for when automatic does not fit (drawings printed rotated, for example). Four clicks — point 1 on the previous version → the same point on the new one → point 2 on the previous → the same point 2 on the new — overlay them and compare. It snaps to corners and intersections. The farther apart the two points, the more accurate. U, Esc, right-click = back to the previous point (cancel if at the first).</li>
+<li>The result is in the coordinates of the previous version (you can copy the added lines straight into your own drawing made from the previous version). The two originals are not moved.</li>
 </ul>
-<p>〔変更の一覧を刷る〕結果のタブの図面の上に、表題・色の約束・置き方と、</p>
-<p>番号ごとの数（「3　消えた 1・増えた 2」）が並びます。</p>
-<p>このタブをそのまま印刷すれば、一覧つきの紙になります。</p>
-<p>画層「比較_一覧」の電球を消せば、一覧は隠れます。</p>
+<p>[Print the list of changes] Above the drawing in the result tab are the title, the colour key, the placement, and</p>
+<p>the counts per number ("3  removed 1 · added 2").</p>
+<p>Print this tab as it is and you get a sheet with the list.</p>
+<p>Turn off the bulb of layer "比較_一覧" and the list is hidden.</p>
 </section>
-<section id="下絵"><h2>下絵（画像を敷いて、上からなぞる）</h2>
-<p>紙の図面の写真やスキャン（PNG・JPG）を、図面のいちばん下に「下絵」として敷き、上から線でなぞって図面にします。</p>
-<p>※画像が自動で線になることはありません。</p>
+<section id="下絵"><h2>Underlay (lay an image and trace over it)</h2>
+<p>Lay a photo or scan of a paper drawing (PNG, JPG) at the very bottom of the drawing as an "underlay", and trace over it with lines to make a drawing.</p>
+<p>* The image never turns into lines automatically.</p>
 <ol class="steps">
-<li><span class="mark">①</span><div>⌘O（メニューバー「ファイル」の［開く］）で画像を選ぶ→新しいタブに敷かれます。画層「下絵」に住み、印刷されません（PDF にも出ません）。
+<li><span class="mark">①</span><div>Choose the image with ⌘O ([Open] in the File menu on the menu bar) → it is laid in a new tab. It lives on layer "下絵" and is not printed (it does not appear in PDFs either).
 </div></li>
-<li><span class="mark">②</span><div>敷いた直後は1画素＝1mmの仮の大きさです。下の帯の［実寸合わせ］を押し、図面に書いてある寸法の両端を2点指して、実際の長さを打つ→Enter→Enter。下絵が実寸になります。
+<li><span class="mark">②</span><div>Right after laying, it has a provisional size of 1 pixel = 1 mm. Press [Calibrate] on the bar below, pick the two ends of a dimension written on the drawing, type the real length → Enter → Enter. The underlay becomes full size.
 </div></li>
-<li><span class="mark">③</span><div>帯の濃さ［100］［70］［50］［30］で、なぞる線と見分けやすい濃さに（U で戻せます・ファイルの画像は変えません）。
+<li><span class="mark">③</span><div>Use the density chips [100] [70] [50] [30] on the bar to make it easy to tell from the lines you trace (U undoes it; the image file is not changed).
 </div></li>
-<li><span class="mark">④</span><div>上から線分・ポリラインでなぞります。吸い付くのは描いた線と下絵の枠の角だけ（絵の中の線には吸い付きません）。
+<li><span class="mark">④</span><div>Trace over it with Line and Polyline. Snaps work only on the lines you drew and the corners of the underlay frame (not on lines inside the picture).
 </div></li>
 </ol>
 <ul>
-<li>右下の札「下絵 1」を押すと、下絵を選び直して帯が出ます（見失ったとき・画層を隠したときの帰り道）。</li>
-<li>大きな画像は、画面には長辺 4,096 画素に縮めて見せます（元のファイルはそのまま）。</li>
+<li>Press the card "下絵 1" at the bottom right to select the underlay again and bring up the bar (the way back when you lose it or hide the layer).</li>
+<li>A large image is shown on screen reduced to 4,096 pixels on the long side (the original file is untouched).</li>
 </ul>
 </section>
 <section id="単位"><h2>Units (changing the measure)</h2>
@@ -252,7 +254,7 @@ figcaption{font-size:.85rem;color:var(--usu);margin-top:.3em}
 <p>If you choose 〈保存しない〉, it asks once more: 「本当に保存しないで、OKですか？」 — “Are you sure you want to close without saving?”</p>
 <p>If you press 〈はい〉 (yes) here, those changes cannot be brought back (the copy is tidied away with them). 〈いいえ〉 (no) does nothing.</p>
 <p>A slip of the hand is not rescued by a copy here; it is stopped by this second question.</p>
-</section><div class="tb-foot">この手引きの文は、K'Ad蔵人の中の教本（メニューバー「ヘルプ」の【教本】）と同じものです。<br>Correct the manual there and this one is corrected the same day.<br>絵は Windows 版の画面です（2026年11月に撮り直しました）。Mac 版では、Ctrl が ⌘、Alt が ⌥ になります。<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">コマンド辞書</a></span></div></div></main>
+</section><div class="tb-foot">The text of this handbook is the same as the manual inside K'Ad (the [Manual] item in the Help menu on the menu bar).<br>Correct the manual there and this one is corrected the same day.<br>The pictures show the Windows version (retaken in November 2026). On the Mac version, Ctrl is ⌘ and Alt is ⌥.<span class="noprint"><br>十七期二十三号窯 ／ 2026-11-20<br><a href="https://gcad.engawaya.com/" rel="noopener">Open K'Ad</a>　<a href="../../../">Engawaya</a>　<a href="../../">About K'Ad</a>　<a href="../../jisho/">Command dictionary</a></span></div></div></main>
 <footer class="ie-ft" id="toiawase">
   <div class="ie-in">
     <div class="ie-ft-cols">
