@@ -108,7 +108,14 @@
 
    【うっすら、にしてある理由】
      ここは字を読む家。光が字より目立ったら、裏地が表に出たことになる（DESIGN.md 1-0「裏地」）。
-     線の濃さは暗い顔で 5 割・明るい顔で 3 割まで、数は画面の広さに合わせて 3〜8 本。
+     線の濃さは暗い顔で 3 割・明るい顔で 2 割まで、数は画面の広さに合わせて 3〜8 本。
+     （はじめは 5 割・3 割で作り、博喜さんの「もう少し薄く」で下げた。数と速さはそのまま。）
+
+   【頭の瞬き】
+     博喜さんのご注文「頭の丸をランダムに瞬かせる」。頭の点は、0.06〜0.3 秒ごとに
+     次の明るさをでたらめに決めて、そこへなめらかに寄っていく（電球がちらつくように）。
+     たまに（八回に一回ほど）強く光る。光ごとに間合いが違うので、揃って瞬くことはない。
+     ⚠️瞬くのは頭だけ。尾まで瞬かせると、線ぜんたいが点滅して、字を読む邪魔になる。
 
    【走らせない場合】
      ・「動きを減らす」を選んでいる閲覧機（乗り物酔いのように、動く物で具合が悪くなる方がいる）。
@@ -169,7 +176,8 @@
       toshi: 0,
       inochi: 5 + Math.random() * 6,                 /* 何秒走るか */
       matsu: saisho ? Math.random() * 4 : 0.5 + Math.random() * 3,   /* 生まれるまでの間 */
-      iro: Math.floor(Math.random() * 4)
+      iro: Math.floor(Math.random() * 4),
+      mata: 1, mataSaki: 1, mataMatsu: 0     /* 瞬き：いまの明るさ・次の明るさ・次を決めるまでの間 */
     };
     tsugi(h, true);
     return h;
@@ -205,7 +213,7 @@
     var sx = window.pageXOffset, sy = window.pageYOffset;
     var hiru = document.documentElement.getAttribute('data-iro') === 'akarui';
     var iro = hiru ? IRO_HIRU : IRO_YORU;
-    var koi = hiru ? 0.3 : 0.5;
+    var koi = hiru ? 0.2 : 0.32;
 
     cx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx.clearRect(0, 0, haba, take);
@@ -255,12 +263,21 @@
         tootta += d; px = qx; py = qy;
       }
 
-      /* 頭。小さな、にじんだ点。 */
-      var gr = cx.createRadialGradient(ax - sx, ay - sy, 0, ax - sx, ay - sy, 5);
-      gr.addColorStop(0, 'rgba(' + c + ',' + (Math.min(1, koi * 1.6) * akarusa).toFixed(3) + ')');
+      /* 頭の瞬き。間が尽きたら次の明るさを決め、いまの明るさをそこへ寄せていく。 */
+      h.mataMatsu -= dt;
+      if (h.mataMatsu <= 0) {
+        h.mataMatsu = 0.06 + Math.random() * 0.24;
+        h.mataSaki = Math.random() < 0.13 ? 2.6 : 0.25 + Math.random() * 1.15;   /* たまに強く */
+      }
+      h.mata += (h.mataSaki - h.mata) * Math.min(1, dt * 18);
+
+      /* 頭。小さな、にじんだ点。明るく瞬いたときは、にじみも少し広がる。 */
+      var hankei = 3.5 + 2.2 * h.mata;
+      var gr = cx.createRadialGradient(ax - sx, ay - sy, 0, ax - sx, ay - sy, hankei);
+      gr.addColorStop(0, 'rgba(' + c + ',' + (Math.min(0.95, koi * 1.5 * h.mata) * akarusa).toFixed(3) + ')');
       gr.addColorStop(1, 'rgba(' + c + ',0)');
       cx.fillStyle = gr;
-      cx.beginPath(); cx.arc(ax - sx, ay - sy, 5, 0, Math.PI * 2); cx.fill();
+      cx.beginPath(); cx.arc(ax - sx, ay - sy, hankei, 0, Math.PI * 2); cx.fill();
     }
     requestAnimationFrame(egaku);
   }
