@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K'Ad Command Dictionary — Engawaya</title>
+<!-- サイトの印（2026-11-20 X の印と同じ絵に統一。正は icon/en-yoi-1024.png）。
+     ?v= は、前の印を控えている閲覧機に取り直してもらうための札。 -->
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261120">
+<link rel="icon" type="image/png" href="/favicon.png?v=20261120">
+<meta name="description" content="A dictionary of K'Ad's tools and keys, looked up by what you want to do. Each entry leads to its chapter of the handbook.">
+
+<!-- ============================================================
+     K'Ad蔵人 コマンド辞書（2026-09-07 新設）
+
+     ■ 何のためのものか
+     手引き（kad/tebiki/）は「順に読む」ための教本です。順に読めば分かるように
+     できていますが、現場で必要なのはたいてい逆の引き方——「角を丸くしたい。
+     何を打てばいい？」です。読む道具と引く道具は、並べ方が違う。
+     だから辞書を別に建てました。
+
+     ■ 写しが二つになることについて（正直に書いておきます）
+     手引きの文は、K'Ad蔵人の中の教本と同じものです。この辞書は、そこから
+     さらに引き写した三つ目の写しになります。写しが増えれば必ず食い違う——
+     この家が何度も踏んだ病です。
+     承知のうえで写しました。理由は上のとおり、引く並べ方が要るからです。
+     そのかわり、食い違いを人の目に任せません。
+
+         python3 kad/jisho/検算.py
+
+     ⚠️ここを直したら、必ず通してください。[FAIL] が出たら commit しない。
+     この見張りは、建てた日に八項目を一つずつ壊して、ぜんぶ鳴ることを
+     確かめてあります。項目を足す日も、同じように鳴らしてから通すこと。
+
+     ■ 項目の足し方
+     下の <li class="ko"> を一つコピーして、書き換えるだけです。
+       data-yo   ＝用事。描く／測る／直す／整える／出す／キー のどれか
+       data-hiku ＝しぼり込みで引っかける言葉。短縮・正式・説明・用事を並べる
+       ko-tan    ＝小窓に打つ短い名前（L、TR、⌘S など）
+       ko-sei    ＝正式な名前。無ければ、この行ごと消す
+       ko-setu   ＝一行の説明。「何をする道具か」だけ。手順は書かない
+       ko-to     ＝手引きの何章か。札の文字も、その章の題と揃えること
+     ⚠️説明にその道具の手順まで書き始めると、辞書が二冊目の教本になります。
+     ここは「どれを打つか」までを引く場所で、打ったあとは手引きが引き受けます。
+
+     ■ 外から何も読み込みません（憲法①）
+     字も、飾りも、しぼり込みの仕組みも、ぜんぶこのファイルの中にあります。
+     回線が細い場所でも、開いた瞬間に出ます。絵文字も使いません（憲法②）。
+     ============================================================ -->
+
+<!-- 2026-11-20 この辞書も「宵のスーツ」へ移した。色は kihon.css（正は DESIGN.md「1-0」）。
+     ⚠️この部屋の <style> に、色の値を書かない（写しが一枚でもあれば、食い違いが始まる）。
+     ⚠️外の書体（Google Fonts）は、ここでは読み込まない。用があって開く道具のページは、
+       回線の細い場所でもすぐ出る作りのままにする（CLAUDE.md の心がけ／検算の七）。
+       見出しの明朝は、その機械に入っている明朝で出る（kihon.css が後ろに並べてある）。 -->
+<link rel="stylesheet" href="../../../kihon.css?v=20261120">
+<script src="../../../kihon.js?v=20261120c"></script>
+<style>
+/* 色（2026-11-20〜）。kihon.css の変数を使う
+   （sumi＝字／usu＝補足の字／ji＝地／ji2＝札の面／sen2＝札のふち／sashi＝差し色）。
+   それまでは母屋と同じ「時刻で光が変わる」仕掛けだった。
+   📌2026-09-07 の教訓は、いまも生きている：**新しい棟を建てた日は、暗い顔も開いて見ること。**
+     この辞書は建てた日に夜の顔が無く、夜に図面を引いていて手が止まった人——いちばん来る人——の
+     目にだけ、真っ白が飛び込んでいた。 */
+* { box-sizing: border-box; }
+body {
+  /* 地と字の色は kihon.css。字の形だけ、この辞書の並び（読み違えにくい BIZ UDPGothic を候補に）を残す。 */
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic",
+               "Yu Gothic", Meiryo, system-ui, sans-serif;
+  line-height: 1.9;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 80px; }
+
+.kaeri { font-size: 14px; color: var(--usu); }
+/* ---- リンクの色（総括）------------------------------------
+   ⚠️どのページにも一つ置くこと。無いと閲覧機の既定の青（#0000EE）が出て、
+   夜の地に沈みます（比 1.5 前後）。「どこそこの a」で数え上げると、
+   必ず数え落とします——2026-09-07、六つの棟で実際に落ちていました。
+   ここは総括なので、下のクラス付きの決まりのほうが強く、上書きされます。
+   （DESIGN.md「3. リンクの作法」／DESIGN検算.py 三））*/
+a { color: var(--sashi); }
+
+.kaeri a { color: var(--sashi); }
+h1 { margin: 18px 0 6px; font-family: var(--min); font-size: clamp(22px, 6vw, 32px); line-height: 1.5; letter-spacing: .06em; }
+.soe { margin: 0; color: var(--usu); font-size: clamp(14px, 3.8vw, 16px); }
+
+/* ---- 引くところ ----------------------------------------------
+   窓もチップも、必要よりだいぶ大きくしてあります（憲法③）。
+   指で押せるように、というだけではありません。手が震える人でも
+   狙いを外さない大きさ、が理由です。 */
+.hikidashi {
+  position: sticky; top: 0; z-index: 5;
+  margin: 22px 0 0; padding: 16px 0 12px;
+  background: var(--ji);          /* 送っても上に残る帯。透けると、下を流れる項目と字が重なる */
+  border-bottom: 1px solid var(--sen2);
+}
+.mado {
+  width: 100%; padding: 16px 18px;
+  font-size: 18px; font-family: inherit; color: var(--sumi);
+  background: var(--ji); border: 2px solid var(--sen2); border-radius: 12px;
+}
+/* 小窓の地は、前は #fff の決め打ちで、夜だけ差し替えていた。いまは地の変数ひとつ
+   （明るい顔ではほぼ白、暗い顔では宵）。夜に白が凶器になる穴は、変数に任せて塞いだ。 */
+.mado:focus { outline: 3px solid var(--hikari); outline-offset: 1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
+.chip {
+  padding: 12px 18px; min-height: 48px;
+  font-size: 16px; font-family: inherit; color: var(--sumi);
+  background: var(--ji2); border: 2px solid var(--sen2);
+  border-radius: 999px; cursor: pointer;
+}
+/* 選んでいる札。差し色の上の字は、家の変数（明るい顔では白・暗い顔では濃い藍）に任せる
+   ＝前は夜だけ字を裏返す一行を別に書いていた（白のままだと比 1.8 で沈んだため）。 */
+.chip[aria-pressed="true"] { background: var(--sashi); border-color: var(--sashi); color: var(--sashi-moji); }
+.kazu { margin: 10px 0 0; font-size: 14px; color: var(--usu); }
+
+/* ---- 項目 ---------------------------------------------------- */
+.ko-list { list-style: none; margin: 22px 0 0; padding: 0;
+           display: grid; grid-template-columns: 1fr; gap: 14px; }
+.ko {
+  padding: 18px 20px;
+  background: var(--ji2); border: 1px solid var(--sen2); border-radius: 14px;
+}
+.ko-na { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.ko-tan {
+  font-size: clamp(20px, 5.2vw, 24px); font-weight: 700; letter-spacing: .04em;
+  color: var(--sumi);
+}
+.ko-sei { font-size: 15px; color: var(--usu); letter-spacing: .08em; }
+.ko-setu { margin: 8px 0 0; font-size: clamp(15px, 3.9vw, 16px); }
+.ko-to { margin: 10px 0 0; font-size: 14px; }
+.ko-to a { color: var(--sashi); }
+.karappo { margin: 30px 0; font-size: 16px; color: var(--usu); }
+
+.ashi { margin: 46px 0 0; padding-top: 20px; border-top: 1px solid var(--sen2);
+        font-size: 13px; color: var(--usu); }
+.ashi a { color: var(--sashi); }
+
+@media (min-width: 760px) {
+  .ko-list { grid-template-columns: 1fr 1fr; }
+}
+</style>
+
+<body>
+<!-- ⚠️この一枚は焼いた物です（非公開の GCad の 手引き/辞書を英語へ.py）。ここを手で直すと、次に焼いた日に消えます。
+     直すのは日本語の辞書（../index.html）と、GCad の 手引き/対訳/辞書_k.txt・辞書_e.txt。 -->
+
+<!-- 上の行（2026-11-20）。表紙・開発日記・K'Ad蔵人とは、と同じ物。 -->
+<header class="ie-hd">
+  <div class="ie-in ie-hd-in">
+    <a class="ie-mark" href="../../../">縁側屋<span>ENGAWAYA</span></a>
+    <div class="ie-hd-migi">
+      <nav class="ie-nav" aria-label="縁側屋の行き先">
+        <a href="../../../#tsukutte">作っているもの</a>
+        <a href="../../../#kiroku">開発の記録</a>
+        <a href="../../../#tsukurite">つくり手</a>
+        <a href="#toiawase">お問い合わせ</a>
+      </nav>
+      <button type="button" class="iro-btn" id="iroBtn">暗くする</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <p class="kaeri"><a href="../../../">縁側屋 Engawaya</a>　／　<a href="../../">About K'Ad (Japanese)</a>　／　<a href="../../tebiki/en/">Handbook</a>　／　<a href="../" lang="ja">日本語</a></p>
+
+  <h1>Command Dictionary</h1>
+  <p class="soe">
+    Look up the short names you type in the command box, by what you want to do.<br>
+    The steps after typing are in the handbook chapter each entry points to.<br>
+    K'Ad's screen is in Japanese. The words you type (L, TR, WW…) work as written here.
+  </p>
+
+  <div class="hikidashi">
+    <label class="mado-fuda" for="mado" hidden>Filter</label>
+    <input class="mado" id="mado" type="search" autocomplete="off"
+           placeholder="A task or a name (e.g. round a corner / TR / erase)"
+           aria-label="Filter the commands">
+    <div class="chips" id="chips">
+      <button class="chip" type="button" data-yo="" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-yo="描く" aria-pressed="false">Draw</button>
+      <button class="chip" type="button" data-yo="測る" aria-pressed="false">Measure</button>
+      <button class="chip" type="button" data-yo="直す" aria-pressed="false">Modify</button>
+      <button class="chip" type="button" data-yo="整える" aria-pressed="false">Set up</button>
+      <button class="chip" type="button" data-yo="出す" aria-pressed="false">Output</button>
+      <button class="chip" type="button" data-yo="キー" aria-pressed="false">Keys</button>
+    </div>
+    <p class="kazu" id="kazu" aria-live="polite"></p>
+  </div>
+
+  <ul class="ko-list" id="list">
+    <li class="ko" data-yo="描く" data-hiku="L LINE 線分。二点をむすぶ線を引きます。続けて引けます。 描く Line. Draws a line joining two points. You can keep drawing. Draw">
+      <p class="ko-na"><span class="ko-tan">L</span><span class="ko-sei">LINE</span></p>
+      <p class="ko-setu">Line. Draws a line joining two points. You can keep drawing.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="PL PLINE ポリライン。何本つないでも、終えたときに一本の図形になります。 描く Polyline. However many segments you join, it becomes one object when you finish. Draw">
+      <p class="ko-na"><span class="ko-tan">PL</span><span class="ko-sei">PLINE</span></p>
+      <p class="ko-setu">Polyline. However many segments you join, it becomes one object when you finish.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="C CIRCLE 円。中心を打って、円周が通る点で決めます。R2000・D8000 と数字でも。 描く Circle. Click the centre, then a point the circle passes through. Numbers work too: R2000, D8000. Draw">
+      <p class="ko-na"><span class="ko-tan">C</span><span class="ko-sei">CIRCLE</span></p>
+      <p class="ko-setu">Circle. Click the centre, then a point the circle passes through. Numbers work too: R2000, D8000.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="A ARC 円弧。始点・通る点・終点の三回クリック。 描く Arc. Three clicks: start, a point it passes, end. Draw">
+      <p class="ko-na"><span class="ko-tan">A</span><span class="ko-sei">ARC</span></p>
+      <p class="ko-setu">Arc. Three clicks: start, a point it passes, end.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="EL ELLIPSE 楕円。軸の両端と、残り半分の幅で。 描く Ellipse. Both ends of an axis, then the other half-width. Draw">
+      <p class="ko-na"><span class="ko-tan">EL</span><span class="ko-sei">ELLIPSE</span></p>
+      <p class="ko-setu">Ellipse. Both ends of an axis, then the other half-width.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="SPL SPLINE 自由な曲線。打った点を、ぜんぶ正確に通ります。 描く Free curve. It passes exactly through every point you click. Draw">
+      <p class="ko-na"><span class="ko-tan">SPL</span><span class="ko-sei">SPLINE</span></p>
+      <p class="ko-setu">Free curve. It passes exactly through every point you click.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="REC 四角。 描く Rectangle. Draw">
+      <p class="ko-na"><span class="ko-tan">REC</span></p>
+      <p class="ko-setu">Rectangle.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="POL ポリゴン。正多角形。 描く Polygon. A regular polygon. Draw">
+      <p class="ko-na"><span class="ko-tan">POL</span></p>
+      <p class="ko-setu">Polygon. A regular polygon.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="GRID 通り芯。 描く Grid lines (building grid). Draw">
+      <p class="ko-na"><span class="ko-tan">GRID</span></p>
+      <p class="ko-setu">Grid lines (building grid).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="DT 文字記入。一行の文字を、枠で置きます。 描く Text. Places one line of text in a frame. Draw">
+      <p class="ko-na"><span class="ko-tan">DT</span></p>
+      <p class="ko-setu">Text. Places one line of text in a frame.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="MT 段落文字。改行のある注記を、枠の中へ流し込みます。 描く Paragraph text. Flows a note with line breaks into a frame. Draw">
+      <p class="ko-na"><span class="ko-tan">MT</span></p>
+      <p class="ko-setu">Paragraph text. Flows a note with line breaks into a frame.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="LE 引出線。 描く Leader. Draw">
+      <p class="ko-na"><span class="ko-tan">LE</span></p>
+      <p class="ko-setu">Leader.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="H ハッチ。 描く Hatch. Draw">
+      <p class="ko-na"><span class="ko-tan">H</span></p>
+      <p class="ko-setu">Hatch.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="記号 建築記号。梁・柱・基礎・耐圧盤・レベル・矢視・図面名。 描く Architectural symbols. Beam, column, footing, mat slab, level, view arrow, drawing title. Draw">
+      <p class="ko-na"><span class="ko-tan">記号</span></p>
+      <p class="ko-setu">Architectural symbols. Beam, column, footing, mat slab, level, view arrow, drawing title.</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="PO POINT 点を置きます。 描く Places a point. Draw">
+      <p class="ko-na"><span class="ko-tan">PO</span><span class="ko-sei">POINT</span></p>
+      <p class="ko-setu">Places a point.</p>
+      <p class="ko-to"><a href="../../tebiki/en/05.html">Handbook　5. Points and division points →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="FRO FROM 基点。ここから測って置く、の起点を決めます。 描く Base point. Sets the origin for &quot;measure from here and place&quot;. Draw">
+      <p class="ko-na"><span class="ko-tan">FRO</span><span class="ko-sei">FROM</span></p>
+      <p class="ko-setu">Base point. Sets the origin for "measure from here and place".</p>
+      <p class="ko-to"><a href="../../tebiki/en/05.html">Handbook　5. Points and division points →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="DIV DIVIDE 分割点。全長を等分して、点を並べます。 描く Divide. Splits the whole length equally and lines up points. Draw">
+      <p class="ko-na"><span class="ko-tan">DIV</span><span class="ko-sei">DIVIDE</span></p>
+      <p class="ko-setu">Divide. Splits the whole length equally and lines up points.</p>
+      <p class="ko-to"><a href="../../tebiki/en/05.html">Handbook　5. Points and division points →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="W WALL 壁 壁 壁（点を順にクリック→右クリック・Enterで置く。曲がり角は自動で継ぐ。W 100,100＝厚200・0＝スナップ点）。 描く Wall (click points in order → right-click or Enter to place. Corners are joined automatically. W 100,100 = thickness 200; 0 = the snap point). Draw">
+      <p class="ko-na"><span class="ko-tan">W</span></p>
+      <p class="ko-setu">Wall (click points in order → right-click or Enter to place. Corners are joined automatically. W 100,100 = thickness 200; 0 = the snap point).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="WW WALLWALK 柱まわし 柱回し 柱まわし 柱まわし（柱を順にクリック→柱間に壁が回る・帯で厚と位置・一体化）。 描く Wall walk (click columns in order → walls run between them; thickness and position on the bar; merge). Draw">
+      <p class="ko-na"><span class="ko-tan">WW</span></p>
+      <p class="ko-setu">Wall walk (click columns in order → walls run between them; thickness and position on the bar; merge).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="BAL BALLOON バルーン 照合番号 バルーン バルーン＝丸に番号の照合番号（指す先→丸の置き場所・番号は続きで増える・BAL D8＝丸の直径 紙の8mm）。 描く Balloon = a reference number in a circle (target → where the circle goes; the number counts up; BAL D8 = circle diameter 8 mm on paper). Draw">
+      <p class="ko-na"><span class="ko-tan">バルーン</span></p>
+      <p class="ko-setu">Balloon = a reference number in a circle (target → where the circle goes; the number counts up; BAL D8 = circle diameter 8 mm on paper).</p>
+      <p class="ko-to"><a href="../../tebiki/en/12.html">Handbook　12. Blocks and the Blocks box →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="PARTS 部品箱 部品箱 部品箱（登録した部品を貼る棚。置く間の帯で倍率＝1／縮尺／数字・押したまま引けば大きさ）。 描く Parts box (the shelf for pasting registered blocks. On the bar while placing: factor = 1 / scale / a number; press and drag for the size). Draw">
+      <p class="ko-na"><span class="ko-tan">PARTS</span></p>
+      <p class="ko-setu">Parts box (the shelf for pasting registered blocks. On the bar while placing: factor = 1 / scale / a number; press and drag for the size).</p>
+      <p class="ko-to"><a href="../../tebiki/en/12.html">Handbook　12. Blocks and the Blocks box →</a></p>
+    </li>
+    <li class="ko" data-yo="描く" data-hiku="SOZAI CADSOZAI 素材 素材 素材をさがす＝CAD 素材の配布サイトの名簿を開く（SOZAI 2＝2番目へ・SOZAI ?＝名簿を直す）。 描く Find parts = opens a list of sites that distribute CAD parts (SOZAI 2 = go to the second; SOZAI ? = edit the list). Draw">
+      <p class="ko-na"><span class="ko-tan">SOZAI</span></p>
+      <p class="ko-setu">Find parts = opens a list of sites that distribute CAD parts (SOZAI 2 = go to the second; SOZAI ? = edit the list).</p>
+      <p class="ko-to"><a href="../../tebiki/en/12.html">Handbook　12. Blocks and the Blocks box →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="D DIM 寸法の列。 測る Dimension chain. Measure">
+      <p class="ko-na"><span class="ko-tan">D</span><span class="ko-sei">DIM</span></p>
+      <p class="ko-setu">Dimension chain.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DAL 平行寸法。 測る Aligned dimension. Measure">
+      <p class="ko-na"><span class="ko-tan">DAL</span></p>
+      <p class="ko-setu">Aligned dimension.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DDI 直径の寸法。 測る Diameter dimension. Measure">
+      <p class="ko-na"><span class="ko-tan">DDI</span></p>
+      <p class="ko-setu">Diameter dimension.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DRA 半径の寸法。 測る Radius dimension. Measure">
+      <p class="ko-na"><span class="ko-tan">DRA</span></p>
+      <p class="ko-setu">Radius dimension.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DAR 弧長の寸法。 測る Arc-length dimension. Measure">
+      <p class="ko-na"><span class="ko-tan">DAR</span></p>
+      <p class="ko-setu">Arc-length dimension.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="DI DIST 計測。図面に残さずに測ります。 測る Measure. Measures without leaving anything in the drawing. Measure">
+      <p class="ko-na"><span class="ko-tan">DI</span><span class="ko-sei">DIST</span></p>
+      <p class="ko-setu">Measure. Measures without leaving anything in the drawing.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="AREA 面積。囲いの内側を、一回クリック。 測る Area. One click inside an enclosure. Measure">
+      <p class="ko-na"><span class="ko-tan">AREA</span></p>
+      <p class="ko-setu">Area. One click inside an enclosure.</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="測る" data-hiku="M2P 二点間中点。二つの点の、ちょうど真ん中。 測る Mid between two points. Exactly the middle of two points. Measure">
+      <p class="ko-na"><span class="ko-tan">M2P</span></p>
+      <p class="ko-setu">Mid between two points. Exactly the middle of two points.</p>
+      <p class="ko-to"><a href="../../tebiki/en/06.html">Handbook　6. Object snap and drawing constraints →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="TR TRIM トリム。はみ出した線を刈ります。 直す Trim. Cuts off the parts of lines that stick out. Modify">
+      <p class="ko-na"><span class="ko-tan">TR</span><span class="ko-sei">TRIM</span></p>
+      <p class="ko-setu">Trim. Cuts off the parts of lines that stick out.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="EX EXTEND 延長。足りない線を、相手まで伸ばします。 直す Extend. Stretches a line that falls short up to its target. Modify">
+      <p class="ko-na"><span class="ko-tan">EX</span><span class="ko-sei">EXTEND</span></p>
+      <p class="ko-setu">Extend. Stretches a line that falls short up to its target.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="O OFFSET 複線。平行にずらした線をつくります。 直す Offset. Makes a line shifted in parallel. Modify">
+      <p class="ko-na"><span class="ko-tan">O</span><span class="ko-sei">OFFSET</span></p>
+      <p class="ko-setu">Offset. Makes a line shifted in parallel.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="F FILLET フィレット。角を丸くします。 直す Fillet. Rounds a corner. Modify">
+      <p class="ko-na"><span class="ko-tan">F</span><span class="ko-sei">FILLET</span></p>
+      <p class="ko-setu">Fillet. Rounds a corner.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="CHA 面取り。角を斜めに落とします。 直す Chamfer. Cuts a corner at an angle. Modify">
+      <p class="ko-na"><span class="ko-tan">CHA</span></p>
+      <p class="ko-setu">Chamfer. Cuts a corner at an angle.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="CO COPY 複製。 直す Copy. Modify">
+      <p class="ko-na"><span class="ko-tan">CO</span><span class="ko-sei">COPY</span></p>
+      <p class="ko-setu">Copy.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="M MOVE 移動。 直す Move. Modify">
+      <p class="ko-na"><span class="ko-tan">M</span><span class="ko-sei">MOVE</span></p>
+      <p class="ko-setu">Move.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="S STRETCH ストレッチ。掴んだ側だけを伸び縮みさせます。 直す Stretch. Lengthens or shortens only the side you grabbed. Modify">
+      <p class="ko-na"><span class="ko-tan">S</span><span class="ko-sei">STRETCH</span></p>
+      <p class="ko-setu">Stretch. Lengthens or shortens only the side you grabbed.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="RO ROTATE 回転。 直す Rotate. Modify">
+      <p class="ko-na"><span class="ko-tan">RO</span><span class="ko-sei">ROTATE</span></p>
+      <p class="ko-setu">Rotate.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="SC SCALE 拡大縮小。 直す Scale. Modify">
+      <p class="ko-na"><span class="ko-tan">SC</span><span class="ko-sei">SCALE</span></p>
+      <p class="ko-setu">Scale.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="MI MIRROR 鏡像。 直す Mirror. Modify">
+      <p class="ko-na"><span class="ko-tan">MI</span><span class="ko-sei">MIRROR</span></p>
+      <p class="ko-setu">Mirror.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="AR 配列。並べて複製します。 直す Array. Copies in rows and columns. Modify">
+      <p class="ko-na"><span class="ko-tan">AR</span></p>
+      <p class="ko-setu">Array. Copies in rows and columns.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="PAR 円形配列。まわりに並べて複製します。 直す Polar array. Copies around a centre. Modify">
+      <p class="ko-na"><span class="ko-tan">PAR</span></p>
+      <p class="ko-setu">Polar array. Copies around a centre.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="J JOIN 結合。分かれている線を、一本にまとめます。 直す Join. Combines separate lines into one. Modify">
+      <p class="ko-na"><span class="ko-tan">J</span><span class="ko-sei">JOIN</span></p>
+      <p class="ko-setu">Join. Combines separate lines into one.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="PR プロパティ。数値を直に打ち替えます。 直す Properties. Retype the numbers directly. Modify">
+      <p class="ko-na"><span class="ko-tan">PR</span></p>
+      <p class="ko-setu">Properties. Retype the numbers directly.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="LIST 名札。その図形が何なのかを見ます。 直す Name tag. Shows what that object is. Modify">
+      <p class="ko-na"><span class="ko-tan">LIST</span></p>
+      <p class="ko-setu">Name tag. Shows what that object is.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="APPINT 仮想交点。延ばせば交わる場所を、交点として掴みます。 直す Apparent intersection. Grabs, as an intersection, the place where lines would meet if extended. Modify">
+      <p class="ko-na"><span class="ko-tan">APPINT</span></p>
+      <p class="ko-setu">Apparent intersection. Grabs, as an intersection, the place where lines would meet if extended.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="HIROI BOM 拾い。数量を拾います。表とCSVで出せます。 直す Take-off. Counts quantities. Output as a table and CSV. Modify">
+      <p class="ko-na"><span class="ko-tan">HIROI</span><span class="ko-sei">BOM</span></p>
+      <p class="ko-setu">Take-off. Counts quantities. Output as a table and CSV.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="TABLE 表。 直す Table. Modify">
+      <p class="ko-na"><span class="ko-tan">TABLE</span></p>
+      <p class="ko-setu">Table.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="YOKE よけ。 直す Exclude (yoke). Modify">
+      <p class="ko-na"><span class="ko-tan">YOKE</span></p>
+      <p class="ko-setu">Exclude (yoke).</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="ISO アイソメ。 直す Isometric. Modify">
+      <p class="ko-na"><span class="ko-tan">ISO</span></p>
+      <p class="ko-setu">Isometric.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="FLATTEN 平らにする 平らに 平ら 平らに 平らに。Z・高さ・厚みを0に（選んだ形／無選択は図面ぜんぶを聞く・U で戻る）。 直す Flatten. Sets Z, elevation and thickness to 0 (the selected shapes / with nothing selected it asks about the whole drawing; U takes it back). Modify">
+      <p class="ko-na"><span class="ko-tan">FLATTEN</span></p>
+      <p class="ko-setu">Flatten. Sets Z, elevation and thickness to 0 (the selected shapes / with nothing selected it asks about the whole drawing; U takes it back).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="PASTESCALE 貼り付け縮尺 貼縮尺 貼り付けの縮尺 貼り付けの縮尺。紙（レイアウト）へ貼る時の縮尺（PASTESCALE 50＝1:50・2:1＝倍尺。モデルでは 1:1 のまま）。 直す Paste scale. The scale used when pasting onto paper (layout) (PASTESCALE 50 = 1:50; 2:1 = enlarged. In model it stays 1:1). Modify">
+      <p class="ko-na"><span class="ko-tan">PASTESCALE</span></p>
+      <p class="ko-setu">Paste scale. The scale used when pasting onto paper (layout) (PASTESCALE 50 = 1:50; 2:1 = enlarged. In model it stays 1:1).</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="COPYBASE 基点を指定してコピー 基点を指定してコピー 基点を指定してコピー。基点を決めてコピー＝貼る時に、その点を持って置ける。 直す Copy with base point. Copy after choosing a base point = when pasting, you hold it by that point. Modify">
+      <p class="ko-na"><span class="ko-tan">COPYBASE</span></p>
+      <p class="ko-setu">Copy with base point. Copy after choosing a base point = when pasting, you hold it by that point.</p>
+      <p class="ko-to"><a href="../../tebiki/en/02.html">Handbook　2. Using the Cursor →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="PASTEORIG 元の場所へ貼り付け 元の場所へ貼り付け 元の場所へ貼り付け。コピーした図形を、元と同じ座標へ貼り付け（別の図面へ同じ場所に写す時に）。 直す Paste to original coordinates. Pastes the copied objects at the same coordinates as the original (for putting them in the same place in another drawing). Modify">
+      <p class="ko-na"><span class="ko-tan">PASTEORIG</span></p>
+      <p class="ko-setu">Paste to original coordinates. Pastes the copied objects at the same coordinates as the original (for putting them in the same place in another drawing).</p>
+      <p class="ko-to"><a href="../../tebiki/en/02.html">Handbook　2. Using the Cursor →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="SELECTSIMILAR 似たものを選ぶ 類似選択 似たものを選ぶ 似たものを選ぶ。選んだ図形と種類・画層・名前が同じものを全部（SELECTSIMILAR）。 直す Select similar. Everything with the same type, layer and name as the selected object (SELECTSIMILAR). Modify">
+      <p class="ko-na"><span class="ko-tan">SELECTSIMILAR</span></p>
+      <p class="ko-setu">Select similar. Everything with the same type, layer and name as the selected object (SELECTSIMILAR).</p>
+      <p class="ko-to"><a href="../../tebiki/en/02.html">Handbook　2. Using the Cursor →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="QSELECT クイック選択 条件で選ぶ クイック選択 クイック選択＝種類・部品・画層・色・線種・太さ・言葉で絞る浮く板（×で閉じる）。 直す Quick select = a floating panel that narrows by type, block, layer, colour, linetype, lineweight and word (× closes it). Modify">
+      <p class="ko-na"><span class="ko-tan">QSELECT</span></p>
+      <p class="ko-setu">Quick select = a floating panel that narrows by type, block, layer, colour, linetype, lineweight and word (× closes it).</p>
+      <p class="ko-to"><a href="../../tebiki/en/02.html">Handbook　2. Using the Cursor →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="中を消す TRIMIN HY 中を消す 中を消す。囲いを選んでトリム→Tab。 直す Erase inside. Select an enclosure, Trim → Tab. Modify">
+      <p class="ko-na"><span class="ko-tan">中を消す</span></p>
+      <p class="ko-setu">Erase inside. Select an enclosure, Trim → Tab.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="DDEDIT ED 文字編集 文字を編集 文字を編集。文字・段落文字の再編集（選択1本→中身だけ直す）。 直す Edit text. Re-edit text and paragraph text (one selected → fix only the content). Modify">
+      <p class="ko-na"><span class="ko-tan">DDEDIT</span><span class="ko-sei">ED</span></p>
+      <p class="ko-setu">Edit text. Re-edit text and paragraph text (one selected → fix only the content).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="LAYCUR 画層へ 現在画層へ 現在画層へ。選択を現在画層へ引っ越し（レイヤ整理）。 直す To current layer. Moves the selection to the current layer (layer tidying). Modify">
+      <p class="ko-na"><span class="ko-tan">LAYCUR</span></p>
+      <p class="ko-setu">To current layer. Moves the selection to the current layer (layer tidying).</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="LAYMCUR 画層取得 この画層を現在に この画層を現在に。選択の画層を現在画層に（図形は動かない）。 直す Make this layer current. Makes the selection&#x27;s layer the current layer (objects do not move). Modify">
+      <p class="ko-na"><span class="ko-tan">LAYMCUR</span></p>
+      <p class="ko-setu">Make this layer current. Makes the selection's layer the current layer (objects do not move).</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="SETBYLAYER 画層に従わせる 画層に従わせる。個別の色・線種を剥がし画層に従わせる。 直す Set ByLayer. Strips individual colour and linetype so that objects follow their layer. Modify">
+      <p class="ko-na"><span class="ko-tan">SETBYLAYER</span></p>
+      <p class="ko-setu">Set ByLayer. Strips individual colour and linetype so that objects follow their layer.</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="REDO 進む やり直し 進む 進む。戻しすぎた一手を進める（⌘Y・⌘⇧Z／新しく描くと進める手は消える）。 直す Redo. Brings back one step undone too far (⌘Y, ⌘⇧Z / drawing something new clears the steps to redo). Modify">
+      <p class="ko-na"><span class="ko-tan">REDO</span></p>
+      <p class="ko-setu">Redo. Brings back one step undone too far (⌘Y, ⌘⇧Z / drawing something new clears the steps to redo).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="LT LINETYPE 線種 線種。現在画層の線種（LT DASHED・LT ?＝品揃え）。 直す Linetype. The linetype of the current layer (LT DASHED; LT ? = what is available). Modify">
+      <p class="ko-na"><span class="ko-tan">LT</span></p>
+      <p class="ko-setu">Linetype. The linetype of the current layer (LT DASHED; LT ? = what is available).</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="直す" data-hiku="TXTEXP 文字を輪郭に 輪郭 文字を輪郭に 文字を輪郭に。選んだ文字を、輪郭の線に変える（表札や切り文字の下ごしらえ）。 直す Text to outlines. Turns the selected text into outline lines (preparation for nameplates and cut lettering). Modify">
+      <p class="ko-na"><span class="ko-tan">輪郭</span></p>
+      <p class="ko-setu">Text to outlines. Turns the selected text into outline lines (preparation for nameplates and cut lettering).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="LA 画層パネル。画層（レイヤ）をまとめて扱います。 整える Layer panel. Handles the layers together. Set up">
+      <p class="ko-na"><span class="ko-tan">LA</span></p>
+      <p class="ko-setu">Layer panel. Handles the layers together.</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="B 部品化。まとめて一つの部品（ブロック）にします。 整える Make block. Gathers objects into one block. Set up">
+      <p class="ko-na"><span class="ko-tan">B</span></p>
+      <p class="ko-setu">Make block. Gathers objects into one block.</p>
+      <p class="ko-to"><a href="../../tebiki/en/12.html">Handbook　12. Blocks and the Blocks box →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="X 分解。部品を、元の線に戻します。 整える Explode. Returns a block to its original lines. Set up">
+      <p class="ko-na"><span class="ko-tan">X</span></p>
+      <p class="ko-setu">Explode. Returns a block to its original lines.</p>
+      <p class="ko-to"><a href="../../tebiki/en/12.html">Handbook　12. Blocks and the Blocks box →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="PROJ プロジェクト。図面の目録。起動して最初に出る板です。 整える Project. The index of drawings. The board that can appear first at startup. Set up">
+      <p class="ko-na"><span class="ko-tan">PROJ</span></p>
+      <p class="ko-setu">Project. The index of drawings. The board that can appear first at startup.</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="CAL 実寸合わせ。下絵の縮尺を、実寸に合わせます。 整える Calibrate. Fits the scale of an underlay to real size. Set up">
+      <p class="ko-na"><span class="ko-tan">CAL</span></p>
+      <p class="ko-setu">Calibrate. Fits the scale of an underlay to real size.</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="書体 FONT TEXTFONT 書体 書体。これから打つ文字の書体を替える（選んだ文字があれば、その書体を替える・一覧はリボンの書体の欄）。 整える Typeface. Changes the typeface of text you are about to type (if text is selected, changes its typeface; the list is in the typeface field on the ribbon). Set up">
+      <p class="ko-na"><span class="ko-tan">書体</span><span class="ko-sei">FONT</span></p>
+      <p class="ko-setu">Typeface. Changes the typeface of text you are about to type (if text is selected, changes its typeface; the list is in the typeface field on the ribbon).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="NOTESCALE 注記の大きさ 注記の大きさ 注記の大きさ。その紙の注記（寸法・文字・引出線）の大きさをまとめて倍率（NOTESCALE 1.5・1＝原図の大きさへ戻す）。 整える Annotation size. Scales all annotations (dimensions, text, leaders) on that sheet by a factor (NOTESCALE 1.5; 1 = back to the original size). Set up">
+      <p class="ko-na"><span class="ko-tan">NOTESCALE</span></p>
+      <p class="ko-setu">Annotation size. Scales all annotations (dimensions, text, leaders) on that sheet by a factor (NOTESCALE 1.5; 1 = back to the original size).</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="PROT 分度器 BUNDOKI 分度器 分度器の入切＝線分の2点目で、基点まわりに角度の目盛りを出す。 整える Protractor on/off = shows angle graduations around the base point at the second point of a line. Set up">
+      <p class="ko-na"><span class="ko-tan">分度器</span></p>
+      <p class="ko-setu">Protractor on/off = shows angle graduations around the base point at the second point of a line.</p>
+      <p class="ko-to"><a href="../../tebiki/en/16.html">Handbook　16. If you get stuck →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="設定 OPTIONS OP SETTING 設定 設定の板（見た目・リボン・案内の入切など）。 整える Settings board (appearance, ribbon, guidance on/off and so on). Set up">
+      <p class="ko-na"><span class="ko-tan">設定</span></p>
+      <p class="ko-setu">Settings board (appearance, ribbon, guidance on/off and so on).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="履歴 りれき HIST HISTORY LOG TEXTSCR 履歴 履歴。案内を500行まで遡る板（左下の淡い履歴の全部）。 整える History. A board that goes back up to 500 lines of guidance (everything in the faint history at the lower left). Set up">
+      <p class="ko-na"><span class="ko-tan">履歴</span></p>
+      <p class="ko-setu">History. A board that goes back up to 500 lines of guidance (everything in the faint history at the lower left).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="単位 UNIT UNITS 単位 単位の取り替え（単位 IN＝インチ→ミリ・逆も）。 整える Unit conversion (単位 IN = inches → millimetres, and the reverse). Set up">
+      <p class="ko-na"><span class="ko-tan">単位</span></p>
+      <p class="ko-setu">Unit conversion (単位 IN = inches → millimetres, and the reverse).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="寸法スタイル DIMSTYLE DST 寸法スタイル 寸法スタイル。寸法の台帳（一覧・切替・新規）。 整える Dimension style. The register of dimension styles (list, switch, new). Set up">
+      <p class="ko-na"><span class="ko-tan">寸法スタイル</span></p>
+      <p class="ko-setu">Dimension style. The register of dimension styles (list, switch, new).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="丸め DIMRND 丸め方式 DIMRNDMODE 寸法の丸め 寸法の丸め。寸法値の丸め（丸め 1＝1066.8→1067・丸め方式 切り上げ＝四捨五入／切り捨て／切り上げ）。 整える Dimension rounding. Rounding of dimension values (丸め 1 = 1066.8 → 1067; 丸め方式 切り上げ = round half up / round down / round up). Set up">
+      <p class="ko-na"><span class="ko-tan">丸め</span></p>
+      <p class="ko-setu">Dimension rounding. Rounding of dimension values (丸め 1 = 1066.8 → 1067; 丸め方式 切り上げ = round half up / round down / round up).</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="桁 DIMDEC 寸法の桁 寸法の桁。寸法値の小数の桁（桁 0＝整数・桁 1＝0.1）。 整える Dimension digits. Decimal places of dimension values (桁 0 = integer; 桁 1 = 0.1). Set up">
+      <p class="ko-na"><span class="ko-tan">桁</span></p>
+      <p class="ko-setu">Dimension digits. Decimal places of dimension values (桁 0 = integer; 桁 1 = 0.1).</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="字高 TEXTSIZE 字高 字高。選んだ文字の大きさを変える（字高 5）。 整える Text height. Changes the size of the selected text (字高 5). Set up">
+      <p class="ko-na"><span class="ko-tan">字高</span></p>
+      <p class="ko-setu">Text height. Changes the size of the selected text (字高 5).</p>
+      <p class="ko-to"><a href="../../tebiki/en/09.html">Handbook　9. Dimensioning: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="文字高 DIMTXT 矢の大きさ DIMASZ 隙間 DIMEXO 突き出し DIMEXE 寸法の衣装（文字高・矢・隙間・突き出し） 寸法の衣装（文字高・矢・隙間・突き出し）。寸法の文字高・矢の大きさ・隙間・突き出し（文字高 3.5）。 整える Dimension dress (text height, arrow, gap, overshoot). Text height, arrow size, gap and overshoot of dimensions (文字高 3.5). Set up">
+      <p class="ko-na"><span class="ko-tan">文字高</span></p>
+      <p class="ko-setu">Dimension dress (text height, arrow, gap, overshoot). Text height, arrow size, gap and overshoot of dimensions (文字高 3.5).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="矢じり DIMARROW DIMBLK 端末記号 矢じり 矢じり。寸法の端末記号を一巡り（斜線＝建築の定番）。 整える Arrowhead. Cycles the terminator of dimensions (the slash = the architectural standard). Set up">
+      <p class="ko-na"><span class="ko-tan">矢じり</span></p>
+      <p class="ko-setu">Arrowhead. Cycles the terminator of dimensions (the slash = the architectural standard).</p>
+      <p class="ko-to"><a href="../../tebiki/en/08.html">Handbook　8. Drawing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="LTDEF 線種定義 線種を作る 線種を作る。自作線種の登録（LTDEF 名前 12,-3＝線12・空き3）。 整える Make a linetype. Registers your own linetype (LTDEF name 12,-3 = dash 12, gap 3). Set up">
+      <p class="ko-na"><span class="ko-tan">LTDEF</span></p>
+      <p class="ko-setu">Make a linetype. Registers your own linetype (LTDEF name 12,-3 = dash 12, gap 3).</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="PDMODE 点の姿 点の姿（PDMODE 3＝×。0=点 1=描かない 2=＋ 34=⊕）。 整える Point style (PDMODE 3 = ×. 0 = dot, 1 = not drawn, 2 = +, 34 = ⊕). Set up">
+      <p class="ko-na"><span class="ko-tan">PDMODE</span></p>
+      <p class="ko-setu">Point style (PDMODE 3 = ×. 0 = dot, 1 = not drawn, 2 = +, 34 = ⊕).</p>
+      <p class="ko-to"><a href="../../tebiki/en/05.html">Handbook　5. Points and division points →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="PDSIZE 点の大きさ 点の大きさ（PDSIZE -3。負＝画面の％・正＝図面）。 整える Point size (PDSIZE -3. Negative = % of the screen; positive = drawing units). Set up">
+      <p class="ko-na"><span class="ko-tan">PDSIZE</span></p>
+      <p class="ko-setu">Point size (PDSIZE -3. Negative = % of the screen; positive = drawing units).</p>
+      <p class="ko-to"><a href="../../tebiki/en/05.html">Handbook　5. Points and division points →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="POLAR 極 極トラッキング 極トラッキング＝角度刻みの綱（POLAR 30＝30度刻み）。 整える Polar tracking = a guide rope at angle steps (POLAR 30 = every 30 degrees). Set up">
+      <p class="ko-na"><span class="ko-tan">POLAR</span></p>
+      <p class="ko-setu">Polar tracking = a guide rope at angle steps (POLAR 30 = every 30 degrees).</p>
+      <p class="ko-to"><a href="../../tebiki/en/06.html">Handbook　6. Object snap and drawing constraints →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="GUIDE ガイド ガイド ガイド。カーソル脇の案内の入切。 整える Guide. Turns the guidance beside the cursor on/off. Set up">
+      <p class="ko-na"><span class="ko-tan">GUIDE</span></p>
+      <p class="ko-setu">Guide. Turns the guidance beside the cursor on/off.</p>
+      <p class="ko-to"><a href="../../tebiki/en/06.html">Handbook　6. Object snap and drawing constraints →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="電卓 QC CALC けいさん 電卓 電卓。式の使い方を出す（＋－×÷と括弧）。 整える Calculator. Shows how to use formulas (+ − × ÷ and brackets). Set up">
+      <p class="ko-na"><span class="ko-tan">電卓</span></p>
+      <p class="ko-setu">Calculator. Shows how to use formulas (+ − × ÷ and brackets).</p>
+      <p class="ko-to"><a href="../../tebiki/en/04.html">Handbook　4. Typing numbers (coordinates and distances) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="DYN 距離入力 ダイナミック入力 距離入力 距離入力。カーソル脇の距離入力の入切（作図中に数字を打つと、カーソルの向きへ伸びます）。 整える Distance input. Turns the distance input beside the cursor on/off (type a number while drawing and the line extends in the cursor&#x27;s direction). Set up">
+      <p class="ko-na"><span class="ko-tan">DYN</span></p>
+      <p class="ko-setu">Distance input. Turns the distance input beside the cursor on/off (type a number while drawing and the line extends in the cursor's direction).</p>
+      <p class="ko-to"><a href="../../tebiki/en/04.html">Handbook　4. Typing numbers (coordinates and distances) →</a></p>
+    </li>
+    <li class="ko" data-yo="整える" data-hiku="ORTHO 直交 直交モードの入切（F8 でも。Shift を握っている間は一時反転）。 整える Ortho mode on/off (F8 too. Temporarily reversed while Shift is held). Set up">
+      <p class="ko-na"><span class="ko-tan">ORTHO</span></p>
+      <p class="ko-setu">Ortho mode on/off (F8 too. Temporarily reversed while Shift is held).</p>
+      <p class="ko-to"><a href="../../tebiki/en/06.html">Handbook　6. Object snap and drawing constraints →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="MV ビューポート。紙の上に置く、図面を映すカメラ。 出す Viewport. A camera placed on the paper that shows the drawing. Output">
+      <p class="ko-na"><span class="ko-tan">MV</span></p>
+      <p class="ko-setu">Viewport. A camera placed on the paper that shows the drawing.</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="VP ビューポートの板。窓ごとに、映り方を細かく直します。 出す Viewport board. Fine-tunes how each viewport shows. Output">
+      <p class="ko-na"><span class="ko-tan">VP</span></p>
+      <p class="ko-setu">Viewport board. Fine-tunes how each viewport shows.</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="3D 立体表示。 出す 3D view. Output">
+      <p class="ko-na"><span class="ko-tan">3D</span></p>
+      <p class="ko-setu">3D view.</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="STL 立体書出。3Dプリンタへ渡す形で出します。 出す Export solid. Outputs in the form handed to a 3D printer. Output">
+      <p class="ko-na"><span class="ko-tan">STL</span></p>
+      <p class="ko-setu">Export solid. Outputs in the form handed to a 3D printer.</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="刻み KIZAMI 刻み（3D の動かす刻み） 刻み（3D の動かす刻み）。面の紙で、自由に動かす点を丸める刻み（刻み 0.5・0＝丸めない・帯の［刻み］でも切替）。 出す Step (the move step in 3D). The step that rounds freely moved points on a face sheet (刻み 0.5; 0 = no rounding; also switched with [Step] on the bar). Output">
+      <p class="ko-na"><span class="ko-tan">刻み</span></p>
+      <p class="ko-setu">Step (the move step in 3D). The step that rounds freely moved points on a face sheet (刻み 0.5; 0 = no rounding; also switched with [Step] on the bar).</p>
+      <p class="ko-to"><a href="../../tebiki/en/06.html">Handbook　6. Object snap and drawing constraints →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="ROOF 屋根 屋根＝3D の部屋で、建物（壁や箱）を押すと載る（切妻・寄棟・方形・片流れ。種類と数字は帯で）。 出す Roof = in the 3D room, press a building (walls or a box) and it sits on top (gable, hip, pyramid, shed. Type and numbers on the bar). Output">
+      <p class="ko-na"><span class="ko-tan">ROOF</span></p>
+      <p class="ko-setu">Roof = in the 3D room, press a building (walls or a box) and it sits on top (gable, hip, pyramid, shed. Type and numbers on the bar).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="積む STACK 積む（図面を階へ） 積む（図面を階へ）。開いている図面を高さに積んで、置き方を決めて立体で見る（右上にファイルマネージャー＝開いている図面の一覧）。 出す Stack (drawings into floors). Stacks the open drawings by height, decides their placement and shows them as a solid (File manager at the top right = the list of open drawings). Output">
+      <p class="ko-na"><span class="ko-tan">積む</span><span class="ko-sei">STACK</span></p>
+      <p class="ko-setu">Stack (drawings into floors). Stacks the open drawings by height, decides their placement and shows them as a solid (File manager at the top right = the list of open drawings).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="部材 MEMBER 部材 部材。「部材 梁」＝帯を開いて部材を梁に（柱・壁・梁・床・その他）。 出す Member. &quot;部材 梁&quot; = opens the bar and sets the member to beam (column, wall, beam, floor, other). Output">
+      <p class="ko-na"><span class="ko-tan">部材</span></p>
+      <p class="ko-setu">Member. "部材 梁" = opens the bar and sets the member to beam (column, wall, beam, floor, other).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="EXT EXTRUDE 押し出し 押出 厚み 押し出し 押し出し。選んだ形に厚みを与える（EXT 1200・EXT 0 で外す・何も選ばずに打つと図面ぜんぶの壁と柱へ）。 出す Extrude. Gives thickness to the selected shapes (EXT 1200; EXT 0 removes it; typed with nothing selected it applies to all walls and columns in the drawing). Output">
+      <p class="ko-na"><span class="ko-tan">EXT</span></p>
+      <p class="ko-setu">Extrude. Gives thickness to the selected shapes (EXT 1200; EXT 0 removes it; typed with nothing selected it applies to all walls and columns in the drawing).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="MEMBERS 部材の板 部材一覧 部材の板 部材の板。この図面の部材の一覧＝行を押すと図面で光る／入れ替え・下端・高さ・一つずつ解除。 出す Members board. The list of members in this drawing = press a row and it lights up in the drawing / change kind, base, height, release one by one. Output">
+      <p class="ko-na"><span class="ko-tan">MEMBERS</span></p>
+      <p class="ko-setu">Members board. The list of members in this drawing = press a row and it lights up in the drawing / change kind, base, height, release one by one.</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="VPNOTE 注記倍率 窓の注記倍率 窓の注記倍率。窓の注記（寸法・文字・引出線）をまとめて倍率（VPNOTE 1.5）。原図は変わりません。 出す Viewport annotation factor. Scales the annotations (dimensions, text, leaders) of a viewport together (VPNOTE 1.5). The original drawing does not change. Output">
+      <p class="ko-na"><span class="ko-tan">VPNOTE</span></p>
+      <p class="ko-setu">Viewport annotation factor. Scales the annotations (dimensions, text, leaders) of a viewport together (VPNOTE 1.5). The original drawing does not change.</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="VPSCALE 窓縮尺 MVSCALE 窓の縮尺 窓の縮尺。その窓の縮尺を打つ（VPSCALE 75＝1:75・2:1 の顔でも受ける）。 出す Viewport scale. Type the scale of that viewport (VPSCALE 75 = 1:75; the form 2:1 is accepted too). Output">
+      <p class="ko-na"><span class="ko-tan">VPSCALE</span></p>
+      <p class="ko-setu">Viewport scale. Type the scale of that viewport (VPSCALE 75 = 1:75; the form 2:1 is accepted too).</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="FIT フィット 用紙にフィット 図枠フィット 用紙にフィット 用紙にフィット。選んだ図枠を、用紙いっぱいに合わせる（形は変えません）。 出す Fit to sheet. Fits the selected title block to the full sheet (the shape is not changed). Output">
+      <p class="ko-na"><span class="ko-tan">FIT</span></p>
+      <p class="ko-setu">Fit to sheet. Fits the selected title block to the full sheet (the shape is not changed).</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="DANMEN 断面 断面を拾う 断面を拾う 断面を拾う＝輪郭の内側を一回クリック→もう一度で採る（元の図面は読むだけ・新しい一枚へ）。 出す Pick a section = click once inside the outline → once more to take it (the original drawing is only read; it goes to a new sheet). Output">
+      <p class="ko-na"><span class="ko-tan">DANMEN</span></p>
+      <p class="ko-setu">Pick a section = click once inside the outline → once more to take it (the original drawing is only read; it goes to a new sheet).</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="COMPARE 比較 図面の比較 図面の比較 図面の比較。前の版と新しい版を比べる板＝赤（消えた）・緑（増えた）・番号つきの雲で一か所ずつ寄る（リボン［ファイル］の［比較］にも）。 出す Compare drawings. A board that compares the previous and the new version = red (removed), green (added), numbered clouds to visit one by one (also [Compare] in the File menu). Output">
+      <p class="ko-na"><span class="ko-tan">COMPARE</span></p>
+      <p class="ko-setu">Compare drawings. A board that compares the previous and the new version = red (removed), green (added), numbered clouds to visit one by one (also [Compare] in the File menu).</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="WS WIRESAW ワイヤーソー ワイヤーソー ワイヤーソー。3D の部屋で、選んだ立体にワイヤーソーを据える（面の上に二点＝刃 → 板で機械と据える側・数字は【試算】）。 出す Wire saw. In the 3D room, sets a wire saw on the selected solid (two points on a face = the blade → machine and mounting side on the board; numbers are estimates). Output">
+      <p class="ko-na"><span class="ko-tan">WS</span></p>
+      <p class="ko-setu">Wire saw. In the 3D room, sets a wire saw on the selected solid (two points on a face = the blade → machine and mounting side on the board; numbers are estimates).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="ページ設定 PAGESETUP PS ページ設定 ページ設定。用紙・向き（横／縦）・縮尺・破線ピッチ・寸法スタイルの板（PAGESETUP）。 出す Page setup. The board for sheet, orientation (landscape / portrait), scale, dash pitch and dimension style (PAGESETUP). Output">
+      <p class="ko-na"><span class="ko-tan">ページ設定</span></p>
+      <p class="ko-setu">Page setup. The board for sheet, orientation (landscape / portrait), scale, dash pitch and dimension style (PAGESETUP).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="PAGE ページ PDF のページ送り PDF のページ送り。束の PDF のページを入れ替える（PAGE 4＝4ページ目へ）。 出す PDF page turn. Switches the page of a multi-page PDF (PAGE 4 = to page 4). Output">
+      <p class="ko-na"><span class="ko-tan">PAGE</span></p>
+      <p class="ko-setu">PDF page turn. Switches the page of a multi-page PDF (PAGE 4 = to page 4).</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="REVOLVE ろくろ ろくろ＝3D の部屋で、閉じた断面の内側→軸の線→回った形を見て置く。 出す Lathe = in the 3D room, inside of a closed section → the axis line → look at the revolved shape and place it. Output">
+      <p class="ko-na"><span class="ko-tan">REVOLVE</span></p>
+      <p class="ko-setu">Lathe = in the 3D room, inside of a closed section → the axis line → look at the revolved shape and place it.</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="LTS LTSCALE 線種の目盛り 線種の目盛り（自動＝紙のピッチ基準）。 出す Linetype scale (automatic = based on the pitch on paper). Output">
+      <p class="ko-na"><span class="ko-tan">LTS</span></p>
+      <p class="ko-setu">Linetype scale (automatic = based on the pitch on paper).</p>
+      <p class="ko-to"><a href="../../tebiki/en/11.html">Handbook　11. Layers and linetypes →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="NEW QNEW 新しい図面 新しい図面のタブ（⌘T・⌘N）。 出す New drawing tab (⌘T, ⌘N). Output">
+      <p class="ko-na"><span class="ko-tan">NEW</span></p>
+      <p class="ko-setu">New drawing tab (⌘T, ⌘N).</p>
+      <p class="ko-to"><a href="../../tebiki/en/03.html">Handbook　3. Moving around the screen →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="TITLE 表題 表題欄 表題欄の記入（作成者・図番）。 出す Fill in the title block (author, drawing number). Output">
+      <p class="ko-na"><span class="ko-tan">TITLE</span></p>
+      <p class="ko-setu">Fill in the title block (author, drawing number).</p>
+      <p class="ko-to"><a href="../../tebiki/en/14.html">Handbook　14. Printing (putting it on paper) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="SCRIPT 台本 台本を流す 台本を流す 台本を流す。K&#x27;Ad の言葉で書いた文字のファイル（.txt）を選んで図面へ流す＝止まれば一本も書かない・U ひと押しで全部戻る。 出す Run script. Choose a text file (.txt) written in K&#x27;Ad&#x27;s words and run it into the drawing = if it stops, nothing is drawn; one U takes it all back. Output">
+      <p class="ko-na"><span class="ko-tan">SCRIPT</span></p>
+      <p class="ko-setu">Run script. Choose a text file (.txt) written in K'Ad's words and run it into the drawing = if it stops, nothing is drawn; one U takes it all back.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="SCRIPTEDIT 台本の机 台本を書く 台本の机 台本の机。台本を書く・流す・直す浮く板＝語彙の棚を押すと例文が入る・止まった行は赤く・開く／保存は .txt。 出す Script desk. A floating panel to write, run and fix scripts = press the vocabulary shelf to insert an example; a stopped line turns red; open / save use .txt. Output">
+      <p class="ko-na"><span class="ko-tan">SCRIPTEDIT</span></p>
+      <p class="ko-setu">Script desk. A floating panel to write, run and fix scripts = press the vocabulary shelf to insert an example; a stopped line turns red; open / save use .txt.</p>
+      <p class="ko-to"><a href="../../tebiki/en/10.html">Handbook　10. Editing: step by step →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="SL SLICE スライス スライス＝3D の部屋で、選んだ立体を面の上の二点（糸）で切り分ける（粘土を糸で切る）。 出す Slice = in the 3D room, cuts the selected solid apart with two points (a thread) on a face (like cutting clay with a thread). Output">
+      <p class="ko-na"><span class="ko-tan">SL</span><span class="ko-sei">SLICE</span></p>
+      <p class="ko-setu">Slice = in the 3D room, cuts the selected solid apart with two points (a thread) on a face (like cutting clay with a thread).</p>
+      <p class="ko-to"><a href="../../tebiki/en/15.html">Handbook　15. Solids (3D and STL) →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="SAVE QSAVE 保存 保存（⌘S。初めての保存は、DXF／PDF の形を選ぶ板が出ます）。 出す Save (⌘S. On the first save, a board asks the format: DXF / PDF). Output">
+      <p class="ko-na"><span class="ko-tan">SAVE</span></p>
+      <p class="ko-setu">Save (⌘S. On the first save, a board asks the format: DXF / PDF).</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="SAVEAS 別名で保存 別名で保存。名前をつけて保存（⌘⇧S）。 出す Save as. Save under a name (⌘⇧S). Output">
+      <p class="ko-na"><span class="ko-tan">SAVEAS</span></p>
+      <p class="ko-setu">Save as. Save under a name (⌘⇧S).</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="出す" data-hiku="OPEN 開く 開く（⌘O。DXF・DWG・PDF・JWW・STL・画像＝下絵）。 出す Open (⌘O. DXF, DWG, PDF, JWW, STL, images = underlay). Output">
+      <p class="ko-na"><span class="ko-tan">OPEN</span></p>
+      <p class="ko-setu">Open (⌘O. DXF, DWG, PDF, JWW, STL, images = underlay).</p>
+      <p class="ko-to"><a href="../../tebiki/en/13.html">Handbook　13. Opening, saving, and setting the true size →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="Esc 一歩さがる。掴みを放す・窓を閉じる・中止。 キー One step back. Let go, close a window, cancel. Keys">
+      <p class="ko-na"><span class="ko-tan">Esc</span></p>
+      <p class="ko-setu">One step back. Let go, close a window, cancel.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="U 元に戻す。何度でも。 キー Undo. As many times as you like. Keys">
+      <p class="ko-na"><span class="ko-tan">U</span></p>
+      <p class="ko-setu">Undo. As many times as you like.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="Tab 重なった図形の選び直し／吸着候補の切替。 キー Re-pick among overlapping objects / cycle snap candidates. Keys">
+      <p class="ko-na"><span class="ko-tan">Tab</span></p>
+      <p class="ko-setu">Re-pick among overlapping objects / cycle snap candidates.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="E 選択中を削除（Delete も同じ）。 キー Erase the selection (Delete does the same). Keys">
+      <p class="ko-na"><span class="ko-tan">E</span></p>
+      <p class="ko-setu">Erase the selection (Delete does the same).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="スペース 押しながら左ドラッグ＝パン（図面をずらす）。 キー Hold and left-drag = pan (shift the drawing). Keys">
+      <p class="ko-na"><span class="ko-tan">スペース</span></p>
+      <p class="ko-setu">Hold and left-drag = pan (shift the drawing).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="F5 アイソメの面を回す（左・上・右）。 キー Turns the isometric plane (left, top, right). Keys">
+      <p class="ko-na"><span class="ko-tan">F5</span></p>
+      <p class="ko-setu">Turns the isometric plane (left, top, right).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="F8 直交の入切。Shift を押している間だけ反転。 キー Ortho on/off. Reversed only while Shift is held. Keys">
+      <p class="ko-na"><span class="ko-tan">F8</span></p>
+      <p class="ko-setu">Ortho on/off. Reversed only while Shift is held.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘A 全選択（⌘⇧A で全選択解除）。 キー Select all (⌘⇧A deselects all). Keys">
+      <p class="ko-na"><span class="ko-tan">⌘A</span></p>
+      <p class="ko-setu">Select all (⌘⇧A deselects all).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘C コピー。 キー Copy. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘C</span></p>
+      <p class="ko-setu">Copy.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘X 切り取り。 キー Cut. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘X</span></p>
+      <p class="ko-setu">Cut.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘V 貼り付け。貼る場所をクリックします。 キー Paste. Click where to paste. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘V</span></p>
+      <p class="ko-setu">Paste. Click where to paste.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘⇧V 控えた時と同じ座標へ、そのまま貼る。 キー Pastes as is, at the same coordinates as when it was copied. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘⇧V</span></p>
+      <p class="ko-setu">Pastes as is, at the same coordinates as when it was copied.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘Z 元に戻す（U と同じはたらき）。 キー Undo (the same as U). Keys">
+      <p class="ko-na"><span class="ko-tan">⌘Z</span></p>
+      <p class="ko-setu">Undo (the same as U).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘S 保存（⌘⇧S で名前をつけて保存）。 キー Save (⌘⇧S saves under a name). Keys">
+      <p class="ko-na"><span class="ko-tan">⌘S</span></p>
+      <p class="ko-setu">Save (⌘⇧S saves under a name).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘O 開く。DXF・DWG・PDF・JWW・STL。 キー Open. DXF, DWG, PDF, JWW, STL. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘O</span></p>
+      <p class="ko-setu">Open. DXF, DWG, PDF, JWW, STL.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘N 新しい図面のタブ（⌘T も同じ）。 キー New drawing tab (⌘T does the same). Keys">
+      <p class="ko-na"><span class="ko-tan">⌘N</span></p>
+      <p class="ko-setu">New drawing tab (⌘T does the same).</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘P PDFに書き出し。 キー Export to PDF. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘P</span></p>
+      <p class="ko-setu">Export to PDF.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="⌘K エイリアスボード。⌘の鍵を、自分の指に替えます。 キー Alias board. Change the ⌘ keys to suit your own fingers. Keys">
+      <p class="ko-na"><span class="ko-tan">⌘K</span></p>
+      <p class="ko-setu">Alias board. Change the ⌘ keys to suit your own fingers.</p>
+      <p class="ko-to"><a href="../../tebiki/en/07.html">Handbook　7. Key reference →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="HELP ヘルプ 手引き TEBIKI 手引き（ブラウザで開く） 手引き（ブラウザで開く）。絵つきの手引きをブラウザで開く（K&#x27;Ad の隣に並べて、見ながら描けます）。 キー Handbook (open in browser). Opens the illustrated handbook in the browser (put it beside K&#x27;Ad and draw while reading). Keys">
+      <p class="ko-na"><span class="ko-tan">ヘルプ</span></p>
+      <p class="ko-setu">Handbook (open in browser). Opens the illustrated handbook in the browser (put it beside K'Ad and draw while reading).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="? コマンド一覧 コマンド一覧。この表を開く／閉じる（? 壁 のように言葉を続けると、やりたい事から道具を探します）。 キー Command list. Opens / closes this table (follow it with a word, as in &quot;? 壁&quot;, to find a tool from what you want to do). Keys">
+      <p class="ko-na"><span class="ko-tan">?</span></p>
+      <p class="ko-setu">Command list. Opens / closes this table (follow it with a word, as in "? 壁", to find a tool from what you want to do).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="教本 MANUAL きょうほん 教本 教本＝手順を文章で読む本（浮く板・読みながら描けます）。 キー Manual = the book for reading the steps as text (a floating panel; you can draw while reading). Keys">
+      <p class="ko-na"><span class="ko-tan">教本</span></p>
+      <p class="ko-setu">Manual = the book for reading the steps as text (a floating panel; you can draw while reading).</p>
+      <p class="ko-to"><a href="../../tebiki/en/01.html">Handbook　1. Getting Started (the layout of the screen) →</a></p>
+    </li>
+    <li class="ko" data-yo="キー" data-hiku="免責 DISCLAIMER MENSEKI 免責 免責事項を読み返す。 キー Read the disclaimer again. Keys">
+      <p class="ko-na"><span class="ko-tan">免責</span></p>
+      <p class="ko-setu">Read the disclaimer again.</p>
+      <p class="ko-to"><a href="../../tebiki/en/16.html">Handbook　16. If you get stuck →</a></p>
+    </li>
+  </ul>
+
+  <p class="karappo" id="karappo" hidden>
+    Nothing found for that word. Please try another way of saying it.<br>
+    If it is still missing, it may simply not be in the dictionary yet.
+    Tell us through the <a href="../../../koe/">suggestion box</a> (the page is in Japanese). We add entries one by one.
+  </p>
+
+  <p class="ashi">
+    This dictionary is copied from the handbook and from the manual inside K'Ad.<br>
+    This English page is generated from the Japanese dictionary; the translation is updated at milestones, not with every change.<br>
+    If something looks wrong, please write to info (at) engawaya.com.
+  </p>
+
+</div>
+</main>
+
+<!-- 足元（2026-11-20）。表紙・開発日記・K'Ad蔵人とは、と同じ物。免責の文言は、全ページで揃える決まり。 -->
+<footer class="ie-ft" id="toiawase">
+  <div class="ie-in">
+    <div class="ie-ft-cols">
+      <div>
+        <p class="ie-ft-h">縁側屋 ENGAWAYA</p>
+        <p>建築・土木の図面の道具と、乗務員のナビ。</p>
+        <p>ソフトウェアの個人開発です。</p>
+      </div>
+      <div>
+        <p class="ie-ft-h">お問い合わせ</p>
+        <p><span class="renraku">info アットマーク engawaya.com</span></p>
+        <ul>
+          <li><a href="../../../koe/">投書箱（登録も名乗りも要りません）</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="ie-ft-h">決まりごと</p>
+        <ul>
+          <li><a href="../../../ochigee/privacy/">プライバシーポリシー（Ochi-Gee）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-support/privacy.html">プライバシーポリシー（TAXI PRO NAVI）</a></li>
+          <li><a href="https://highlylights0-hub.github.io/geomemory-help/">TAXI PRO NAVI の使い方とサポート</a></li>
+          <li><a href="../../../jokyo/">稼働の様子（情報の取り込みが動いているか）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ie-ft-men">
+      <p>どの道具も、まだ開発中です。うまく動かないところが残っています。</p>
+      <p>ファイルを扱うときは、必ず控え（バックアップ）を取ってからどうぞ。上書きしたものは元に戻せません。大事な図面や記録は、こまめに保存して、別の場所にも控えを置いてください。</p>
+      <p>ナビは、運転中に操作しないでください。道順や知らせより、実際の道路標識・交通規制・係員の指示が優先です。</p>
+      <p>使ったことで起きた損害まではお引き受けできません。そこだけご承知ください。</p>
+      <p>おかしいところ、こうしてほしいところがあれば、投書箱かメールでお知らせください。ひとつずつ直していきます。</p>
+    </div>
+    <p class="ie-ft-mei">© 2026 縁側屋　岡澤博喜　蔵人Claude<br>このページの制作と管理は Claude が担当しています</p>
+  </div>
+</footer>
+
+<script>
+/* しぼり込み。外から何も読み込まないので、ここに全部書いてあります。
+   ⚠️この script が動かない機械でも、項目は全部そのまま出ます。
+   （隠すのは script が動いたあとだけ＝読み上げソフトでも最初から全件読めます） */
+(function () {
+  var mado  = document.getElementById('mado');
+  var list  = document.getElementById('list');
+  var kazu  = document.getElementById('kazu');
+  var kara  = document.getElementById('karappo');
+  var chips = document.getElementById('chips');
+  var kos   = Array.prototype.slice.call(list.getElementsByClassName('ko'));
+  var yo    = '';
+
+  function fuu() {
+    var kotoba = mado.value.trim().toLowerCase();
+    var nokori = 0;
+    kos.forEach(function (ko) {
+      var au = (!yo || ko.getAttribute('data-yo') === yo) &&
+               (!kotoba || ko.getAttribute('data-hiku').toLowerCase().indexOf(kotoba) >= 0);
+      ko.hidden = !au;
+      if (au) nokori++;
+    });
+    kazu.textContent = nokori + (nokori === 1 ? ' entry' : ' entries');
+    kara.hidden = nokori > 0;
+  }
+
+  mado.addEventListener('input', fuu);
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    yo = b.getAttribute('data-yo');
+    Array.prototype.forEach.call(chips.getElementsByClassName('chip'), function (c) {
+      c.setAttribute('aria-pressed', c === b ? 'true' : 'false');
+    });
+    fuu();
+  });
+  fuu();
+})();
+</script>
+
+<!-- 2026-11-20 ここにあった「時刻で光を変える」仕掛け（data-time）は、やめた。
+     顔は上の行の「明るくする／暗くする」で選ぶ（kihon.js）。 -->
