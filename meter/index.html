@@ -716,6 +716,33 @@ footer a { color: inherit; }
 
   keisan();   /* 開いた時点の表示を作っておく */
 })();
+
+/* ------------------------------------------------------------
+   仲間の板の中で開かれたとき（2026-11-22）。
+   TAXI PRO NAVI の仲間の板（乗務員の Web の板）の［メーター引き］のタブは、
+   この頁を枠（iframe）でそのまま見せている＝正はこの一枚だけ。
+   枠の高さが決まっていると、枠の中と板とで二重にスクロールになり、
+   指で動かすと思った方が動かない。疲れた手には、それがいちばん困る。
+   だから枠の中にいる時だけ、この頁の丈を板へ知らせて、枠を丈どおりに伸ばしてもらう。
+   知らせるのは丈の数字ひとつだけ（打った数字は送らない）。
+   body の min-height（画面いっぱい）を枠の中では外す。
+   外さないと、枠を伸ばした丈がそのまま底になって、縮めなくなる。
+   ------------------------------------------------------------ */
+(function () {
+  if (window.parent === window) { return; }
+  document.body.style.minHeight = '0';
+  var mae = 0;
+  function shiraseru() {
+    var take = Math.ceil(document.body.scrollHeight);
+    if (take === mae) { return; }
+    mae = take;
+    window.parent.postMessage({ meterHeight: take }, '*');
+  }
+  if (window.ResizeObserver) { new ResizeObserver(shiraseru).observe(document.body); }
+  window.addEventListener('load', shiraseru);
+  document.addEventListener('toggle', shiraseru, true); /* 「出どころ」を開け閉めしたとき */
+  shiraseru();
+})();
 </script>
 </body>
 </html>
