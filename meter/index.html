@@ -290,6 +290,7 @@ h1 {
 }
 .naoshita { color: var(--minus); font-weight: 700; }
 .kakinaoshi { font-size: 16px; text-align: right; padding: 2px 6px 0; }
+.naoshi-list { list-style: none; margin: 0; padding: 8px 12px; border: 2px solid var(--minus); border-radius: 6px; font-size: 18px; line-height: 1.9; }
 .chui { font-size: 14px; margin: 10px 0 0; line-height: 1.6; }
 .chui.minus, .minus { color: var(--minus); }
 .hosoku { font-size: 12.5px; color: var(--ink-soft); margin: 8px 0 0; line-height: 1.6; }
@@ -433,7 +434,19 @@ footer a { color: inherit; }
     <!-- 二重線（2026-11-22 博喜さん「日報Ⅰに二重線を引き表示を足してください」）：
          マニュアルの訂正の見本と同じく、刷られた数字を二重線で消し、その横に書き直す数字を出す。
          紙の上でやることを、そのまま画面に見せる＝写すだけで済む。 -->
-    <p class="chui" id="naoshiChui" hidden><b class="naoshita">赤い数字</b>＝調整金額により、事務所・乗務員が確認する数字。日報の<b>税込運収・消費税・運収</b>は、刷られた数字を二重線で消して、赤い数字に書き直す。<b>納金額</b>は手で書く欄なので、そのまま書く。</p>
+    <div class="chui" id="naoshiChui" hidden>
+      <!-- 書き直しの一覧（2026-11-22 博喜さんが書いてくれた形のまま：
+           「税込運収→０００００￥／高速納金＝※変わらない／納金額→…／消費税→…／運収→…」）。
+           並びは日報１の上からの順。矢印は「書き直す」、＝は「そのまま」。 -->
+      <p style="margin:0 0 4px"><b class="naoshita">赤い数字</b>＝調整金額により、事務所・乗務員が確認する数字。刷られた数字を二重線で消して書き直す。</p>
+      <ul class="naoshi-list">
+        <li>税込運収 → <b class="naoshita" id="nGross"></b></li>
+        <li>高速納金 ＝ ※変わらない</li>
+        <li>納金額 → <b class="naoshita" id="nFinal"></b></li>
+        <li>消費税 → <b class="naoshita" id="nTax"></b></li>
+        <li>運収 → <b class="naoshita" id="nNet"></b></li>
+      </ul>
+    </div>
     <!-- 式は、マニュアルの「計算方法」(1)〜(4) と同じ順・同じ書き方で出す。
          合わなかった晩に、紙のマニュアルと一行ずつ見比べられるように。 -->
     <ol class="shiki">
@@ -659,6 +672,10 @@ footer a { color: inherit; }
     var gn = document.getElementById('grossNaoshi');
     gn.hidden = !naoshi;
     nijuu('grossNaoshi', naoshi ? kazu(gross) : '', naoshi ? kazu(adjusted) : '');
+    put('nGross', kazu(adjusted) + '￥');
+    put('nFinal', kazu(final) + '￥');
+    put('nTax',   kazu(tax) + '￥');
+    put('nNet',   kazu(net) + '￥');
 
     var rawShow = Math.floor(taxRaw * 1000) / 1000;
     var tsuzuki = (rawShow !== taxRaw) ? '…' : '';
