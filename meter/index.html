@@ -72,9 +72,23 @@
       Swift 版のコメントには「運収＋税＋高速代＋チップ」とあったので聞いたが、
       要らないとのこと。増やさない判断なので、蒸し返さないこと。
 
-    まだ確かめていないこと（施主に聞いてある）:
-      ・丸めの単位 … 会社の伝票が10円単位でなければ、ここを変える。
-      ・高速代の向き … 足す（預かった現金を納める）で合っているか。
+    確かめたこと（2026-11-22 施主から会社の納金マニュアルを見せてもらった）:
+      ・丸め … 11 で割った数の 1 の位を四捨五入（10円単位）。いままでどおりで合っていた。
+      ・高速代 … 最後に足す（高速納金と (1) を足して納金額）。合っていた。
+      ・調整は引くだけ（迎車キャンセルの分がほとんど）。足すことは無い。
+
+    升目を日報１・金種票・納金カードに合わせた（2026-11-22）:
+      施主「ぶっきらぼうな UI ですが、矢崎メーターの自動日報に合わせる＝
+      使い慣れた UI なので、理解しやすい」。
+      ・メーターが出した数字は変えられない。迎車キャンセルの分も、税込運収に足されたまま。
+      ・金種票＝納金機に入れる数字。上の三行は訂正前のまま書き、引く分は
+        「その他」の欄を二重線で消して「メーター引き」と書き、そこに額を書く。
+        納金機には「その他」で入れ、総納金額から引いてもらう＝乗務員が損をしない。
+      ・日報１の直し（消費税・運収）と納金カード＝事務所と本人が、調整した額を知るための数字。
+      ・二つを同じ一枚で見せる（施主「二つの要素を見たい」）。
+      ・会社の名前・配車の名前は、この公開の頁には書かない。
+      ・マニュアルの例（未収合計）には足し算の誤りがあった（30,090 → 正しくは 30,990）。
+        機械に足させる意味は、ここにある。
 
     憲法（母屋の CLAUDE.md）に沿っていること:
       ・外から何も読み込まない（この一枚だけで完結。地図も無いので例外ゼロ）
@@ -87,7 +101,7 @@
     外した案とその理由:
       ・打ち込んだ数字の保存 … 置き場（ブラウザの中）は掃除で消える。
         「覚えているつもりだったのに消えた」が起きるくらいなら、
-        毎回打ち直すほうが安全。数字は3つしかない。
+        毎回打ち直すほうが安全。日報は3つ、金種票は紙の伝票を見ながら打つ数字。
       ・日ごとの記録・集計 … それは別の道具の仕事。
         一枚でやることを増やすと、いちばん使う「今日の納金」が遠くなる。
       ・画面の下に貼りつく答えの帯 … iPhone はキーボードが出ると
@@ -103,7 +117,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261120">
 <link rel="icon" type="image/png" href="/favicon.png?v=20261120">
 <title>メーター引き — 納金の計算｜縁側屋</title>
-<meta name="description" content="タクシーの納金計算。税込の運収を打ち込むだけで、消費税・税抜運収・納める金額が出ます。途中の数字も全部出るので、伝票と見比べられます。無料・登録もインストールも不要。">
+<meta name="description" content="タクシーの納金計算。日報の税込運収・調整・高速納金を打つと、消費税・運収・納金額と、金種票（メーター引き・未収合計・現金合計）が出ます。無料・登録もインストールも不要。">
 
 <meta property="og:title" content="メーター引き — 納金の計算｜縁側屋">
 <meta property="og:description" content="ひと晩の運収から、納める金額を。消費税も税抜運収も、途中の式ごと出ます。ブラウザで開けば、すぐ使えます。無料・登録不要。">
@@ -128,6 +142,7 @@ html, body { margin: 0; padding: 0; }
   --accent:     #9c5f2d;
   --minus:      #a33b2a;   /* 引く数の色 */
   --field:      #fffdf8;   /* 打ち込む欄の地の色 */
+  --utsu:       #fff4c4;   /* 日報１の打つ三つ（紙に蛍光ペンを引いた色） */
 }
 html[data-time="morning"] { --sky-top: #dbe9f4; --sky-bottom: #fdfcf7; }
 html[data-time="day"]     { --sky-top: #f2efe6; --sky-bottom: #fbf8f1; }
@@ -140,6 +155,7 @@ html[data-time="night"] {
   --accent: #e0a061;
   --minus: #e08a72;
   --field: #1c2333;
+  --utsu: #3a3520;
 }
 
 /* ---- 全体 ---- */
@@ -204,135 +220,77 @@ h1 {
   letter-spacing: .08em;
 }
 
-/* ---- 打ち込む欄 ----------------------------------------------
-   高さを 58px 取っているのは見た目のためではない。
-   20時間走ったあとの手で、揺れる車内で、狙いを外さず押せるため。 */
-.field { margin-bottom: 12px; }
-.field label {
-  display: block;
-  font-size: 15px;
-  margin-bottom: 2px;
-}
-.field .hint {
-  display: block;
-  font-size: 12.5px;
-  color: var(--ink-soft);
-  line-height: 1.5;
-  margin-bottom: 5px;
-}
-.inputwrap { position: relative; }
-.inputwrap input {
+/* ---- 升目（日報１・金種票・納金カード）2026-11-22 --------------------
+   紙と同じ形に見えることが、いちばんの分かりやすさ（博喜さん「使い慣れた UI」）。
+   だから角を丸めず、罫をはっきり引く。行の高さ 52px は、揺れる車内でも押し外さないため。 */
+.kozi { font-size: 12.5px; letter-spacing: .02em; color: var(--accent); }
+.hyo {
   width: 100%;
-  height: 58px;
-  padding: 0 42px 0 14px;
-  font-size: 26px;              /* 16px 未満だと iPhone が勝手に拡大する。大きく取る */
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 15px;
+}
+.hyo th, .hyo td {
+  border: 1.5px solid var(--ink-soft);
+  height: 52px;
+  padding: 0 8px;
+}
+.hyo th { font-weight: 400; text-align: center; letter-spacing: .08em; }
+.hyo td { text-align: right; font-size: 20px; white-space: nowrap; }
+.hyo td:has(input) { padding: 4px; }
+.hyo input {
+  width: 100%;
+  height: 44px;
+  padding: 0 8px;
+  font-size: 20px;               /* 16px 未満だと iPhone が勝手に拡大する */
   font-family: inherit;
   font-variant-numeric: tabular-nums;
   text-align: right;
   color: var(--ink);
   background: var(--field);
   border: 2px solid var(--card-line);
-  border-radius: 10px;
+  border-radius: 4px;
   outline: none;
   -webkit-appearance: none;
   appearance: none;
 }
-.inputwrap input:focus { border-color: var(--accent); }
-/* ⚠️上の input には outline:none が「素の決まり」として書いてあり、
-   焦点の枠が最初から最後まで消えていました。代わりは 2px の縁の色替えだけ。
-   20時間走ったあとの人が、キーボードで納金を打つ日もあります。
-   指で触った時は出さず、キーで来た時だけ出す＝:focus-visible。
-   （DESIGN.md「3.」三／DESIGN検算.py 五）） */
-.inputwrap input:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+.hyo input:focus { border-color: var(--accent); }
+.hyo input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.hyo input::placeholder { color: var(--ink-soft); opacity: .55; font-size: 15px; }
+/* 打つ三つは、紙の上で目印を付けるように黄色く */
+.nippo .utsu input { background: var(--utsu); }
+.nippo .usui th, .nippo .usui td { color: var(--ink-soft); opacity: .55; }
+.futoi th, .futoi td { font-weight: 700; }
+.nippo .futoi td { color: var(--accent); font-size: 24px; }
+.kinshu .midashi th { height: 36px; font-size: 13px; }
+.kinshu td.zero { color: var(--ink-soft); }
+.kinshu .kei td { font-weight: 700; }
+.yoko th { font-size: 12.5px; letter-spacing: 0; height: 36px; padding: 0 2px; }
+.yoko td { font-size: 17px; padding: 0 6px; }
+/* 「その他」の欄。調整がある時だけ、二重線で消し、同じ枠の中のすぐ下に「メーター引き」 */
+.sonota .meterbiki { display: none; }
+.sonota.on th { line-height: 1.35; padding: 6px 4px; }
+.sonota.on .keshi {
+  text-decoration: line-through double;
+  text-decoration-color: var(--minus);
+  text-decoration-thickness: 2px;   /* 紙に定規で引く二重線のように、はっきり */
+  color: var(--ink);
+  font-size: 16px;
 }
-.inputwrap .yen {
-  position: absolute;
-  right: 14px; top: 50%;
-  transform: translateY(-50%);
-  font-size: 17px;
-  color: var(--ink-soft);
-  pointer-events: none;         /* 「円」を押しても欄が反応するように */
-}
-
-/* ---- 例の見せ方（薄く・小さく）--------------------------------
-   打ち込む数字は 26px でくっきり、例は 18px でうすく。
-   大きさと濃さの両方を変えているのは、
-   「これは打ち込まれた数字ではなく、ただの例だ」が
-   一目で伝わらないといけないから。同じ見た目だと、
-   すでに何か入っていると思われて、消すのか上書きなのかで迷わせる。
-   ※うすくしすぎない。読めなくなったら、例を置いた意味が消える。 */
-.inputwrap input::placeholder {
-  color: var(--ink-soft);
-  opacity: 0.55;
-  font-size: 18px;
-  font-weight: 400;
-}
-
-/* ---- 答え ----------------------------------------------------
-   打ち込む欄と同じ座布団の中、いちばん下に置く。
-   別の座布団に分けると、打ち終わってから答えを探すことになる。
-   疲れている人にスクロールを一回させる意味は無い。 */
-.answer {
-  margin-top: 16px;
-  padding: 14px 16px 16px;
-  border-radius: 12px;
-  border: 2px solid var(--accent);
-  text-align: center;
-}
-.answer .name {
-  font-size: 13px;
-  color: var(--ink-soft);
-  letter-spacing: .16em;
-}
-.answer .num {
-  font-size: clamp(34px, 11vw, 44px);
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1.3;
-  word-break: keep-all;
-}
-
-/* ---- 伝票（計算の道すじ） ---- */
-.step {
-  padding: 10px 0;
-  border-bottom: 1px dashed var(--card-line);
-}
-.step:last-child { border-bottom: none; }
-.step .line {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-.step .name { font-size: 15px; }
-.step .num  { font-size: 21px; white-space: nowrap; }
-.step .why {
-  font-size: 12.5px;
-  color: var(--ink-soft);
-  line-height: 1.6;
-  margin-top: 2px;
-}
-.step .shiki {                  /* 実際に使った式を、そのまま見せる行 */
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin-top: 3px;
-}
-.minus .num, .minus .name { color: var(--minus); }
-
-/* 小計の行（点線でなく実線で締める） */
-.subtotal {
-  border-top: 2px solid var(--card-line);
-  border-bottom: none;
-  margin-top: 4px;
-  padding-top: 10px;
-}
-.subtotal .name, .subtotal .num { font-weight: 600; }
-
-/* まだ何も打ち込まれていないときの、うすい表示。
-   「0円」が答えとして出ているように見えないように。 */
-.empty .num, .empty .shiki { opacity: 0.35; }
+.sonota.on .meterbiki { display: block; color: var(--minus); font-weight: 700; letter-spacing: .04em; }
+.sonota.on td:last-child { color: var(--minus); font-weight: 700; font-size: 24px; }
+.sonota.on th, .sonota.on td { border-width: 2.5px; border-color: var(--minus); }
+.chui { font-size: 14px; margin: 10px 0 0; line-height: 1.6; }
+.chui.minus, .minus { color: var(--minus); }
+.hosoku { font-size: 12.5px; color: var(--ink-soft); margin: 8px 0 0; line-height: 1.6; }
+.shiki { font-size: 13px; color: var(--ink-soft); margin: 10px 0 0; padding-left: 2.2em; line-height: 1.7; }
+.shiki li { list-style: none; position: relative; }
+.shiki li::before { position: absolute; left: -2.2em; }
+.shiki li:nth-child(1)::before { content: "(1)"; }
+.shiki li:nth-child(2)::before { content: "(2)"; }
+.shiki li:nth-child(3)::before { content: "(3)"; }
+.shiki li:nth-child(4)::before { content: "(4)"; }
+.empty td { opacity: .35; }
 
 /* ---- 押しもの ---- */
 .btn {
@@ -436,98 +394,90 @@ footer a { color: inherit; }
        だから看板の一行目でそこに答える＝**割り算はこちらでやります**。
        道具の自慢（消費税も税抜も出ます）は、その次の行で足りる。 -->
   <p class="lead">数字を打つだけ。<b>割り算はこちらでやります。</b><br>
-    消費税も、税抜の運収も、納める金額も出ます。</p>
+    日報１・金種票・納金カードと同じ升目で出します。</p>
 
-  <!-- ============ 打ち込む → 答え（ひとつづき） ============
-       打ち込む欄と答えを同じ座布団に入れてあるのは、
-       「打ち終わってから答えを探す」を無くすため。 -->
+  <!-- ============ ① 日報１ ============
+       升目・呼び名・並びは、矢崎メーターの自動日報（日報１）のまま（2026-11-22 博喜さん
+       「ぶっきらぼうな UI ですが、矢崎メーターの自動日報に合わせる＝使い慣れた UI なので、理解しやすい」）。
+       紙を横に置いて、同じ行に同じ数字を打てば済む。言い換えた名前は、ここでは使わない。
+       打つのは黄色の三つだけ。計算に使わない二行（ｶｰﾄﾞ無し営業・障割迎車）も、
+       紙と同じ形に見えるよう、うすく残してある。 -->
   <section class="card">
-    <h2>打ち込む</h2>
+    <h2>① 日報１　<span class="kozi">黄色の三つを打つ</span></h2>
+    <table class="hyo nippo">
+      <colgroup><col style="width:46%"><col></colgroup>
+      <tr class="usui"><th>ｶｰﾄﾞ無し営業</th><td></td></tr>
+      <tr class="usui"><th>障割迎車</th><td></td></tr>
+      <tr class="utsu"><th><label for="adjust">調整＋−</label></th>
+        <td><!-- 例は 500。いまの迎車料金（施主 2026-08-01）。マニュアルの例は古い 320。 -->
+          <input id="adjust" type="text" inputmode="numeric" placeholder="例 500" autocomplete="off" enterkeyhint="next"></td></tr>
+      <tr class="utsu"><th><label for="gross">税込運収</label></th>
+        <td><input id="gross" type="text" inputmode="numeric" placeholder="例 51340" autocomplete="off" enterkeyhint="next" autofocus></td></tr>
+      <tr class="utsu"><th><label for="highway">高速納金</label></th>
+        <td><input id="highway" type="text" inputmode="numeric" placeholder="例 1000" autocomplete="off" enterkeyhint="done"></td></tr>
+      <tr class="deru futoi"><th>納金額</th><td id="outFinal"></td></tr>
+      <tr class="deru naoshi"><th>消費税</th><td id="outTax"></td></tr>
+      <tr class="deru naoshi"><th>運　収</th><td id="outNet"></td></tr>
+    </table>
+    <p class="chui" id="naoshiChui" hidden>調整があるので、日報の<b>消費税・運収</b>は二重線で消して、上の数字に書き直す（事務所が、調整した額を分かるように）。</p>
+    <!-- 式は、マニュアルの「計算方法」(1)〜(4) と同じ順・同じ書き方で出す。
+         合わなかった晩に、紙のマニュアルと一行ずつ見比べられるように。 -->
+    <ol class="shiki">
+      <li id="s1"></li>
+      <li id="s2"></li>
+      <li id="s3"></li>
+      <li id="s4"></li>
+    </ol>
+  </section>
 
-    <div class="field">
-      <label for="gross">税込の運収（メーターの合計）</label>
-      <span class="hint">メーターに出た、税込みの合計。</span>
-      <div class="inputwrap">
-        <!-- 例は「例 51340」とだけ書く。右はしの「円」は箱が持っているので、
-             並ぶと「例 51340　円」と読める。placeholder に「円」まで書くと二つ出る。
-             autofocus ＝ 開いた瞬間にここから打てる（探させない）。 -->
-        <input id="gross" type="text" inputmode="decimal" placeholder="例 51340"
-               autocomplete="off" enterkeyhint="next" autofocus>
-        <span class="yen">円</span>
-      </div>
-    </div>
+  <!-- ============ ② 金種票＝納金機に入れる数字 ============
+       ⚠️ここがこの道具の芯（2026-11-22 博喜さん）。
+       メーターが出した数字は変えられない。迎車キャンセルの分も、税込運収に足されたまま残る。
+       だから金種票の上の三行は「訂正前のまま」書き、引きたい分は
+       「その他」の欄を二重線で消して「メーター引き」と書き、そこに額を書く。
+       納金機には「その他」として入れ、総納金額から引いてもらう＝乗務員が損をしない。
+       「その他」の欄は博喜さんの写真には無いが実物にはある（後から付け足した運用）ので、作った。
+       メーター引きも未収合計に入れる。入れないと、現金合計がその分多くなる。 -->
+  <section class="card">
+    <h2>② 金種票　<span class="kozi">納金機に入れる数字</span></h2>
+    <table class="hyo kinshu">
+      <colgroup><col style="width:44%"><col style="width:19%"><col></colgroup>
+      <tr><th colspan="2">税込運収額</th><td id="kGross"></td></tr>
+      <tr class="futoi"><th colspan="2">高速カード納金額</th><td id="kHighway"></td></tr>
+      <tr><th colspan="2">総納金額</th><td id="kTotal"></td></tr>
+      <tr class="midashi"><th colspan="3">金　種　区　分</th></tr>
+      <tr class="midashi"><th>金　種</th><th>枚</th><th>金　額</th></tr>
+      <tr><th>大口チケット</th><td><input class="mai" inputmode="numeric" aria-label="大口チケットの枚数"></td><td><input class="kin" inputmode="numeric" aria-label="大口チケットの金額"></td></tr>
+      <tr><th>その他チケット</th><td><input class="mai" inputmode="numeric" aria-label="その他チケットの枚数"></td><td><input class="kin" inputmode="numeric" aria-label="その他チケットの金額"></td></tr>
+      <tr><th>福祉券</th><td><input class="mai" inputmode="numeric" aria-label="福祉券の枚数"></td><td><input class="kin" inputmode="numeric" aria-label="福祉券の金額"></td></tr>
+      <tr><th>クーポン</th><td><input class="mai" inputmode="numeric" aria-label="クーポンの枚数"></td><td><input class="kin" inputmode="numeric" aria-label="クーポンの金額"></td></tr>
+      <tr><th>クレジット</th><td><input class="mai" inputmode="numeric" aria-label="クレジットの枚数"></td><td><input class="kin" inputmode="numeric" aria-label="クレジットの金額"></td></tr>
+      <tr><th>電子マネー</th><td><input class="mai" inputmode="numeric" aria-label="電子マネーの枚数"></td><td><input class="kin" inputmode="numeric" aria-label="電子マネーの金額"></td></tr>
+      <tr><th>障割・その他</th><td><input class="mai" inputmode="numeric" aria-label="障割・その他の枚数"></td><td><input class="kin" inputmode="numeric" aria-label="障割・その他の金額"></td></tr>
+      <tr><th>QR/ネット</th><td><input class="mai" inputmode="numeric" aria-label="QR/ネットの枚数"></td><td><input class="kin" inputmode="numeric" aria-label="QR/ネットの金額"></td></tr>
+      <!-- 調整があると「その他」に二重線が引かれ、そのすぐ下、同じ枠の中に「メーター引き」が出る。
+           額は①の「調整＋−」がそのまま来る（打ち直させない）。 -->
+      <tr class="sonota" id="rowSonota"><th><span class="keshi">その他</span><span class="meterbiki">メーター引き</span></th><td></td><td id="kMeter"></td></tr>
+      <tr class="kei"><th>未収合計</th><td></td><td id="kMishu"></td></tr>
+      <tr class="kei futoi"><th>現金合計</th><td></td><td id="kGenkin"></td></tr>
+      <tr class="kei"><th>合　計</th><td></td><td id="kGokei"></td></tr>
+    </table>
+    <p class="chui" id="sonotaChui" hidden>納金機には、<b>メーター引き</b>の額を「その他」で入れる。総納金額から引かれます。</p>
+    <p class="chui minus" id="genkinChui" hidden>未収が総納金額より多くなっています。打ち間違いがないか確かめてください。</p>
+    <p class="hosoku">未収合計＝チケットからQR/ネット、メーター引きまでを足した額。現金合計＝総納金額 − 未収合計。合計が総納金額と同じなら合っています。</p>
+  </section>
 
-    <div class="field">
-      <label for="adjust">調整金（引く分）</label>
-      <span class="hint">取り消し・値引きなど。無ければ空のまま。</span>
-      <div class="inputwrap">
-        <!-- 500円。以前は320円だったが、いまの調整金は500円（施主 2026-08-01）。
-             古い値段を例に置くと、それが正しい額だと思われてしまう。 -->
-        <input id="adjust" type="text" inputmode="decimal" placeholder="例 500"
-               autocomplete="off" enterkeyhint="next">
-        <span class="yen">円</span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label for="highway">高速代など（立替）</label>
-      <span class="hint">お客様から預かって、会社へ渡すだけのお金。</span>
-      <div class="inputwrap">
-        <input id="highway" type="text" inputmode="decimal" placeholder="例 1000"
-               autocomplete="off" enterkeyhint="done">
-        <span class="yen">円</span>
-      </div>
-    </div>
-
-    <div class="answer">
-      <div class="name">納 め る 金 額</div>
-      <div class="num" id="outFinal">0円</div>
-    </div>
+  <!-- ============ ③ 納金カード ============
+       こちらは「引いた後」の数字（マニュアル：納金カードにメーター引きを行った後の金額を書き入れる）。 -->
+  <section class="card">
+    <h2>③ 納金カード　<span class="kozi">引いた後の数字</span></h2>
+    <table class="hyo yoko">
+      <tr><th>運　収</th><th>税　金</th><th>高速納金</th><th>納金合計</th></tr>
+      <tr><td id="cNet"></td><td id="cTax"></td><td id="cHighway"></td><td id="cFinal"></td></tr>
+    </table>
   </section>
 
   <button class="btn" id="clear" type="button">はじめから（打ち込んだ数字を消す）</button>
-
-  <!-- ============ 道すじ ============
-       いつもは見なくていい。合わなかった晩に、足がつくように置いてある。 -->
-  <div style="height:16px"></div>
-  <section class="card">
-    <h2>その数字の出どころ</h2>
-
-    <div class="step" id="rowGross">
-      <div class="line"><span class="name">① 税込の運収</span><span class="num" id="outGross">0円</span></div>
-      <div class="why">メーターに出たままの数字。</div>
-    </div>
-
-    <div class="step minus" id="rowAdjust">
-      <div class="line"><span class="name">② 調整金をひく</span><span class="num" id="outAdjust">−0円</span></div>
-      <div class="why">先に引く。取り消した売上には、その分の税も付いていないから。</div>
-    </div>
-
-    <div class="step subtotal" id="rowAdjusted">
-      <div class="line"><span class="name">修正後の税込運収</span><span class="num" id="outAdjusted">0円</span></div>
-    </div>
-
-    <div class="step" id="rowTax">
-      <div class="line"><span class="name">③ 消費税をとりだす</span><span class="num" id="outTax">0円</span></div>
-      <div class="why">税込のうち、税はちょうど 1/11。だから 11 で割ると税だけ出る。</div>
-      <div class="shiki" id="shikiTax">— ÷ 11 ＝ —　→　10円単位に四捨五入</div>
-    </div>
-
-    <div class="step" id="rowNet">
-      <div class="line"><span class="name">④ 税抜の運収</span><span class="num" id="outNet">0円</span></div>
-      <div class="shiki" id="shikiNet">— − — ＝ —</div>
-    </div>
-
-    <div class="step" id="rowHighway">
-      <div class="line"><span class="name">⑤ 高速代などを足す</span><span class="num" id="outHighway">＋0円</span></div>
-      <div class="why">預かっただけのお金なので、税の計算が終わってから最後に足す。</div>
-    </div>
-
-    <div class="step subtotal" id="rowFinal2">
-      <div class="line"><span class="name">＝ 納める金額</span><span class="num" id="outFinal2">0円</span></div>
-      <div class="shiki" id="shikiFinal">— ＋ — ＋ — ＝ —</div>
-    </div>
-  </section>
 
   <!-- ============ たたんである説明 ============ -->
   <details>
@@ -564,11 +514,12 @@ footer a { color: inherit; }
   <details>
     <summary>合わないときに、どこを見るか</summary>
     <div class="body">
-      <p><b>数十円だけ合わない</b>…… 丸めの単位を疑ってください。ここは 10 円単位で
-         四捨五入しています。会社の伝票が 1 円単位や 100 円単位なら、
-         メールをいただければ直します。</p>
-      <p><b>税が多い／少ない</b>…… 高速代を運収に混ぜていないか、
-         調整金を税の計算のあとに引いていないか。順番が違うと、この二つでずれます。</p>
+      <p><b>数十円だけ合わない</b>…… 丸めを疑ってください。消費税は、11 で割った数の
+         1 の位を四捨五入しています（10 円単位。4,638 → 4,640）。</p>
+      <p><b>税が多い／少ない</b>…… 調整（メーター引き）を、税の計算のあとに引いていないか。
+         先に税込運収から引いてから、11 で割ります。</p>
+      <p><b>現金が合わない</b>…… 未収合計に、メーター引きを足し忘れていないか。
+         足さないと、その分だけ現金を多く出すことになります。</p>
       <p><b>まるごと合わない</b>…… 「税込の運収」に、税抜の数字を打っていないか。
          この一枚は、いちばん上に<b>税込み</b>の数字が入る前提で計算しています。</p>
     </div>
@@ -641,65 +592,81 @@ footer a { color: inherit; }
     if (shosu > 0) { s += String(Math.round(shosu * 100) / 100).slice(1); }
     return minus + s + '円';
   }
-  /* 説明の式の中で使う、単位を付けない形 */
+
+  /* 数を「51,340」の形に（升目の中なので「円」は付けない。紙の伝票と同じ）。 */
   function kazu(n) { return en(n).replace('円', ''); }
-
-  function keisan() {
-    var gross   = yomu(elGross.value);
-    var adjust  = yomu(elAdjust.value);
-    var highway = yomu(elHighway.value);
-
-    /* ① 調整金を引いた、修正後の税込運収。
-          マイナスにはしない（打ち間違いで妙な納金額を出さないため）。 */
-    var adjusted = Math.max(0, gross - adjust);
-
-    /* ② 消費税＝税込 ÷ 11 を、10円単位に四捨五入。
-          割った生の値も、画面に式として出すために取っておく。 */
-    var taxRaw = adjusted / 11;
-    var tax    = Math.round(taxRaw / 10) * 10;
-
-    /* ③ 税抜の運収 */
-    var net = Math.max(0, adjusted - tax);
-
-    /* ④ 納める金額＝税抜運収 ＋ 消費税 ＋ 高速代
-          （税抜＋税は修正後の税込に戻るが、伝票と同じ足し方で書いておく。
-            そのほうが、伝票の行と一行ずつ突き合わせられる） */
-    var final = net + tax + highway;
-
-    /* --- 画面へ --- */
-    var karappo = (gross === 0 && adjust === 0 && highway === 0);
-
-    put('outGross',    en(gross));
-    put('outAdjust',   '−' + en(adjust));
-    put('outAdjusted', en(adjusted));
-    put('outTax',      en(tax));
-    put('outNet',      en(net));
-    put('outHighway',  '＋' + en(highway));
-    put('outFinal',    en(final));
-    put('outFinal2',   en(final));
-
-    /* 式は、実際に使った数字をそのまま並べる。
-       割り算の生の値は小数第2位まで（…を付けて「まだ続く」と分かるように） */
-    var rawShow = Math.floor(taxRaw * 100) / 100;
-    var tsuzuki = (rawShow !== taxRaw) ? '…' : '';
-    put('shikiTax',
-        kazu(adjusted) + ' ÷ 11 ＝ ' + kazu(rawShow) + tsuzuki +
-        '　→　10円単位に四捨五入して ' + kazu(tax));
-    put('shikiNet',
-        kazu(adjusted) + ' − ' + kazu(tax) + ' ＝ ' + kazu(net));
-    put('shikiFinal',
-        kazu(net) + ' ＋ ' + kazu(tax) + ' ＋ ' + kazu(highway) + ' ＝ ' + kazu(final));
-
-    /* まだ何も打っていないうちは、数字をうすくしておく。 */
-    var rows = document.querySelectorAll('.step, .answer');
-    for (var i = 0; i < rows.length; i++) {
-      rows[i].classList.toggle('empty', karappo);
-    }
-  }
-
   function put(id, text) {
     var el = document.getElementById(id);
     if (el) { el.textContent = text; }
+  }
+
+  var kinshuIn = document.querySelectorAll('.kinshu input');
+
+  function keisan() {
+    var gross   = yomu(elGross.value);
+    var adjust  = Math.abs(yomu(elAdjust.value));   /* 調整は引くだけ（足すことは無い・博喜さん 2026-11-22）。
+                                                        「−320」と打たれても 320 を引く */
+    var highway = yomu(elHighway.value);
+
+    /* --- ① 日報１：マニュアルの「計算方法」(1)〜(4) の順 ---
+       (1) 税込運収 − 調整 ＝ 直した税込運収（マイナスにはしない）
+       (2) ÷ 11 の 1 の位を四捨五入 ＝ 消費税
+       (3) (1) − (2) ＝ 運収
+       (4) 高速納金 ＋ (1) ＝ 納金額 */
+    var adjusted = Math.max(0, gross - adjust);
+    var taxRaw   = adjusted / 11;
+    var tax      = Math.round(taxRaw / 10) * 10;
+    var net      = adjusted - tax;
+    var final    = adjusted + highway;
+
+    var karappo = (gross === 0 && adjust === 0 && highway === 0);
+
+    put('outFinal', kazu(final));
+    put('outTax',   kazu(tax));
+    put('outNet',   kazu(net));
+
+    var rawShow = Math.floor(taxRaw * 1000) / 1000;
+    var tsuzuki = (rawShow !== taxRaw) ? '…' : '';
+    put('s1', '税込運収 − 調整：' + kazu(gross) + ' − ' + kazu(adjust) + ' ＝ ' + kazu(adjusted));
+    put('s2', '÷ 11：' + kazu(adjusted) + ' ÷ 11 ＝ ' + kazu(rawShow) + tsuzuki + ' → 1 の位を四捨五入して ' + kazu(tax));
+    put('s3', '運収：' + kazu(adjusted) + ' − ' + kazu(tax) + ' ＝ ' + kazu(net));
+    put('s4', '納金額：' + kazu(adjusted) + ' ＋ ' + kazu(highway) + ' ＝ ' + kazu(final));
+    document.getElementById('naoshiChui').hidden = !(adjust > 0 && gross > 0);
+
+    /* --- ② 金種票：上の三行は訂正前のまま ---
+       メーターの数字は変えられないので、総納金額も訂正前（税込運収＋高速）。
+       引くのは納金機の仕事＝「その他」を消して書いた「メーター引き」の額で。 */
+    var total = gross + highway;
+    put('kGross',   kazu(gross));
+    put('kHighway', kazu(highway));
+    put('kTotal',   kazu(total));
+
+    var mishu = 0;
+    for (var i = 0; i < kinshuIn.length; i++) {
+      if (kinshuIn[i].classList.contains('kin')) { mishu += yomu(kinshuIn[i].value); }
+    }
+    var row = document.getElementById('rowSonota');
+    row.classList.toggle('on', adjust > 0);
+    put('kMeter', adjust > 0 ? kazu(adjust) : '');
+    mishu += adjust;                 /* メーター引きも未収合計に入れる（入れないと現金を多く出す） */
+
+    var genkin = total - mishu;
+    put('kMishu',  kazu(mishu));
+    put('kGenkin', kazu(genkin));
+    put('kGokei',  kazu(mishu + genkin));
+    document.getElementById('kGenkin').classList.toggle('minus', genkin < 0);
+    document.getElementById('genkinChui').hidden = !(genkin < 0);
+    document.getElementById('sonotaChui').hidden = !(adjust > 0);
+
+    /* --- ③ 納金カード：引いた後 --- */
+    put('cNet',     kazu(net));
+    put('cTax',     kazu(tax));
+    put('cHighway', kazu(highway));
+    put('cFinal',   kazu(final));
+
+    /* まだ何も打っていないうちは、出る数字をうすく（「0」が答えに見えないように） */
+    var hyo = document.querySelectorAll('.hyo');
+    for (var j = 0; j < hyo.length; j++) { hyo[j].classList.toggle('empty', karappo && mishu === 0); }
   }
 
   /* 打つそばから計算する。押して確定する「＝」は置かない。
@@ -707,9 +674,11 @@ footer a { color: inherit; }
   [elGross, elAdjust, elHighway].forEach(function (el) {
     el.addEventListener('input', keisan);
   });
+  for (var k = 0; k < kinshuIn.length; k++) { kinshuIn[k].addEventListener('input', keisan); }
 
   document.getElementById('clear').addEventListener('click', function () {
     elGross.value = ''; elAdjust.value = ''; elHighway.value = '';
+    for (var i = 0; i < kinshuIn.length; i++) { kinshuIn[i].value = ''; }
     keisan();
     elGross.focus();
   });
