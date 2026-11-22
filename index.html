@@ -182,6 +182,18 @@ html, body { overflow-x: hidden; }
 
 /* ---- 作っているもの ----
    道具の並べ方（.row・.spec・.tools・.hoka）は、遊びの部屋でも使うので kihon.css へ移した（2026-10-27）。 */
+/* 二本続けて流す動画（2026-11-22）。隠している方を、ちゃんと隠す。
+   【なぜ要るか】kihon.css の「.row-e video { display: block }」が、hidden の「出さない」より強い。
+     この一行が無いと、二本が縦に並んで両方見えてしまう。 */
+.douga-ren video[hidden] { display: none; }
+/* 説明も二つを同じ升に重ね、流している方だけ見せる。
+   【なぜ重ねるか】説明の長さが違うので、入れ替えると窓の下が一行ぶん跳ねて、下の行がずれる（手元で 21px）。
+     重ねれば、升の高さはいつも長い方の高さ＝切り替わっても何も動かない。
+   visibility: hidden は読み上げにも読まれない＝流していない方の説明は読まれない。 */
+.douga-ren figcaption { display: grid; }
+.douga-ren figcaption > span { grid-area: 1 / 1; }
+.douga-ren figcaption > .kakusu { visibility: hidden; }
+
 /* スマホで来た人への案内（2026-10-27。博喜さんのご依頼
    「スマホで engawaya にアクセスしても、WEB の K'Ad にはアクセスできない。その案内が欲しい」）
    【何をするか】スマホでは「ブラウザで開く」をしまい、代わりにこの箱を出す。
@@ -1053,6 +1065,27 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
          ⚠️版の番号（パソコン版 4.0.0）は、下の札の中の一か所だけ。版を出した日に直す三箇所の一つ
            （kad/index.html の二行と、ここ）。Web 版の号数は「開発の記録」の版の表にだけ書く
            ＝同じ数字を二か所に置かない（この家が何度も踏んだ病）。
+         【動画は二本を続けて流す】（2026-11-22 博喜さんの発案「ワイヤーソーで切断している動画を更に入れる」→ 裁定「続けて流す案」）
+           一本目＝3Dの箱を組み立てる（kad/kutai-3d-0929.mp4・45秒）→ 二本目＝ワイヤーソーで切る
+           （kad/wiresaw-1117.mp4・28秒）→ 一本目に戻る、のくり返し。仕掛けはページ下のスクリプト
+           「表紙の動画を二本続けて流す」。
+           【なぜ一つの窓で続けるか】K'Ad への道はこの行一つ＝窓も一つ。二つ並べると行が重くなる。
+             順は「描いた図面から立体を起こす → その立体を切る」＝話がつながる順。
+             一本目が先なのは、見出し「図面を描く 2D CAD」と、絵の始まり（図面）を合わせるため。
+           【二本目の焼き方】元は博喜さんの Desktop の `過去K'Ad全バージョン/K'Ad_ワイヤーソー_20261117_183903.mp4`
+             （2560x1378・26秒・23MB）。リポジトリには入れない。
+             縦横の比が一本目（16:9）と違う（約 2:1）ので、幅 1280 に縮めて上下に K'Ad の地の色
+             （#1b1e24）を足し 1280x720 にした＝切り替わるとき窓の高さが跳ねない。
+             （両端を切る案は外した＝右の板の端か、左上の「選択」の札が欠けるため）
+             最後の「二つに分かれた姿」は 2 秒止めて延ばした（元は 2.5 秒しかなく、字幕が読み切れない）。
+             字幕は一本目と同じ作り（黒い角丸の帯・白のヒラギノ角ゴ W6・36px・帯の下端は下から 92px）。
+             ffmpeg に字を描く機能が無いので、帯を透明な絵に描いて重ねた。字幕の時刻：
+             0〜6.5 秒「据えて［切る］」／6.5〜15 秒「奥から縮む」／15〜23.25 秒「右の板（数字は試算）」／
+             23.25 秒〜「二つに分かれる」（23.25 秒＝塊が分かれる瞬間を明るさで測った）。
+           ⚠️**数字は試算**。開発日記（11-17）と同じ断りを、字幕と添え書きの両方に入れた。
+             表紙で見た人が、機械の性能や工期の目安と受け取らないように。
+           ⚠️二本目は poster も preload も持たない＝表紙を開いた瞬間には一バイトも落とさない。
+             一本目が流れ始めてから読み始め、読めてから切り替える（読めるまでは一本目の最後の絵で待つ）。
          ---- ここから下は、前の表紙の板書（消さない）---- -->
   <!-- K'Ad蔵人の実際の画面（2026-09-07）。
        施主のご依頼「左の絵のスペースへ、K'Adの見栄えする画像」。
@@ -1197,13 +1230,18 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
          片方だけ古くなる**（この家が何度も踏んだ病。開発日記が「いま配っている版の一覧」を
          作らないのと、まったく同じ理由）。日数の正は kad/index.html の表ひとつだけ。 -->
     <article class="row row-hajime">
-      <figure class="row-e">
+      <figure class="row-e douga-ren">
         <video src="kad/kutai-3d-0929.mp4?v=20260929b" poster="kad/kutai-3d-0929.jpg?v=20260929b"
                width="960" height="540"
                autoplay loop muted playsinline
                aria-label="K'Ad蔵人の画面。平面図と東西南北の立面図を読み込み、立面図に描いた窓や穴を壁に貼って、3Dの箱に組み立てていくところ。音はありません。">
         </video>
-        <figcaption>平面図と立面図から、3Dの箱を組み立てているところ（2026年9月の工事・約45秒）。音はありません。</figcaption>
+        <video src="kad/wiresaw-1117.mp4?v=20261122" hidden
+               width="960" height="540"
+               muted playsinline preload="none"
+               aria-label="K'Ad蔵人の3Dの部屋。コンクリートの塊にワイヤーソーを据えて切っていくところ。切る面のまだ切れていない所が奥から縮んでいき、最後に塊が上下二つに分かれる。音はありません。">
+        </video>
+        <figcaption><span>平面図と立面図から、3Dの箱を組み立てているところ（2026年9月の工事・約45秒）。音はありません。</span><span class="kakusu">組み立てた立体を、ワイヤーソー（コンクリートを切る機械）で切っているところ（2026年11月の工事・約28秒）。数字は試算です。音はありません。</span></figcaption>
       </figure>
       <div>
         <p class="tag">図面を描く 2D CAD</p>
@@ -2682,6 +2720,61 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   }
 })();
 
+
+/* ------------------------------------------------------------
+   表紙の動画を二本続けて流す（2026-11-22）。
+   K'Ad の行の窓で、3Dの箱を組み立てる → ワイヤーソーで切る → また組み立てる、をくり返す。
+   【なぜ src を差し替えず、video を二つ重ねるか】差し替えると、読み直すあいだ窓が一瞬黒くなる。
+     二つ持って、読めた方を出せば、切り替わりが途切れない。
+   【なぜ一本目に loop が書いてあるか】このスクリプトが動かない閲覧機でも、
+     今までどおり一本目がくり返し流れるように。動くときだけ loop を外して、二本目へつなぐ。
+   【二本目を読み始めるのは、一本目が流れ始めてから】表紙を開いた瞬間の重さを増やさない。
+   ------------------------------------------------------------ */
+(function () {
+  var fig = document.querySelector('.douga-ren');
+  if (!fig) return;
+  var vs  = fig.querySelectorAll('video');
+  var kotoba = fig.querySelectorAll('figcaption > span');
+  if (vs.length < 2) return;
+  var a = vs[0], b = vs[1];
+  a.loop = false;
+
+  var yonda = false;
+  function yomihajime() {
+    if (yonda) return;
+    yonda = true;
+    b.preload = 'auto';
+    b.load();
+  }
+  a.addEventListener('playing', yomihajime);
+
+  /* from を隠して to を出し、頭から流す。説明（figcaption）も合わせて替える。 */
+  function kirikae(from, to) {
+    to.currentTime = 0;
+    to.hidden = false;
+    from.hidden = true;
+    /* 説明は二つとも figcaption に重ねて置いてあり、流している方だけ見せる（高さが跳ねないように） */
+    for (var i = 0; i < kotoba.length; i++) kotoba[i].classList.toggle('kakusu', vs[i] !== to);
+    var p = to.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
+  a.addEventListener('ended', function () {
+    yomihajime();
+    /* 二本目がまだ読めていなければ、読めるまで一本目の最後の絵で待つ */
+    if (b.readyState >= 2) { kirikae(a, b); return; }
+    b.addEventListener('canplay', function hitotabi() {
+      b.removeEventListener('canplay', hitotabi);
+      kirikae(a, b);
+    });
+  });
+  /* 二本目が読めなかったとき（回線が切れた等）は、一本目だけのくり返しに戻す */
+  b.addEventListener('error', function () {
+    a.loop = true;
+    if (a.ended) kirikae(b, a);
+  });
+  b.addEventListener('ended', function () { kirikae(b, a); });
+})();
 
 /* ------------------------------------------------------------
    スマホの「この住所を、自分に送る」（2026-10-27）。
