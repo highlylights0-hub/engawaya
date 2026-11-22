@@ -280,6 +280,16 @@ h1 {
 .sonota.on .meterbiki { display: block; color: var(--minus); font-weight: 700; letter-spacing: .04em; }
 .sonota.on td:last-child { color: var(--minus); font-weight: 700; font-size: 24px; }
 .sonota.on th, .sonota.on td { border-width: 2.5px; border-color: var(--minus); }
+.nijuu {
+  text-decoration: line-through double;
+  text-decoration-color: var(--minus);
+  text-decoration-thickness: 2px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  margin-right: 8px;
+}
+.naoshita { color: var(--minus); font-weight: 700; }
+.kakinaoshi { font-size: 16px; text-align: right; padding: 2px 6px 0; }
 .chui { font-size: 14px; margin: 10px 0 0; line-height: 1.6; }
 .chui.minus, .minus { color: var(--minus); }
 .hosoku { font-size: 12.5px; color: var(--ink-soft); margin: 8px 0 0; line-height: 1.6; }
@@ -412,14 +422,18 @@ footer a { color: inherit; }
         <td><!-- 例は 500。いまの迎車料金（施主 2026-08-01）。マニュアルの例は古い 320。 -->
           <input id="adjust" type="text" inputmode="numeric" placeholder="例 500" autocomplete="off" enterkeyhint="next"></td></tr>
       <tr class="utsu"><th><label for="gross">税込運収</label></th>
-        <td><input id="gross" type="text" inputmode="numeric" placeholder="例 51340" autocomplete="off" enterkeyhint="next" autofocus></td></tr>
+        <td><input id="gross" type="text" inputmode="numeric" placeholder="例 51340" autocomplete="off" enterkeyhint="next" autofocus>
+          <div class="kakinaoshi" id="grossNaoshi" hidden></div></td></tr>
       <tr class="utsu"><th><label for="highway">高速納金</label></th>
         <td><input id="highway" type="text" inputmode="numeric" placeholder="例 1000" autocomplete="off" enterkeyhint="done"></td></tr>
       <tr class="deru futoi"><th>納金額</th><td id="outFinal"></td></tr>
       <tr class="deru naoshi"><th>消費税</th><td id="outTax"></td></tr>
       <tr class="deru naoshi"><th>運　収</th><td id="outNet"></td></tr>
     </table>
-    <p class="chui" id="naoshiChui" hidden>調整があるので、日報の<b>消費税・運収</b>は二重線で消して、上の数字に書き直す（事務所が、調整した額を分かるように）。</p>
+    <!-- 二重線（2026-11-22 博喜さん「日報Ⅰに二重線を引き表示を足してください」）：
+         マニュアルの訂正の見本と同じく、刷られた数字を二重線で消し、その横に書き直す数字を出す。
+         紙の上でやることを、そのまま画面に見せる＝写すだけで済む。 -->
+    <p class="chui" id="naoshiChui" hidden><b class="naoshita">赤い数字</b>＝調整金額により、事務所・乗務員が確認する数字。日報の<b>税込運収・消費税・運収</b>は、刷られた数字を二重線で消して、赤い数字に書き直す。<b>納金額</b>は手で書く欄なので、そのまま書く。</p>
     <!-- 式は、マニュアルの「計算方法」(1)〜(4) と同じ順・同じ書き方で出す。
          合わなかった晩に、紙のマニュアルと一行ずつ見比べられるように。 -->
     <ol class="shiki">
@@ -600,6 +614,18 @@ footer a { color: inherit; }
     if (el) { el.textContent = text; }
   }
 
+  /* 二重線の数字（消す数）と、書き直す数を一つの升に。消す数が空なら、書き直す数だけ（いつもの形）。 */
+  function nijuu(id, moto, ima) {
+    var el = document.getElementById(id);
+    el.textContent = '';
+    if (moto) {
+      var s = document.createElement('span'); s.className = 'nijuu'; s.textContent = moto; el.appendChild(s);
+      var b = document.createElement('span'); b.className = 'naoshita'; b.textContent = ima; el.appendChild(b);
+    } else {
+      el.textContent = ima;
+    }
+  }
+
   var kinshuIn = document.querySelectorAll('.kinshu input');
 
   function keisan() {
@@ -622,8 +648,17 @@ footer a { color: inherit; }
     var karappo = (gross === 0 && adjust === 0 && highway === 0);
 
     put('outFinal', kazu(final));
-    put('outTax',   kazu(tax));
-    put('outNet',   kazu(net));
+
+    /* 調整がある時は、刷られた数字（調整を引く前に計算した値）を二重線で消し、横に書き直す数字。
+       刷られた消費税・運収は、メーターが税込運収そのままで計算した値＝ここで同じ式で出せる。 */
+    var naoshi = adjust > 0 && gross > 0;
+    var taxMoto = Math.round(gross / 11 / 10) * 10;
+    var netMoto = gross - taxMoto;
+    nijuu('outTax', naoshi ? kazu(taxMoto) : '', kazu(tax));
+    nijuu('outNet', naoshi ? kazu(netMoto) : '', kazu(net));
+    var gn = document.getElementById('grossNaoshi');
+    gn.hidden = !naoshi;
+    nijuu('grossNaoshi', naoshi ? kazu(gross) : '', naoshi ? kazu(adjusted) : '');
 
     var rawShow = Math.floor(taxRaw * 1000) / 1000;
     var tsuzuki = (rawShow !== taxRaw) ? '…' : '';
