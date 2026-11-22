@@ -731,6 +731,23 @@ footer a { color: inherit; }
 (function () {
   if (window.parent === window) { return; }
   document.body.style.minHeight = '0';
+
+  /* 屋号の「縁 側 屋」は、枠の中では「仲間の板へ戻る」に替える（博喜さん
+     「仲間の板からメーター引き。戻るのは、仲間の板です」）。
+     そのままだと、押すと枠の中だけが縁側屋の表紙に変わり、板の中に迷子になる。
+     押したら板へ「戻して」と知らせるだけで、枠の中は動かさない。 */
+  var yagou = document.querySelector('.yagou');
+  if (yagou) {
+    yagou.textContent = '← 仲間の板へ戻る';
+    yagou.style.letterSpacing = '0.05em';
+    yagou.style.fontSize = '16px';     /* 疲れた指でも外さないよう、押す所を大きく */
+    yagou.style.padding = '10px 14px 10px 0';
+    yagou.style.color = 'var(--accent)';
+    yagou.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.parent.postMessage({ meterBack: true }, '*');
+    });
+  }
   var mae = 0;
   function shiraseru() {
     var take = Math.ceil(document.body.scrollHeight);
