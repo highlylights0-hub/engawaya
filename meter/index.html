@@ -769,6 +769,16 @@ footer a { color: inherit; }
       window.parent.postMessage({ meterBack: true }, '*');
     });
   }
+  /* 足元も、枠の中ではコピーライトの一行だけにする（博喜さん 2026-11-22
+     「縁側屋にくれば、誰が何を指示し、作成しているか分かりますが、簡潔に、コピーライトだけおきたい」）。
+     板の中では、制作の分担まで書くと板の持ち主が誰なのか紛らわしくなる。詳しくは縁側屋の側に置いてある。
+     縁側屋への戸は別の窓（target="_blank"）で開く。枠の中で開くと、板の中に縁側屋が入り込んで迷子になるため。
+     縁側屋で直に開いたときの足元（名前と制作の分担）は、今までどおり。 */
+  var ashimoto = document.querySelector('footer');
+  if (ashimoto) {
+    ashimoto.innerHTML = 'Copyright (C) ' +
+      '<a href="https://engawaya.com/" target="_blank" rel="noopener">縁側屋</a> 2026';
+  }
   var mae = 0;
   function shiraseru() {
     var take = Math.ceil(document.body.scrollHeight);
