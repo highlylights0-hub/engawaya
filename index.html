@@ -1364,6 +1364,70 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
       </div>
     </article>
 
+    <!-- TAXI 運収（2026-11-25 版 1.0 が審査を通り、博喜さんが公開した日に敷いた。博喜さんのご依頼「縁側屋へ TAXI 運収の紹介を追加」）。
+         【置き場所】TAXI PRO NAVI のすぐ下。姉妹アプリで、ヒートマップを NAVI の地図に重ねる＝走る道具と、走り終えて数える道具を隣に。
+           メーター引き（ブラウザの道具）より上に置いたのは、こちらが入手の窓口（App Store）を持つ「行」の道具だから。
+           外した案：①「そのほかに作ったもの」の一行 → 仕事の道具なので、遊びや Ochi-Gee と同じ棚に置くと何の店かがぼやける。
+                     ② メーター引きの隣の小さな札（.tool）→ あちらは「押したその場で動く」ブラウザの道具の棚。入手の段がある物を混ぜると、札の約束が崩れる。
+         【組み方】NAVI の段の組み（.navi-row ほか）をそのまま借りた＝CSS は一行も足していない。姉妹が同じ顔で並ぶ。
+           NAVI の「サブスク」の箱は、ここでは「買い切り」の箱（同じ .navi-sub）。札（.navi-fuda）も「買い切り」と字で添える（色だけに背負わせない）。
+         【絵】App Store に出している今の 7 枚（6.9 インチ）を、幅 480px の JPEG にして unshu/ に置いた。正は非公開の Hiitaro の `審査/スクショ/6.9インチ/`。
+           写っている日報は見本（アプリの中の「見本の日報」）で、App Store で既に見せている物だけ。App Store の絵を差し替えた日は、ここも書き出し直す。
+         【書かないこと】メーターの会社の名前（Hiitaro の決まり＝名前に出さない・関係のない会社なので）。版の数字は版の表（開発の記録）ひとつだけ。
+         【出典】ヒートマップは国の「位置参照情報」を使う＝利用約款の条件で出典を出す。絵の中にも写っているが、字でも spec に添えた。 -->
+    <article class="row navi-row">
+      <figure class="row-e navi-futatsu">
+        <img src="unshu/1-kinshu.jpg" width="480" height="1043" loading="lazy"
+             alt="TAXI 運収の撮る画面。10/18 の日報 32 回。金種表の枚数に、クレジット 8 枚・電子マネー 8 枚・QR/ネット 5 枚・障割 0 枚。下に迎車キャンセルの 3 行（No.13・14・19、各 500 円）。">
+        <img src="unshu/3-meterbiki.jpg" width="480" height="1043" loading="lazy"
+             alt="メーター引き 3 件 1,500 円。日報の書き直し：調整 1,500、税込運収 67,050→65,550、消費税 6,100→5,960、運収 60,950→59,590、納金額 69,460→67,960。金種表は「その他」を「メーター引き」に、納金機は「その他」で 1,500 円を入力。">
+        <figcaption>左：日報を撮ると、金種表に書く枚数を。右：迎車キャンセルをメーター引きにして、書き直す数字まで。</figcaption>
+      </figure>
+      <div>
+        <p class="tag">日報を撮って、数えて、引く</p>
+        <h3>TAXI 運収</h3>
+        <p class="desc">入庫のあとにメーターが刷る自動日報を撮るだけで、金種表に書く枚数を数え、迎車キャンセルをメーター引きにします。納金の前の、指で数えて割り算をする手間を引き受けます。</p>
+        <ul class="navi-iiten">
+          <li><b>金種表の枚数を数える</b>クレジット・電子マネー・QR／ネット・障割。印の意味は、日報に刷ってある凡例から覚えます。</li>
+          <li><b>迎車キャンセルをメーター引きに</b>税込運収・消費税・運収・納金額の書き直しと、金種表・納金機への入れ方まで。</li>
+          <li><b>読めなかった所は、正直に</b>推し量って埋めずに「確かめてください」に写真ごと出します。押して選べば直ります。</li>
+          <li><b>金額は変えません</b>金額は入庫のレシートが正。アプリが出すのは枚数と、メーター引きだけです。</li>
+          <li><b>記録は iPhone の中だけ</b>写真も日報も外へ送りません。アカウントもありません。</li>
+        </ul>
+        <div class="navi-sub">
+          <p class="navi-sub-na"><span class="navi-fuda">買い切り</span>運収日報帳・ヒートマップ<span class="navi-sub-ne">600 円</span></p>
+          <ul>
+            <li>運収日報帳：日ごとの運収（税抜）をカレンダーに。月の合計・出番・一出番の平均</li>
+            <li>一回ずつの帳簿：時刻・乗車地→降車地・人員・金額・払い方（押して直せます）</li>
+            <li>乗車地のヒートマップ：期間・曜日・時間帯で絞って、町丁目ごとに</li>
+            <li>TAXI PRO NAVI の地図に重ねる・丸から NAVI で案内</li>
+          </ul>
+          <p class="navi-sub-note">はじめの 1 か月は無料でお試しいただけます。お試しが終わっても、勝手にお金はかかりません。続ける時は一度のお支払いだけで、月額ではありません。撮る・数える・引くは、ずっと無料です。</p>
+        </div>
+        <dl class="spec">
+          <dt>動く場所</dt><dd>iPhone</dd>
+          <dt>料金</dt><dd>無料（App 内課金あり：1 か月の無料お試しと、買い切り 600 円）</dd>
+          <dt>地図</dt><dd>ヒートマップは東京都の住所に対応。出典：位置参照情報 国土交通省</dd>
+        </dl>
+        <div class="btns">
+          <a class="btn btn-p" href="https://apps.apple.com/jp/app/id6838592380">App Store で見る</a>
+          <a class="btn btn-s btn-sm" href="https://highlylights0-hub.github.io/geomemory-support/taxi-unshu.html">使い方とサポート</a>
+        </div>
+      </div>
+      <div class="navi-gaku">
+        <p class="navi-gaku-midashi"><span>画面を見る（7 枚）</span><span aria-hidden="true">横に送れます →</span></p>
+        <ul class="navi-nagare">
+          <li><img src="unshu/1-kinshu.jpg" width="480" height="1043" loading="lazy" alt="金種表の枚数。クレジット 8・電子マネー 8・QR/ネット 5・障割 0。"><p>金種表の枚数</p></li>
+          <li><img src="unshu/2-tashikame.jpg" width="480" height="1043" loading="lazy" alt="確かめてください（5）。読めなかった行の写真の帯と、クレジット・電子マネー・QR/ネット・障割の押す札。"><p>読めなかった所は、写真を見て選ぶ</p></li>
+          <li><img src="unshu/3-meterbiki.jpg" width="480" height="1043" loading="lazy" alt="メーター引き 3 件 1,500 円と、日報の書き直し・金種表・納金機への入れ方。"><p>メーター引きと書き直し</p></li>
+          <li><img src="unshu/4-nippocho.jpg" width="480" height="1043" loading="lazy" alt="運収日報帳の 2026 年 10 月のカレンダー。運収（税抜）141,870 円・出番 2 回・一出番の平均 70,935 円・営業 49 回。18 日と 20 日の升に 6.0万・8.2万。"><span class="navi-fuda">買い切り</span><p>運収日報帳</p></li>
+          <li><img src="unshu/5-chobo.jpg" width="480" height="1043" loading="lazy" alt="10 月 18 日の一回ずつの帳簿。時刻・乗車地→降車地・金額・払い方の行が並ぶ。"><span class="navi-fuda">買い切り</span><p>一回ずつの帳簿</p></li>
+          <li><img src="unshu/6-heatmap.jpg" width="480" height="1043" loading="lazy" alt="乗車地のヒートマップ。渋谷・恵比寿のあたりが赤く、新宿・六本木・品川のあたりに黄色の丸。上に期間・曜日・時間帯の切り替え。"><span class="navi-fuda">買い切り</span><p>乗車地のヒートマップ</p></li>
+          <li><img src="unshu/7-navi.jpg" width="480" height="1043" loading="lazy" alt="恵比寿南1 の丸を押したところ。乗車 10 回・運収（税抜）18,740 円・多い時間帯と行き先。下に［TAXI PRO NAVI でここへ行く］。"><span class="navi-fuda">買い切り</span><p>丸から TAXI PRO NAVI へ</p></li>
+        </ul>
+      </div>
+    </article>
+
     <div class="tools">
     <!-- 2026-08-01 開通。施主の実機検収「大歓声、大完成」を受けて敷いた。
          道の道具どうしを隣に並べる（GeoMemory の下・遊びの上）＝
@@ -1481,6 +1545,11 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
               <th scope="row">TAXI PRO NAVI</th>
               <td>4.3</td>
               <td>2026年11月16日</td>
+            </tr>
+            <tr>
+              <th scope="row">TAXI 運収</th>
+              <td>1.0</td>
+              <td>2026年11月25日</td>
             </tr>
         <!-- App Store の名前は「魚群 - 羽田空港 アナリティクス」ですが、ここは短いほうだけ
              （下の Ochi-Gee と同じ訳。一列目が長いと右の日付が押し出されます）。 -->
