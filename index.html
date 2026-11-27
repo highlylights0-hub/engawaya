@@ -129,8 +129,19 @@ html, body { overflow-x: hidden; }
   margin: 0;
   font-family: var(--min); font-weight: 700;
   font-size: clamp(27px, 5.6vw, 44px); line-height: 1.55; letter-spacing: .04em;
+  /* 2026-11-27 字の大きさを、窓の幅ではなく「見出しの欄の幅」で決める（cqi＝欄の幅の百分の一）。
+     一行目「『あったらいいな…』を」は十一字（字の間を足して約 11.5 字ぶん）。8.6cqi なら欄にちょうど収まり、
+     パソコンでも iPhone でも二行で読める。この書き方を知らない古い閲覧機は、上の一行のまま。 */
+  font-size: clamp(27px, 8.6cqi, 44px);
 }
+/* 見出しの欄を「幅の物差し」にする（上の cqi が、この欄の幅を測る）。 */
+.genkan > div:first-child { container-type: inline-size; }
 /* 一行の下に、三日月の筆のひと刷け（2026-11-20。Xの背景の、あの一筆）。 */
+/* 大見出しの折り返し（2026-11-27）。言葉のかたまりを span で包み、かたまりの切れ目でだけ折り返す。
+   なぜ：パソコンの幅では「『あったらいいな…』を」が一行に入りきらず、「を」が一字だけ次の行へ落ちた。
+   かたまりにしておけば、狭いときは「『あったら／いいな…』を」と、意味の切れ目で割れる。
+   inline-block にしたのは、かたまりどうしの境目が、どの閲覧機でも確かに折り返せる場所になるため。 */
+.genkan h1 span { display: inline-block; }
 .genkan h1::after {
   content: ""; display: block;
   width: min(300px, 70%); height: 22px; margin-top: 14px;
@@ -1043,7 +1054,7 @@ html[data-time="night"][data-season="autumn"] .koorogi { display: inline-flex; }
   <div class="genkan">
     <div>
       <p class="genkan-eyebrow">ソフトウェアの個人開発</p>
-      <h1 id="genkan-midashi">『あったらいいな…』を<br>アプリにしています。</h1>
+      <h1 id="genkan-midashi"><span>『あったら</span><span>いいな…』を</span><br><span>アプリに</span><span>しています。</span></h1>
       <p class="genkan-lead">建築・土木の 2D CAD「K'Ad蔵人」と、タクシー乗務員のための「TAXI PRO NAVI」と「TAXI 運収」、神社やお寺に参る人のための「お参り」。つくっているのは、岡澤 博喜と蔵人（AI）です。K'Ad蔵人とお参りは無料。TAXI PRO NAVI と TAXI 運収は無料で始められて、手をかけた一部の機能だけ有料です（NAVI はサブスクリプション、運収は買い切り）。</p>
       <div class="btns">
         <a class="btn btn-p" href="#tsukutte">作っているものを見る</a>
